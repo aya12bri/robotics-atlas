@@ -1,0 +1,21 @@
+// Français — page gantry. Clé = empreinte du texte anglais, valeur = traduction.
+RA.add({
+"13zxvk5d7bp": "Robot cartésien (portique) (P-P-P)",
+"15rmiub09he": "Les trois liaisons coulissent en ligne droite. Déplacez un curseur, ou tapez une valeur dans une case numérique.",
+"177jn6fzzr6": "Chaque carré est une liaison glissière (prismatique), et la barre grise est sa course complète. La ligne orange est le chemin de la base à l'outil : d'abord le long de q1, puis q2, puis q3. Axes : <span class=\"legend-x\">x rouge</span>, <span class=\"legend-y\">y vert</span>, <span class=\"legend-z\">z bleu</span>. ⊙ pointe <em>vers vous</em>, ⊗ pointe <em>à l'opposé</em>. Changez la <strong>Vue</strong> pour voir la machine de face, de dessus ou de côté.",
+"nul9ckttya": "Le repère i est attaché à l'axe de la liaison i+1. Chaque ligne est : <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>. Pour une liaison glissière, <strong>d</strong> est la variable. Les nombres orange sont les valeurs actuelles.",
+"15o5vivrxv3": "La dernière colonne est la position de l'outil dans le repère de base {0}.",
+"n3z4891gnr": "Cinématique directe d'un robot cartésien",
+"7pfole3b80": "x0 = q3 + 0.15      (x0 pointe vers le BAS)\ny0 = q2             (en travers de la machine)\nz0 = q1             (le long des grands rails)",
+"2fzymia8f5u": "C'est la cinématique la plus simple de tous les robots : <strong>chaque liaison est directement une coordonnée</strong>. C'est pourquoi les robots cartésiens sont si faciles à programmer et si précis. Le repère {0} est placé de façon que son axe z suive le premier rail, d'où z0 = q1.",
+"88friz60fa": "Où utilise-t-on un robot cartésien ?",
+"271l5mvrpsl": "Imprimantes 3D, défonceuses et fraiseuses CNC, découpeuses laser, traceurs, robots de pipetage de laboratoire, palettisation, stockage et déstockage en entrepôt, collage et dépose de produit, et machines d'inspection. La zone de travail peut être aussi grande qu'on veut : il suffit d'allonger les rails.",
+"m7jd91fl7b": "<strong>Points forts :</strong> très précis et rigide, grand espace de travail, et les mathématiques les plus simples. <strong>Points faibles :</strong> la machine est encombrante par rapport à la zone où elle travaille, elle est plus lente qu'un SCARA ou un Delta, et l'outil ne peut ni s'incliner ni tourner sans axes supplémentaires.",
+"1avj6wx8gyx": "<strong>Oui, une pince fonctionne</strong>, comme celle du modèle 3D. Elle pointe toujours droit vers le bas. Si la pièce doit être tournée, ajoutez un axe de rotation à l'outil. Autres outils :",
+"lm7bvjgjnd": "<strong>Ventouse</strong>, pour des boîtes, des plaques ou des pièces plates.",
+"2ezcc3l52tj": "<strong>Buse d'extrusion d'impression 3D</strong>, pour imprimer.",
+"av6d20kmr1": "<strong>Broche de coupe ou tête laser</strong>, pour l'usinage et la découpe.",
+"e629uzggkw": "<strong>Pipette</strong>, pour les liquides de laboratoire.",
+"1wul4wgsvmm": "<strong>Stylo ou caméra</strong>, pour dessiner ou inspecter.",
+"16oex1n4ir6": "Robot cartésien (portique)"
+});
