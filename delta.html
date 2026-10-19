@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Delta robot (parallel robot)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 480px; border-radius: 6px; }
+      select, .xyz input {
+        background: #0f1720; color: #e8eef5; border: 1px solid #44566b;
+        border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem;
+      }
+      .xyz input { width: 5.5rem; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script src="helpers.js"></script>
+  </head>
+  <body>
+    <h1>Delta robot (parallel robot, 3 arms)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+    <div class="toolbar">
+      <button id="demoBtn">Start demo</button>
+      <button id="resetBtn">Reset</button>
+      <span id="demoStatus">Pick-and-place demo: the robot moves the blue cube between pad A and pad B.</span>
+    </div>
+
+    <h2>Joints (the three motors)</h2>
+    <p>The Delta has <strong>three motors</strong>, one at the top of each arm. Move a slider, or type a value in the number box.
+       θ is the angle of the upper arm: 0° = horizontal, positive = the arm swings <em>down</em>.
+       The fourth slider is the optional rotation of the tool around the vertical axis.</p>
+    <div id="controls"></div>
+
+    <h2>Inverse kinematics: go to a point</h2>
+    <p>Type where the centre of the effector must go (in metres, in the base frame {0}: the origin is at the centre of the top plate,
+       z points up, so the work area is at <strong>negative z</strong>) and press the button.</p>
+    <div class="toolbar xyz">
+      <label>x <input id="gx" type="number" step="0.01" value="0" /></label>
+      <label>y <input id="gy" type="number" step="0.01" value="0" /></label>
+      <label>z <input id="gz" type="number" step="0.01" value="-0.55" /></label>
+      <button id="goBtn">Go to this point</button>
+      <span id="goStatus"></span>
+    </div>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames: <select id="frameSel">
+        <option value="all">Both frames</option>
+        <option value="0">Base frame {0} only (x0 y0 z0)</option>
+        <option value="1">Effector frame {E} only (x1 y1 z1)</option>
+      </select></span>
+      <label>View:
+        <select id="viewSel">
+          <option value="front">Front view</option>
+          <option value="side">Side view</option>
+          <option value="top">Top view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+    <p>
+      Each leg is: a <strong>revolute joint</strong> at the base (circle or thick bar, with the angle θ),
+      an <strong>upper arm</strong> (orange line), then a <strong>parallelogram</strong> of two rods (the two light lines) ending on the
+      effector triangle (white). The small circles are <strong>ball joints</strong> (spherical joints, 3 rotations).
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>, <span class="legend-z">z blue</span>.
+      The effector frame {E} always keeps the <em>same orientation</em> as the base frame {0}: that is the magic of the parallelograms.
+      The dashed squares are the pads A and B, and the blue square is the cube.
+    </p>
+    <p id="readout"></p>
+
+    <h2>Why no single DH table?</h2>
+    <p>A DH table describes a <strong>serial</strong> chain: one joint after the other, from the base to the tool. The Delta is a
+       <strong>parallel robot</strong>: the effector is held by <strong>three chains at the same time</strong>, which close loops
+       (base → leg 1 → effector → leg 2 → base). A single table cannot describe a loop. What we can do is write the DH table of the
+       <strong>open part of each leg</strong>, from the base to its elbow, and then add the condition "the forearm has length l":
+       that condition closes the loop.</p>
+    <div class="toolbar">
+      <label>Leg: <select id="legSel">
+        <option value="0">Leg 1 (φ = 0°)</option>
+        <option value="1">Leg 2 (φ = 120°)</option>
+        <option value="2">Leg 3 (φ = 240°)</option>
+      </select></label>
+    </div>
+    <h3>DH table (standard) of the upper arm of the leg</h3>
+    <p>Row 1 is fixed: turn by φ around z, go out by R<sub>b</sub> along x, then turn the frame by −90° so that its z axis lies along the
+       motor axis. Row 2 is the motor: θ, then the arm of length L.</p>
+    <div id="dhStd"></div>
+    <h3>DHM table (modified DH) of the same arm</h3>
+    <div id="dhMod"></div>
+    <h3>Result: where is the elbow?</h3>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the elbow of the leg in the base frame {0}. It is the centre of the elbow cross bar in the 3D model.
+       Both tables give the same matrix.</p>
+
+    <h2>Geometry of this robot</h2>
+    <table class="dh">
+      <tr><th>Symbol</th><th>Meaning</th><th>Value</th></tr>
+      <tr><td>R<sub>b</sub></td><td>radius of the base: distance from the centre to each motor axis</td><td>0.16 m</td></tr>
+      <tr><td>r<sub>e</sub></td><td>radius of the effector: distance from its centre to each forearm attachment</td><td>0.05 m</td></tr>
+      <tr><td>L</td><td>length of the upper arm</td><td>0.28 m</td></tr>
+      <tr><td>l</td><td>length of the forearm (each of the two rods)</td><td>0.55 m</td></tr>
+      <tr><td>w</td><td>distance between the two rods of a parallelogram</td><td>0.07 m</td></tr>
+      <tr><td>φ<sub>1</sub>, φ<sub>2</sub>, φ<sub>3</sub></td><td>direction of each leg around the vertical axis</td><td>0°, 120°, 240°</td></tr>
+    </table>
+
+    <h2>Forward and inverse kinematics</h2>
+    <p>Because the forearm of each leg can only turn around the ball joints, the point <em>elbow<sub>i</sub></em> and the effector
+       are always <strong>l apart</strong>. Write P for the centre of the effector and shift every leg by r<sub>e</sub>
+       (so the effector becomes a single point, and R = R<sub>b</sub> − r<sub>e</sub>).</p>
+    <pre class="matrix">elbow_i = ( R + L·cos θi ,  0 ,  − L·sin θi )       in the frame of leg i (x outwards)
+| P − elbow_i |² = l²                               for i = 1, 2, 3</pre>
+    <p><strong>Forward kinematics</strong> (given θ1, θ2, θ3): the three elbows are known points, and P is at distance l from each of
+       them. This is the intersection of <strong>three spheres</strong>, which has a closed-form answer (two solutions; the effector
+       is the lower one). <strong>Inverse kinematics</strong> (given P): the equation of each leg becomes</p>
+    <pre class="matrix">A·cos θ + B·sin θ = C
+A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² − l² ]
+(x', y', z') = P written in the frame of leg i  (turn P by −φi around z)
+θ = atan2(B, A) ± arccos( C / √(A² + B²) )          → keep the solution with the elbow outside</pre>
+    <p>No iteration is needed: the three legs are solved <strong>independently</strong>, in a few microseconds. This is one reason why Delta robots
+       are so fast. If C is larger than √(A²+B²) the point is out of reach.</p>
+
+    <h2>How many degrees of freedom? (Grübler)</h2>
+    <p>Count: <strong>11 bodies</strong> (base, 3 upper arms, 6 forearm rods, effector), <strong>3 revolute joints</strong> (1 DOF each)
+       and <strong>12 ball joints</strong> (3 DOF each, 4 per leg). The Grübler formula for 3D mechanisms:</p>
+    <pre class="matrix">M = 6 (n − 1 − j) + Σ f  =  6 (11 − 1 − 15) + 3×1 + 12×3  =  −30 + 3 + 36  =  9</pre>
+    <p>The result is 9, but 6 of them are useless: each of the 6 rods can <em>spin around its own axis</em> without moving anything else.
+       So the useful mobility is <strong>9 − 6 = 3</strong>: the effector can move in x, y, z, and the parallelograms forbid any rotation of it.
+       That is why a fourth motor, a telescopic shaft inside one of the legs, is added when the product must be turned
+       (the "tool rotation" slider).</p>
+
+    <h2>Serial robot or parallel robot?</h2>
+    <table class="dh">
+      <tr><th></th><th>Serial (SCARA, 6-axis, cobot)</th><th>Parallel (Delta)</th></tr>
+      <tr><td>Motors</td><td>Each motor carries the next ones</td><td>All 3 motors are fixed on the base</td></tr>
+      <tr><td>Moving mass</td><td>Heavy</td><td>Very light (carbon rods)</td></tr>
+      <tr><td>Speed and acceleration</td><td>Medium</td><td>Very high (more than 100 picks per minute)</td></tr>
+      <tr><td>Stiffness and precision</td><td>Errors add up along the chain</td><td>Rigid, errors are shared between the legs</td></tr>
+      <tr><td>Workspace</td><td>Large</td><td>Small, shaped like a dome or a cylinder</td></tr>
+      <tr><td>Payload</td><td>High</td><td>Low (from some grams to a few kg)</td></tr>
+      <tr><td>Tool orientation</td><td>Free (6 axes)</td><td>Fixed, only 1 optional rotation</td></tr>
+      <tr><td>Kinematics</td><td>Inverse: usually hard</td><td>Inverse: easy, forward: needs the 3 spheres</td></tr>
+    </table>
+
+    <div class="robot">
+      <h2>Where is a Delta robot used?</h2>
+      <p><strong>Fast pick and place of light products on a moving conveyor</strong>, almost always with a camera that tells the robot where each product
+         is: <strong>food</strong> (biscuits, chocolates, meat, ready meals into trays), <strong>pharmaceuticals</strong> (blisters, vials),
+         <strong>cosmetics</strong>, <strong>electronics</strong> (small components), <strong>packaging</strong> of any small product,
+         and in a different form <strong>3D printers</strong> (delta printers) and <strong>laboratory automation</strong>.
+         It is mounted <strong>upside down</strong>, hanging from a frame above the conveyor. Typical payload: about 0.1 to 8 kg.
+         Well-known makers: ABB (FlexPicker IRB 360), FANUC (DR-3iB), Omron, Festo, Codian, Yaskawa, Stäubli, Kawasaki.</p>
+      <h3>End effector (tool)</h3>
+      <p><strong>Yes, a pinch gripper (pince) is possible</strong>, as in the 3D model, mainly for products with a clear shape. But it is not the
+         most common choice, because products are usually soft, small and packed close together. Typical tools:</p>
+      <ul>
+        <li><strong>Vacuum suction cups</strong> (the most common), the vacuum comes through a pipe along one of the legs or the telescopic shaft.</li>
+        <li><strong>Soft finger grippers</strong> and <strong>needle grippers</strong>, for food and fabrics.</li>
+        <li><strong>Pinch grippers</strong>, electric or pneumatic.</li>
+        <li><strong>Multi-cup heads</strong> that pick several products at once.</li>
+        <li><strong>Camera</strong> (vision) next to the robot, to find the products on the belt.</li>
+      </ul>
+    </div>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      // ================= geometry of the robot (metres) =================
+      const RB_ = 0.16, RE = 0.05, L = 0.28, LL = 0.55, W = 0.07;      // base radius, effector radius, upper arm, forearm, parallelogram width
+      const R = RB_ - RE;                                              // shoulder circle seen from the effector point
+      const PHI = [0, 120, 240].map((d) => (d * Math.PI) / 180);
+      const FLOOR = -0.74;                                             // z of the floor (the base frame {0} is at the top plate)
+      const H = -FLOOR;                                                // scene height of the base frame
+      const TH_MIN = -20, TH_MAX = 90;                                 // joint limits (degrees)
+      const GRIP = 0.07;                                               // from the effector centre down to the middle of the fingers
+      const CUBE = 0.06;
+      const D2R = Math.PI / 180;
+
+      // ================= kinematics =================
+      // Inverse: P = [x, y, z] (centre of the effector, base frame) -> [th1, th2, th3] in degrees, or null if out of reach
+      function deltaIK(P) {
+        const out = [];
+        for (const ph of PHI) {
+          const c = Math.cos(ph), s = Math.sin(ph);
+          const x0 = c * P[0] + s * P[1], y0 = -s * P[0] + c * P[1], z0 = P[2];     // P in the frame of leg i
+          const A = -2 * L * (x0 - R), B = 2 * L * z0;
+          const C = -((x0 - R) ** 2 + y0 * y0 + z0 * z0 + L * L - LL * LL);
+          const m = Math.hypot(A, B);
+          if (Math.abs(C) > m) return null;
+          const t0 = Math.atan2(B, A), d = Math.acos(C / m);
+          const wrap = (t) => Math.atan2(Math.sin(t), Math.cos(t));
+          const t = [wrap(t0 + d), wrap(t0 - d)].sort((p, q) => Math.cos(q) - Math.cos(p))[0];   // elbow outside
+          out.push(t / D2R);
+        }
+        return out;
+      }
+      const elbowOf = (i, thDeg) => {                                  // elbow centre (real, not shifted), base frame
+        const t = thDeg * D2R, rad = RB_ + L * Math.cos(t);
+        return [rad * Math.cos(PHI[i]), rad * Math.sin(PHI[i]), -L * Math.sin(t)];
+      };
+      // Forward: three spheres of radius l around the shifted elbows
+      function deltaFK(th) {
+        const J = th.slice(0, 3).map((t, i) => {
+          const a = t * D2R, rad = R + L * Math.cos(a);
+          return [rad * Math.cos(PHI[i]), rad * Math.sin(PHI[i]), -L * Math.sin(a)];
+        });
+        const sub = (a, b) => a.map((v, k) => v - b[k]);
+        const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        const nrm = (a) => Math.sqrt(dot(a, a));
+        const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+        const d12 = sub(J[1], J[0]), d = nrm(d12), ex = d12.map((v) => v / d);
+        const t = sub(J[2], J[0]), i = dot(ex, t);
+        const eyv = sub(t, ex.map((v) => v * i)), j = nrm(eyv), ey = eyv.map((v) => v / j), ez = cross(ex, ey);
+        const x = d / 2, y = (i * i + j * j) / (2 * j) - (i / j) * x;
+        const z2 = LL * LL - x * x - y * y;
+        if (z2 < 0) return null;
+        const z = Math.sqrt(z2);
+        return [1, -1].map((sg) => J[0].map((v, k) => v + ex[k] * x + ey[k] * y + ez[k] * z * sg)).sort((p, q) => p[2] - q[2])[0];
+      }
+
+      // ================= DH and DHM table of one upper arm =================
+      const legRows = (i) => {
+        const phi = [0, 120, 240][i];
+        return {
+          STD: [
+            { th: [`φ = ${phi}`, phi], d: ['0', 0], a: ['Rb = 0.16', RB_], al: ['−90', -90] },
+            { th: [`θ${i + 1}`, (q) => q[i]], d: ['0', 0], a: ['L = 0.28', L], al: ['0', 0] }
+          ],
+          MOD: [
+            { al: ['0', 0], a: ['0', 0], th: [`φ = ${phi}`, phi], d: ['0', 0] },
+            { al: ['−90', -90], a: ['Rb = 0.16', RB_], th: [`θ${i + 1}`, (q) => q[i]], d: ['0', 0] },
+            { al: ['0', 0], a: ['L = 0.28', L], th: ['0', 0], d: ['0', 0] }
+          ]
+        };
+      };
+
+      // ================= 3D scene =================
+      const box = document.getElementById('view');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color('#1b2633');
+      const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
+      camera.position.set(1.25, 0.95, 1.35);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(box.clientWidth, box.clientHeight);
+      box.appendChild(renderer.domElement);
+      const orbit = new OrbitControls(camera, renderer.domElement);
+      orbit.target.set(0, 0.42, 0);
+
+      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      const sun = new THREE.DirectionalLight('#ffffff', 1.5);
+      sun.position.set(3, 5, 2);
+      scene.add(sun);
+      scene.add(new THREE.GridHelper(4, 16, '#667788', '#334455'));
+
+      // base frame {0} (x, y, z up) -> scene (X, Y, Z) = (x, H + z, -y)
+      const S = (p) => new THREE.Vector3(p[0], H + p[2], -p[1]);
+      const mat = (color, rough = 0.5, metal = 0.2) => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal });
+      const mFrame = mat('#4a5568', 0.6, 0.3), mArm = mat('#cfd8e3'), mMotor = mat('#ff9f43', 0.4, 0.3);
+      const mRod = mat('#9fb0c3', 0.4, 0.4), mBall = mat('#e8eef5', 0.3, 0.5), mEff = mat('#6f8fb8', 0.4, 0.3);
+
+      // a cell: frame of 4 posts and a top plate that holds the three motors
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.03, 0.8), mFrame);
+      plate.position.set(0, H + 0.115, 0);
+      scene.add(plate);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+        const post = new THREE.Mesh(new THREE.BoxGeometry(0.03, H + 0.13, 0.03), mFrame);
+        post.position.set(sx * 0.37, (H + 0.13) / 2, sz * 0.37);
+        scene.add(post);
+      }
+      // conveyor-like table
+      const table = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.01, 0.8), mat('#2b3745', 0.8, 0.1));
+      table.position.set(0, 0.004, 0);
+      scene.add(table);
+
+      // motors and brackets (fixed)
+      for (let i = 0; i < 3; i++) {
+        const c = Math.cos(PHI[i]), s = Math.sin(PHI[i]);
+        const g = new THREE.CylinderGeometry(0.035, 0.035, 0.11, 24);           // axis along the tangent
+        const motor = new THREE.Mesh(g, mMotor);
+        motor.position.copy(S([RB_ * c, RB_ * s, 0]));
+        motor.rotation.set(0, 0, 0);
+        motor.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), S([-s, c, 0]).sub(S([0, 0, 0])).normalize());
+        scene.add(motor);
+        const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.1, 0.04), mFrame);
+        bracket.position.copy(S([RB_ * c, RB_ * s, 0.05]));
+        scene.add(bracket);
+      }
+
+      // a rod between two scene points
+      const Y_AXIS = new THREE.Vector3(0, 1, 0);
+      function makeRod(radius, material) {
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, 1, 14), material);
+        scene.add(m);
+        return m;
+      }
+      function setRod(m, a, b) {
+        const d = b.clone().sub(a), len = d.length();
+        m.position.copy(a).addScaledVector(d, 0.5);
+        m.scale.set(1, Math.max(len, 1e-5), 1);
+        m.quaternion.setFromUnitVectors(Y_AXIS, d.normalize());
+      }
+      const makeBall = (r) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), mBall); scene.add(m); return m; };
+
+      const legs = [0, 1, 2].map(() => ({
+        upper: makeRod(0.016, mArm), cross: makeRod(0.012, mArm), effBar: makeRod(0.012, mEff),
+        fore: [makeRod(0.008, mRod), makeRod(0.008, mRod)],
+        balls: [makeBall(0.014), makeBall(0.014), makeBall(0.014), makeBall(0.014)],
+        ends: [[null, null], [null, null]]
+      }));
+      const effDisk = new THREE.Mesh(new THREE.CylinderGeometry(RE + 0.012, RE + 0.012, 0.02, 3 * 8), mEff);
+      scene.add(effDisk);
+
+      // the gripper hangs under the effector and can turn (4th axis)
+      const grip = new THREE.Group();
+      scene.add(grip);
+      const orange = mat('#ff9f43');
+      const palm = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.02, 0.05), orange);
+      palm.position.y = -0.03;
+      grip.add(palm);
+      const fingers = [];
+      for (const side of [-1, 1]) {
+        const f = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.06, 0.05), orange);
+        f.position.set(side * 0.065, -0.07, 0);
+        grip.add(f);
+        fingers.push({ mesh: f, side });
+      }
+
+      // pads and cube
+      const PAD_A = { x: -0.20, y: -0.12 };
+      const PAD_B = { x: 0.20, y: 0.12 };
+      for (const [p, color] of [[PAD_A, '#2f6f4f'], [PAD_B, '#6f4f2f']]) {
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.004, 0.14), mat(color));
+        pad.position.set(p.x, 0.012, -p.y);
+        scene.add(pad);
+      }
+      const cube = new THREE.Mesh(new THREE.BoxGeometry(CUBE, CUBE, CUBE), mat('#5aa9ff'));
+      scene.add(cube);
+      const CUBE_Y = H + FLOOR + CUBE / 2 + 0.014;                      // resting on a pad
+      cube.position.set(PAD_A.x, CUBE_Y, -PAD_A.y);
+
+      // ================= demo poses (computed with the same inverse kinematics) =================
+      const Z_DOWN = FLOOR + 0.014 + CUBE / 2 + GRIP, Z_UP = Z_DOWN + 0.14;
+      const WAY = {
+        Aup: [PAD_A.x, PAD_A.y, Z_UP], Adown: [PAD_A.x, PAD_A.y, Z_DOWN],
+        Bup: [PAD_B.x, PAD_B.y, Z_UP], Bdown: [PAD_B.x, PAD_B.y, Z_DOWN]
+      };
+      document.getElementById('gz').value = Z_UP.toFixed(2);
+
+      // ================= diagram + update =================
+      const VIEWS = {
+        front: { right: [0, 1, 0], up: [0, 0, 1], toward: [1, 0, 0],  map: (u, v) => [350 + u * 400, 40 + (0.1 - v) * 400], ground: true },
+        side:  { right: [1, 0, 0], up: [0, 0, 1], toward: [0, -1, 0], map: (u, v) => [350 + u * 400, 40 + (0.1 - v) * 400], ground: true },
+        top:   { right: [1, 0, 0], up: [0, 1, 0], toward: [0, 0, 1],  map: (u, v) => [350 + u * 400, 210 - v * 400], ground: false }
+      };
+      const svg = document.getElementById('schema');
+      const frameSel = document.getElementById('frameSel');
+      const viewSel = document.getElementById('viewSel');
+      const legSel = document.getElementById('legSel');
+      let showAxes = true;
+      let th = [0, 0, 0, 0];
+      let Pnow = [0, 0, -0.5];
+
+      const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const add = (a, b, k = 1) => a.map((v, i) => v + b[i] * k);
+
+      function jointSymbol(P, axis, view, name, dx, dy) {
+        const [x, y] = P;
+        const du = dot(axis, view.right), dv = dot(axis, view.up), dw = dot(axis, view.toward);
+        if (Math.hypot(du, dv) < 0.35) {
+          RB.shape(svg, 'circle', { cx: x, cy: y, r: 11, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+          if (dw > 0) RB.shape(svg, 'circle', { cx: x, cy: y, r: 3, fill: '#e8eef5' });
+          else {
+            RB.shape(svg, 'line', { x1: x - 4, y1: y - 4, x2: x + 4, y2: y + 4, stroke: '#e8eef5', 'stroke-width': 2.5 });
+            RB.shape(svg, 'line', { x1: x - 4, y1: y + 4, x2: x + 4, y2: y - 4, stroke: '#e8eef5', 'stroke-width': 2.5 });
+          }
+        } else {
+          const ang = (Math.atan2(-dv, du) * 180) / Math.PI;
+          RB.shape(svg, 'rect', { x: x - 14, y: y - 5, width: 28, height: 10, rx: 2, fill: '#1b2633',
+                                  stroke: '#e8eef5', 'stroke-width': 2.5, transform: `rotate(${ang} ${x} ${y})` });
+        }
+        RB.label(svg, x + dx, y + dy, name, '#ffffff', 16, dx < 0 ? 'end' : 'start');
+      }
+
+      function update() {
+        const P = deltaFK(th) || Pnow;
+        Pnow = P;
+        const radial = PHI.map((p) => [Math.cos(p), Math.sin(p), 0]);
+        const tang = PHI.map((p) => [-Math.sin(p), Math.cos(p), 0]);
+
+        // ----- 3D -----
+        for (let i = 0; i < 3; i++) {
+          const B = [RB_ * radial[i][0], RB_ * radial[i][1], 0];
+          const J = elbowOf(i, th[i]);
+          const E = add(P, radial[i], RE);                                   // forearm attachment on the effector
+          const lg = legs[i];
+          setRod(lg.upper, S(B), S(J));
+          const Ja = add(J, tang[i], -W / 2), Jb = add(J, tang[i], W / 2);
+          const Ea = add(E, tang[i], -W / 2), Eb = add(E, tang[i], W / 2);
+          setRod(lg.cross, S(Ja), S(Jb));
+          setRod(lg.effBar, S(Ea), S(Eb));
+          setRod(lg.fore[0], S(Ja), S(Ea));
+          setRod(lg.fore[1], S(Jb), S(Eb));
+          lg.balls[0].position.copy(S(Ja)); lg.balls[1].position.copy(S(Jb));
+          lg.balls[2].position.copy(S(Ea)); lg.balls[3].position.copy(S(Eb));
+          lg.ends = [[S(Ja), S(Ea)], [S(Jb), S(Eb)]];
+        }
+        effDisk.position.copy(S(P));
+        grip.position.copy(S(P));
+        grip.rotation.y = th[3] * D2R;
+        scene.updateMatrixWorld(true);
+
+        // ----- maths -----
+        const i = Number(legSel.value);
+        const rows = legRows(i);
+        RB.renderTable(document.getElementById('dhStd'), 'std', rows.STD, th);
+        RB.renderTable(document.getElementById('dhMod'), 'mod', rows.MOD, th);
+        const Tstd = RB.stdChain(rows.STD, th);
+        RB.renderMatrix(document.getElementById('matrix'), Tstd[2], `T(0→elbow ${i + 1}) =`);
+        document.getElementById('readout').textContent =
+          `Effector centre in the base frame {0}:  x = ${P[0].toFixed(3)} m   y = ${P[1].toFixed(3)} m   z = ${P[2].toFixed(3)} m` +
+          `      (the effector stays parallel to the base)`;
+
+        // ----- diagram -----
+        const view = VIEWS[viewSel.value];
+        const Pm = (p) => view.map(dot(p, view.right), dot(p, view.up));
+        svg.innerHTML = '';
+        if (view.ground) {
+          const a = view.map(-0.45, FLOOR), b = view.map(0.45, FLOOR);
+          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#667788', 'stroke-width': 2 });
+          const c = view.map(-0.45, 0.1), d = view.map(0.45, 0.1);
+          RB.shape(svg, 'line', { x1: c[0], y1: c[1], x2: d[0], y2: d[1], stroke: '#667788', 'stroke-width': 4 });
+        }
+        for (const [pad, name] of [[PAD_A, 'A'], [PAD_B, 'B']]) {
+          const c = Pm([pad.x, pad.y, FLOOR]);
+          RB.shape(svg, 'rect', { x: c[0] - 12, y: c[1] - (view.ground ? 4 : 12), width: 24, height: view.ground ? 8 : 24,
+                                  fill: 'none', stroke: '#9fb0c3', 'stroke-width': 1.5, 'stroke-dasharray': '4 3' });
+          RB.label(svg, c[0] + 16, c[1] + (view.ground ? 18 : 5), name, '#9fb0c3', 15);
+        }
+        const cw = cube.getWorldPosition(new THREE.Vector3());
+        const cp = Pm([cw.x, -cw.z, cw.y - H]);
+        RB.shape(svg, 'rect', { x: cp[0] - 7, y: cp[1] - 7, width: 14, height: 14, fill: '#5aa9ff', opacity: 0.9 });
+
+        const Bs = [0, 1, 2].map((k) => [RB_ * radial[k][0], RB_ * radial[k][1], 0]);
+        const Es = [0, 1, 2].map((k) => add(P, radial[k], RE));
+        const poly = (pts, stroke, w, extra = {}) => RB.shape(svg, 'polygon', { points: pts.map((p) => Pm(p).join(',')).join(' '),
+          fill: 'none', stroke, 'stroke-width': w, 'stroke-linejoin': 'round', ...extra });
+        poly(Bs, '#667788', 2);                                               // base triangle
+        poly(Es, '#e8eef5', 3);                                               // effector triangle
+        for (let k = 0; k < 3; k++) {
+          const J = elbowOf(k, th[k]);
+          const Ja = add(J, tang[k], -W / 2), Jb = add(J, tang[k], W / 2);
+          const Ea = add(Es[k], tang[k], -W / 2), Eb = add(Es[k], tang[k], W / 2);
+          for (const [a, b] of [[Ja, Ea], [Jb, Eb]]) {                         // forearm parallelogram
+            const p = Pm(a), q = Pm(b);
+            RB.shape(svg, 'line', { x1: p[0], y1: p[1], x2: q[0], y2: q[1], stroke: '#cfd8e3', 'stroke-width': 2 });
+          }
+          const p0 = Pm(Bs[k]), p1 = Pm(J);                                    // upper arm
+          RB.shape(svg, 'line', { x1: p0[0], y1: p0[1], x2: p1[0], y2: p1[1], stroke: '#ff9f43', 'stroke-width': 6, 'stroke-linecap': 'round' });
+          for (const b of [Ja, Jb, Ea, Eb]) {                                  // ball joints
+            const p = Pm(b);
+            RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 3.5, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 1.5 });
+          }
+        }
+        const lab = [[-22, -16], [22, -16], [-22, 30]];
+        for (let k = 0; k < 3; k++) jointSymbol(Pm(Bs[k]), tang[k], view, `θ${k + 1}`, lab[k][0], lab[k][1]);
+
+        if (showAxes) {
+          const T0 = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+          const TE = [[1, 0, 0, P[0]], [0, 1, 0, P[1]], [0, 0, 1, P[2]], [0, 0, 0, 1]];
+          RB.drawFrames(svg, [T0, TE], view, view.map, { only: frameSel.value, len: 45 });
+        }
+      }
+
+      // ================= pick-and-place demo =================
+      let where = 'A';
+      let gripOpen = 1, gripTarget = 1;
+      const holdCube = () => grip.attach(cube);
+      const dropCube = () => { scene.attach(cube); cube.position.y = CUBE_Y; cube.rotation.set(0, 0, 0); };
+      function cycle(srcName, dstName) {
+        return [
+          { to: WAY[srcName + 'up'],   dur: 0.9, text: `Move above pad ${srcName}` },
+          { to: WAY[srcName + 'down'], dur: 0.4, text: 'Go down to the cube' },
+          { to: WAY[srcName + 'down'], dur: 0.3, text: 'Close the gripper', start: () => { gripTarget = 0; }, end: holdCube },
+          { to: WAY[srcName + 'up'],   dur: 0.4, text: 'Lift the cube' },
+          { to: WAY[dstName + 'up'],   dur: 1.0, text: `Carry the cube above pad ${dstName}` },
+          { to: WAY[dstName + 'down'], dur: 0.4, text: 'Go down' },
+          { to: WAY[dstName + 'down'], dur: 0.3, text: 'Open the gripper',
+            start: () => { gripTarget = 1; }, end: () => { dropCube(); where = dstName; } },
+          { to: WAY[dstName + 'up'],   dur: 0.4, text: 'Go back up' }
+        ];
+      }
+      const demoBtn = document.getElementById('demoBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const statusEl = document.getElementById('demoStatus');
+      const goStatus = document.getElementById('goStatus');
+      let running = false, segs = [], si = 0, elapsed = 0, fromP = null;
+      const IDLE = 'Pick-and-place demo: the robot moves the blue cube between pad A and pad B.';
+
+      function moveTo(P) {                                                     // inverse kinematics, then the sliders follow
+        const t = deltaIK(P);
+        if (!t) return false;
+        ctl.set([...t, ctl.values()[3]]);
+        return true;
+      }
+      function beginSegment() {
+        elapsed = 0;
+        fromP = Pnow.slice();
+        statusEl.textContent = `Demo: ${segs[si].text}`;
+        if (segs[si].start) segs[si].start();
+      }
+      function nextCycle() {
+        segs = where === 'A' ? cycle('A', 'B') : cycle('B', 'A');
+        si = 0;
+        beginSegment();
+      }
+      const setInputsDisabled = (off) => document.querySelectorAll('#controls input, .xyz input, #goBtn').forEach((i) => { i.disabled = off; });
+      function stepDemo(dt) {
+        if (!running) return;
+        const s = segs[si];
+        elapsed += dt;
+        const k = Math.min(elapsed / s.dur, 1);
+        const e = k * k * (3 - 2 * k);
+        moveTo(fromP.map((v, i) => v + (s.to[i] - v) * e));
+        if (k >= 1) {
+          if (s.end) s.end();
+          si++;
+          if (si >= segs.length) nextCycle(); else beginSegment();
+        }
+      }
+      function stepGripper(dt) {
+        const dir = Math.sign(gripTarget - gripOpen);
+        gripOpen = Math.min(1, Math.max(0, gripOpen + dir * dt * 4));
+        if (Math.abs(gripTarget - gripOpen) < 0.001) gripOpen = gripTarget;
+        for (const f of fingers) f.mesh.position.x = f.side * (0.04 + 0.025 * gripOpen);
+      }
+      demoBtn.addEventListener('click', () => {
+        running = !running;
+        if (running && !segs.length) nextCycle();
+        setInputsDisabled(running);
+        demoBtn.textContent = running ? 'Pause demo' : 'Resume demo';
+        if (!running) statusEl.textContent = 'Demo paused. You can move the sliders; press Resume to continue.';
+      });
+      resetBtn.addEventListener('click', () => {
+        running = false; segs = []; si = 0; where = 'A';
+        dropCube();
+        cube.position.set(PAD_A.x, CUBE_Y, -PAD_A.y);
+        gripOpen = gripTarget = 1;
+        stepGripper(0);
+        setInputsDisabled(false);
+        ctl.set([...deltaIK(WAY.Aup), 0]);
+        demoBtn.textContent = 'Start demo';
+        statusEl.textContent = IDLE;
+        goStatus.textContent = '';
+      });
+      document.getElementById('goBtn').addEventListener('click', () => {
+        const P = ['gx', 'gy', 'gz'].map((id) => Number(document.getElementById(id).value));
+        const t = deltaIK(P);
+        if (!t) { goStatus.textContent = 'Out of reach: the forearm is too short or too long for this point.'; return; }
+        if (t.some((v) => v < TH_MIN || v > TH_MAX)) {
+          goStatus.textContent = `Out of range: this needs θ = (${t.map((v) => v.toFixed(1)).join(', ')})°, but the motors only go from ${TH_MIN}° to ${TH_MAX}°.`;
+          return;
+        }
+        ctl.set([...t, ctl.values()[3]]);
+        goStatus.textContent = `θ1 = ${t[0].toFixed(1)}°, θ2 = ${t[1].toFixed(1)}°, θ3 = ${t[2].toFixed(1)}°`;
+      });
+
+      // ================= controls =================
+      document.getElementById('axesBtn').addEventListener('click', (e) => {
+        showAxes = !showAxes;
+        e.target.textContent = showAxes ? 'Hide axes' : 'Show axes';
+        update();
+      });
+      frameSel.addEventListener('change', update);
+      viewSel.addEventListener('change', update);
+      legSel.addEventListener('change', update);
+
+      const start = deltaIK(WAY.Aup);
+      const ctl = RB.controls(document.getElementById('controls'), [
+        { label: 'θ1 · motor 1 (R)', min: TH_MIN, max: TH_MAX, step: 1, value: Math.round(start[0] * 100) / 100, unit: '°' },
+        { label: 'θ2 · motor 2 (R)', min: TH_MIN, max: TH_MAX, step: 1, value: Math.round(start[1] * 100) / 100, unit: '°' },
+        { label: 'θ3 · motor 3 (R)', min: TH_MIN, max: TH_MAX, step: 1, value: Math.round(start[2] * 100) / 100, unit: '°' },
+        { label: 'θ4 · tool rotation (R, optional)', min: -180, max: 180, step: 1, value: 0, unit: '°' }
+      ], (v) => { th = v; update(); });
+
+      let lastTime = performance.now();
+      renderer.setAnimationLoop((now) => {
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+        stepDemo(dt);
+        stepGripper(dt);
+        orbit.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>
