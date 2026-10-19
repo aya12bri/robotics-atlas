@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SCARA robot</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 480px; border-radius: 6px; }
+      label { display: block; margin: 0.6rem 0; }
+      input { width: 300px; vertical-align: middle; }
+      .val { display: inline-block; width: 4.5rem; color: #ff9f43; }
+      .formula { background: #1b2633; padding: 1rem; border-radius: 6px; font-family: monospace; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>SCARA robot (R-R-P-R)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="Learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+    <p><strong>Tasks:</strong> fast pick-and-place, screwing, electronics assembly.
+       It is stiff vertically and fast horizontally.</p>
+
+    <div id="view"></div>
+
+    <label>q1, shoulder (R) <input id="j1" type="range" min="-130" max="130" value="30" /><span class="val" id="v1"></span></label>
+    <label>q2, elbow (R) <input id="j2" type="range" min="-145" max="145" value="60" /><span class="val" id="v2"></span></label>
+    <label>q3, vertical slide (P) <input id="j3" type="range" min="0" max="30" value="10" /><span class="val" id="v3"></span></label>
+    <label>q4, tool rotation (R) <input id="j4" type="range" min="-180" max="180" value="0" /><span class="val" id="v4"></span></label>
+
+    <h2>Kinematic diagram (schéma cinématique), top view</h2>
+    <svg id="schema" viewBox="0 0 500 300"
+         style="width:100%;max-width:500px;background:#1b2633;border-radius:6px"></svg>
+    <p id="readout"></p>
+    <p>In the top view, q3 slides along the direction you are looking, so it is drawn as a
+       square. The circles are the rotating joints.</p>
+
+    <h2>Forward kinematics of a SCARA</h2>
+    <p class="formula">
+      x = L1·cos(q1) + L2·cos(q1+q2)<br />
+      z = −( L1·sin(q1) + L2·sin(q1+q2) )<br />
+      height = fixed height − q3<br />
+      tool angle = q1 + q2 + q4
+    </p>
+    <p>Compare with the arm page: the x and z position only depends on q1 and q2.
+       The prismatic joint q3 only changes the height. That separation is why SCARAs are
+       easy to program.</p>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      const L1 = 0.6;          // link 1 length (m)
+      const L2 = 0.5;          // link 2 length (m)
+      const H = 0.6;           // column height (m)
+      const TIP_UP = 0.34;     // tool height when the quill is fully up (m)
+
+      // ---------- stage ----------
+      const box = document.getElementById('view');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color('#1b2633');
+      const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
+      camera.position.set(2.2, 1.8, 2.2);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(box.clientWidth, box.clientHeight);
+      box.appendChild(renderer.domElement);
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.target.set(0.3, 0.4, 0);
+
+      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      const sun = new THREE.DirectionalLight('#ffffff', 1.5);
+      sun.position.set(3, 5, 2);
+      scene.add(sun);
+      scene.add(new THREE.GridHelper(6, 12, '#667788', '#334455'));
+
+      const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
+      const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
+      const dark = new THREE.MeshStandardMaterial({ color: '#4a5568' });
+
+      // ---------- robot: a chain of nested groups ----------
+      const base = new THREE.Group();
+      scene.add(base);
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, H, 32), dark);
+      column.position.y = H / 2;
+      base.add(column);
+
+      // joint 1: turns around the vertical axis (Y)
+      const arm1 = new THREE.Group();
+      arm1.position.y = H;
+      base.add(arm1);
+      const house1 = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.16, 32), orange);
+      house1.position.y = 0.04;
+      arm1.add(house1);
+      const link1 = new THREE.Mesh(new THREE.BoxGeometry(L1, 0.1, 0.12), grey);
+      link1.position.set(L1 / 2, 0.05, 0);
+      arm1.add(link1);
+
+      // joint 2: at the end of link 1, also turns around Y
+      const arm2 = new THREE.Group();
+      arm2.position.set(L1, 0.1, 0);
+      arm1.add(arm2);
+      const house2 = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.14, 32), orange);
+      house2.position.y = 0.03;
+      arm2.add(house2);
+      const link2 = new THREE.Mesh(new THREE.BoxGeometry(L2, 0.1, 0.12), grey);
+      link2.position.set(L2 / 2, 0.05, 0);
+      arm2.add(link2);
+
+      // joint 3 (prismatic): the quill slides DOWN along Y
+      const quill = new THREE.Group();
+      quill.position.set(L2, 0, 0);
+      arm2.add(quill);
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 20), grey);
+      rod.position.y = -0.05;
+      quill.add(rod);
+
+      // joint 4: the tool turns around Y at the bottom of the quill
+      const tool = new THREE.Group();
+      tool.position.y = -0.3;
+      quill.add(tool);
+      const palm = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.05), orange);
+      tool.add(palm);
+      for (const side of [-1, 1]) {
+        const finger = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.06, 0.03), orange);
+        finger.position.set(side * 0.04, -0.045, 0);
+        tool.add(finger);
+      }
+
+      // ---------- kinematic diagram (top view) ----------
+      const svg = document.getElementById('schema');
+      const readout = document.getElementById('readout');
+      const NS = 'http://www.w3.org/2000/svg';
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      function shape(name, attrs) {
+        const e = document.createElementNS(NS, name);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        svg.appendChild(e);
+        return e;
+      }
+      function text(x, y, str) {
+        const t = shape('text', { x, y, fill: '#cfd8e3', 'font-size': 14 });
+        t.textContent = str;
+      }
+      const SCALE = 120;                    // pixels per metre
+      const sx = (x) => 250 + x * SCALE;    // scene X -> screen right
+      const sy = (z) => 150 + z * SCALE;    // scene Z -> screen down
+
+      function revolute(x, z, label) {
+        shape('circle', { cx: sx(x), cy: sy(z), r: 10, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
+        shape('circle', { cx: sx(x), cy: sy(z), r: 2.5, fill: '#e8eef5' });
+        text(sx(x) + 13, sy(z) - 12, label);
+      }
+
+      function drawSchema(q1, q2, q3, q4) {
+        svg.innerHTML = '';
+        const a1 = toRad(q1);
+        const a2 = toRad(q1 + q2);
+        const a4 = toRad(q1 + q2 + q4);
+        // three.js: a rotation of +a around Y moves X toward -Z
+        const p2 = { x: L1 * Math.cos(a1), z: -L1 * Math.sin(a1) };
+        const tip = { x: p2.x + L2 * Math.cos(a2), z: p2.z - L2 * Math.sin(a2) };
+
+        // base
+        shape('circle', { cx: sx(0), cy: sy(0), r: 22, fill: '#4a5568' });
+        // links
+        shape('polyline', {
+          points: `${sx(0)},${sy(0)} ${sx(p2.x)},${sy(p2.z)} ${sx(tip.x)},${sy(tip.z)}`,
+          fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round'
+        });
+        revolute(0, 0, 'q1');
+        revolute(p2.x, p2.z, 'q2');
+        // prismatic joint q3: its axis points at the viewer, so it is a square
+        shape('rect', { x: sx(tip.x) - 9, y: sy(tip.z) - 9, width: 18, height: 18,
+                        fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
+        text(sx(tip.x) + 13, sy(tip.z) + 22, 'q3 (slide)');
+        // tool rotation q4: a short bar showing the tool direction
+        shape('line', {
+          x1: sx(tip.x), y1: sy(tip.z),
+          x2: sx(tip.x) + 24 * Math.cos(a4), y2: sy(tip.z) - 24 * Math.sin(a4),
+          stroke: '#e8eef5', 'stroke-width': 3, 'stroke-linecap': 'round'
+        });
+        text(sx(tip.x) + 13, sy(tip.z) - 12, 'q4');
+
+        const height = TIP_UP - q3;
+        readout.textContent =
+          `Tool position:  X = ${tip.x.toFixed(2)} m   Y = ${height.toFixed(2)} m   Z = ${tip.z.toFixed(2)} m`;
+      }
+
+      // ---------- sliders ----------
+      function update() {
+        const q1 = Number(document.getElementById('j1').value);
+        const q2 = Number(document.getElementById('j2').value);
+        const q3 = Number(document.getElementById('j3').value) / 100;   // cm -> m
+        const q4 = Number(document.getElementById('j4').value);
+
+        arm1.rotation.y = toRad(q1);
+        arm2.rotation.y = toRad(q2);
+        quill.position.y = -q3;
+        tool.rotation.y = toRad(q4);
+
+        document.getElementById('v1').textContent = q1 + '°';
+        document.getElementById('v2').textContent = q2 + '°';
+        document.getElementById('v3').textContent = (q3 * 100).toFixed(0) + ' cm';
+        document.getElementById('v4').textContent = q4 + '°';
+        drawSchema(q1, q2, q3, q4);
+      }
+      ['j1', 'j2', 'j3', 'j4'].forEach((id) => document.getElementById(id).addEventListener('input', update));
+      update();
+
+      renderer.setAnimationLoop(() => {
+        controls.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>
