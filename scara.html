@@ -164,8 +164,13 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
       const quill = new THREE.Group();                // joint 3: the rod slides DOWN
       quill.position.set(L2, 0, 0);
       arm2.add(quill);
-      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 20), grey);
-      rod.position.y = -0.05;
+           // fixed housing at the end of link 2: the rod slides through it
+      const housing = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.14, 24), orange);
+      housing.position.set(L2, 0.05, 0);
+      arm2.add(housing);
+      // the rod is long, so it always stays inside the housing, even when it is fully down
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.75, 20), grey);
+      rod.position.y = 0.075;                         // from -0.30 (bottom) to +0.45 (top) around the arm
       quill.add(rod);
 
       const tool = new THREE.Group();                 // joint 4: the gripper rotates
