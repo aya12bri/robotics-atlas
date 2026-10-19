@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mobile robots: wheels and drive types</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1rem; margin: 1rem 0; }
+      .card { background: #1b2633; border-left: 4px solid #ff9f43; border-radius: 6px; padding: 0.9rem 1.1rem; }
+      .card h3 { margin: 0.2rem 0 0.1rem; color: #ff9f43; }
+      .card .fr { color: #9fb0c3; font-size: 0.9rem; margin: 0 0 0.5rem; }
+      .card svg { width: 100%; max-width: 200px; display: block; margin: 0.3rem 0 0.5rem; background: #0f1720; border-radius: 6px; }
+      .card p { margin: 0.35rem 0; font-size: 0.95rem; }
+      .tag { display: inline-block; background: #26364a; border-radius: 4px; padding: 0.05rem 0.45rem; margin-right: 0.3rem; font-size: 0.8rem; color: #cfd8e3; }
+      .pro { color: #6bdc8b; } .con { color: #ff8a80; }
+      #presets button { margin: 0.2rem 0.3rem 0.2rem 0; padding: 0.3rem 0.7rem; font-size: 0.9rem; }
+      select { background: #0f1720; color: #e8eef5; border: 1px solid #44566b; border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem; }
+      table.dh td.left, table.dh th.left { text-align: left; }
+      ul.tight li { margin: 0.2rem 0; }
+    </style>
+    <script src="helpers.js"></script>
+  </head>
+  <body>
+    <h1>Mobile robots: wheels, drive types and everything else</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="mobile.html" style="color:#ff9f43">The mobile robot in 3D</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <p>A <strong>mobile robot</strong> is a robot that is not fixed to the ground: it moves in its environment.
+       The most important choice when you design one is <strong>how it moves</strong>. The wheels you pick decide
+       which movements are possible, how well the robot carries loads, how well it knows where it is, and how
+       hard it is to control. This page shows every common wheel type, then lets you <em>drive</em> four
+       different drive types to feel the difference.</p>
+
+    <h2>1. Wheel types (types de roues)</h2>
+    <p>Engineers sort wheels by two questions: can the wheel <em>steer</em>, and can it <em>slide sideways</em>?
+       Four classes are classic (fixed, steered, castor, omnidirectional), plus balls and tracks.</p>
+    <div class="cards" id="wheelCards"></div>
+
+    <h3>Tyre materials (matières des pneus)</h3>
+    <table class="dh">
+      <tr><th class="left">Material</th><th class="left">Good for</th><th class="left">Limits</th></tr>
+      <tr><td class="left">Polyurethane (PU)</td><td class="left">indoor floors, quiet, long life, most AGVs and AMRs</td><td class="left">hard floors only, can slip on dust</td></tr>
+      <tr><td class="left">Rubber</td><td class="left">grip, small and educational robots</td><td class="left">wears faster, can leave marks</td></tr>
+      <tr><td class="left">Pneumatic (air-filled)</td><td class="left">outdoor, bumps, soft ground</td><td class="left">can puncture, pressure changes the wheel radius</td></tr>
+      <tr><td class="left">Solid or foam-filled</td><td class="left">outdoor without punctures</td><td class="left">heavier, less comfortable</td></tr>
+      <tr><td class="left">Hard plastic or nylon</td><td class="left">castors, light loads, low friction</td><td class="left">little grip</td></tr>
+      <tr><td class="left">Steel</td><td class="left">robots running on rails</td><td class="left">needs rails</td></tr>
+    </table>
+
+    <h3>Suspension (suspension)</h3>
+    <ul class="tight">
+      <li><strong>None (rigid):</strong> fine on a perfectly flat floor, with 3 wheels (3 points always touch the floor).</li>
+      <li><strong>Spring-loaded drive wheels:</strong> keep the pressure on the floor on bumpy ground. This is very common on
+          differential-drive AMRs.</li>
+      <li><strong>Rocker-bogie:</strong> a system of pivoting arms that keeps all 6 wheels on the ground and climbs obstacles
+          as tall as a wheel. It is used by Mars rovers.</li>
+      <li><strong>Mecanum wheels need a suspension:</strong> all 4 wheels must touch the floor, otherwise the robot drifts.</li>
+    </ul>
+
+    <h2>2. Drive configurations (configurations de motorisation)</h2>
+    <p>Siegwart and Nourbakhsh describe a robot with two numbers: the <strong>degree of mobility δm</strong>
+       (how many motions the wheels allow <em>right now</em>, without steering) and the <strong>degree of steerability δs</strong>
+       (how many wheels you can steer). The <strong>degree of manoeuvrability</strong> is δM = δm + δs.
+       A robot with δM = 3 can reach any position and heading, but only a robot with <strong>δm = 3</strong> can do it
+       <em>instantly</em>: it is <strong>holonomic</strong>.</p>
+    <table class="dh">
+      <tr><th class="left">Configuration</th><th class="left">Wheels</th><th>(δm, δs)</th><th>δM</th><th>Holonomic?</th><th class="left">Typical use</th></tr>
+      <tr><td class="left">Differential drive</td><td class="left">2 driven fixed wheels + 1 or 2 castors</td><td>(2, 0)</td><td>2</td><td>no</td><td class="left">indoor AMRs, vacuum robots, education</td></tr>
+      <tr><td class="left">Tricycle</td><td class="left">1 steered and driven front wheel + 2 fixed rear wheels</td><td>(1, 1)</td><td>2</td><td>no</td><td class="left">tow tractors, counterbalanced AGV forklifts</td></tr>
+      <tr><td class="left">Car-like (Ackermann)</td><td class="left">4 wheels: 2 steered at the front, 2 driven at the rear</td><td>(1, 1)</td><td>2</td><td>no</td><td class="left">self-driving cars, outdoor delivery robots</td></tr>
+      <tr><td class="left">Synchro drive</td><td class="left">3 or more wheels, all steered and driven together</td><td>(1, 1)</td><td>2</td><td>no</td><td class="left">some research robots</td></tr>
+      <tr><td class="left">3 omni wheels (kiwi)</td><td class="left">3 omni wheels at 120°</td><td>(3, 0)</td><td>3</td><td><strong>yes</strong></td><td class="left">RoboCup, small holonomic platforms</td></tr>
+      <tr><td class="left">4 Mecanum wheels</td><td class="left">4 Mecanum wheels in an "X" layout</td><td>(3, 0)</td><td>3</td><td><strong>yes</strong></td><td class="left">omnidirectional forklifts, warehouse platforms</td></tr>
+      <tr><td class="left">Swerve drive</td><td class="left">3 or 4 wheels, each steered and driven</td><td>(2, 1)</td><td>3</td><td>after the wheels have turned</td><td class="left">competition robots, heavy omnidirectional AGVs</td></tr>
+      <tr><td class="left">Skid-steer / tracked</td><td class="left">4+ fixed wheels or 2 tracks, turning by slipping</td><td>(2, 0)</td><td>2</td><td>no (it slips)</td><td class="left">rough terrain, rescue, agriculture</td></tr>
+    </table>
+
+    <h2>3. Drive four robots yourself</h2>
+    <p>Choose a drive type, press <strong>Start</strong>, and change the inputs. The <strong>big drawing</strong> shows the
+       wheels, how fast each wheel turns (arrows and numbers), the steering angles, and the <strong>ICC</strong> (the point the
+       robot is turning around). The <strong>arena</strong> below it shows where the robot goes.</p>
+    <div class="toolbar">
+      <label>Drive type:
+        <select id="typeSel">
+          <option value="diff">Differential drive</option>
+          <option value="ackermann">Car-like (Ackermann steering)</option>
+          <option value="omni3">3 omni wheels (kiwi drive)</option>
+          <option value="mecanum">4 Mecanum wheels</option>
+        </select>
+      </label>
+      <button id="runBtn">Start</button>
+      <button id="resetBtn">Reset</button>
+      <span id="warn" style="color:#ff9f43"></span>
+    </div>
+    <div id="presets"></div>
+    <div id="controls"></div>
+
+    <h3>The robot and its wheels</h3>
+    <svg id="zoom" viewBox="0 0 700 400" style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+    <p id="readout"></p>
+
+    <h3>The arena (top view)</h3>
+    <svg id="arena" viewBox="0 0 700 420" style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+
+    <div class="robot" id="typeInfo"></div>
+
+    <h2>4. Know the vocabulary</h2>
+    <div class="cards">
+      <div class="card"><h3>Holonomic</h3>
+        <p>A robot is holonomic if it can move in any direction <em>at any moment</em>, without first having to turn.
+           A 4-Mecanum robot can slide sideways at once. It is the easiest to program for paths.</p></div>
+      <div class="card"><h3>Nonholonomic</h3>
+        <p>The robot has more positions to reach than motions available right now. A car cannot slide sideways, so to park
+           beside a wall it must go forward, reverse and turn. Differential and car-like robots are nonholonomic.</p></div>
+      <div class="card"><h3>ICC</h3>
+        <p>Instantaneous Centre of Curvature: the single point of the plane that does not move at this instant. Every
+           other point turns around it. For wheels that roll without slipping, all the wheel axles must meet at the ICC.</p></div>
+      <div class="card"><h3>Track width and wheelbase</h3>
+        <p><strong>Track width</strong> is the distance between the left and right wheels. <strong>Wheelbase</strong> is the
+           distance between the front and rear axles. A bigger track makes the robot more stable but turns more slowly.</p></div>
+    </div>
+
+    <h2>5. Everything else about mobile robots</h2>
+
+    <h3>Where do they move? (types by environment)</h3>
+    <table class="dh">
+      <tr><th class="left">Environment</th><th class="left">Examples</th><th class="left">How they move</th></tr>
+      <tr><td class="left">Ground</td><td class="left">warehouse AMR, vacuum robot, rover, self-driving car</td><td class="left">wheels, tracks or legs</td></tr>
+      <tr><td class="left">Air</td><td class="left">drones (UAV): inspection, delivery, mapping</td><td class="left">propellers or wings</td></tr>
+      <tr><td class="left">Water surface</td><td class="left">survey boats (USV)</td><td class="left">propellers, water jets</td></tr>
+      <tr><td class="left">Underwater</td><td class="left">ROV (remote-controlled), AUV (autonomous)</td><td class="left">thrusters</td></tr>
+    </table>
+
+    <h3>Wheels, tracks or legs?</h3>
+    <table class="dh">
+      <tr><th class="left">Locomotion</th><th class="left">Strong points</th><th class="left">Weak points</th></tr>
+      <tr><td class="left">Wheels</td><td class="left">simple, fast, very energy-efficient on flat ground, cheap</td><td class="left">poor on stairs, rubble and soft ground</td></tr>
+      <tr><td class="left">Tracks</td><td class="left">rough and soft terrain, stairs, low ground pressure</td><td class="left">slip when turning, heavier, more energy, noisy</td></tr>
+      <tr><td class="left">Legs</td><td class="left">any terrain a human can walk on, steps and stairs</td><td class="left">complex, slow, more energy, hard to control</td></tr>
+    </table>
+
+    <h3>AGV or AMR?</h3>
+    <table class="dh">
+      <tr><th class="left"></th><th class="left">AGV (Automated Guided Vehicle)</th><th class="left">AMR (Autonomous Mobile Robot)</th></tr>
+      <tr><td class="left">Guidance</td><td class="left">fixed path: magnetic tape, wire in the floor, reflectors, QR codes</td><td class="left">free navigation with a map, lidar and cameras</td></tr>
+      <tr><td class="left">Obstacle</td><td class="left">stops and waits</td><td class="left">plans a path around it</td></tr>
+      <tr><td class="left">Change a route</td><td class="left">modify the floor infrastructure</td><td class="left">change the map or the software</td></tr>
+      <tr><td class="left">Best for</td><td class="left">stable, repeated routes with heavy loads</td><td class="left">changing layouts, mixed traffic with people</td></tr>
+    </table>
+
+    <h3>Sensors (capteurs)</h3>
+    <p><strong>Proprioceptive</strong> sensors measure the robot itself. <strong>Exteroceptive</strong> sensors measure the world.</p>
+    <table class="dh">
+      <tr><th class="left">Sensor</th><th class="left">What it gives</th><th class="left">Used for</th></tr>
+      <tr><td class="left">Wheel encoder <span class="tag">proprio</span></td><td class="left">rotation of each wheel</td><td class="left">odometry (distance driven, speed)</td></tr>
+      <tr><td class="left">IMU: gyro + accelerometer <span class="tag">proprio</span></td><td class="left">turning rate, acceleration, tilt</td><td class="left">heading, detecting slip and slopes</td></tr>
+      <tr><td class="left">Motor current <span class="tag">proprio</span></td><td class="left">the load on a motor</td><td class="left">detecting a blocked wheel or a collision</td></tr>
+      <tr><td class="left">2D lidar <span class="tag">extero</span></td><td class="left">distances to obstacles in a plane</td><td class="left">mapping, localization, obstacle detection, safety scanner</td></tr>
+      <tr><td class="left">3D lidar <span class="tag">extero</span></td><td class="left">a 3D point cloud</td><td class="left">outdoor robots, cars, 3D mapping</td></tr>
+      <tr><td class="left">Camera, RGB or depth <span class="tag">extero</span></td><td class="left">images, depth, markers</td><td class="left">recognizing objects and QR codes, 3D obstacles</td></tr>
+      <tr><td class="left">Ultrasonic, infrared, time-of-flight <span class="tag">extero</span></td><td class="left">short-range distance</td><td class="left">cheap obstacle detection, parking</td></tr>
+      <tr><td class="left">Bumper, cliff sensor <span class="tag">extero</span></td><td class="left">contact, floor drop</td><td class="left">last-resort safety, stairs</td></tr>
+      <tr><td class="left">GNSS (GPS) <span class="tag">extero</span></td><td class="left">position outdoors (centimetres with RTK)</td><td class="left">outdoor and farm robots</td></tr>
+      <tr><td class="left">Line, magnetic tape, UWB, RFID <span class="tag">extero</span></td><td class="left">position on a guide or from beacons</td><td class="left">AGVs, indoor positioning</td></tr>
+    </table>
+
+    <h3>Odometry and why it drifts</h3>
+    <p>With encoders the robot adds up its small motions: <code>x ← x + v·cosθ·dt</code>, <code>y ← y + v·sinθ·dt</code>,
+       <code>θ ← θ + ω·dt</code>. This is <strong>dead reckoning</strong>. Errors never go away: wheel slip, a wheel
+       radius that is slightly wrong, uneven floors, and encoder resolution. A small heading error grows into a
+       large position error after a few metres. So robots <strong>correct odometry</strong> with other sensors.</p>
+
+    <h3>Localization and mapping</h3>
+    <ul class="tight">
+      <li><strong>Sensor fusion (Kalman filter, EKF):</strong> mixes odometry, IMU and other measures into one better estimate.</li>
+      <li><strong>Monte Carlo localization (particle filter, AMCL):</strong> the robot knows the map and compares lidar scans with it.</li>
+      <li><strong>SLAM:</strong> Simultaneous Localization And Mapping. The robot builds the map while it finds itself in it
+          (lidar SLAM, visual SLAM).</li>
+      <li><strong>Landmarks:</strong> QR codes, reflectors, or markers on the floor give an exact position when seen.</li>
+    </ul>
+
+    <h3>Navigation (how a robot gets from A to B)</h3>
+    <pre class="matrix">map  →  localization  →  global planner  →  local planner  →  speed command  →  wheels
+                       (A*, Dijkstra)     (DWA, TEB, MPC)    (v, ω)</pre>
+    <ul class="tight">
+      <li><strong>Global planner:</strong> finds the whole path on the map (Dijkstra, A*, RRT).</li>
+      <li><strong>Local planner:</strong> follows the path and avoids obstacles that were not in the map (DWA, TEB, potential fields).</li>
+      <li><strong>Costmap:</strong> a grid that says where it is free, dangerous or forbidden.</li>
+      <li><strong>Recovery behaviours:</strong> turn on the spot, back up, or ask for help when the robot is stuck.</li>
+      <li><strong>Fleet management:</strong> software that gives jobs to many robots and avoids traffic jams.</li>
+    </ul>
+
+    <h3>Motors, electronics and software</h3>
+    <ul class="tight">
+      <li><strong>Motors:</strong> brushed DC with a gearbox (common), brushless (BLDC, also hub motors in the wheel), steppers (cheap, slower).</li>
+      <li><strong>Motor driver:</strong> an H-bridge or ESC that turns a command into current. A <strong>PID</strong> loop on each wheel keeps its speed on target, using the encoder.</li>
+      <li><strong>Brains:</strong> a microcontroller (Arduino, STM32, ESP32) for the fast low-level loops, and a computer (Raspberry Pi, Jetson, industrial PC) for navigation.</li>
+      <li><strong>Software:</strong> ROS 2 and its navigation stack (Nav2) are the standard tools in research and many products.</li>
+      <li><strong>Battery:</strong> Li-ion or LiFePO4 (lead-acid on older machines), with a battery management system (BMS). Many robots go back to a charging dock by themselves.</li>
+    </ul>
+
+    <h3>Safety and standards</h3>
+    <ul class="tight">
+      <li>A <strong>safety lidar scanner</strong> with protective fields: the robot slows down when a person is near and stops when they are close.</li>
+      <li><strong>Emergency stop</strong>, bumpers, speed limits, lights and sounds that warn people.</li>
+      <li>Standards: <strong>ISO 3691-4</strong> (driverless industrial trucks), <strong>ANSI/RIA R15.08</strong> (industrial mobile robots),
+          and <strong>ISO 13849</strong> (safety-related control systems).</li>
+    </ul>
+
+    <h3>Where are they used?</h3>
+    <table class="dh">
+      <tr><th class="left">Field</th><th class="left">Tasks</th><th class="left">Typical drive</th></tr>
+      <tr><td class="left">Warehouses and logistics</td><td class="left">carrying boxes, shelves, pallets; picking</td><td class="left">differential, Mecanum (forklifts)</td></tr>
+      <tr><td class="left">Factories</td><td class="left">moving parts between machines (AGV, AMR)</td><td class="left">differential, tricycle, omnidirectional</td></tr>
+      <tr><td class="left">Hospitals and hotels</td><td class="left">delivering meals, medicine, linen</td><td class="left">differential</td></tr>
+      <tr><td class="left">Cleaning</td><td class="left">vacuum and floor-scrubbing robots</td><td class="left">differential</td></tr>
+      <tr><td class="left">Outdoor delivery and cars</td><td class="left">sidewalk delivery, self-driving vehicles</td><td class="left">car-like (Ackermann), 4-6 wheels</td></tr>
+      <tr><td class="left">Agriculture</td><td class="left">crop monitoring, weeding, harvesting</td><td class="left">tracks, 4-wheel steering</td></tr>
+      <tr><td class="left">Inspection and rescue</td><td class="left">pipes, tunnels, disaster zones, stairs</td><td class="left">tracks, legs</td></tr>
+      <tr><td class="left">Space</td><td class="left">exploring other planets</td><td class="left">rocker-bogie wheels</td></tr>
+      <tr><td class="left">Education and research</td><td class="left">learning robotics, competitions</td><td class="left">differential, omni, Mecanum</td></tr>
+    </table>
+
+    <h3>How to choose a drive for your robot</h3>
+    <table class="dh">
+      <tr><th class="left">Your need</th><th class="left">Choose</th><th class="left">Why</th></tr>
+      <tr><td class="left">simple, cheap, indoor</td><td class="left">differential + castor</td><td class="left">2 motors, can turn on the spot</td></tr>
+      <tr><td class="left">tight spaces, sideways motion</td><td class="left">Mecanum or omni</td><td class="left">holonomic</td></tr>
+      <tr><td class="left">high speed, outdoors, long distances</td><td class="left">car-like (Ackermann)</td><td class="left">stable at speed</td></tr>
+      <tr><td class="left">rough, soft ground or stairs</td><td class="left">tracks or rocker-bogie</td><td class="left">grip and obstacle crossing</td></tr>
+      <tr><td class="left">very heavy loads</td><td class="left">tricycle or differential with big wheels</td><td class="left">strong fixed wheels</td></tr>
+    </table>
+
+    <h2>Glossary</h2>
+    <p><strong>AGV</strong> automated guided vehicle · <strong>AMR</strong> autonomous mobile robot ·
+       <strong>DOF</strong> degree of freedom · <strong>IMU</strong> inertial measurement unit ·
+       <strong>lidar</strong> laser distance scanner · <strong>odometry</strong> position estimated from the wheels ·
+       <strong>SLAM</strong> build a map while locating yourself · <strong>PID</strong> a simple feedback controller ·
+       <strong>ROS</strong> Robot Operating System · <strong>BMS</strong> battery management system ·
+       <strong>kinematics</strong> the study of motion without forces · <strong>dynamics</strong> the study of motion with forces.</p>
+
+    <script>
+      const D2R = Math.PI / 180, R2D = 180 / Math.PI;
+      const ARENA = 2.0, ARENA_SCALE = 100, LIMIT = 1.7;
+      const L_DIFF = 0.40;                        // distance between the two wheels of the differential robot (m)
+      const AK = { L: 0.5, T: 0.35, MAX: 35 };    // car-like: wheelbase, track, maximum steering angle (deg)
+      const OM = { R: 0.2, ANG: [60, 180, 300] }; // 3 omni wheels: distance from the centre, angles of the wheels (deg)
+      const MC = { lx: 0.2, ly: 0.2 };            // 4 Mecanum wheels: position of the wheels
+      const WHEEL_R = 0.05;                       // wheel radius, only used to show rad/s (m)
+      const wrap90 = (a) => { while (a > Math.PI / 2) a -= Math.PI; while (a < -Math.PI / 2) a += Math.PI; return a; };
+
+      // =====================================================================================
+      // The four drive types. For each one:
+      //   inputs   = the sliders             body(u)   = speed of the robot (vx, vy, w) in its own frame
+      //   wheels(b) = what each wheel does: position, direction of its rim speed, rim speed (inverse kinematics)
+      // The robot frame: x forward, y to the left, angles counter-clockwise.
+      // =====================================================================================
+      const TYPES = {
+        diff: {
+          name: 'Differential drive',
+          inputs: [
+            { label: 'vL · left wheel speed',  min: -1, max: 1, step: 0.05, value: 0.3, unit: 'm/s' },
+            { label: 'vR · right wheel speed', min: -1, max: 1, step: 0.05, value: 0.6, unit: 'm/s' }
+          ],
+          presets: [['Straight', [0.5, 0.5]], ['Curve left', [0.3, 0.6]], ['Spin on the spot', [-0.3, 0.3]], ['Stop', [0, 0]]],
+          body: (u) => ({ vx: (u[0] + u[1]) / 2, vy: 0, w: (u[1] - u[0]) / L_DIFF }),
+          wheels: (b, u) => [
+            { name: 'left wheel',  x: 0, y: L_DIFF / 2,  dir: 0, v: u[0], kind: 'fixed' },
+            { name: 'right wheel', x: 0, y: -L_DIFF / 2, dir: 0, v: u[1], kind: 'fixed' }
+          ],
+          casters: [[-0.2, 0], [0.2, 0]],
+          shape: { kind: 'rect', x0: -0.25, y0: -0.17, x1: 0.25, y1: 0.17 },
+          holonomic: false, mobility: '(δm, δs) = (2, 0), δM = 2',
+          equations: 'v = (vR + vL) / 2\nω = (vR − vL) / L              L = 0.40 m\nR = (L/2)·(vR + vL)/(vR − vL)\n\nInverse:  vR = v + ωL/2     vL = v − ωL/2',
+          pros: ['only 2 motors, simple and cheap', 'can turn on the spot (tight spaces)', 'strong fixed wheels carry heavy loads', 'easy odometry'],
+          cons: ['cannot slide sideways (nonholonomic)', 'castors add small disturbances', 'wheel speeds must match exactly to go straight'],
+          uses: 'indoor AMRs, vacuum robots, hospital delivery robots, school robots (TurtleBot).'
+        },
+        ackermann: {
+          name: 'Car-like (Ackermann steering)',
+          inputs: [
+            { label: 'v · speed (negative = reverse)', min: -1, max: 1, step: 0.05, value: 0.5, unit: 'm/s' },
+            { label: 'δ · steering angle (left +)',    min: -AK.MAX, max: AK.MAX, step: 1, value: 25, unit: '°' }
+          ],
+          presets: [['Straight', [0.5, 0]], ['Left turn', [0.5, 25]], ['Right turn', [0.5, -25]], ['Reverse, steering left', [-0.4, 25]],
+                    ['Tightest turn', [0.4, AK.MAX]], ['Stop', [0, 0]]],
+          body: (u) => ({ vx: u[0], vy: 0, w: (u[0] * Math.tan(u[1] * D2R)) / AK.L }),
+          wheels: (b) => {
+            const front = (side, name) => {                    // velocity of the wheel centre = V + w × r
+              const yy = side * AK.T / 2;
+              const vxw = b.vx - b.w * yy, vyw = b.w * AK.L;
+              const a = wrap90(Math.atan2(vyw, vxw));
+              return { name, x: AK.L, y: yy, dir: a * R2D, v: vxw * Math.cos(a) + vyw * Math.sin(a), kind: 'steer' };
+            };
+            return [front(1, 'front left'), front(-1, 'front right'),
+                    { name: 'rear left',  x: 0, y: AK.T / 2,  dir: 0, v: b.vx - (b.w * AK.T) / 2, kind: 'fixed' },
+                    { name: 'rear right', x: 0, y: -AK.T / 2, dir: 0, v: b.vx + (b.w * AK.T) / 2, kind: 'fixed' }];
+          },
+          casters: [],
+          shape: { kind: 'rect', x0: -0.14, y0: -0.13, x1: AK.L + 0.14, y1: 0.13 },
+          centre: AK.L / 2,
+          holonomic: false, mobility: '(δm, δs) = (1, 1), δM = 2',
+          equations: 'ω = v · tan δ / L              L = 0.50 m (wheelbase)\nR = L / tan δ                  radius of the turn (rear axle centre)\n\nThe two front wheels must NOT have the same angle:\n  cot δ_outer − cot δ_inner = T / L       T = 0.35 m (track)\n(Ackermann geometry: all axles meet at the ICC)',
+          pros: ['stable at high speed', 'natural for outdoor and road use', 'big wheels, suspension, easy to build'],
+          cons: ['cannot turn on the spot: minimum turning radius R = L / tan(δmax) = 0.71 m here', 'needs a steering mechanism', 'parking needs manoeuvres'],
+          uses: 'self-driving cars, outdoor delivery robots, agricultural vehicles, golf and airport carts.'
+        },
+        omni3: {
+          name: '3 omni wheels (kiwi drive)',
+          inputs: [
+            { label: 'vx · forward speed',  min: -1, max: 1, step: 0.05, value: 0.4, unit: 'm/s' },
+            { label: 'vy · sideways speed (left +)', min: -1, max: 1, step: 0.05, value: 0, unit: 'm/s' },
+            { label: 'ω · turning speed',   min: -2, max: 2, step: 0.1, value: 0, unit: 'rad/s' }
+          ],
+          presets: [['Forward', [0.5, 0, 0]], ['Slide left', [0, 0.5, 0]], ['Diagonal', [0.4, 0.4, 0]], ['Spin', [0, 0, 1.2]],
+                    ['Curve', [0.4, 0, 0.8]], ['Stop', [0, 0, 0]]],
+          body: (u) => ({ vx: u[0], vy: u[1], w: u[2] }),
+          wheels: (b) => OM.ANG.map((a, i) => ({
+            name: `wheel ${i + 1}`, x: OM.R * Math.cos(a * D2R), y: OM.R * Math.sin(a * D2R), dir: a + 90,
+            v: -Math.sin(a * D2R) * b.vx + Math.cos(a * D2R) * b.vy + OM.R * b.w, kind: 'omni'
+          })),
+          casters: [],
+          shape: { kind: 'circle', r: 0.16 },
+          holonomic: true, mobility: '(δm, δs) = (3, 0), δM = 3',
+          equations: 'wheel i at angle α_i (60°, 180°, 300°), distance R = 0.2 m, driven along its tangent:\n  v_i = −sin α_i · vx + cos α_i · vy + R · ω\n\nForward kinematics (3 wheels at 120°):\n  vx = (2/3) Σ −sin α_i · v_i      vy = (2/3) Σ cos α_i · v_i      ω = Σ v_i / (3R)',
+          pros: ['holonomic: any direction, instantly', 'only 3 motors and 3 fixed wheels', 'compact and agile'],
+          cons: ['vibrations (gaps between rollers)', 'less grip and payload', 'slip makes odometry drift', 'needs a smooth floor'],
+          uses: 'RoboCup robots, educational and research platforms, small agile carts.'
+        },
+        mecanum: {
+          name: '4 Mecanum wheels',
+          inputs: [
+            { label: 'vx · forward speed',  min: -1, max: 1, step: 0.05, value: 0, unit: 'm/s' },
+            { label: 'vy · sideways speed (left +)', min: -1, max: 1, step: 0.05, value: 0.5, unit: 'm/s' },
+            { label: 'ω · turning speed',   min: -2, max: 2, step: 0.1, value: 0, unit: 'rad/s' }
+          ],
+          presets: [['Forward', [0.5, 0, 0]], ['Slide left', [0, 0.5, 0]], ['Slide right', [0, -0.5, 0]], ['Diagonal', [0.4, 0.4, 0]],
+                    ['Spin', [0, 0, 1.2]], ['Curve', [0.4, 0, 0.8]], ['Stop', [0, 0, 0]]],
+          body: (u) => ({ vx: u[0], vy: u[1], w: u[2] }),
+          wheels: (b) => {
+            const k = MC.lx + MC.ly;
+            return [
+              { name: 'front left',  x: MC.lx,  y: MC.ly,  dir: 0, v: b.vx - b.vy - k * b.w, kind: 'mecanum', roller: 45 },
+              { name: 'front right', x: MC.lx,  y: -MC.ly, dir: 0, v: b.vx + b.vy + k * b.w, kind: 'mecanum', roller: -45 },
+              { name: 'rear left',   x: -MC.lx, y: MC.ly,  dir: 0, v: b.vx + b.vy - k * b.w, kind: 'mecanum', roller: -45 },
+              { name: 'rear right',  x: -MC.lx, y: -MC.ly, dir: 0, v: b.vx - b.vy + k * b.w, kind: 'mecanum', roller: 45 }
+            ];
+          },
+          casters: [],
+          shape: { kind: 'rect', x0: -0.27, y0: -0.15, x1: 0.27, y1: 0.15 },
+          holonomic: true, mobility: '(δm, δs) = (3, 0), δM = 3',
+          equations: 'k = lx + ly = 0.4 m\n  v_FL = vx − vy − k·ω        v_FR = vx + vy + k·ω\n  v_RL = vx + vy − k·ω        v_RR = vx − vy + k·ω\n\nForward kinematics:\n  vx = (v_FL + v_FR + v_RL + v_RR) / 4\n  vy = (−v_FL + v_FR + v_RL − v_RR) / 4\n  ω  = (−v_FL + v_FR − v_RL + v_RR) / (4k)',
+          pros: ['holonomic: forward, sideways, diagonal and rotation at once', 'good for tight spaces and docking', 'can carry heavy loads (bigger than omni)'],
+          cons: ['lower efficiency: some wheel force cancels out', 'needs a flat, clean floor and suspension', 'rollers wear, expensive', 'slip: odometry is less accurate'],
+          uses: 'omnidirectional forklifts, warehouse platforms, competition robots, mobile manipulators.'
+        }
+      };
+
+      // =====================================================================================
+      // Drawing a robot (used big with arrows and small in the arena)
+      // =====================================================================================
+      let clipCounter = 0;
+      function drawWheel(parent, w, s) {
+        const len = w.kind === 'omni' ? 0.12 : 0.14, th = 0.05;
+        const L = len * s, T = th * s;
+        const g = RB.shape(parent, 'g', { transform: `translate(${w.x * s} ${-w.y * s}) rotate(${-w.dir})` });
+        RB.shape(g, 'rect', { x: -L / 2, y: -T / 2, width: L, height: T, rx: 2, fill: '#222a33', stroke: '#e8eef5', 'stroke-width': Math.max(1, s / 120) });
+        if (w.kind === 'omni') {                              // small rollers across the wheel
+          for (const k of [-0.33, 0, 0.33]) RB.shape(g, 'line', { x1: k * L, y1: -T / 2, x2: k * L, y2: T / 2, stroke: '#ff9f43', 'stroke-width': Math.max(1, s / 90) });
+        } else if (w.kind === 'mecanum') {                    // rollers at 45°
+          const id = `clip${clipCounter++}`;
+          const cp = RB.shape(g, 'clipPath', { id });
+          RB.shape(cp, 'rect', { x: -L / 2, y: -T / 2, width: L, height: T });
+          const cg = RB.shape(g, 'g', { 'clip-path': `url(#${id})` });
+          const slope = Math.tan((w.roller - w.dir) * D2R);   // roller axis direction, seen in the wheel's own frame
+          for (let k = -4; k <= 4; k++) {
+            const cx = k * (L / 5);
+            RB.shape(cg, 'line', { x1: cx - T / 2 / (slope || 1), y1: T / 2, x2: cx + T / 2 / (slope || 1), y2: -T / 2, stroke: '#ff9f43', 'stroke-width': Math.max(1, s / 90) });
+          }
+        } else if (w.kind === 'steer') {                      // a steering pivot in the middle
+          RB.shape(g, 'circle', { cx: 0, cy: 0, r: T * 0.28, fill: '#ff9f43' });
+        }
+        return g;
+      }
+
+      function drawRobot(parent, type, wheels, s, detailed) {
+        const T = TYPES[type];
+        const sh = T.shape;
+        if (sh.kind === 'rect') {
+          RB.shape(parent, 'rect', { x: sh.x0 * s, y: -sh.y1 * s, width: (sh.x1 - sh.x0) * s, height: (sh.y1 - sh.y0) * s, rx: 4, fill: '#cfd8e3', opacity: 0.92 });
+        } else {
+          RB.shape(parent, 'circle', { cx: 0, cy: 0, r: sh.r * s, fill: '#cfd8e3', opacity: 0.92 });
+        }
+        const nose = (sh.kind === 'rect' ? sh.x1 : sh.r) * s;                       // an orange triangle shows the front
+        RB.shape(parent, 'polygon', { points: `${nose - 0.1 * s},${-0.07 * s} ${nose + 0.03 * s},0 ${nose - 0.1 * s},${0.07 * s}`, fill: '#ff9f43' });
+        for (const [cx, cy] of T.casters) RB.shape(parent, 'circle', { cx: cx * s, cy: -cy * s, r: 0.03 * s, fill: '#222a33', stroke: '#9fb0c3', 'stroke-width': 1 });
+        wheels.forEach((w) => drawWheel(parent, w, s));
+      }
+
+      // =====================================================================================
+      // State and simulation
+      // =====================================================================================
+      const sim = { x: 0, y: 0, th: 0, trail: [[0, 0]], blocked: false };
+      let type = 'diff', ctl = null, u = [], running = false;
+      const svgZoom = document.getElementById('zoom'), svgArena = document.getElementById('arena');
+
+      function integrate(dt) {
+        const b = TYPES[type].body(u);
+        const mid = sim.th + (b.w * dt) / 2;
+        sim.x += (b.vx * Math.cos(mid) - b.vy * Math.sin(mid)) * dt;
+        sim.y += (b.vx * Math.sin(mid) + b.vy * Math.cos(mid)) * dt;
+        sim.th += b.w * dt;
+        sim.blocked = false;
+        for (const k of ['x', 'y']) if (Math.abs(sim[k]) > LIMIT) { sim[k] = Math.sign(sim[k]) * LIMIT; sim.blocked = true; }
+        const last = sim.trail[sim.trail.length - 1];
+        if (Math.hypot(sim.x - last[0], sim.y - last[1]) > 0.02) { sim.trail.push([sim.x, sim.y]); if (sim.trail.length > 3000) sim.trail.shift(); }
+      }
+
+      function update() {
+        const T = TYPES[type];
+        const b = T.body(u);
+        const wheels = T.wheels(b, u);
+
+        // ---- the big drawing: robot facing right, not rotating
+        svgZoom.innerHTML = '';
+        const S = 260, cy = 200;
+        const cx = 350 - (T.centre || 0) * S;                       // keeps every robot in the middle
+        const g = RB.shape(svgZoom, 'g', { transform: `translate(${cx} ${cy})` });
+        // ICC: the point that does not move
+        if (Math.abs(b.w) > 1e-6) {
+          const icc = [-b.vy / b.w, b.vx / b.w];
+          if (Math.hypot(icc[0], icc[1]) < 0.72) {
+            wheels.forEach((w) => RB.shape(g, 'line', { x1: w.x * S, y1: -w.y * S, x2: icc[0] * S, y2: -icc[1] * S, stroke: '#5aa9ff', 'stroke-width': 1.3, 'stroke-dasharray': '4 3' }));
+            RB.shape(g, 'circle', { cx: icc[0] * S, cy: -icc[1] * S, r: 6, fill: '#5aa9ff' });
+            RB.label(svgZoom, cx + icc[0] * S + 10, cy - icc[1] * S - 8, 'ICC', '#5aa9ff', 16);
+          }
+        }
+        drawRobot(g, type, wheels, S, true);
+        wheels.forEach((w) => {                                        // arrow = rim speed of each wheel
+          const len = w.v * 80;
+          const x1 = w.x * S, y1 = -w.y * S;
+          if (Math.abs(len) > 4) RB.arrow(g, x1, y1, x1 + Math.cos(w.dir * D2R) * len, y1 - Math.sin(w.dir * D2R) * len, '#ffffff');
+          const side = w.y >= 0 ? -1 : 1;                              // the labels go outside the robot
+          const lines = [[w.name, '#9fb0c3'], [`${w.v.toFixed(2)} m/s`, '#ffffff'], [`${(w.v / WHEEL_R).toFixed(1)} rad/s`, '#9fb0c3']];
+          if (w.kind === 'steer') lines.push([`steering ${w.dir.toFixed(1)}°`, '#ff9f43']);
+          lines.forEach(([text, color], k) => {
+            const yy = side < 0 ? y1 - 40 - 16 * k : y1 + 52 + 16 * k;
+            RB.label(svgZoom, cx + x1, cy + yy, text, color, 13, 'middle');
+          });
+        });
+        if (Math.hypot(b.vx, b.vy) > 0.01) {                             // blue arrow: motion of the robot centre
+          RB.arrow(svgZoom, cx, cy, cx + b.vx * 120, cy - b.vy * 120, '#5aa9ff');
+          RB.label(svgZoom, cx + b.vx * 120 + 8, cy - b.vy * 120 - 8, 'V', '#5aa9ff', 15);
+        }
+        RB.label(svgZoom, 14, 26, T.name, '#ffffff', 18);
+        RB.label(svgZoom, 14, 48, 'front →', '#9fb0c3', 13);
+
+        // ---- numbers
+        const th = Math.atan2(Math.sin(sim.th), Math.cos(sim.th));
+        let R = '∞ (straight line)';
+        if (Math.abs(b.w) > 1e-6) R = `${(Math.hypot(b.vx, b.vy) / Math.abs(b.w)).toFixed(2)} m`;
+        if (Math.hypot(b.vx, b.vy) < 1e-9 && Math.abs(b.w) < 1e-9) R = 'robot stopped';
+        document.getElementById('readout').textContent =
+          `x = ${sim.x.toFixed(2)} m   y = ${sim.y.toFixed(2)} m   θ = ${(th * R2D).toFixed(0)}°      ` +
+          `vx = ${b.vx.toFixed(2)}   vy = ${b.vy.toFixed(2)} m/s   ω = ${b.w.toFixed(2)} rad/s   turn radius = ${R}`;
+        document.getElementById('warn').textContent = sim.blocked ? '⚠ wall: the robot stopped' : '';
+
+        // ---- the arena
+        svgArena.innerHTML = '';
+        const half = ARENA * ARENA_SCALE, ox = 350, oy = 210;
+        RB.shape(svgArena, 'rect', { x: ox - half, y: oy - half, width: 2 * half, height: 2 * half, fill: 'none', stroke: '#667788', 'stroke-width': 2, 'stroke-dasharray': '6 4' });
+        for (let k = -ARENA + 1; k < ARENA; k++) {
+          RB.shape(svgArena, 'line', { x1: ox + k * ARENA_SCALE, y1: oy - half, x2: ox + k * ARENA_SCALE, y2: oy + half, stroke: '#2c3b4d' });
+          RB.shape(svgArena, 'line', { x1: ox - half, y1: oy + k * ARENA_SCALE, x2: ox + half, y2: oy + k * ARENA_SCALE, stroke: '#2c3b4d' });
+        }
+        RB.label(svgArena, ox - half + 8, oy - half + 20, 'grid: 1 square = 1 m', '#667788', 13);
+        const stride = Math.ceil(sim.trail.length / 600);
+        const pts = sim.trail.filter((_, i) => i % stride === 0 || i === sim.trail.length - 1).map((p) => `${ox + p[0] * ARENA_SCALE},${oy - p[1] * ARENA_SCALE}`).join(' ');
+        RB.shape(svgArena, 'polyline', { points: pts, fill: 'none', stroke: '#ff9f43', 'stroke-width': 2.5, 'stroke-linejoin': 'round' });
+        const ga = RB.shape(svgArena, 'g', { transform: `translate(${ox + sim.x * ARENA_SCALE} ${oy - sim.y * ARENA_SCALE}) rotate(${-sim.th * R2D})` });
+        drawRobot(ga, type, wheels, ARENA_SCALE, false);
+      }
+
+      // =====================================================================================
+      // The page: sliders, buttons, information box
+      // =====================================================================================
+      function showInfo() {
+        const T = TYPES[type];
+        document.getElementById('typeInfo').innerHTML =
+          `<h2>${T.name}</h2>` +
+          `<p><span class="tag">${T.mobility}</span> <span class="tag">${T.holonomic ? 'holonomic: it can slide sideways' : 'nonholonomic: it cannot slide sideways'}</span></p>` +
+          `<h3>Equations</h3><pre class="matrix">${T.equations}</pre>` +
+          `<div style="display:flex;gap:2rem;flex-wrap:wrap"><div><h3 class="pro">Advantages</h3><ul class="tight">${T.pros.map((p) => `<li>${p}</li>`).join('')}</ul></div>` +
+          `<div><h3 class="con">Disadvantages</h3><ul class="tight">${T.cons.map((p) => `<li>${p}</li>`).join('')}</ul></div></div>` +
+          `<p><strong>Used in:</strong> ${T.uses}</p>`;
+      }
+      function buildControls() {
+        const T = TYPES[type];
+        const box = document.getElementById('controls');
+        box.innerHTML = '';
+        const pb = document.getElementById('presets');
+        pb.innerHTML = '<strong>Try:</strong> ';
+        ctl = RB.controls(box, T.inputs, (v) => { u = v; update(); });
+        T.presets.forEach(([label, vals]) => {
+          const b = document.createElement('button');
+          b.textContent = label;
+          b.addEventListener('click', () => ctl.set(vals));
+          pb.appendChild(b);
+        });
+        showInfo();
+      }
+      function resetPose() { Object.assign(sim, { x: 0, y: 0, th: 0, trail: [[0, 0]], blocked: false }); }
+
+      document.getElementById('typeSel').addEventListener('change', (e) => {
+        type = e.target.value;
+        resetPose();
+        running = false;
+        document.getElementById('runBtn').textContent = 'Start';
+        buildControls();
+      });
+      document.getElementById('runBtn').addEventListener('click', (e) => {
+        running = !running;
+        e.target.textContent = running ? 'Pause' : 'Resume';
+      });
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        resetPose();
+        running = false;
+        document.getElementById('runBtn').textContent = 'Start';
+        update();
+      });
+
+      buildControls();
+      let lastTime = performance.now();
+      (function loop(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+        if (running) { integrate(dt); update(); }
+        requestAnimationFrame(loop);
+      })(lastTime);
+
+      // =====================================================================================
+      // The wheel catalogue (drawings made with code)
+      // =====================================================================================
+      function wheelIcon(kind) {
+        const o = '#e8eef5', a = '#ff9f43', d = '#222a33';
+        const arrow = (x1, y1, x2, y2, c = a) => `<line x1="${x1}" y1="${y1}" x2="${x2 - 6}" y2="${y2}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>` +
+          `<polygon points="${x2},${y2} ${x2 - 9},${y2 - 5} ${x2 - 9},${y2 + 5}" fill="${c}"/>`;   // an arrow pointing to the right
+        const ring = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${d}" stroke="${o}" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r * 0.3}" fill="${o}"/>`;
+        const rollers = (cx, cy, r, n, slant) => Array.from({ length: n }, (_, i) => {
+          const t = (i / n) * 2 * Math.PI, x = cx + Math.cos(t) * r * 0.82, y = cy + Math.sin(t) * r * 0.82;
+          return `<ellipse cx="${x}" cy="${y}" rx="${r * 0.2}" ry="${r * 0.1}" fill="${a}" transform="rotate(${(t * 180) / Math.PI + slant} ${x} ${y})"/>`;
+        }).join('');
+        const parts = {
+          fixed: ring(60, 45, 28) + `<line x1="10" y1="80" x2="110" y2="80" stroke="#667788" stroke-width="2"/>` + arrow(35, 14, 85, 14) +
+                 `<text x="60" y="94" fill="#9fb0c3" font-size="9" text-anchor="middle">rolls, no sliding sideways</text>`,
+          castor: `<line x1="10" y1="80" x2="110" y2="80" stroke="#667788" stroke-width="2"/>` +
+                  `<rect x="30" y="8" width="40" height="8" rx="2" fill="${o}"/><line x1="50" y1="16" x2="50" y2="26" stroke="${o}" stroke-width="4"/>` +
+                  `<line x1="50" y1="26" x2="72" y2="48" stroke="${o}" stroke-width="4"/>` + ring(76, 56, 22) +
+                  `<path d="M 28 20 A 24 12 0 0 1 72 20" fill="none" stroke="${a}" stroke-width="2"/>` +
+                  `<text x="60" y="94" fill="#9fb0c3" font-size="9" text-anchor="middle">pivot offset: it trails behind</text>`,
+          steer: ring(60, 52, 24) + `<line x1="60" y1="6" x2="60" y2="52" stroke="${o}" stroke-width="4"/><rect x="42" y="4" width="36" height="8" rx="2" fill="${o}"/>` +
+                 `<path d="M 28 22 A 34 16 0 0 1 92 22" fill="none" stroke="${a}" stroke-width="2.5"/><polygon points="92,22 84,15 86,26" fill="${a}"/>` +
+                 `<line x1="10" y1="80" x2="110" y2="80" stroke="#667788" stroke-width="2"/>` +
+                 `<text x="60" y="94" fill="#9fb0c3" font-size="9" text-anchor="middle">steers around a vertical axis</text>`,
+          omni: ring(60, 45, 30) + rollers(60, 45, 30, 10, 90) + `<line x1="10" y1="80" x2="110" y2="80" stroke="#667788" stroke-width="2"/>` +
+                `<text x="60" y="94" fill="#9fb0c3" font-size="9" text-anchor="middle">rollers at 90°</text>`,
+          mecanum: ring(60, 45, 30) + rollers(60, 45, 30, 10, 45) + `<line x1="10" y1="80" x2="110" y2="80" stroke="#667788" stroke-width="2"/>` +
+                   `<text x="60" y="94" fill="#9fb0c3" font-size="9" text-anchor="middle">rollers at 45°</text>`,
+          ball: `<circle cx="60" cy="42" r="30" fill="${d}" stroke="${o}" stroke-width="2"/><ellipse cx="60" cy="42" rx="30" ry="10" fill="none" stroke="#44566b"/>` +
+                `<ellipse cx="60" cy="42" rx="10" ry="30" fill="none" stroke="#44566b"/>` +
+                `<circle cx="38" cy="78" r="6" fill="${a}"/><circle cx="82" cy="78" r="6" fill="${a}"/><circle cx="60" cy="84" r="6" fill="${a}"/>` +
+                `<text x="60" y="95" fill="#9fb0c3" font-size="9" text-anchor="middle">a ball driven by rollers</text>`,
+          track: `<rect x="14" y="22" width="92" height="46" rx="23" fill="none" stroke="${o}" stroke-width="5"/>` +
+                 Array.from({ length: 14 }, (_, i) => `<line x1="${22 + i * 6.3}" y1="19" x2="${22 + i * 6.3}" y2="25" stroke="${a}" stroke-width="2"/>`).join('') +
+                 `<circle cx="37" cy="45" r="11" fill="${d}" stroke="${o}" stroke-width="2"/><circle cx="83" cy="45" r="11" fill="${d}" stroke="${o}" stroke-width="2"/>` +
+                 `<line x1="10" y1="80" x2="110" y2="80" stroke="#667788" stroke-width="2"/>` +
+                 `<text x="60" y="94" fill="#9fb0c3" font-size="9" text-anchor="middle">a belt on wheels</text>`
+        };
+        return `<svg viewBox="0 0 120 100">${parts[kind]}</svg>`;
+      }
+
+      const WHEELS = [
+        { kind: 'fixed', name: 'Fixed standard wheel', fr: 'roue fixe', tags: ['rolls', 'no steering', 'no sideways'],
+          what: 'A normal wheel on a fixed axle. It rolls forward and backward. It cannot steer and the floor stops it from sliding sideways, which is the nonholonomic constraint.',
+          used: 'differential-drive robots, rear wheels of cars, most AGVs.', pro: 'simple, cheap, strong, efficient, accurate odometry.', con: 'cannot move sideways; needs extra support wheels.' },
+        { kind: 'castor', name: 'Castor wheel', fr: 'roue folle, roulette pivotante (offset orientable wheel)', tags: ['passive', 'swivels', 'no motor'],
+          what: 'A wheel that swivels freely around a vertical pivot placed <em>behind</em> the axle, so it trails and lines itself up with the motion. It has no motor.',
+          used: 'office chairs, shopping carts, the support wheels of differential-drive robots and AMRs.', pro: 'gives stability with no motor, cheap, lets the robot turn freely.', con: 'swings when the direction changes, can shimmy at speed, adds noise to odometry.' },
+        { kind: 'steer', name: 'Steered wheel', fr: 'roue orientable centrée', tags: ['rolls', 'steers', '2 motors'],
+          what: 'A driven wheel that also rotates around a vertical axis passing through its contact point. One motor makes it roll and another turns its direction.',
+          used: 'front wheel of a tricycle AGV, cars, synchro drive, swerve drive.', pro: 'precise control of the direction of each wheel, high traction.', con: 'more motors and sensors; steering takes time; the zero angle must be calibrated.' },
+        { kind: 'omni', name: 'Omni wheel', fr: 'roue omnidirectionnelle', tags: ['rolls', 'slides sideways', 'rollers 90°'],
+          what: 'A wheel with small free rollers around its rim, at 90° to the main rotation. It drives in one direction and slides freely in the other.',
+          used: 'kiwi drive (3 wheels at 120°), 4-wheel holonomic bases, RoboCup, education.', pro: 'holonomic motion with only fixed wheels, compact.', con: 'vibrates, less grip and payload, odometry drifts, needs a smooth floor.' },
+        { kind: 'mecanum', name: 'Mecanum wheel', fr: 'roue Mecanum (roue suédoise)', tags: ['rolls', 'pushes diagonally', 'rollers 45°'],
+          what: 'A wheel with rollers at 45°. Each wheel pushes the robot diagonally. With 4 wheels turned in the right combinations the robot goes in any direction and can turn at the same time.',
+          used: 'omnidirectional forklifts, warehouse platforms, competition robots, mobile manipulators.', pro: 'moves sideways and diagonally, heavier loads than omni wheels.', con: 'lower efficiency (forces cancel), needs a flat floor and suspension, wears, costs more.' },
+        { kind: 'ball', name: 'Spherical (ball) wheel', fr: 'roue sphérique', tags: ['holonomic', 'balances'],
+          what: 'A ball driven by rollers or omni wheels pressed against it. A robot can even balance on one ball (a ballbot).',
+          used: 'research ballbots and a few special omnidirectional robots.', pro: 'omnidirectional, small footprint.', con: 'complex, low payload, the balance must be controlled all the time.' },
+        { kind: 'track', name: 'Tracks', fr: 'chenilles', tags: ['skid steering', 'rough terrain'],
+          what: 'A continuous belt that goes around wheels. The robot turns by running the left and right tracks at different speeds, like a differential drive, but with a lot of slip.',
+          used: 'rescue, military, agriculture, inspection, construction, climbing stairs.', pro: 'rough, soft ground and stairs; low pressure on the ground.', con: 'slips when turning (odometry is unreliable), uses more energy, noisy, can damage floors.' }
+      ];
+      document.getElementById('wheelCards').innerHTML = WHEELS.map((w) =>
+        `<div class="card"><h3>${w.name}</h3><p class="fr">${w.fr}</p>${wheelIcon(w.kind)}` +
+        `<p>${w.tags.map((t) => `<span class="tag">${t}</span>`).join('')}</p><p>${w.what}</p>` +
+        `<p><strong>Used in:</strong> ${w.used}</p><p><span class="pro">+</span> ${w.pro}</p><p><span class="con">−</span> ${w.con}</p></div>`).join('');
+    </script>
+  </body>
+</html>
