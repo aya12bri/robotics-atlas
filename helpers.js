@@ -83,8 +83,10 @@ const RB = (function () {
 
   // ---------- sliders + number boxes ----------
   // defs: [{label, min, max, step, value, unit}]. onChange(values) is called at every change.
+  // Returns { values(), set(list) } so that a program (for example a demo) can move the sliders too.
   function controls(container, defs, onChange) {
     const vals = defs.map((d) => d.value);
+    const rows = [];
     defs.forEach((d, i) => {
       const row = document.createElement('div');
       row.className = 'ctl';
@@ -95,6 +97,7 @@ const RB = (function () {
         `<span class="ctl-unit">${d.unit}</span>`;
       const range = row.querySelector('[type=range]');
       const num = row.querySelector('[type=number]');
+      rows.push({ range, num, d });
       const apply = (v) => { vals[i] = v; onChange(vals.slice()); };
 
       range.addEventListener('input', () => { num.value = range.value; apply(Number(range.value)); });
@@ -113,6 +116,19 @@ const RB = (function () {
       container.appendChild(row);
     });
     onChange(vals.slice());
+    return {
+      values: () => vals.slice(),
+      set: (list) => {
+        list.forEach((v, i) => {
+          const { range, num, d } = rows[i];
+          v = Math.min(d.max, Math.max(d.min, v));
+          vals[i] = v;
+          range.value = v;
+          num.value = Math.round(v * 100) / 100;
+        });
+        onChange(vals.slice());
+      }
+    };
   }
 
   // ---------- SVG drawing ----------
