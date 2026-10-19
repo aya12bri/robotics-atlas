@@ -1,0 +1,23 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #0f1720;
+  color: #e8eef5;
+  margin: 0;
+  padding: 2rem;
+}
+
+h1 {
+  color: #ff9f43;
+}
+
+.robot {
+  background: #1b2633;
+  border-left: 4px solid #ff9f43;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  border-radius: 6px;
+}
+
+.robot h2 {
+  margin-top: 0;
+}
