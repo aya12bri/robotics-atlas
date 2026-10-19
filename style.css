@@ -21,3 +21,29 @@ h1 {
 .robot h2 {
   margin-top: 0;
 }
+
+/* ---- sliders with a number box ---- */
+.ctl { display: flex; align-items: center; gap: 0.6rem; margin: 0.5rem 0; flex-wrap: wrap; }
+.ctl-name { width: 13rem; }
+.ctl input[type=range] { width: 240px; }
+.ctl input[type=number] {
+  width: 5.5rem; padding: 0.25rem 0.4rem; border-radius: 4px;
+  border: 1px solid #44566b; background: #0f1720; color: #ff9f43; font-size: 1rem;
+}
+.ctl-unit { color: #9fb0c3; width: 2.5rem; }
+
+/* ---- buttons and options ---- */
+.toolbar { display: flex; gap: 1.2rem; align-items: center; flex-wrap: wrap; margin: 0.8rem 0; }
+button {
+  background: #ff9f43; color: #0f1720; border: 0; border-radius: 4px;
+  padding: 0.45rem 0.9rem; font-size: 1rem; cursor: pointer; font-weight: bold;
+}
+button:hover { background: #ffb870; }
+
+/* ---- DH tables ---- */
+table.dh { border-collapse: collapse; margin: 0.5rem 0 1rem; background: #1b2633; }
+table.dh th, table.dh td { border: 1px solid #44566b; padding: 0.4rem 0.9rem; text-align: center; }
+table.dh th { background: #26364a; }
+table.dh small { display: block; color: #ff9f43; }
+pre.matrix { background: #1b2633; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+.legend-x { color: #ff6b6b; } .legend-y { color: #6bdc8b; } .legend-z { color: #5aa9ff; }

@@ -94,7 +94,23 @@
       <p><strong>Control</strong> compares where the joint is with where it should be, and corrects the motor.
          The most common method is called PID.</p>
     </div>
-
+    <div class="robot">
+      <h2>11. DH and DHM: describing a robot with a table</h2>
+      <p>Instead of drawing every robot, we describe each joint with <strong>4 numbers</strong>, one row per joint:</p>
+      <ul>
+        <li><strong>θ</strong> — the rotation around the joint axis (this is the variable of a revolute joint).</li>
+        <li><strong>d</strong> — the shift along the joint axis (this is the variable of a prismatic joint).</li>
+        <li><strong>a</strong> — the distance between two consecutive joint axes (the link length).</li>
+        <li><strong>α</strong> — the twist angle between two consecutive joint axes.</li>
+      </ul>
+      <p>Each row becomes a 4×4 matrix. Multiply all the matrices from the base to the tool and you get the
+         tool's position and orientation: that is forward kinematics.</p>
+      <p><strong>Standard DH</strong> puts frame i on the axis of joint i+1. <strong>Modified DH (DHM,
+         Khalil–Kleinfinger)</strong> puts frame i on the axis of joint i. The tables look different but give
+         exactly the same final matrix. Compare them on the SCARA and arm pages.</p>
+      <p>Rule of thumb for the frames: z is along the joint axis, and x is along the common perpendicular
+         between two axes.</p>
+    </div>
     <p>Next: a SCARA robot to practise these ideas.</p>
   </body>
 </html>

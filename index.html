@@ -16,23 +16,47 @@
       <p><strong>Tasks:</strong> welding, painting, palletizing, assembly.</p>
       <p><strong>Joints:</strong> 6 rotating joints.</p>
     </div>
+    <div class="robot">
+      <h2>Articulated arm (6 axes)</h2>
+      <p><strong>Joints:</strong> 6 rotating joints (R-R-R-R-R-R).</p>
+      <p><strong>Used in:</strong> car factories (welding, painting), palletizing, machine tending, assembly, material handling.</p>
+      <p><strong>End effectors:</strong> yes, a pinch gripper (pince) works; also welding torch, spot-welding gun,
+         vacuum suction cup, paint gun, screwdriver. With 6 axes it can pick an object from any direction.</p>
+    </div>
+
+    <div class="robot">
+      <h2>Collaborative robot (cobot, UR-style)</h2>
+      <p><strong>Joints:</strong> 6 rotating joints, force-limited so it can work next to people.</p>
+      <p><strong>Used in:</strong> screwing, packaging, lab automation, machine tending, quality inspection in small factories.</p>
+      <p><strong>End effectors:</strong> yes, a pinch gripper (pince) is the most common; also suction cups, screwdrivers, cameras.</p>
+    </div>
 
     <div class="robot">
       <h2>SCARA</h2>
-      <p><strong>Tasks:</strong> fast pick-and-place, electronics assembly.</p>
-      <p><strong>Joints:</strong> 2 rotating, 1 sliding, 1 rotating.</p>
+      <p><strong>Joints:</strong> rotating, rotating, sliding, rotating (R-R-P-R). <a href="scara.html" style="color:#ff9f43">→ 3D model</a></p>
+      <p><strong>Used in:</strong> electronics assembly, screwing, fast pick-and-place, packaging, dispensing glue.</p>
+      <p><strong>End effectors:</strong> yes, a pinch gripper works; most often a vacuum suction cup, also a screwdriver or a dispensing nozzle. The tool always points down.</p>
     </div>
 
     <div class="robot">
-      <h2>Delta</h2>
-      <p><strong>Tasks:</strong> sorting and packing food at high speed.</p>
-      <p><strong>Joints:</strong> 3 arms working in parallel.</p>
+      <h2>Delta (parallel robot)</h2>
+      <p><strong>Joints:</strong> 3 arms working in parallel, all motors fixed on top.</p>
+      <p><strong>Used in:</strong> food and pharma packaging, sorting objects on a conveyor belt with a camera, at over 100 picks per minute.</p>
+      <p><strong>End effectors:</strong> mostly vacuum suction cups or soft grippers. Small pinch grippers are possible, but the payload is light (about 1 to 8 kg at most).</p>
     </div>
 
     <div class="robot">
-      <h2>Mobile robot</h2>
-      <p><strong>Tasks:</strong> carrying goods in warehouses, cleaning.</p>
-      <p><strong>Joints:</strong> two driven wheels.</p>
+      <h2>Cartesian robot (gantry)</h2>
+      <p><strong>Joints:</strong> 3 sliding joints at right angles (P-P-P).</p>
+      <p><strong>Used in:</strong> 3D printers, CNC machines, laboratory pipetting, warehouse picking, palletizing, gluing.</p>
+      <p><strong>End effectors:</strong> very flexible: pinch gripper, suction cup, 3D-printing nozzle, cutting spindle, pipette, laser.</p>
+    </div>
+
+    <div class="robot">
+      <h2>Mobile robot (AMR / AGV)</h2>
+      <p><strong>Joints:</strong> two driven wheels (differential drive) plus a free caster wheel.</p>
+      <p><strong>Used in:</strong> warehouses (carrying shelves and boxes), hospitals, cleaning, inspection and security.</p>
+      <p><strong>End effectors:</strong> usually none. It carries a load on top, a fork or a tow hook. It can also carry a robot arm with a gripper, which is then called a mobile manipulator.</p>
     </div>
   </body>
 </html>

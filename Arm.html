@@ -2,12 +2,11 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>3D robot arm</title>
     <link rel="stylesheet" href="style.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
-      label { display: block; margin: 0.6rem 0; }
-      input { width: 300px; }
     </style>
     <script type="importmap">
       {
@@ -17,66 +16,112 @@
         }
       }
     </script>
+    <script src="helpers.js"></script>
   </head>
   <body>
-    <h1>3D robot arm</h1>
-    <p><a href="index.html" style="color:#ff9f43">← Back to the robot list</a></p>
+    <h1>3D robot arm (R-R-R)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="Learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
 
-    <div id="view">
-            <h2>Kinematic diagram (schéma cinématique)</h2>
-    <svg id="schema" viewBox="0 0 500 300"
-         style="width:100%;max-width:500px;background:#1b2633;border-radius:6px"></svg>
-    <p id="readout"></p>
+    <div id="view"></div>
+
+    <h2>Joints</h2>
+    <p>Move a slider, or click in a number box and type a value with your keyboard.</p>
+    <div id="controls"></div>
+
+    <h2>Kinematic diagram (schéma cinématique), side view</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames:
+        <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
+        <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
+      </span>
     </div>
+    <svg id="schema" viewBox="0 0 500 300"
+         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+    <p>
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
+      <span class="legend-z">z blue</span>. ⊙ is an axis pointing <em>at you</em>, ⊗ is an axis
+      pointing <em>away</em> from you. The view turns with q1, so you always look at the arm from the side.
+    </p>
+    <p id="readout"></p>
 
-    <label>Joint 1, base rotation <input id="j1" type="range" min="-180" max="180" value="30" /></label>
-    <label>Joint 2, shoulder <input id="j2" type="range" min="-90" max="90" value="-30" /></label>
-    <label>Joint 3, elbow <input id="j3" type="range" min="-135" max="135" value="60" /></label>
+    <h2>DH table (standard)</h2>
+    <p>Frame i is attached to the axis of joint i+1.
+       Each row is: <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>.
+       Orange numbers are the current values.</p>
+    <div id="dhStd"></div>
+
+    <h2>DHM table (modified DH)</h2>
+    <p>Frame i is attached to the axis of joint i.
+       Each row is: <code>A<sub>i</sub> = Rx(α<sub>i−1</sub>) · Tx(a<sub>i−1</sub>) · Rz(θ) · Tz(d)</code>.
+       The last row is the fixed step from the elbow to the tool.</p>
+    <div id="dhMod"></div>
+
+    <h2>Result: where is the tool?</h2>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the position of the tool in the base frame {0}. Both tables give
+       exactly this same matrix.</p>
+
+    <div class="robot">
+      <h2>Where is this kind of arm used?</h2>
+      <p>These three joints are the <strong>positioning part</strong> of a bigger industrial arm:
+         the base, shoulder and elbow bring the tool to a point in space. A real 6-axis robot
+         adds a three-joint <em>wrist</em> to also choose the tool's orientation. On its own, a
+         3-axis arm is used for simple pick-and-place, teaching robots, and camera or sensor
+         positioning.</p>
+      <h3>End effector (tool)</h3>
+      <p><strong>Yes, you can put a gripper (pince) on it</strong>, but with only 3 degrees of
+         freedom it chooses <em>where</em> the tool is, not <em>how it points</em>. So the object
+         must always be grabbed from the same direction. What works:</p>
+      <ul>
+        <li><strong>Suction cup</strong> or pinch gripper for objects that are always placed the same way.</li>
+        <li><strong>Pen, marker or laser pointer</strong>, for drawing and demonstrations.</li>
+        <li><strong>Camera</strong>, for inspection.</li>
+      </ul>
+      <p>For welding, painting or picking at any angle you need the 3 extra wrist joints.</p>
+    </div>
 
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-      // 1. The stage: scene + camera + renderer
+      // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
       scene.background = new THREE.Color('#1b2633');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
-      camera.position.set(3, 2.5, 3);
+      camera.position.set(4, 3, 4);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(box.clientWidth, box.clientHeight);
       box.appendChild(renderer.domElement);
+      const orbit = new OrbitControls(camera, renderer.domElement);
+      orbit.target.set(0, 1.2, 0);
 
-      const controls = new OrbitControls(camera, renderer.domElement); // drag to rotate the view
-      controls.target.set(0, 1, 0);
-
-      // 2. Light and floor
       scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
       scene.add(new THREE.GridHelper(6, 12, '#667788', '#334455'));
 
-      // 3. Materials (colours)
       const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
       const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
 
-      // helper: a round joint housing whose axis points along Z
-      function jointHousing() {
+      function jointHousing() {                      // round housing, axis along Z
         const geo = new THREE.CylinderGeometry(0.17, 0.17, 0.3, 28);
         geo.rotateX(Math.PI / 2);
         return new THREE.Mesh(geo, orange);
       }
 
-      // 4. The robot: each joint is a Group. A group placed inside another group
-      //    moves with it. This is a kinematic chain.
-      const base = new THREE.Group();               // joint 1 turns around Y
+      const base = new THREE.Group();                // joint 1: turns around the vertical axis
       scene.add(base);
       const column = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 0.5, 32), orange);
       column.position.y = 0.25;
       base.add(column);
 
-      const shoulder = new THREE.Group();           // joint 2 turns around Z
+      const shoulder = new THREE.Group();            // joint 2
       shoulder.position.y = 0.5;
       base.add(shoulder);
       shoulder.add(jointHousing());
@@ -84,7 +129,7 @@
       link1.position.y = 0.6;
       shoulder.add(link1);
 
-      const elbow = new THREE.Group();              // joint 3 turns around Z
+      const elbow = new THREE.Group();               // joint 3
       elbow.position.y = 1.2;
       shoulder.add(elbow);
       elbow.add(jointHousing());
@@ -96,77 +141,88 @@
       hand.position.y = 1.05;
       elbow.add(hand);
 
-           // 5. Sliders move the joints
-      const toRad = (deg) => (deg * Math.PI) / 180;
+      // ================= DH and DHM tables =================
+      // A cell is [ "symbol shown", number or function of q ].  q = [q1, q2, q3] in degrees
+      const STD = [
+        { th: ['q1', (q) => q[0]],            d: ['d1 = 0.50', 0.5], a: ['0', 0],          al: ['90', 90] },
+        { th: ['q2 + 90', (q) => q[1] + 90],  d: ['0', 0],           a: ['L1 = 1.20', 1.2], al: ['0', 0] },
+        { th: ['q3', (q) => q[2]],            d: ['0', 0],           a: ['L2 = 1.05', 1.05], al: ['0', 0] }
+      ];
+      const MOD = [
+        { al: ['0', 0],   a: ['0', 0],           th: ['q1', (q) => q[0]],           d: ['d1 = 0.50', 0.5] },
+        { al: ['90', 90], a: ['0', 0],           th: ['q2 + 90', (q) => q[1] + 90], d: ['0', 0] },
+        { al: ['0', 0],   a: ['L1 = 1.20', 1.2], th: ['q3', (q) => q[2]],           d: ['0', 0] },
+        { al: ['0', 0],   a: ['L2 = 1.05', 1.05], th: ['0 (fixed)', 0],              d: ['0', 0] }
+      ];
 
-      // --- Kinematic diagram: the arm seen from the side, in its own plane ---
+      // ================= diagram + update =================
       const svg = document.getElementById('schema');
-      const readout = document.getElementById('readout');
-      const NS = 'http://www.w3.org/2000/svg';
-      function shape(name, attrs) {
-        const e = document.createElementNS(NS, name);
-        for (const k in attrs) e.setAttribute(k, attrs[k]);
-        svg.appendChild(e);
-        return e;
-      }
-      const px = (x) => 250 + x * 100;   // metres -> pixels (left/right)
-      const py = (y) => 270 - y * 100;   // metres -> pixels (height)
-
-      function joint(x, y, label) {
-        shape('circle', { cx: px(x), cy: py(y), r: 9, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
-        shape('circle', { cx: px(x), cy: py(y), r: 2.5, fill: '#e8eef5' });
-        const t = shape('text', { x: px(x) + 14, y: py(y) - 10, fill: '#cfd8e3', 'font-size': 14 });
-        t.textContent = label;
-      }
-
-      function drawSchema(a1, a2, a3) {
-        svg.innerHTML = '';
-        // geometry: lengths are the same as the 3D model
-        const t2 = toRad(a2);
-        const t3 = toRad(a2 + a3);          // angles add up along the chain
-        const sh = { x: 0, y: 0.5 };
-        const el = { x: sh.x - 1.2 * Math.sin(t2), y: sh.y + 1.2 * Math.cos(t2) };
-        const tip = { x: el.x - 1.05 * Math.sin(t3), y: el.y + 1.05 * Math.cos(t3) };
-
-        // ground
-        shape('line', { x1: px(-2.4), y1: py(0), x2: px(2.4), y2: py(0), stroke: '#667788', 'stroke-width': 2 });
-        // base (joint 1 turns around the vertical axis)
-        shape('rect', { x: px(-0.15), y: py(0.5), width: 30, height: 50, fill: '#ff9f43' });
-        const t = shape('text', { x: px(0.25), y: py(0.2), fill: '#cfd8e3', 'font-size': 14 });
-        t.textContent = 'q1 (vertical axis)';
-        // links
-        shape('polyline', {
-          points: `${px(sh.x)},${py(sh.y)} ${px(el.x)},${py(el.y)} ${px(tip.x)},${py(tip.y)}`,
-          fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round'
-        });
-        // joints and tool
-        joint(sh.x, sh.y, 'q2');
-        joint(el.x, el.y, 'q3');
-        shape('rect', { x: px(tip.x) - 6, y: py(tip.y) - 6, width: 12, height: 12, fill: '#e8eef5' });
-
-        // real 3D position of the hand (forward kinematics)
-        const phi = toRad(a1);
-        const r = tip.x;                    // distance from the vertical axis
-        const X = r * Math.cos(phi), Y = tip.y, Z = -r * Math.sin(phi);
-        readout.textContent =
-          `Hand position:  X = ${X.toFixed(2)} m   Y = ${Y.toFixed(2)} m   Z = ${Z.toFixed(2)} m`;
-      }
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      const map = (u, v) => [250 + u * 85, 280 - v * 85];   // metres -> pixels
+      let showAxes = true;
+      let q = [30, -30, 60];
 
       function update() {
-        const a1 = Number(document.getElementById('j1').value);
-        const a2 = Number(document.getElementById('j2').value);
-        const a3 = Number(document.getElementById('j3').value);
-        base.rotation.y = toRad(a1);
-        shoulder.rotation.z = toRad(a2);
-        elbow.rotation.z = toRad(a3);
-        drawSchema(a1, a2, a3);
-      }
-      ['j1', 'j2', 'j3'].forEach((id) => document.getElementById(id).addEventListener('input', update));
-      update();
+        // 3D model
+        base.rotation.y = toRad(q[0]);
+        shoulder.rotation.z = toRad(q[1]);
+        elbow.rotation.z = toRad(q[2]);
 
-      // 6. Draw the scene again and again
+        // maths
+        const Tstd = RB.stdChain(STD, q);
+        const Tmod = RB.modChain(MOD, q);
+        const convention = document.querySelector('input[name=conv]:checked').value;
+        const frames = convention === 'std' ? Tstd : Tmod;
+        const tcp = Tstd[Tstd.length - 1];
+        RB.renderTable(document.getElementById('dhStd'), 'std', STD, q);
+        RB.renderTable(document.getElementById('dhMod'), 'mod', MOD, q);
+        RB.renderMatrix(document.getElementById('matrix'), tcp, 'T(0→tool) =');
+        document.getElementById('readout').textContent =
+          `Tool position in the base frame {0}:  x = ${tcp[0][3].toFixed(2)} m   ` +
+          `y = ${tcp[1][3].toFixed(2)} m   z = ${tcp[2][3].toFixed(2)} m`;
+
+        // the side view turns with q1, so the arm always lies in the picture plane
+        const p = toRad(q[0]);
+        const view = {
+          right: [Math.cos(p), Math.sin(p), 0],
+          up: [0, 0, 1],
+          toward: [Math.sin(p), -Math.cos(p), 0]
+        };
+        const O = Tstd.map((T) => map(T[0][3] * view.right[0] + T[1][3] * view.right[1], T[2][3]));
+
+        svg.innerHTML = '';
+        RB.shape(svg, 'line', { x1: map(-2.4, 0)[0], y1: map(0, 0)[1], x2: map(2.4, 0)[0], y2: map(0, 0)[1],
+                                stroke: '#667788', 'stroke-width': 2 });
+        RB.shape(svg, 'rect', { x: O[0][0] - 15, y: O[1][1], width: 30, height: O[0][1] - O[1][1], fill: '#ff9f43' });
+        RB.shape(svg, 'polyline', {
+          points: `${O[1]} ${O[2]} ${O[3]}`,
+          fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round'
+        });
+        RB.label(svg, O[0][0] + 55, O[0][1] - 6, 'q1 (vertical axis)');
+        [[O[1], 'q2'], [O[2], 'q3']].forEach(([pt, name]) => {
+          RB.shape(svg, 'circle', { cx: pt[0], cy: pt[1], r: 10, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
+          RB.shape(svg, 'circle', { cx: pt[0], cy: pt[1], r: 2.5, fill: '#e8eef5' });
+          RB.label(svg, pt[0] + 14, pt[1] - 12, name);
+        });
+        RB.shape(svg, 'rect', { x: O[3][0] - 6, y: O[3][1] - 6, width: 12, height: 12, fill: '#e8eef5' });
+        if (showAxes) RB.drawFrames(svg, frames, view, map);
+      }
+
+      document.getElementById('axesBtn').addEventListener('click', (e) => {
+        showAxes = !showAxes;
+        e.target.textContent = showAxes ? 'Hide axes' : 'Show axes';
+        update();
+      });
+      document.querySelectorAll('input[name=conv]').forEach((r) => r.addEventListener('change', update));
+
+      RB.controls(document.getElementById('controls'), [
+        { label: 'q1 · base rotation (R)', min: -180, max: 180, step: 1, value: 30,  unit: '°' },
+        { label: 'q2 · shoulder (R)',      min: -90,  max: 90,  step: 1, value: -30, unit: '°' },
+        { label: 'q3 · elbow (R)',         min: -135, max: 135, step: 1, value: 60,  unit: '°' }
+      ], (v) => { q = v; update(); });
+
       renderer.setAnimationLoop(() => {
-        controls.update();
+        orbit.update();
         renderer.render(scene, camera);
       });
     </script>
