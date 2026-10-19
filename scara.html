@@ -22,7 +22,7 @@
     <h1>SCARA robot (R-R-P-R)</h1>
     <p>
       <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
-      <a href="Learn.html" style="color:#ff9f43">Learn the basics</a>
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
     </p>
 
     <div id="view"></div>
@@ -38,6 +38,7 @@
         <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
         <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
       </span>
+      <label>Show: <select id="frameSel"></select></label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
          style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
@@ -159,6 +160,9 @@ tool angle = q1 + q2 − q4      (z points DOWN, so q4 turns the other way)</pre
         finger.position.set(side * 0.04, -0.045, 0);
         tool.add(finger);
       }
+      const tipNode = new THREE.Object3D();           // the tool centre point (TCP)
+      tipNode.position.y = -0.06;
+      tool.add(tipNode);
 
       // ================= DH and DHM tables =================
       // A cell is [ "symbol shown", number or function of q ].  q = [q1 (°), q2 (°), q3 (m), q4 (°)]
@@ -175,7 +179,7 @@ tool angle = q1 + q2 − q4      (z points DOWN, so q4 turns the other way)</pre
         { al: ['0', 0],   a: ['0', 0],          th: ['q4', (q) => q[3]], d: ['d4 = 0.06', 0.06] }
       ];
 
-            // ================= diagram + update =================
+      // ================= diagram + update =================
       const svg = document.getElementById('schema');
       const toRad = (deg) => (deg * Math.PI) / 180;
       const SCALE = 170;                                   // pixels per metre

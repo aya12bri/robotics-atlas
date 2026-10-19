@@ -22,7 +22,7 @@
     <h1>3D robot arm (R-R-R)</h1>
     <p>
       <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
-      <a href="Learn.html" style="color:#ff9f43">Learn the basics</a>
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
     </p>
 
     <div id="view"></div>
@@ -38,6 +38,7 @@
         <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
         <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
       </span>
+      <label>Show: <select id="frameSel"></select></label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
          style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
@@ -140,6 +141,9 @@
       const hand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.2), orange);
       hand.position.y = 1.05;
       elbow.add(hand);
+      const tipNode = new THREE.Object3D();          // the tool centre point (TCP)
+      tipNode.position.y = 1.05;
+      elbow.add(tipNode);
 
       // ================= DH and DHM tables =================
       // A cell is [ "symbol shown", number or function of q ].  q = [q1, q2, q3] in degrees
@@ -155,7 +159,7 @@
         { al: ['0', 0],   a: ['L2 = 1.05', 1.05], th: ['0 (fixed)', 0],              d: ['0', 0] }
       ];
 
-             // ================= diagram + update =================
+      // ================= diagram + update =================
       const svg = document.getElementById('schema');
       const toRad = (deg) => (deg * Math.PI) / 180;
       const map = (u, v) => [350 + u * 120, 395 - v * 120];   // metres -> pixels
