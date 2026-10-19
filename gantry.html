@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cartesian gantry robot</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 480px; border-radius: 6px; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script src="helpers.js"></script>
+  </head>
+  <body>
+    <h1>Cartesian gantry robot (P-P-P)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+
+    <h2>Joints</h2>
+    <p>All three joints slide in a straight line. Move a slider, or type a value in a number box.</p>
+    <div id="controls"></div>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames:
+        <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
+        <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
+      </span>
+      <label>Show: <select id="frameSel"></select></label>
+      <label>View:
+        <select id="viewSel">
+          <option value="front">Front view</option>
+          <option value="top">Top view</option>
+          <option value="side">Side view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+    <p>
+      Each square is a sliding joint (prismatic), and the grey bar is its full travel.
+      The orange line is the path from the base to the tool: first along q1, then q2, then q3.
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
+      <span class="legend-z">z blue</span>. ⊙ points <em>at you</em>, ⊗ points <em>away</em>.
+      Change the <strong>View</strong> to see the machine from the front, from above or from the side.
+    </p>
+    <p id="readout"></p>
+
+    <h2>DH table (standard)</h2>
+    <p>Frame i is attached to the axis of joint i+1.
+       Each row is: <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>.
+       For a sliding joint, <strong>d</strong> is the variable. Orange numbers are the current values.</p>
+    <div id="dhStd"></div>
+
+    <h2>DHM table (modified DH)</h2>
+    <p>Frame i is attached to the axis of joint i.
+       Each row is: <code>A<sub>i</sub> = Rx(α<sub>i−1</sub>) · Tx(a<sub>i−1</sub>) · Rz(θ) · Tz(d)</code>.</p>
+    <div id="dhMod"></div>
+
+    <h2>Result: where is the tool?</h2>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the position of the tool in the base frame {0}.</p>
+
+    <h2>Forward kinematics of a gantry</h2>
+    <pre class="matrix">x0 = q3 + 0.15      (x0 points DOWN)
+y0 = q2             (across the machine)
+z0 = q1             (along the long rails)</pre>
+    <p>This is the simplest kinematics of all robots: <strong>each joint is directly one
+       coordinate</strong>. That is why gantries are so easy to program and so precise. The frame
+       {0} is placed so that its z axis points along the first rail, which is why z0 = q1.</p>
+
+    <div class="robot">
+      <h2>Where is a Cartesian gantry used?</h2>
+      <p>3D printers, CNC routers and milling machines, laser cutters, plotters, laboratory
+         pipetting robots, palletizing, warehouse storage and retrieval, gluing and dispensing,
+         and inspection machines. The work area can be as big as you want: just make the rails longer.</p>
+      <p><strong>Strengths:</strong> very precise and rigid, a large workspace, and the simplest
+         maths. <strong>Weaknesses:</strong> the machine is big compared to the area it works on,
+         it is slower than a SCARA or a delta, and the tool can't tilt or rotate unless you add extra axes.</p>
+      <h3>End effector (tool)</h3>
+      <p><strong>Yes, a pinch gripper (pince) works</strong>, like the one in the 3D model. It always
+         points straight down. If the part must be turned, add a rotating axis to the tool. Other tools:</p>
+      <ul>
+        <li><strong>Vacuum suction cup</strong>, for boxes, sheets or flat parts.</li>
+        <li><strong>3D-printing extruder nozzle</strong>, for printing.</li>
+        <li><strong>Cutting spindle or laser head</strong>, for machining and cutting.</li>
+        <li><strong>Pipette</strong>, for laboratory liquids.</li>
+        <li><strong>Pen or camera</strong>, for drawing or inspection.</li>
+      </ul>
+    </div>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      const ZH = 0.95;                // height of the frame {0} origin above the floor (m)
+      const TOOL = 0.15;              // gripper length: from the flange down to the finger tips (m)
+
+      // ================= 3D scene =================
+      const box = document.getElementById('view');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color('#1b2633');
+      const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
+      camera.position.set(2.0, 1.5, 1.6);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(box.clientWidth, box.clientHeight);
+      box.appendChild(renderer.domElement);
+      const orbit = new OrbitControls(camera, renderer.domElement);
+      orbit.target.set(0.5, 0.55, -0.4);
+
+      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      const sun = new THREE.DirectionalLight('#ffffff', 1.5);
+      sun.position.set(3, 5, 2);
+      scene.add(sun);
+      scene.add(new THREE.GridHelper(6, 12, '#667788', '#334455'));
+
+      const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
+      const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
+      const dark = new THREE.MeshStandardMaterial({ color: '#4a5568' });
+      const tableMat = new THREE.MeshStandardMaterial({ color: '#2f3f52' });
+      const add = (parent, w, h, d, mat, x, y, z) => {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+        m.position.set(x, y, z);
+        parent.add(m);
+        return m;
+      };
+
+      // fixed frame: 4 posts, 2 long rails, and a work table
+      for (const x of [-0.1, 1.2]) for (const z of [0.1, -0.9]) add(scene, 0.08, 1.04, 0.08, dark, x, 0.52, z);
+      for (const z of [0.1, -0.9]) add(scene, 1.3, 0.06, 0.06, dark, 0.55, 1.04, z);
+      add(scene, 1.4, 0.3, 1.1, tableMat, 0.55, 0.15, -0.4);
+
+      // joint 1: the bridge slides along X, on the long rails
+      const bridge = new THREE.Group();
+      scene.add(bridge);
+      add(bridge, 0.08, 0.06, 1.1, grey, 0, 1.1, -0.4);
+
+      // joint 2: the carriage slides along the bridge (scene Z)
+      const carriage = new THREE.Group();
+      carriage.position.y = 1.1;
+      bridge.add(carriage);
+      add(carriage, 0.16, 0.12, 0.14, orange, 0, 0, 0);
+
+      // joint 3: the vertical axis slides up and down
+      const zaxis = new THREE.Group();
+      carriage.add(zaxis);
+      add(zaxis, 0.05, 0.5, 0.05, grey, 0, 0.25, 0);       // the mast
+      add(zaxis, 0.1, 0.03, 0.05, orange, 0, -0.015, 0);   // the gripper palm
+      for (const side of [-1, 1]) add(zaxis, 0.015, 0.12, 0.03, orange, side * 0.04, -0.09, 0);
+      const tipNode = new THREE.Object3D();                // the tool centre point (TCP)
+      tipNode.position.y = -TOOL;
+      zaxis.add(tipNode);
+
+      // ================= DH and DHM tables =================
+      // q = [q1, q2, q3] in metres
+      const STD = [
+        { th: ['0', 0],     d: ['q1', (q) => q[0]],              a: ['0', 0], al: ['−90', -90] },
+        { th: ['−90', -90], d: ['q2', (q) => q[1]],              a: ['0', 0], al: ['−90', -90] },
+        { th: ['0', 0],     d: ['q3 + 0.15', (q) => q[2] + 0.15], a: ['0', 0], al: ['0', 0] }
+      ];
+      const MOD = [
+        { al: ['0', 0],     a: ['0', 0], th: ['0', 0],     d: ['q1', (q) => q[0]] },
+        { al: ['−90', -90], a: ['0', 0], th: ['−90', -90], d: ['q2', (q) => q[1]] },
+        { al: ['−90', -90], a: ['0', 0], th: ['0', 0],     d: ['q3 + 0.15', (q) => q[2] + 0.15] }
+      ];
+
+      // ================= diagram + update =================
+      // Views are described in the coordinates of frame {0}:
+      //   z0 = along the long rails (q1), y0 = across (q2), x0 = DOWN (q3)
+      const VIEWS = {
+        front: { right: [0, 0, 1], up: [-1, 0, 0], toward: [0, -1, 0], map: (u, v) => [110 + u * 420, 60 - v * 420] },
+        top:   { right: [0, 0, 1], up: [0, 1, 0],  toward: [-1, 0, 0], map: (u, v) => [110 + u * 420, 390 - v * 420] },
+        side:  { right: [0, 1, 0], up: [-1, 0, 0], toward: [0, 0, 1],  map: (u, v) => [110 + u * 420, 60 - v * 420] }
+      };
+      const TRAVEL = [[0, 1.0], [0, 0.8], [TOOL, TOOL + 0.45]];   // range of d for each joint
+      const svg = document.getElementById('schema');
+      const frameSel = document.getElementById('frameSel');
+      const viewSel = document.getElementById('viewSel');
+      let showAxes = true;
+      let q = [0.5, 0.4, 0.2];
+
+      const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const origin = (T) => [T[0][3], T[1][3], T[2][3]];
+      const zAxis = (T) => [T[0][2], T[1][2], T[2][2]];
+
+      function update() {
+        // 3D model
+        bridge.position.x = q[0];
+        carriage.position.z = -q[1];
+        zaxis.position.y = ZH - 1.1 - q[2];
+
+        // maths
+        const Tstd = RB.stdChain(STD, q);
+        const Tmod = RB.modChain(MOD, q);
+        const frames = document.querySelector('input[name=conv]:checked').value === 'std' ? Tstd : Tmod;
+        const tcp = Tstd[Tstd.length - 1];
+        RB.renderTable(document.getElementById('dhStd'), 'std', STD, q);
+        RB.renderTable(document.getElementById('dhMod'), 'mod', MOD, q);
+        RB.renderMatrix(document.getElementById('matrix'), tcp, 'T(0→tool) =');
+        document.getElementById('readout').textContent =
+          `Tool position in the base frame {0}:  x0 = ${tcp[0][3].toFixed(2)} m   ` +
+          `y0 = ${tcp[1][3].toFixed(2)} m   z0 = ${tcp[2][3].toFixed(2)} m`;
+
+        // drawing
+        const view = VIEWS[viewSel.value];
+        const P = (p) => view.map(dot(p, view.right), dot(p, view.up));
+        svg.innerHTML = '';
+        // grey bars: the full travel of each joint
+        for (let i = 0; i < 3; i++) {
+          const o = origin(Tstd[i]), z = zAxis(Tstd[i]);
+          const a = P(o.map((c, k) => c + z[k] * TRAVEL[i][0]));
+          const b = P(o.map((c, k) => c + z[k] * TRAVEL[i][1]));
+          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#4a5568', 'stroke-width': 10 });
+        }
+        // orange path: base -> q1 -> q2 -> q3 -> tool
+        const pts = Tstd.map((T) => P(origin(T)));
+        RB.shape(svg, 'polyline', {
+          points: pts.map((p) => p.join(',')).join(' '),
+          fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+        });
+        // sliding joints: nested squares, so they are visible even when they overlap
+        const SIZE = [34, 24, 14];
+        const LAB = [[-26, -22, 'end'], [26, -22, 'start'], [-26, 36, 'end']];
+        for (let i = 0; i < 3; i++) {
+          const p = pts[i];
+          RB.shape(svg, 'rect', { x: p[0] - SIZE[i] / 2, y: p[1] - SIZE[i] / 2, width: SIZE[i], height: SIZE[i],
+                                  fill: 'none', stroke: '#e8eef5', 'stroke-width': 2.5 });
+          RB.label(svg, p[0] + LAB[i][0], p[1] + LAB[i][1], `q${i + 1}`, '#ffffff', 18, LAB[i][2]);
+        }
+        const tip = pts[3];
+        RB.shape(svg, 'circle', { cx: tip[0], cy: tip[1], r: 6, fill: '#e8eef5' });
+        if (showAxes) RB.drawFrames(svg, frames, view, view.map, { only: frameSel.value });
+      }
+
+      document.getElementById('axesBtn').addEventListener('click', (e) => {
+        showAxes = !showAxes;
+        e.target.textContent = showAxes ? 'Hide axes' : 'Show axes';
+        update();
+      });
+      frameSel.innerHTML = '<option value="all">All frames</option>' +
+        MOD.concat([0]).map((_, i) => `<option value="${i}">Frame {${i}} only</option>`).join('');
+      frameSel.addEventListener('change', update);
+      viewSel.addEventListener('change', update);
+      document.querySelectorAll('input[name=conv]').forEach((r) => r.addEventListener('change', update));
+
+      RB.controls(document.getElementById('controls'), [
+        { label: 'q1 · along the rails (P)', min: 0, max: 100, step: 1, value: 50, unit: 'cm' },
+        { label: 'q2 · across (P)',          min: 0, max: 80,  step: 1, value: 40, unit: 'cm' },
+        { label: 'q3 · down (P)',            min: 0, max: 45,  step: 1, value: 20, unit: 'cm' }
+      ], (v) => {
+        q = v.map((cm) => cm / 100);                      // typed in cm, used in metres
+        update();
+      });
+
+      renderer.setAnimationLoop(() => {
+        orbit.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>
