@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>6-axis articulated robot</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 480px; border-radius: 6px; }
+      select {
+        background: #0f1720; color: #e8eef5; border: 1px solid #44566b;
+        border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script src="helpers.js"></script>
+    <script src="dharm.js"></script>
+  </head>
+  <body>
+    <h1>6-axis articulated robot (R-R-R-R-R-R)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+    <div class="toolbar">
+      <button id="demoBtn">Start demo</button>
+      <button id="resetBtn">Reset</button>
+      <span id="demoStatus">Pick-and-place demo: the robot moves the blue cube between pad A and pad B.</span>
+    </div>
+
+    <h2>Joints</h2>
+    <p>Move a slider, or click in a number box and type a value with your keyboard.
+       With q = 0 for all joints, the arm points straight up.</p>
+    <div id="controls"></div>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames:
+        <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
+        <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
+      </span>
+      <label>Show: <select id="frameSel"></select></label>
+      <label>View:
+        <select id="viewSel">
+          <option value="side">Side view</option>
+          <option value="front">Front view</option>
+          <option value="top">Top view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+    <p>
+      Each joint is drawn with its symbol: a <strong>circle</strong> when its axis points towards you or away from you,
+      and a <strong>thick bar</strong> along its axis otherwise. The orange line goes from the base to the tool.
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
+      <span class="legend-z">z blue</span>. ⊙ points <em>at you</em>, ⊗ points <em>away</em>.
+      The dashed squares are the pads A and B, and the blue square is the cube.
+    </p>
+    <p id="readout"></p>
+
+    <h2>DH table (standard)</h2>
+    <p>Frame i is attached to the axis of joint i+1.
+       Each row is: <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>.
+       Orange numbers are the current values. The "+ 90" in rows 2 and 3 is an offset that puts the arm
+       straight up when q = 0.</p>
+    <div id="dhStd"></div>
+
+    <h2>DHM table (modified DH)</h2>
+    <p>Frame i is attached to the axis of joint i.
+       Each row is: <code>A<sub>i</sub> = Rx(α<sub>i−1</sub>) · Tx(a<sub>i−1</sub>) · Rz(θ) · Tz(d)</code>.</p>
+    <div id="dhMod"></div>
+
+    <h2>Result: where is the tool?</h2>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the position of the tool centre point (TCP, between the fingertips) in the base frame {0}.
+       The 3×3 block says where the tool points: its third column is the direction of z<sub>6</sub>, the direction the
+       gripper is pointing in. Both tables give exactly this same matrix.</p>
+
+    <h2>The spherical wrist</h2>
+    <p>Look at the table: rows 4, 5 and 6 have a = 0. So the axes of joints 4, 5 and 6 <strong>meet at one point</strong>:
+       the wrist centre. Joints 1, 2 and 3 place that point (the position), and joints 4, 5 and 6 turn the tool around
+       it (the orientation). This is why almost every industrial robot has this shape.</p>
+    <div class="robot">
+      <h3>Try it: a singularity</h3>
+      <p>Set <strong>q5 = 0</strong>. Now the axes of joints 4 and 6 are on the same line (choose
+         <em>Show: Frame {4} only</em> and compare z<sub>3</sub> and z<sub>5</sub>). Move q4, then move q6: the tool
+         turns the same way. The robot has lost one degree of freedom. This is a <em>wrist singularity</em>, and
+         robot programmers avoid it.</p>
+    </div>
+
+    <h2>Inverse kinematics: how the demo finds the joint angles</h2>
+    <p>The demo says "put the tool at this point, pointing down" and the page finds the 6 joint angles.
+       For 6 joints there is no simple formula to type in, so it uses a <strong>numerical method</strong>:</p>
+    <pre class="matrix">1. compute where the tool is now (forward kinematics)
+2. compute the error between the target and the tool
+3. use the Jacobian to find the small joint changes that reduce the error
+4. repeat until the error is below 0.01 mm</pre>
+    <p>The tool must point straight down, with the fingers along x. These are the angles it found:</p>
+    <div id="ikTable"></div>
+
+    <div class="robot">
+      <h2>Where is a 6-axis articulated robot used?</h2>
+      <p><strong>Car factories</strong> (spot welding, arc welding, painting, sealing), <strong>machine tending</strong>
+         (loading and unloading CNC machines), <strong>palletizing</strong>, <strong>assembly</strong>,
+         <strong>material handling</strong>, foundries and forging, and laboratories. Payloads go from a few kg to more than
+         1000 kg, with a repeatability of 0.02 to 0.1 mm. Well-known makers: FANUC, KUKA, ABB, Yaskawa, Stäubli.</p>
+      <h3>End effector (tool)</h3>
+      <p><strong>Yes, a pinch gripper (pince) works</strong>, like the two-finger one in the 3D model. Thanks to the 6 axes
+         it can pick an object from <em>any</em> direction, not only from above. Other tools:</p>
+      <ul>
+        <li><strong>Vacuum suction cup</strong>, for boxes, sheets and car body panels.</li>
+        <li><strong>Welding torch or spot-welding gun</strong>, for welding.</li>
+        <li><strong>Paint gun</strong> or a sealing nozzle.</li>
+        <li><strong>Screwdriver</strong>, <strong>deburring spindle</strong> or polishing tool.</li>
+        <li><strong>Camera</strong>, for inspection, and a <strong>tool changer</strong> to swap tools during the day.</li>
+      </ul>
+    </div>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      // ================= DH and DHM tables =================
+      // A cell is [ "symbol shown", number or function of q ].  q = [q1 ... q6] in degrees
+      const STD = [
+        { th: ['q1', (q) => q[0]],           d: ['d1 = 0.40', 0.40], a: ['0', 0],           al: ['90', 90] },
+        { th: ['q2 + 90', (q) => q[1] + 90], d: ['0', 0],           a: ['a2 = 0.45', 0.45], al: ['0', 0] },
+        { th: ['q3 + 90', (q) => q[2] + 90], d: ['0', 0],           a: ['0', 0],           al: ['90', 90] },
+        { th: ['q4', (q) => q[3]],           d: ['d4 = 0.45', 0.45], a: ['0', 0],           al: ['−90', -90] },
+        { th: ['q5', (q) => q[4]],           d: ['0', 0],           a: ['0', 0],           al: ['90', 90] },
+        { th: ['q6', (q) => q[5]],           d: ['d6 = 0.15', 0.15], a: ['0', 0],           al: ['0', 0] }
+      ];
+      const MOD = [
+        { al: ['0', 0],     a: ['0', 0],           th: ['q1', (q) => q[0]],           d: ['d1 = 0.40', 0.40] },
+        { al: ['90', 90],   a: ['0', 0],           th: ['q2 + 90', (q) => q[1] + 90], d: ['0', 0] },
+        { al: ['0', 0],     a: ['a2 = 0.45', 0.45], th: ['q3 + 90', (q) => q[2] + 90], d: ['0', 0] },
+        { al: ['90', 90],   a: ['0', 0],           th: ['q4', (q) => q[3]],           d: ['d4 = 0.45', 0.45] },
+        { al: ['−90', -90], a: ['0', 0],           th: ['q5', (q) => q[4]],           d: ['0', 0] },
+        { al: ['90', 90],   a: ['0', 0],           th: ['q6', (q) => q[5]],           d: ['d6 = 0.15', 0.15] }
+      ];
+      const LIMITS = [[-170, 170], [-100, 60], [-140, 50], [-180, 180], [-115, 115], [-180, 180]];
+
+      // ================= 3D scene =================
+      const box = document.getElementById('view');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color('#1b2633');
+      const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
+      camera.position.set(1.5, 1.05, 1.4);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(box.clientWidth, box.clientHeight);
+      box.appendChild(renderer.domElement);
+      const orbit = new OrbitControls(camera, renderer.domElement);
+      orbit.target.set(0.3, 0.45, 0);
+
+      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      const sun = new THREE.DirectionalLight('#ffffff', 1.5);
+      sun.position.set(3, 5, 2);
+      scene.add(sun);
+      scene.add(new THREE.GridHelper(4, 16, '#667788', '#334455'));
+
+      // the robot is generated from the STD table above
+      const arm = DHArm.build(THREE, STD, {
+        link: '#cfd8e3', joint: '#ff9f43', cap: '#222a33', lr: 0.035, baseR: 0.14,
+        sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 },
+                { r: 0.055, l: 0.10 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }]
+      });
+      scene.add(arm.root);
+
+      // the gripper, in the frame of the tool: z points where the tool points, the origin is between the fingertips
+      const tcp = arm.frames[6];
+      const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
+      const palm = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.05, 0.02), orange);
+      palm.position.z = -0.07;
+      tcp.add(palm);
+      const fingers = [];
+      for (const side of [-1, 1]) {
+        const finger = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.05, 0.06), orange);
+        finger.position.set(side * 0.065, 0, -0.03);
+        tcp.add(finger);
+        fingers.push({ mesh: finger, side });
+      }
+
+      // ================= pick-and-place objects =================
+      // pads and cube use the maths coordinates (x, y) of the base frame: scene X = x, scene Z = -y
+      const PAD_A = { x: 0.60, y: -0.30 };
+      const PAD_B = { x: 0.60, y: 0.30 };
+      const CUBE = 0.06;
+      for (const [p, color] of [[PAD_A, '#2f6f4f'], [PAD_B, '#6f4f2f']]) {
+        const pad = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.004, 0.14), new THREE.MeshStandardMaterial({ color }));
+        pad.position.set(p.x, 0.002, -p.y);
+        scene.add(pad);
+      }
+      const cube = new THREE.Mesh(new THREE.BoxGeometry(CUBE, CUBE, CUBE), new THREE.MeshStandardMaterial({ color: '#5aa9ff' }));
+      scene.add(cube);
+      cube.position.set(PAD_A.x, CUBE / 2, -PAD_A.y);
+
+      // ================= inverse kinematics for the demo =================
+      const Z_GRIP = 0.03, Z_UP = 0.30;                    // height of the tool (m): on the cube, and above it
+      const solve = (p, guess) => DHArm.solveIK(STD, guess, { p, z: [0, 0, -1], x: [1, 0, 0] }, { limits: LIMITS });
+      const poses = {};
+      let prev = [-20, -30, -70, 0, 20, 0];
+      for (const [name, p] of [['Aup', [PAD_A.x, PAD_A.y, Z_UP]], ['Adown', [PAD_A.x, PAD_A.y, Z_GRIP]],
+                               ['Bup', [PAD_B.x, PAD_B.y, Z_UP]], ['Bdown', [PAD_B.x, PAD_B.y, Z_GRIP]]]) {
+        const r = solve(p, name === 'Bup' ? poses.Aup.q : prev);
+        poses[name] = { q: r.q, p, err: r.posErr + r.oriErr };
+        prev = r.q;
+      }
+      document.getElementById('ikTable').innerHTML =
+        '<table class="dh"><tr><th>Target</th><th>x (m)</th><th>y (m)</th><th>z (m)</th>' +
+        [1, 2, 3, 4, 5, 6].map((i) => `<th>q${i} (°)</th>`).join('') + '</tr>' +
+        [['Aup', 'above pad A'], ['Adown', 'on pad A'], ['Bup', 'above pad B'], ['Bdown', 'on pad B']].map(([k, label]) =>
+          `<tr><td>${label}</td>${poses[k].p.map((v) => `<td>${v.toFixed(2)}</td>`).join('')}` +
+          `${poses[k].q.map((v) => `<td>${v.toFixed(1)}</td>`).join('')}</tr>`).join('') + '</table>';
+
+      // ================= diagram + update =================
+      // Views are described in the coordinates of the base frame {0}
+      const VIEWS = {
+        side:  { right: [1, 0, 0], up: [0, 0, 1], toward: [0, -1, 0], map: (u, v) => [350 + u * 220, 390 - v * 220], ground: true },
+        front: { right: [0, 1, 0], up: [0, 0, 1], toward: [1, 0, 0],  map: (u, v) => [350 + u * 220, 390 - v * 220], ground: true },
+        top:   { right: [1, 0, 0], up: [0, 1, 0], toward: [0, 0, 1],  map: (u, v) => [350 + u * 190, 210 - v * 190], ground: false }
+      };
+      const svg = document.getElementById('schema');
+      const frameSel = document.getElementById('frameSel');
+      const viewSel = document.getElementById('viewSel');
+      let showAxes = true;
+      let q = poses.Aup.q.slice();
+
+      const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const origin = (T) => [T[0][3], T[1][3], T[2][3]];
+      const zAxis = (T) => [T[0][2], T[1][2], T[2][2]];
+      const num = (c) => (typeof c[1] === 'function' ? c[1](q) : c[1]);
+      const LABELS = [[-24, -22, 'end'], [-24, -22, 'end'], [24, -22, 'start'], [24, 34, 'start'], [-24, 34, 'end'], [-26, 64, 'end']];
+
+      function jointSymbol(P, axis, view, i) {
+        const [x, y] = P;
+        const du = dot(axis, view.right), dv = dot(axis, view.up), dw = dot(axis, view.toward);
+        if (Math.hypot(du, dv) < 0.35) {                    // the axis points at the viewer (or away): a circle
+          RB.shape(svg, 'circle', { cx: x, cy: y, r: 13, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+          if (dw > 0) {
+            RB.shape(svg, 'circle', { cx: x, cy: y, r: 3, fill: '#e8eef5' });
+          } else {
+            RB.shape(svg, 'line', { x1: x - 5, y1: y - 5, x2: x + 5, y2: y + 5, stroke: '#e8eef5', 'stroke-width': 2.5 });
+            RB.shape(svg, 'line', { x1: x - 5, y1: y + 5, x2: x + 5, y2: y - 5, stroke: '#e8eef5', 'stroke-width': 2.5 });
+          }
+        } else {                                            // the axis lies in the picture: a bar along it
+          const ang = (Math.atan2(-dv, du) * 180) / Math.PI;
+          RB.shape(svg, 'rect', { x: x - 15, y: y - 6, width: 30, height: 12, rx: 2, fill: '#1b2633',
+                                  stroke: '#e8eef5', 'stroke-width': 2.5, transform: `rotate(${ang} ${x} ${y})` });
+        }
+        RB.label(svg, x + LABELS[i][0], y + LABELS[i][1], `q${i + 1}`, '#ffffff', 17, LABELS[i][2]);
+      }
+
+      function update() {
+        arm.setPose(q);
+        scene.updateMatrixWorld(true);
+
+        // maths
+        const Tstd = RB.stdChain(STD, q);
+        const Tmod = RB.modChain(MOD, q);
+        const frames = document.querySelector('input[name=conv]:checked').value === 'std' ? Tstd : Tmod;
+        const T = Tstd[6];
+        RB.renderTable(document.getElementById('dhStd'), 'std', STD, q);
+        RB.renderTable(document.getElementById('dhMod'), 'mod', MOD, q);
+        RB.renderMatrix(document.getElementById('matrix'), T, 'T(0→tool) =');
+        document.getElementById('readout').textContent =
+          `Tool position in the base frame {0}:  x = ${T[0][3].toFixed(2)} m   y = ${T[1][3].toFixed(2)} m   z = ${T[2][3].toFixed(2)} m` +
+          `      tool points to (${T[0][2].toFixed(2)}, ${T[1][2].toFixed(2)}, ${T[2][2].toFixed(2)})`;
+
+        // drawing
+        const view = VIEWS[viewSel.value];
+        const P = (p) => view.map(dot(p, view.right), dot(p, view.up));
+        svg.innerHTML = '';
+        if (view.ground) {
+          const a = view.map(-1.2, 0), b = view.map(1.2, 0);
+          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#667788', 'stroke-width': 2 });
+        }
+        // pads A and B, and the cube
+        for (const [pad, name] of [[PAD_A, 'A'], [PAD_B, 'B']]) {
+          const c = P([pad.x, pad.y, 0]);
+          RB.shape(svg, 'rect', { x: c[0] - 12, y: c[1] - (view.ground ? 4 : 12), width: 24, height: view.ground ? 8 : 24,
+                                  fill: 'none', stroke: '#9fb0c3', 'stroke-width': 1.5, 'stroke-dasharray': '4 3' });
+          RB.label(svg, c[0] + 16, c[1] + (view.ground ? 18 : 5), name, '#9fb0c3', 15);
+        }
+        const cw = cube.getWorldPosition(new THREE.Vector3());
+        const cp = P([cw.x, -cw.z, cw.y]);                  // scene (X, Y, Z) -> base frame (x, y, z) = (X, -Z, Y)
+        RB.shape(svg, 'rect', { x: cp[0] - 7, y: cp[1] - 7, width: 14, height: 14, fill: '#5aa9ff', opacity: 0.9 });
+
+        // the orange line: base -> (d along z) -> (a along x) -> ... -> tool
+        const pts = [P(origin(Tstd[0]))];
+        for (let i = 1; i <= 6; i++) {
+          const o = origin(Tstd[i - 1]), z = zAxis(Tstd[i - 1]), d = num(STD[i - 1].d);
+          pts.push(P(o.map((c, k) => c + z[k] * d)));
+          pts.push(P(origin(Tstd[i])));
+        }
+        RB.shape(svg, 'polyline', { points: pts.map((p) => p.join(',')).join(' '), fill: 'none', stroke: '#ff9f43',
+                                    'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        for (let i = 0; i < 6; i++) jointSymbol(P(origin(Tstd[i])), zAxis(Tstd[i]), view, i);
+        const tip = P(origin(Tstd[6]));
+        RB.shape(svg, 'circle', { cx: tip[0], cy: tip[1], r: 6, fill: '#e8eef5' });
+
+        if (showAxes) RB.drawFrames(svg, frames, view, view.map, { only: frameSel.value, len: 42 });
+      }
+
+      // ================= pick-and-place demo =================
+      const toRad = (d) => (d * Math.PI) / 180;
+      let where = 'A';                                     // which pad the cube is on
+      let gripOpen = 1, gripTarget = 1;                    // 1 = open, 0 = closed
+      const holdCube = () => tcp.attach(cube);             // attach keeps the world position
+      const dropCube = () => {
+        scene.attach(cube);
+        cube.position.y = CUBE / 2;
+        cube.rotation.set(0, 0, 0);
+      };
+      function cycle(src, dst, srcName, dstName) {
+        const up = (n) => poses[n + 'up'].q, down = (n) => poses[n + 'down'].q;
+        return [
+          { to: up(srcName),   dur: 1.8, text: `Move above pad ${srcName}` },
+          { to: down(srcName), dur: 0.9, text: 'Go down to the cube' },
+          { to: down(srcName), dur: 0.5, text: 'Close the gripper', start: () => { gripTarget = 0; }, end: holdCube },
+          { to: up(srcName),   dur: 0.9, text: 'Lift the cube' },
+          { to: up(dstName),   dur: 2.0, text: `Carry the cube above pad ${dstName}` },
+          { to: down(dstName), dur: 0.9, text: 'Go down' },
+          { to: down(dstName), dur: 0.5, text: 'Open the gripper',
+            start: () => { gripTarget = 1; }, end: () => { dropCube(); where = dstName; } },
+          { to: up(dstName),   dur: 0.9, text: 'Go back up' }
+        ];
+      }
+
+      const demoBtn = document.getElementById('demoBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const statusEl = document.getElementById('demoStatus');
+      let running = false, segs = [], si = 0, elapsed = 0, from = null;
+      const IDLE = 'Pick-and-place demo: the robot moves the blue cube between pad A and pad B.';
+
+      function beginSegment() {
+        elapsed = 0;
+        from = ctl.values();
+        statusEl.textContent = `Demo: ${segs[si].text}`;
+        if (segs[si].start) segs[si].start();
+      }
+      function nextCycle() {
+        segs = where === 'A' ? cycle(PAD_A, PAD_B, 'A', 'B') : cycle(PAD_B, PAD_A, 'B', 'A');
+        si = 0;
+        beginSegment();
+      }
+      const setInputsDisabled = (off) => document.querySelectorAll('#controls input').forEach((i) => { i.disabled = off; });
+      function stepDemo(dt) {
+        if (!running) return;
+        const s = segs[si];
+        elapsed += dt;
+        const k = Math.min(elapsed / s.dur, 1);
+        const e = k * k * (3 - 2 * k);                     // smooth start and stop
+        ctl.set(from.map((v, i) => v + (s.to[i] - v) * e));
+        if (k >= 1) {
+          if (s.end) s.end();
+          si++;
+          if (si >= segs.length) nextCycle(); else beginSegment();
+        }
+      }
+      function stepGripper(dt) {
+        const dir = Math.sign(gripTarget - gripOpen);
+        gripOpen = Math.min(1, Math.max(0, gripOpen + dir * dt * 3));
+        if (Math.abs(gripTarget - gripOpen) < 0.001) gripOpen = gripTarget;
+        for (const f of fingers) f.mesh.position.x = f.side * (0.04 + 0.025 * gripOpen);
+      }
+
+      demoBtn.addEventListener('click', () => {
+        running = !running;
+        if (running && !segs.length) nextCycle();
+        setInputsDisabled(running);
+        demoBtn.textContent = running ? 'Pause demo' : 'Resume demo';
+        if (!running) statusEl.textContent = 'Demo paused. You can move the sliders; press Resume to continue.';
+      });
+      resetBtn.addEventListener('click', () => {
+        running = false; segs = []; si = 0; where = 'A';
+        dropCube();
+        cube.position.set(PAD_A.x, CUBE / 2, -PAD_A.y);
+        gripOpen = gripTarget = 1;
+        stepGripper(0);
+        setInputsDisabled(false);
+        ctl.set(poses.Aup.q);
+        demoBtn.textContent = 'Start demo';
+        statusEl.textContent = IDLE;
+      });
+
+      // ================= controls =================
+      document.getElementById('axesBtn').addEventListener('click', (e) => {
+        showAxes = !showAxes;
+        e.target.textContent = showAxes ? 'Hide axes' : 'Show axes';
+        update();
+      });
+      frameSel.innerHTML = '<option value="all">All frames</option>' +
+        MOD.concat([0]).map((_, i) => `<option value="${i}">Frame {${i}} only</option>`).join('');
+      frameSel.addEventListener('change', update);
+      viewSel.addEventListener('change', update);
+      document.querySelectorAll('input[name=conv]').forEach((r) => r.addEventListener('change', update));
+
+      const ctl = RB.controls(document.getElementById('controls'),
+        LIMITS.map((lim, i) => ({
+          label: `q${i + 1} · ${['base rotation', 'shoulder', 'elbow', 'forearm roll', 'wrist bend', 'tool roll'][i]} (R)`,
+          min: lim[0], max: lim[1], step: 1, value: Math.round(poses.Aup.q[i] * 100) / 100, unit: '°'
+        })),
+        (v) => { q = v; update(); });
+
+      let lastTime = performance.now();
+      renderer.setAnimationLoop((now) => {
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+        stepDemo(dt);
+        stepGripper(dt);
+        orbit.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>
