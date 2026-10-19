@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>3D robot arm</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 480px; border-radius: 6px; }
+      label { display: block; margin: 0.6rem 0; }
+      input { width: 300px; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>3D robot arm</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Back to the robot list</a></p>
+
+    <div id="view"></div>
+
+    <label>Joint 1, base rotation <input id="j1" type="range" min="-180" max="180" value="30" /></label>
+    <label>Joint 2, shoulder <input id="j2" type="range" min="-90" max="90" value="-30" /></label>
+    <label>Joint 3, elbow <input id="j3" type="range" min="-135" max="135" value="60" /></label>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+      // 1. The stage: scene + camera + renderer
+      const box = document.getElementById('view');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color('#1b2633');
+      const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
+      camera.position.set(3, 2.5, 3);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(box.clientWidth, box.clientHeight);
+      box.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement); // drag to rotate the view
+      controls.target.set(0, 1, 0);
+
+      // 2. Light and floor
+      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      const sun = new THREE.DirectionalLight('#ffffff', 1.5);
+      sun.position.set(3, 5, 2);
+      scene.add(sun);
+      scene.add(new THREE.GridHelper(6, 12, '#667788', '#334455'));
+
+      // 3. Materials (colours)
+      const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
+      const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
+
+      // helper: a round joint housing whose axis points along Z
+      function jointHousing() {
+        const geo = new THREE.CylinderGeometry(0.17, 0.17, 0.3, 28);
+        geo.rotateX(Math.PI / 2);
+        return new THREE.Mesh(geo, orange);
+      }
+
+      // 4. The robot: each joint is a Group. A group placed inside another group
+      //    moves with it. This is a kinematic chain.
+      const base = new THREE.Group();               // joint 1 turns around Y
+      scene.add(base);
+      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 0.5, 32), orange);
+      column.position.y = 0.25;
+      base.add(column);
+
+      const shoulder = new THREE.Group();           // joint 2 turns around Z
+      shoulder.position.y = 0.5;
+      base.add(shoulder);
+      shoulder.add(jointHousing());
+      const link1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 0.2), grey);
+      link1.position.y = 0.6;
+      shoulder.add(link1);
+
+      const elbow = new THREE.Group();              // joint 3 turns around Z
+      elbow.position.y = 1.2;
+      shoulder.add(elbow);
+      elbow.add(jointHousing());
+      const link2 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.0, 0.16), grey);
+      link2.position.y = 0.5;
+      elbow.add(link2);
+
+      const hand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.2), orange);
+      hand.position.y = 1.05;
+      elbow.add(hand);
+
+      // 5. Sliders move the joints
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      function update() {
+        base.rotation.y = toRad(document.getElementById('j1').value);
+        shoulder.rotation.z = toRad(document.getElementById('j2').value);
+        elbow.rotation.z = toRad(document.getElementById('j3').value);
+      }
+      ['j1', 'j2', 'j3'].forEach((id) => document.getElementById(id).addEventListener('input', update));
+      update();
+
+      // 6. Draw the scene again and again
+      renderer.setAnimationLoop(() => {
+        controls.update();
+        renderer.render(scene, camera);
+      });
+    </script>
+  </body>
+</html>
