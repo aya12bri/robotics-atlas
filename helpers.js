@@ -122,8 +122,11 @@ const RB = (function () {
     svg.appendChild(e);
     return e;
   }
-  function label(svg, x, y, str, color = '#cfd8e3', size = 14) {
-    const t = shape(svg, 'text', { x, y, fill: color, 'font-size': size });
+   function label(svg, x, y, str, color = '#cfd8e3', size = 16, anchor = 'start') {
+    const t = shape(svg, 'text', {
+      x, y, fill: color, 'font-size': size, 'text-anchor': anchor,
+      stroke: '#1b2633', 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round'
+    });
     t.textContent = str;
     return t;
   }
@@ -137,13 +140,24 @@ const RB = (function () {
   const AXIS_COLOR = { x: '#ff6b6b', y: '#6bdc8b', z: '#5aa9ff' };
   const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
-  // Draw the x, y, z axes of every frame.
+  // Draw the x, y, z axes of the frames.
   //   Ts   : list of 4x4 frame poses (from stdChain / modChain)
   //   view : { right, up, toward } three unit vectors describing where we look from
   //   map  : (u, v) => [pixelX, pixelY]
+  //   opts : { only: frame number or 'all', len: arrow length in pixels }
   // An axis pointing at the viewer is drawn as ⊙ and an axis pointing away as ⊗.
-  function drawFrames(svg, Ts, view, map, len = 34) {
+  // Axes that fall on the same spot share one label, for example "z0=z1".
+  function drawFrames(svg, Ts, view, map, opts = {}) {
+    const len = opts.len || 50;
+    const only = opts.only === undefined || opts.only === 'all' ? null : Number(opts.only);
+    const labels = {};
+    const addLabel = (x, y, name, color) => {
+      const key = color + Math.round(x / 6) + ',' + Math.round(y / 6);
+      if (labels[key]) labels[key].names.push(name);
+      else labels[key] = { x, y, names: [name], color };
+    };
     Ts.forEach((T, i) => {
+      if (only !== null && i !== only) return;
       const o = [T[0][3], T[1][3], T[2][3]];
       const [ox, oy] = map(dot(o, view.right), dot(o, view.up));
       ['x', 'y', 'z'].forEach((name, k) => {
@@ -151,22 +165,23 @@ const RB = (function () {
         const du = dot(d, view.right), dv = dot(d, view.up), dw = dot(d, view.toward);
         const color = AXIS_COLOR[name];
         if (Math.hypot(du, dv) < 0.3) {
-          shape(svg, 'circle', { cx: ox, cy: oy, r: 7, fill: 'none', stroke: color, 'stroke-width': 2 });
+          shape(svg, 'circle', { cx: ox, cy: oy, r: 9, fill: 'none', stroke: color, 'stroke-width': 2.5 });
           if (dw > 0) {
-            shape(svg, 'circle', { cx: ox, cy: oy, r: 2.5, fill: color });
+            shape(svg, 'circle', { cx: ox, cy: oy, r: 3, fill: color });
           } else {
-            const c = 4;
-            shape(svg, 'line', { x1: ox - c, y1: oy - c, x2: ox + c, y2: oy + c, stroke: color, 'stroke-width': 2 });
-            shape(svg, 'line', { x1: ox - c, y1: oy + c, x2: ox + c, y2: oy - c, stroke: color, 'stroke-width': 2 });
+            const c = 5;
+            shape(svg, 'line', { x1: ox - c, y1: oy - c, x2: ox + c, y2: oy + c, stroke: color, 'stroke-width': 2.5 });
+            shape(svg, 'line', { x1: ox - c, y1: oy + c, x2: ox + c, y2: oy - c, stroke: color, 'stroke-width': 2.5 });
           }
-          label(svg, ox + 9, oy + 16 + i * 2, `${name}${i}`, color, 12);
+          addLabel(ox + 13, oy + 22, `${name}${i}`, color);
         } else {
           const ex = ox + du * len, ey = oy - dv * len;
           arrow(svg, ox, oy, ex, ey, color);
-          label(svg, ex + 4, ey - 4 + i * 2, `${name}${i}`, color, 12);
+          addLabel(ex + 5, ey - 5, `${name}${i}`, color);
         }
       });
     });
+    Object.values(labels).forEach((l) => label(svg, l.x, l.y, l.names.join('='), l.color, 15));
   }
 
   return { identity, mul, stdA, modA, stdChain, modChain, fmt,

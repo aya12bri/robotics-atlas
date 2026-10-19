@@ -39,7 +39,7 @@
         <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
       </span>
     </div>
-    <svg id="schema" viewBox="0 0 500 300"
+    <svg id="schema" viewBox="0 0 700 420"
          style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
     <p>
       Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
@@ -155,10 +155,10 @@
         { al: ['0', 0],   a: ['L2 = 1.05', 1.05], th: ['0 (fixed)', 0],              d: ['0', 0] }
       ];
 
-      // ================= diagram + update =================
+             // ================= diagram + update =================
       const svg = document.getElementById('schema');
       const toRad = (deg) => (deg * Math.PI) / 180;
-      const map = (u, v) => [250 + u * 85, 280 - v * 85];   // metres -> pixels
+      const map = (u, v) => [350 + u * 120, 395 - v * 120];   // metres -> pixels
       let showAxes = true;
       let q = [30, -30, 60];
 
@@ -191,21 +191,21 @@
         const O = Tstd.map((T) => map(T[0][3] * view.right[0] + T[1][3] * view.right[1], T[2][3]));
 
         svg.innerHTML = '';
-        RB.shape(svg, 'line', { x1: map(-2.4, 0)[0], y1: map(0, 0)[1], x2: map(2.4, 0)[0], y2: map(0, 0)[1],
+        RB.shape(svg, 'line', { x1: map(-2.8, 0)[0], y1: map(0, 0)[1], x2: map(2.8, 0)[0], y2: map(0, 0)[1],
                                 stroke: '#667788', 'stroke-width': 2 });
-        RB.shape(svg, 'rect', { x: O[0][0] - 15, y: O[1][1], width: 30, height: O[0][1] - O[1][1], fill: '#ff9f43' });
+        RB.shape(svg, 'rect', { x: O[0][0] - 20, y: O[1][1], width: 40, height: O[0][1] - O[1][1], fill: '#ff9f43' });
         RB.shape(svg, 'polyline', {
           points: `${O[1]} ${O[2]} ${O[3]}`,
           fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round'
         });
-        RB.label(svg, O[0][0] + 55, O[0][1] - 6, 'q1 (vertical axis)');
+        RB.label(svg, O[0][0] + 75, O[0][1] - 8, 'q1 (vertical axis)', '#ffffff', 18);
         [[O[1], 'q2'], [O[2], 'q3']].forEach(([pt, name]) => {
-          RB.shape(svg, 'circle', { cx: pt[0], cy: pt[1], r: 10, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
-          RB.shape(svg, 'circle', { cx: pt[0], cy: pt[1], r: 2.5, fill: '#e8eef5' });
-          RB.label(svg, pt[0] + 14, pt[1] - 12, name);
+          RB.shape(svg, 'circle', { cx: pt[0], cy: pt[1], r: 13, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+          RB.shape(svg, 'circle', { cx: pt[0], cy: pt[1], r: 3, fill: '#e8eef5' });
+          RB.label(svg, pt[0] - 18, pt[1] - 18, name, '#ffffff', 18, 'end');
         });
-        RB.shape(svg, 'rect', { x: O[3][0] - 6, y: O[3][1] - 6, width: 12, height: 12, fill: '#e8eef5' });
-        if (showAxes) RB.drawFrames(svg, frames, view, map);
+        RB.shape(svg, 'rect', { x: O[3][0] - 8, y: O[3][1] - 8, width: 16, height: 16, fill: '#e8eef5' });
+        if (showAxes) RB.drawFrames(svg, frames, view, map, { only: frameSel.value });
       }
 
       document.getElementById('axesBtn').addEventListener('click', (e) => {
@@ -213,6 +213,10 @@
         e.target.textContent = showAxes ? 'Hide axes' : 'Show axes';
         update();
       });
+      const frameSel = document.getElementById('frameSel');
+      frameSel.innerHTML = '<option value="all">All frames</option>' +
+        MOD.concat([0]).map((_, i) => `<option value="${i}">Frame {${i}} only</option>`).join('');
+      frameSel.addEventListener('change', update);
       document.querySelectorAll('input[name=conv]').forEach((r) => r.addEventListener('change', update));
 
       RB.controls(document.getElementById('controls'), [

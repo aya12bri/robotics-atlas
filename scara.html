@@ -39,7 +39,7 @@
         <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
       </span>
     </div>
-    <svg id="schema" viewBox="0 0 500 300"
+    <svg id="schema" viewBox="0 0 700 420"
          style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
     <p>
       Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
@@ -175,19 +175,19 @@ tool angle = q1 + q2 − q4      (z points DOWN, so q4 turns the other way)</pre
         { al: ['0', 0],   a: ['0', 0],          th: ['q4', (q) => q[3]], d: ['d4 = 0.06', 0.06] }
       ];
 
-      // ================= diagram + update =================
+            // ================= diagram + update =================
       const svg = document.getElementById('schema');
       const toRad = (deg) => (deg * Math.PI) / 180;
-      const SCALE = 120;                                   // pixels per metre
-      const map = (u, v) => [250 + u * SCALE, 150 - v * SCALE];
+      const SCALE = 170;                                   // pixels per metre
+      const map = (u, v) => [350 + u * SCALE, 215 - v * SCALE];
       const topView = { right: [1, 0, 0], up: [0, 1, 0], toward: [0, 0, 1] };
       let showAxes = true;
       let q = [30, 60, 0.1, 0];
 
       function revolute(p, name) {
-        RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 10, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
-        RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 2.5, fill: '#e8eef5' });
-        RB.label(svg, p[0] + 13, p[1] - 12, name);
+        RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 13, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+        RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 3, fill: '#e8eef5' });
+        RB.label(svg, p[0] - 18, p[1] - 18, name, '#ffffff', 18, 'end');
       }
 
       function update() {
@@ -213,21 +213,21 @@ tool angle = q1 + q2 − q4      (z points DOWN, so q4 turns the other way)</pre
         // drawing (everything below is computed from the DH chain)
         svg.innerHTML = '';
         const O = Tstd.map((T) => map(T[0][3], T[1][3]));
-        RB.shape(svg, 'circle', { cx: O[0][0], cy: O[0][1], r: 22, fill: '#4a5568' });
+        RB.shape(svg, 'circle', { cx: O[0][0], cy: O[0][1], r: 30, fill: '#4a5568' });
         RB.shape(svg, 'polyline', {
           points: `${O[0]} ${O[1]} ${O[2]}`,
           fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round'
         });
         revolute(O[0], 'q1');
         revolute(O[1], 'q2');
-        RB.shape(svg, 'rect', { x: O[2][0] - 9, y: O[2][1] - 9, width: 18, height: 18,
-                                fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
-        RB.label(svg, O[2][0] + 13, O[2][1] + 24, 'q3 (slide)');
+        RB.shape(svg, 'rect', { x: O[2][0] - 13, y: O[2][1] - 13, width: 26, height: 26,
+                                fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+        RB.label(svg, O[2][0] - 18, O[2][1] + 34, 'q3 (slide)', '#ffffff', 18, 'end');
         // q4: a short bar along the tool's x axis
-        RB.shape(svg, 'line', { x1: O[4][0], y1: O[4][1], x2: O[4][0] + 22 * tcp[0][0], y2: O[4][1] - 22 * tcp[1][0],
+        RB.shape(svg, 'line', { x1: O[4][0], y1: O[4][1], x2: O[4][0] + 30 * tcp[0][0], y2: O[4][1] - 30 * tcp[1][0],
                                 stroke: '#e8eef5', 'stroke-width': 3, 'stroke-linecap': 'round' });
-        RB.label(svg, O[4][0] + 13, O[4][1] - 12, 'q4');
-        if (showAxes) RB.drawFrames(svg, frames, topView, map);
+        RB.label(svg, O[4][0] - 18, O[4][1] - 18, 'q4', '#ffffff', 18, 'end');
+        if (showAxes) RB.drawFrames(svg, frames, topView, map, { only: frameSel.value });
       }
 
       document.getElementById('axesBtn').addEventListener('click', (e) => {
@@ -235,6 +235,10 @@ tool angle = q1 + q2 − q4      (z points DOWN, so q4 turns the other way)</pre
         e.target.textContent = showAxes ? 'Hide axes' : 'Show axes';
         update();
       });
+      const frameSel = document.getElementById('frameSel');
+      frameSel.innerHTML = '<option value="all">All frames</option>' +
+        MOD.concat([0]).map((_, i) => `<option value="${i}">Frame {${i}} only</option>`).join('');
+      frameSel.addEventListener('change', update);
       document.querySelectorAll('input[name=conv]').forEach((r) => r.addEventListener('change', update));
 
       RB.controls(document.getElementById('controls'), [
