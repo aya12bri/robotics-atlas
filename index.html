@@ -1,56 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Robotics Atlas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Robotics Atlas — robots, kinematics and 3D models</title>
+    <meta name="description" content="An illustrated atlas of robot types: tasks, kinematic diagrams, DH tables and interactive 3D models." />
     <link rel="stylesheet" href="style.css" />
+    <script src="nav.js" defer></script>
   </head>
   <body>
-    <h1>Robotics Atlas</h1>
-    <p>All types of robots, their tasks, and how they move.</p>
-    <p><a href="arm.html" style="color:#ff9f43">→ See the 3D robot arm</a></p>
-    <p><a href="learn.html" style="color:#ff9f43">→ Learn the basics first</a></p>   
-    <div class="robot">
-      <h2>Articulated arm (6 axes)</h2>
-      <p><strong>Joints:</strong> 6 rotating joints (R-R-R-R-R-R). <a href="articulated.html" style="color:#ff9f43">→ 3D model</a></p>
-      <p><strong>Used in:</strong> car factories (welding, painting), palletizing, machine tending, assembly, material handling.</p>
-      <p><strong>End effectors:</strong> yes, a pinch gripper (pince) works; also welding torch, spot-welding gun,
-         vacuum suction cup, paint gun, screwdriver. With 6 axes it can pick an object from any direction.</p>
+    <section class="hero">
+      <h1>Robotics Atlas</h1>
+      <p class="lead">Every main type of robot in one place: what it does, how it is built, its <strong>kinematic diagram</strong>,
+         its <strong>DH and DHM tables</strong>, and an interactive <strong>3D model</strong> you can move with sliders.
+         Start from zero, with the Learn page.</p>
+      <div class="cta">
+        <a class="btn" href="learn.html">Start with the basics</a>
+        <a class="btn ghost" href="#robots">Browse the robots</a>
+      </div>
+      <div class="stats">
+        <div><b>8</b>robot pages</div>
+        <div><b>3D</b>models you can move</div>
+        <div><b>DH + DHM</b>tables on every arm</div>
+        <div><b>4</b>pick-and-place demos</div>
+      </div>
+    </section>
+
+    <h2 id="robots">The robots</h2>
+    <div class="chips" id="chips">
+      <button class="on" data-f="all">All</button>
+      <button data-f="serial">Serial arms</button>
+      <button data-f="cartesian">Cartesian</button>
+      <button data-f="parallel">Parallel</button>
+      <button data-f="mobile">Mobile</button>
+    </div>
+    <div class="grid" id="grid">
+      <article class="card" data-kind="serial">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="52" width="20" height="6" rx="2"/><path d="M18 52 V38 L36 20 L54 24"/><circle cx="18" cy="38" r="3.5"/><circle cx="36" cy="20" r="3.5"/><path d="M54 24 l4 -4 M54 24 l4 4"/></svg></div>
+        <h3>3-DOF robot arm</h3>
+        <p class="tag">Serial · R-R-R · 3 degrees of freedom</p>
+        <p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p>
+        <dl>
+          <dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd>
+          <dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd>
+        </dl>
+        <a class="btn go" href="arm.html">3D model →</a>
+      </article>
+      <article class="card" data-kind="cartesian">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8 56 V10 H56 V56"/><path d="M8 24 H56"/><rect x="28" y="20" width="10" height="8" rx="1"/><path d="M33 28 V44 M29 44 H37"/></svg></div>
+        <h3>Cartesian gantry</h3>
+        <p class="tag">Cartesian · P-P-P · 3 degrees of freedom</p>
+        <p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p>
+        <dl>
+          <dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd>
+          <dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd>
+        </dl>
+        <a class="btn go" href="gantry.html">3D model →</a>
+      </article>
+      <article class="card" data-kind="serial">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="50" width="16" height="8" rx="2"/><path d="M16 50 V34 H34 L48 40"/><circle cx="16" cy="34" r="3.5"/><circle cx="34" cy="34" r="3.5"/><path d="M48 40 V56 M44 56 H52"/></svg></div>
+        <h3>SCARA</h3>
+        <p class="tag">Serial · R-R-P-R · 4 degrees of freedom</p>
+        <p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p>
+        <dl>
+          <dt>Used in</dt><dd>Electronics assembly, screwing, dispensing, packaging, fast pick and place.</dd>
+          <dt>End effectors</dt><dd>Pinch gripper, vacuum nozzle, screwdriver, glue dispenser.</dd>
+        </dl>
+        <a class="btn go" href="scara.html">3D model + pick and place →</a>
+      </article>
+      <article class="card" data-kind="serial">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="52" width="22" height="6" rx="2"/><path d="M21 52 V34 L21 22 L42 12 L54 18"/><circle cx="21" cy="34" r="3.5"/><circle cx="21" cy="22" r="3.5"/><circle cx="42" cy="12" r="3.5"/><path d="M54 18 l5 -3 M54 18 l1 6"/></svg></div>
+        <h3>6-axis industrial robot</h3>
+        <p class="tag">Serial · 6 × R · 6 degrees of freedom</p>
+        <p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p>
+        <dl>
+          <dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd>
+          <dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd>
+        </dl>
+        <a class="btn go" href="articulated.html">3D model + pick and place →</a>
+      </article>
+      <article class="card" data-kind="serial">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="52" width="22" height="6" rx="2"/><path d="M19 52 V36 L40 24"/><circle cx="19" cy="36" r="5"/><circle cx="40" cy="24" r="5"/><path d="M44 27 L54 44 M50 44 H58"/><path d="M52 8 a8 8 0 0 1 8 8" stroke-dasharray="2 4"/></svg></div>
+        <h3>Collaborative robot (UR5)</h3>
+        <p class="tag">Serial · 6 × R · works next to people</p>
+        <p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p>
+        <dl>
+          <dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd>
+          <dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd>
+        </dl>
+        <a class="btn go" href="cobot.html">3D model + pick and place →</a>
+      </article>
+      <article class="card" data-kind="parallel">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12 H54 L32 22 Z"/><path d="M14 13 L26 44 M50 13 L38 44 M32 21 L32 44"/><path d="M24 44 H40 L32 54 Z"/></svg></div>
+        <h3>Delta robot</h3>
+        <p class="tag">Parallel · 3 arms + 1 optional rotation</p>
+        <p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p>
+        <dl>
+          <dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd>
+          <dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd>
+        </dl>
+        <a class="btn go" href="delta.html">3D model + pick and place →</a>
+      </article>
+      <article class="card" data-kind="mobile">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="26" width="44" height="18" rx="4"/><circle cx="20" cy="48" r="6"/><circle cx="44" cy="48" r="6"/><path d="M44 26 V16 H36"/></svg></div>
+        <h3>Mobile robot (differential drive)</h3>
+        <p class="tag">Mobile · 2 driven wheels · x, y, θ</p>
+        <p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p>
+        <dl>
+          <dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd>
+          <dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd>
+        </dl>
+        <a class="btn go" href="mobile.html">3D model + programs →</a>
+      </article>
+      <article class="card" data-kind="mobile">
+        <div class="pic"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><circle cx="32" cy="32" r="6"/><path d="M32 10 V26 M32 38 V54 M10 32 H26 M38 32 H54"/></svg></div>
+        <h3>Wheels and mobile bases</h3>
+        <p class="tag">Mobile · reference and simulator</p>
+        <p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p>
+        <dl>
+          <dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd>
+          <dt>End effectors</dt><dd>—</dd>
+        </dl>
+        <a class="btn go" href="wheels.html">Wheel catalogue + simulator →</a>
+      </article>
     </div>
 
-    <div class="robot">
-      <h2>Collaborative robot (cobot, UR-style)</h2>
-      <p><strong>Joints:</strong> 6 rotating joints, force-limited so it can work next to people.<a href="cobot.html" style="color:#ff9f43">→ 3D model</a></p>
-      <p><strong>Used in:</strong> screwing, packaging, lab automation, machine tending, quality inspection in small factories.</p>
-      <p><strong>End effectors:</strong> yes, a pinch gripper (pince) is the most common; also suction cups, screwdrivers, cameras.</p>
+    <h2>Where to start?</h2>
+    <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
+    <ol class="path">
+      <li><a href="learn.html">Learn the basics</a><br>Joints, degrees of freedom, frames, DH.</li>
+      <li><a href="arm.html">3-DOF arm</a><br>Your first kinematic diagram.</li>
+      <li><a href="gantry.html">Cartesian gantry</a><br>Prismatic joints.</li>
+      <li><a href="scara.html">SCARA</a><br>Mixed joints, closed-form inverse kinematics.</li>
+      <li><a href="articulated.html">6-axis robot</a><br>The wrist, singularities, numerical IK.</li>
+      <li><a href="cobot.html">Cobot</a><br>Offset wrist and safety.</li>
+      <li><a href="delta.html">Delta robot</a><br>Parallel robots and closed loops.</li>
+      <li><a href="mobile.html">Mobile robot</a><br>Wheels, then <a href="wheels.html">drive types</a>.</li>
+    </ol>
+
+    <h2>Robots side by side</h2>
+    <div class="cmp-wrap">
+      <table class="dh">
+        <tr><th>Robot</th><th>Joints</th><th>DOF</th><th>Speed</th><th>Payload</th><th>Workspace</th><th>Typical job</th></tr>
+        <tr><td>3-DOF arm</td><td>R-R-R</td><td>3</td><td>Medium</td><td>Low</td><td>Sphere-like</td><td>Teaching, light handling</td></tr>
+        <tr><td>Cartesian gantry</td><td>P-P-P</td><td>3</td><td>Medium</td><td>Medium to high</td><td>Box</td><td>CNC, 3D printing, picking</td></tr>
+        <tr><td>SCARA</td><td>R-R-P-R</td><td>4</td><td>High</td><td>Low to medium</td><td>Cylinder, flat</td><td>Assembly from above</td></tr>
+        <tr><td>6-axis industrial</td><td>6 × R</td><td>6</td><td>High</td><td>5 to 1000+ kg</td><td>Large sphere</td><td>Welding, painting, handling</td></tr>
+        <tr><td>Cobot</td><td>6 × R</td><td>6</td><td>Limited (safety)</td><td>3 to 25 kg</td><td>Sphere, 0.5 to 1.7 m</td><td>Work next to people</td></tr>
+        <tr><td>Delta</td><td>3 × R (parallel)</td><td>3 + 1</td><td>Very high</td><td>0.1 to 8 kg</td><td>Dome, small</td><td>Conveyor pick and place</td></tr>
+        <tr><td>Mobile (differential)</td><td>2 driven wheels</td><td>3 (x, y, θ) with 2 inputs</td><td>Medium</td><td>Depends on the base</td><td>Unlimited floor</td><td>Transport, cleaning</td></tr>
+      </table>
     </div>
 
-    <div class="robot">
-      <h2>SCARA</h2>
-      <p><strong>Joints:</strong> rotating, rotating, sliding, rotating (R-R-P-R). <a href="scara.html" style="color:#ff9f43">→ 3D model</a></p>
-      <p><strong>Used in:</strong> electronics assembly, screwing, fast pick-and-place, packaging, dispensing glue.</p>
-      <p><strong>End effectors:</strong> yes, a pinch gripper works; most often a vacuum suction cup, also a screwdriver or a dispensing nozzle. The tool always points down.</p>
-    </div>
-
-    <div class="robot">
-      <h2>Delta (parallel robot)</h2>
-      <p><strong>Joints:</strong> 3 arms working in parallel, all motors fixed on top.<a href="delta.html" style="color:#ff9f43">→ 3D model</a></p>
-      <p><strong>Used in:</strong> food and pharma packaging, sorting objects on a conveyor belt with a camera, at over 100 picks per minute.</p>
-      <p><strong>End effectors:</strong> mostly vacuum suction cups or soft grippers. Small pinch grippers are possible, but the payload is light (about 1 to 8 kg at most).</p>
-    </div>
-
-    <div class="robot">
-      <h2>Cartesian robot (gantry)</h2>
-      <p><strong>Joints:</strong> 3 sliding joints at right angles (P-P-P). <a href="gantry.html" style="color:#ff9f43">→ 3D model</a></p>
-      <p><strong>Used in:</strong> 3D printers, CNC machines, laboratory pipetting, warehouse picking, palletizing, gluing.</p>
-      <p><strong>End effectors:</strong> very flexible: pinch gripper, suction cup, 3D-printing nozzle, cutting spindle, pipette, laser.</p>
-    </div>
-
-    <div class="robot">
-      <h2>Mobile robot (AMR / AGV)</h2>
-     <p><strong>Joints:</strong> two driven wheels (differential drive) plus a free caster wheel. <a href="mobile.html" style="color:#ff9f43">→ 3D model</a> · <a href="wheels.html" style="color:#ff9f43">→ wheel types and drive types</a></p>
-     <p><strong>Used in:</strong> warehouses (carrying shelves and boxes), hospitals, cleaning, inspection and security.</p>
-     <p><strong>End effectors:</strong> usually none. It carries a load on top, a fork or a tow hook. It can also carry a robot arm with a gripper, which is then called a mobile manipulator.</p>
-    </div>
+    <script>
+      // filter chips
+      (function () {
+        const chips = document.querySelectorAll('#chips button'), cards = document.querySelectorAll('#grid .card');
+        chips.forEach((b) => b.addEventListener('click', () => {
+          chips.forEach((c) => c.classList.toggle('on', c === b));
+          cards.forEach((c) => c.classList.toggle('hide', b.dataset.f !== 'all' && c.dataset.kind !== b.dataset.f));
+        }));
+      })();
+    </script>
   </body>
 </html>
