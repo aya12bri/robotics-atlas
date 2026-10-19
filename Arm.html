@@ -22,7 +22,12 @@
     <h1>3D robot arm</h1>
     <p><a href="index.html" style="color:#ff9f43">← Back to the robot list</a></p>
 
-    <div id="view"></div>
+    <div id="view">
+            <h2>Kinematic diagram (schéma cinématique)</h2>
+    <svg id="schema" viewBox="0 0 500 300"
+         style="width:100%;max-width:500px;background:#1b2633;border-radius:6px"></svg>
+    <p id="readout"></p>
+    </div>
 
     <label>Joint 1, base rotation <input id="j1" type="range" min="-180" max="180" value="30" /></label>
     <label>Joint 2, shoulder <input id="j2" type="range" min="-90" max="90" value="-30" /></label>
@@ -91,12 +96,70 @@
       hand.position.y = 1.05;
       elbow.add(hand);
 
-      // 5. Sliders move the joints
+           // 5. Sliders move the joints
       const toRad = (deg) => (deg * Math.PI) / 180;
+
+      // --- Kinematic diagram: the arm seen from the side, in its own plane ---
+      const svg = document.getElementById('schema');
+      const readout = document.getElementById('readout');
+      const NS = 'http://www.w3.org/2000/svg';
+      function shape(name, attrs) {
+        const e = document.createElementNS(NS, name);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        svg.appendChild(e);
+        return e;
+      }
+      const px = (x) => 250 + x * 100;   // metres -> pixels (left/right)
+      const py = (y) => 270 - y * 100;   // metres -> pixels (height)
+
+      function joint(x, y, label) {
+        shape('circle', { cx: px(x), cy: py(y), r: 9, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2 });
+        shape('circle', { cx: px(x), cy: py(y), r: 2.5, fill: '#e8eef5' });
+        const t = shape('text', { x: px(x) + 14, y: py(y) - 10, fill: '#cfd8e3', 'font-size': 14 });
+        t.textContent = label;
+      }
+
+      function drawSchema(a1, a2, a3) {
+        svg.innerHTML = '';
+        // geometry: lengths are the same as the 3D model
+        const t2 = toRad(a2);
+        const t3 = toRad(a2 + a3);          // angles add up along the chain
+        const sh = { x: 0, y: 0.5 };
+        const el = { x: sh.x - 1.2 * Math.sin(t2), y: sh.y + 1.2 * Math.cos(t2) };
+        const tip = { x: el.x - 1.05 * Math.sin(t3), y: el.y + 1.05 * Math.cos(t3) };
+
+        // ground
+        shape('line', { x1: px(-2.4), y1: py(0), x2: px(2.4), y2: py(0), stroke: '#667788', 'stroke-width': 2 });
+        // base (joint 1 turns around the vertical axis)
+        shape('rect', { x: px(-0.15), y: py(0.5), width: 30, height: 50, fill: '#ff9f43' });
+        const t = shape('text', { x: px(0.25), y: py(0.2), fill: '#cfd8e3', 'font-size': 14 });
+        t.textContent = 'q1 (vertical axis)';
+        // links
+        shape('polyline', {
+          points: `${px(sh.x)},${py(sh.y)} ${px(el.x)},${py(el.y)} ${px(tip.x)},${py(tip.y)}`,
+          fill: 'none', stroke: '#ff9f43', 'stroke-width': 5, 'stroke-linecap': 'round'
+        });
+        // joints and tool
+        joint(sh.x, sh.y, 'q2');
+        joint(el.x, el.y, 'q3');
+        shape('rect', { x: px(tip.x) - 6, y: py(tip.y) - 6, width: 12, height: 12, fill: '#e8eef5' });
+
+        // real 3D position of the hand (forward kinematics)
+        const phi = toRad(a1);
+        const r = tip.x;                    // distance from the vertical axis
+        const X = r * Math.cos(phi), Y = tip.y, Z = -r * Math.sin(phi);
+        readout.textContent =
+          `Hand position:  X = ${X.toFixed(2)} m   Y = ${Y.toFixed(2)} m   Z = ${Z.toFixed(2)} m`;
+      }
+
       function update() {
-        base.rotation.y = toRad(document.getElementById('j1').value);
-        shoulder.rotation.z = toRad(document.getElementById('j2').value);
-        elbow.rotation.z = toRad(document.getElementById('j3').value);
+        const a1 = Number(document.getElementById('j1').value);
+        const a2 = Number(document.getElementById('j2').value);
+        const a3 = Number(document.getElementById('j3').value);
+        base.rotation.y = toRad(a1);
+        shoulder.rotation.z = toRad(a2);
+        elbow.rotation.z = toRad(a3);
+        drawSchema(a1, a2, a3);
       }
       ['j1', 'j2', 'j3'].forEach((id) => document.getElementById(id).addEventListener('input', update));
       update();
