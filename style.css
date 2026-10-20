@@ -129,12 +129,13 @@ html body table.dh td.left, html body table.dh th.left { text-align: left; }
 body { padding-top: 5.6rem; }
 .site-nav {
   position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%); z-index: 70; width: min(1120px, calc(100% - 1.6rem)); margin: 0;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; padding: 0.45rem 0.6rem 0.45rem 1.2rem;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; padding: 0.4rem 0.6rem 0.4rem 0.5rem;
   background: color-mix(in srgb, var(--bg) 62%, transparent); border: 1px solid var(--border); border-radius: 999px;
   backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); box-shadow: 0 10px 40px -18px rgba(0, 0, 0, 0.6);
 }
-.brand { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text); font-family: var(--display); font-stretch: 85%; font-weight: 800; font-size: 1.15rem; text-decoration: none; justify-self: center; }
+.brand { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text); font-family: var(--display); font-stretch: 85%; font-weight: 800; font-size: 1.15rem; text-decoration: none; justify-self: start; }
 .nav-l, .nav-r { display: flex; align-items: center; gap: 0.15rem; }
+.nav-l { justify-content: center; }
 .nav-r { justify-content: flex-end; gap: 0.35rem; }
 .nav-l > a, .dd-link, .dd-btn { color: var(--muted); text-decoration: none; padding: 0.42rem 0.85rem; border-radius: 999px; background: none; border: 0; font: inherit; font-weight: 500; font-size: 0.92rem; cursor: pointer; min-height: 0; transition: color 0.15s, background 0.15s; white-space: nowrap; }
 .nav-l > a:hover, .dd-link:hover, .dd-btn:hover, .dd.open .dd-btn { background: color-mix(in srgb, var(--text) 10%, transparent); color: var(--text); text-decoration: none; }
@@ -663,3 +664,12 @@ html, body { overflow-x: clip; }
 @media (max-width: 900px) { .gal-cards .card h2 { font-size: 1.9rem; } .gal-cards .card .btn { width: auto; } }
 
 .scene-sec.gal > .wrap { justify-content: flex-end; }
+
+/* ---- social links (footer and signature) ---- */
+.social { display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin: 0.8rem auto !important; }
+.social a { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 1rem; border-radius: 99px; border: 1px solid var(--border); color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: border-color 0.2s, background 0.2s, transform 0.2s; background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.social a:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); transform: translateY(-2px); text-decoration: none; }
+.social svg { width: 18px; height: 18px; flex: none; }
+.btn.gh { gap: 0.6rem; } .btn.gh svg { width: 18px; height: 18px; }
+.sign .social { margin-top: 1.6rem !important; }
+.brand svg { border-radius: 9px; }

@@ -18,6 +18,12 @@
     ['mobile.html',     { en: 'Mobile robot',             fr: 'Robot mobile' },             '2 wheels / roues'],
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];
+  const SOCIAL = [
+    ['LinkedIn', 'https://www.linkedin.com/in/ayabriksine', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>'],
+    ['GitHub', 'https://github.com/aya12bri', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>'],
+    ['Portfolio', 'https://www.ayabriksine.com', '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.7 4 5.9 4 9.5s-1.4 6.8-4 9.5c-2.6-2.7-4-5.9-4-9.5s1.4-6.8 4-9.5z"/></svg>']
+  ];
+  window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
           foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels' },
@@ -163,14 +169,15 @@
   if (!head.querySelector('link[rel~=icon]')) {
     const ic = document.createElement('link');
     ic.rel = 'icon';
-    ic.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#1f1f1f"/><circle cx="10" cy="22" r="5.5" fill="none" stroke="#ececec" stroke-width="2.4"/><circle cx="10" cy="22" r="1.8" fill="#ececec"/><path d="M14 18 L25 8" stroke="#ff9f43" stroke-width="3.6" stroke-linecap="round"/></svg>');
+    ic.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#2f6bff"/><path d="M7.5 25.5 L16 7.5 L24.5 25.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.2 19.2 H20.8" stroke="#ff9f43" stroke-width="3.2" stroke-linecap="round"/><circle cx="16" cy="7.5" r="3.1" fill="#fff"/><circle cx="16" cy="7.5" r="1.1" fill="#2f6bff"/></svg>');
     head.appendChild(ic);
   }
 
   // ---------------------------------------------------------------- build the page chrome
   function build() {
     // the mark is a joint seen along its axis (circle with a dot) and the link that leaves it
-    const LOGO = '<svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><circle cx="9" cy="23" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="9" cy="23" r="1.9" fill="currentColor"/><path d="M13.5 18.7 L25 8" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>';
+    // the mark: an "A" drawn as a two-link robot arm (joint at the top, orange crossbar), on a blue tile
+    const LOGO = '<svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#2f6bff"/><path d="M7.5 25.5 L16 7.5 L24.5 25.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.2 19.2 H20.8" stroke="#ff9f43" stroke-width="3.2" stroke-linecap="round"/><circle cx="16" cy="7.5" r="3.1" fill="#fff"/><circle cx="16" cy="7.5" r="1.1" fill="#2f6bff"/></svg>';
     const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
     const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
     const link = (href, text) => `<a href="${href}"${here === href ? ' aria-current="page"' : ''}>${text}</a>`;
@@ -179,9 +186,9 @@
     const nav = document.createElement('header');
     nav.className = 'site-nav';
     nav.innerHTML =
+      `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<nav class="nav-l" aria-label="Main">' +
       (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#start">${ui.secRoad}</a>` + link('learn.html', ui.learn) : link('index.html', ui.home) + link('learn.html', ui.learn) + `<a href="index.html#start">${ui.start}</a>`) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
-      `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<div class="nav-r">' +
       `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
       ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + '</div></div>' +
@@ -219,8 +226,9 @@
       pager = `<div class="pager"><a href="${p[0]}">← ${p[1][lang]}</a><a href="${n[0]}">${n[1][lang]} →</a></div>`;
     }
     const doneBar = i >= 0 ? `<div class="done-bar"><label class="done-toggle"><input type="checkbox" id="pageDone"><span class="box" aria-hidden="true"></span><span class="lbl">${ui.done}</span></label><a href="index.html#start">${ui.road} →</a></div>` : '';
+    const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
-      `<p class="by">${ui.by} <a href="https://github.com/aya12bri">Aya Briksine</a></p>` +
+      `<p class="by">${ui.by} <a href="https://www.ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
       `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
