@@ -19,9 +19,9 @@
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];
   const UI = {
-    en: { home: 'Home', learn: 'Learn', start: 'Where to start', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
+    en: { home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
           foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels' },
-    fr: { home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
+    fr: { home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
           foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues' }
   };
 
@@ -67,6 +67,15 @@
     },
     text(s) { return RA.tr(s) || s; }
   };
+  // what the visitor has finished (roadmap, lessons and robot pages share it)
+  const PROG = 'ra-progress';
+  RA.progress = {
+    all() { try { return JSON.parse(store.get(PROG) || '{}') || {}; } catch (e) { return {}; } },
+    get(id) { return !!this.all()[id]; },
+    set(id, v) { const o = this.all(); if (v) o[id] = 1; else delete o[id]; store.set(PROG, JSON.stringify(o)); window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id, v: !!v } })); },
+    clear(ids) { const o = this.all(); ids.forEach((i) => delete o[i]); store.set(PROG, JSON.stringify(o)); window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); }
+  };
+  window.addEventListener('storage', (e) => { if (e.key === PROG) window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); });
   const SKIP = /^(SCRIPT|STYLE|SVG|CANVAS|TEXTAREA|NOSCRIPT|PRE|CODE)$/i;
   const mine = (el) => el.classList && (el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top'));
   const inSvg = (n) => { const e = n.nodeType === 1 ? n : n.parentNode; return !!(e && e.closest && e.closest('svg')); };
@@ -208,10 +217,16 @@
       const p = ROBOTS[(i + ROBOTS.length - 1) % ROBOTS.length], n = ROBOTS[(i + 1) % ROBOTS.length];
       pager = `<div class="pager"><a href="${p[0]}">← ${p[1][lang]}</a><a href="${n[0]}">${n[1][lang]} →</a></div>`;
     }
-    foot.innerHTML = pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
+    const doneBar = i >= 0 ? `<div class="done-bar"><label class="done-toggle"><input type="checkbox" id="pageDone"><span class="box" aria-hidden="true"></span><span class="lbl">${ui.done}</span></label><a href="index.html#start">${ui.road} →</a></div>` : '';
+    foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://github.com/aya12bri">Aya Briksine</a></p>` +
       `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a></p>`;
     document.body.appendChild(foot);
+    const dn = foot.querySelector('#pageDone');
+    if (dn) {
+      const paint = () => { dn.checked = RA.progress.get(pageName); dn.closest('.done-toggle').classList.toggle('on', dn.checked); dn.parentNode.querySelector('.lbl').textContent = dn.checked ? ui.doneOn : ui.done; };
+      dn.addEventListener('change', () => RA.progress.set(pageName, dn.checked)); window.addEventListener('ra-progress', paint); paint();
+    }
 
     const top = document.createElement('button');
     top.className = 'to-top'; top.type = 'button'; top.setAttribute('aria-label', ui.top); top.textContent = '↑';
@@ -241,7 +256,7 @@
     }
     // chips that jump to each section
     const heads = [...body.querySelectorAll('h2')].filter((h) => !h.closest('.stage-side') && !h.closest('.robot') && h.textContent.trim());
-    if (h1 && heads.length > 2 && !body.classList.contains('home')) {
+    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn')) {
       const toc = document.createElement('nav'); toc.className = 'toc'; toc.setAttribute('aria-label', lang === 'fr' ? 'Sur cette page' : 'On this page');
       const short = (h) => h.textContent.replace(/^\d+\.\s*/, '').replace(/\s*\(.*$/, '').replace(/,\s*(side|top|front) view$/i, '').trim() || h.textContent.trim();
       heads.forEach((h, i) => {
