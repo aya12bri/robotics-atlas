@@ -223,19 +223,20 @@ const NEUTRAL = [10, -50, -60, 0, -40, 0];
 let renderer = null;
 try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alpha: true }); } catch (e) { $('gl').remove(); }
 const secs = [...document.querySelectorAll('.scene-sec')], N = secs.length;
-const prog = $('progress'); secs.forEach(() => prog.appendChild(document.createElement('i')));
+const prog = $('progress'); secs.forEach((sec, i) => { const d = document.createElement('i'); d.addEventListener('click', () => sec.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })); prog.appendChild(d); });
 const tagEls = [0, 1, 2, 3, 4, 5].map((i) => $('jt' + i));
 
 if (renderer) {
-  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1)); renderer.setClearColor(0x000000, 0);
-  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const LITE = innerWidth < 900;                                  // phones and small screens: cheaper rendering
+  renderer.setPixelRatio(Math.min(LITE ? 1.25 : 1.5, devicePixelRatio || 1)); renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = !LITE; renderer.shadowMap.type = THREE.PCFShadowMap;
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.1, 80);
   scene.fog = new THREE.Fog(0x1f1f1f, 5, 12);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.05));
   const sun = new THREE.DirectionalLight(0xffffff, 2.0); sun.position.set(3.2, 5.5, 2.4); sun.castShadow = true;
-  scene.add(sun.target); sun.shadow.mapSize.set(1536, 1536); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
+  scene.add(sun.target); sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.receiveShadow = true; scene.add(floor);
-  const grid = new THREE.GridHelper(80, 160, 0x777777, 0x666666); grid.position.set(0, 0.002, -10); grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
+  const grid = new THREE.GridHelper(60, 60, 0x777777, 0x666666); grid.position.set(0, 0.002, -10); grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
 
   const arm = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14,
     sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.10 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
@@ -383,10 +384,13 @@ if (renderer) {
     p = [s0[0] + v[0] * k, s0[1] + v[1] * k, Math.max(0.14, s0[2] + v[2] * k)]; return p;
   }
   const mid = () => innerHeight / 2;
+  let tops = [];                                                   // section centres in page coordinates, measured once (and on resize)
+  const measure = () => { tops = secs.map((el) => el.offsetTop + el.offsetHeight / 2); };
+  measure(); addEventListener('resize', measure); addEventListener('load', measure);
   function frac() {
-    const c = secs.map((s) => { const r = s.getBoundingClientRect(); return r.top + r.height / 2; });
-    if (mid() <= c[0]) return 0; if (mid() >= c[N - 1]) return N - 1;
-    for (let i = 0; i < N - 1; i++) if (mid() < c[i + 1]) return i + (mid() - c[i]) / (c[i + 1] - c[i]);
+    const y = scrollY + mid();
+    if (y <= tops[0]) return 0; if (y >= tops[N - 1]) return N - 1;
+    for (let i = 0; i < N - 1; i++) if (y < tops[i + 1]) return i + (y - tops[i]) / (tops[i + 1] - tops[i]);
     return N - 1;
   }
   const dhBody = $('dhBody'), readIK = $('readIK'), readDemo = $('readDemo'); let lastTxt = {};
@@ -402,12 +406,14 @@ if (renderer) {
 
   function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
   size(); addEventListener('resize', size);
-  const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
+  let quality = 0, acc = 0, cnt = 0; const glEl = $('gl'); const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
   function frame(now) {
     requestAnimationFrame(frame); if (!visible) return;
-    const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now; const t = now / 1000, f = frac(), mode = Math.round(f);
+    const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now;
+    // adaptive quality: if the machine is slow, draw fewer pixels, then drop the shadows
+    acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, f = frac(), mode = Math.round(f);
     // camera
     const k0 = Math.floor(f), k1 = Math.min(N - 1, k0 + 1), e = reduce ? Math.round(f - k0) : smooth(f - k0), A = KF[k0], B = KF[k1];
     const tp = v3.set(...A.p).lerp(new THREE.Vector3(...B.p), e).clone(), tl = new THREE.Vector3(...A.l).lerp(new THREE.Vector3(...B.l), e);
@@ -416,13 +422,16 @@ if (renderer) {
     if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= 0.5;
     tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
     const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
+    // past the gallery the page is plain text: stop drawing
+    const idle3d = f > N - 1.55; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) return;
+    arm.root.visible = mode <= 5; place.visible = mode === 4; gal.visible = f > 4.2;
     // arm goals per section
     const hl = Math.floor(t / 2.4) % 6;
     if (mode !== cur.mode) { cur.mode = mode; [...prog.children].forEach((d, i) => d.classList.toggle('on', i === mode)); if (mode !== 4) { segs = []; resetCube(); grip = 1; } if (mode === 4) { where = 'A'; resetCube(); segs = cyc('A', 'B'); si = 0; el = 0; from = q.slice(); } }
     let usedIK = false;
     if (mode === 0 || mode === 3) {
       const p = pointerTarget(mode === 3 ? 1.0 : 0.6, t); target.visible = mode === 3; target.position.set(p[0], p[2], -p[1]); halo.scale.setScalar(1 + 0.12 * Math.sin(t * 3));
-      const r = DHArm.solveIK(STD, q, { p }, { limits: LIMITS, iters: 14, wOri: 0 }); for (let i = 0; i < 6; i++) qGoal[i] = r.q[i]; lastIK = { posErr: r.posErr, p }; usedIK = true;
+      const r = DHArm.solveIK(STD, q, { p }, { limits: LIMITS, iters: 7, wOri: 0 }); for (let i = 0; i < 6; i++) qGoal[i] = r.q[i]; lastIK = { posErr: r.posErr, p }; usedIK = true;
     } else { target.visible = false; }
     if (mode === 1) for (let i = 0; i < 6; i++) qGoal[i] = NEUTRAL[i] + (i === hl ? 34 * Math.sin(t * 1.5) : 0);
     if (mode === 2) { const w = [25 * Math.sin(t * 0.5), 14 * Math.sin(t * 0.7 + 1), 16 * Math.sin(t * 0.6 + 2), 40 * Math.sin(t * 0.8), 25 * Math.sin(t * 0.9), 60 * Math.sin(t * 1.1)]; for (let i = 0; i < 6; i++) qGoal[i] = NEUTRAL[i] + w[i]; }
@@ -435,9 +444,9 @@ if (renderer) {
     const rate = usedIK && mode === 3 ? 1 : mode === 4 ? 1 : 1 - Math.exp(-dt * 4);
     if (mode <= 4) { for (let i = 0; i < 6; i++) q[i] = lerp(q[i], qGoal[i], rate); arm.setPose(q); }
     sun.position.set(cam.l.x + 3.2, 5.5, cam.l.z + 2.4); sun.target.position.copy(cam.l);
-    if (mode >= 5) for (const m of models) if (Math.abs(GX(m.i) - cam.p.x) < 8) m.update(t);
+    if (gal.visible) for (const m of models) { const near = Math.abs(GX(m.i) - cam.p.x) < 6; gal.children[m.i].visible = near; if (near) m.update(t); }
     gripNow = lerp(gripNow, grip, 1 - Math.exp(-dt * 8)); for (const fg of fingers) fg.m.position.x = fg.side * (0.04 + 0.025 * gripNow);
-    place.visible = mode === 4; cube.visible = mode === 4;
+    cube.visible = mode === 4;
     // frames and tags
     axes.forEach((a, i) => { a.visible = mode === 2; });
     jointMats.forEach((m, i) => m.color.set(mode === 1 && i === hl ? '#2f6bff' : '#ff9f43'));

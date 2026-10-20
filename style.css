@@ -168,7 +168,7 @@ html body table.dh td.left, html body table.dh th.left { text-align: left; }
 #gl { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; transition: opacity 0.6s; }
 body.home { background: radial-gradient(120% 90% at 70% 40%, var(--surface) 0%, var(--bg) 62%); background-attachment: fixed; }
 body.home > .site-nav { position: sticky; z-index: 60; }
-.scene-sec { position: relative; z-index: 1; min-height: 100svh; display: flex; align-items: center; margin: 0 calc(-1 * var(--pad)); padding: 5rem var(--pad); }
+.scene-sec { position: relative; z-index: 1; min-height: 46svh; display: flex; align-items: center; margin: 0 calc(-1 * var(--pad)); padding: 2.5rem var(--pad); }
 .scene-sec.hero { align-items: flex-end; padding-bottom: 3.4rem; min-height: calc(100svh - 3.4rem); }
 .scene-sec.end { background: var(--bg); min-height: 0; padding-top: 5rem; align-items: flex-start; }
 .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; }
@@ -200,11 +200,16 @@ body.home > .site-nav { position: sticky; z-index: 60; }
 .jtag.on { opacity: 1; }
 .jtag.hl { background: var(--accent); color: #fff; }
 .jtag.hl b { color: #fff; }
-.progress { position: fixed; right: 1.1rem; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; gap: 0.4rem; }
-.progress i { display: block; width: 3px; height: 12px; background: var(--border); transition: background 0.3s, height 0.3s; }
+.progress { pointer-events: none; position: fixed; right: 0.6rem; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; gap: 0.4rem; }
+.progress i { pointer-events: auto; cursor: pointer; display: block; width: 3px; height: 12px; background: var(--border); transition: background 0.3s, height 0.3s; box-sizing: content-box; border: 0 solid transparent; border-width: 3px 8px; background-clip: content-box; }
 .progress i.on { background: var(--accent); height: 28px; }
 
-.scene-sec.gal { min-height: 78svh; }
+.scene-sec.gal { min-height: 34svh; padding: 1rem var(--pad); }
+.scene-sec.gal .panel { padding: 1.1rem 1.4rem; }
+.scene-sec.gal .panel h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); margin-bottom: 0.4rem; }
+.scene-sec.gal .panel p { margin-bottom: 0.5rem; }
+.scene-sec.gal .panel dl { font-size: 0.9rem; margin: 0.3rem 0 0.8rem; }
+.scene-sec.gal .panel dt { margin-top: 0.4rem; }
 .panel .rtag { color: var(--muted); margin: 0 0 0.8rem; }
 .panel .notation { margin-right: 0.6rem; }
 .panel dl { margin: 0.4rem 0 1.1rem; }
