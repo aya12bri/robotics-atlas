@@ -6,8 +6,10 @@
     <title>Robotics Atlas — robots, kinematics and 3D models</title>
     <meta name="description" content="An illustrated atlas of robot types: tasks, kinematic diagrams, DH tables and interactive 3D models." />
     <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" />
     <script type="importmap">
-      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" } }
     </script>
     <script src="helpers.js"></script>
     <script src="dharm.js"></script>
@@ -504,11 +506,12 @@ if (renderer) {
 
   function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
   size(); addEventListener('resize', size);
-  let quality = 0, acc = 0, cnt = 0; const glEl = $('gl'); const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
+  let lastDraw = 0, quality = 0, acc = 0, cnt = 0; const glEl = $('gl'); const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
   function frame(now) {
     requestAnimationFrame(frame); if (!visible) return;
+    if (LITE && now - lastDraw < 30) return; lastDraw = now;          // phones: 30 images per second are enough
     const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now;
     // adaptive quality: if the machine is slow, draw fewer pixels, then drop the shadows
     acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
@@ -569,7 +572,11 @@ if (renderer) {
     if (mode === 3) setTxt(readIK, 'ik', `target  x ${lastIK.p[0].toFixed(2)}  y ${lastIK.p[1].toFixed(2)}  z ${lastIK.p[2].toFixed(2)}\nerror   ${(lastIK.posErr * 1000).toFixed(1)} mm`);
     renderer.render(scene, camera);
   }
-  if (reduce) { frame(performance.now()); addEventListener('scroll', () => frame(performance.now()), { passive: true }); } else requestAnimationFrame(frame);
+  // compile every shader now (hero, gallery, shadows), so that scrolling never waits for the graphics card
+  const vis = [gal, place, cube, target, arm.root], was = vis.map((o) => o.visible); vis.forEach((o) => { o.visible = true; });
+  const start = () => { vis.forEach((o, i) => { o.visible = was[i]; }); if (reduce) { frame(performance.now()); addEventListener('scroll', () => frame(performance.now()), { passive: true }); } else requestAnimationFrame(frame); };
+  let started = false; const go = () => { if (!started) { started = true; start(); } };
+  Promise.race([renderer.compileAsync ? renderer.compileAsync(scene, camera) : Promise.resolve(), new Promise((r) => setTimeout(r, 2500))]).catch(() => {}).then(go); setTimeout(go, 3000);
 }
 
     </script>
