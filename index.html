@@ -252,6 +252,7 @@ new IntersectionObserver((en) => en.forEach((x) => { if (x.isIntersecting) x.tar
 // ---------- the roadmap: nodes with a checkbox, saved in the browser ----------
 const RM = {
   learn: { href: 'learn.html', tag: ['Basics', 'Bases'], min: 45, lv: 1, t: ['Learn the basics', 'Apprendre les bases'], d: ['Joints, degrees of freedom, frames and the DH table.', 'Liaisons, degrés de liberté, repères et tableau DH.'] },
+  maths: { href: 'learn-maths.html', tag: ['Course', 'Cours'], min: 90, lv: 1, t: ['Maths and motion', 'Maths et mouvement'], d: ['A 2-axis arm from zero: angles, DH and motion laws.', 'Un bras à 2 axes depuis zéro : angles, DH et lois de mouvement.'] },
   arm: { href: 'arm.html', tag: ['R-R-R', 'R-R-R'], min: 30, lv: 1, t: ['3-DOF arm', 'Bras 3 axes'], d: ['Your first kinematic diagram and DH table.', 'Votre premier schéma cinématique et tableau DH.'] },
   gantry: { href: 'gantry.html', tag: ['P-P-P', 'P-P-P'], min: 15, lv: 1, t: ['Cartesian gantry', 'Robot cartésien'], d: ['Sliding joints: the simplest kinematics.', 'Liaisons glissières : la cinématique la plus simple.'] },
   scara: { href: 'scara.html', tag: ['R-R-P-R', 'R-R-P-R'], min: 30, lv: 2, t: ['SCARA', 'SCARA'], d: ['Mixed joints and closed-form inverse kinematics.', 'Liaisons mixtes et cinématique inverse en formule fermée.'] },
@@ -259,15 +260,17 @@ const RM = {
   cobot: { href: 'cobot.html', tag: ['6 × R', '6 × R'], min: 30, lv: 2, t: ['Cobot (UR5)', 'Cobot (UR5)'], d: ['Offset wrist, safety and a real UR5 table.', 'Poignet décalé, sécurité et vrai tableau d\'un UR5.'] },
   delta: { href: 'delta.html', tag: ['Parallel', 'Parallèle'], min: 45, lv: 3, t: ['Delta robot', 'Robot Delta'], d: ['Parallel robots and closed loops.', 'Robots parallèles et boucles fermées.'] },
   mobile: { href: 'mobile.html', tag: ['2 wheels', '2 roues'], min: 30, lv: 2, t: ['Mobile robot', 'Robot mobile'], d: ['Wheel speeds, turning circle and odometry.', 'Vitesses des roues, cercle de virage et odométrie.'] },
+  model: { href: 'learn-model.html', tag: ['Full course', 'Cours complet'], min: 200, lv: 3, t: ['Robot modelling', 'Modélisation d\'un robot'], d: ['Master level: DHm, MGD, MGI, Jacobian, motion laws, dynamics.', 'Niveau Master : DHm, MGD, MGI, jacobienne, lois de mouvement, dynamique.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'mobile', 'wheels'];
+const RM_ORDER = ['learn', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'mobile', 'wheels', 'model'];
 const RM_ROWS = [
-  { phase: ['1 · Start here', '1 · Pour commencer'], c: 'learn' },
+  { phase: ['1 · Start here', '1 · Pour commencer'], c: 'learn', r: 'maths' },
   { phase: ['2 · Serial robots', '2 · Robots série'], c: 'arm', l: 'gantry', r: 'scara' },
   { c: 'articulated', l: 'cobot' },
   { phase: ['3 · Parallel robots', '3 · Robots parallèles'], c: 'delta' },
-  { phase: ['4 · Mobile robots', '4 · Robots mobiles'], c: 'mobile', r: 'wheels' }
+  { phase: ['4 · Mobile robots', '4 · Robots mobiles'], c: 'mobile', r: 'wheels' },
+  { phase: ['5 · Go further', '5 · Aller plus loin'], c: 'model' }
 ];
 const LVL = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
 const rmEl = $('roadmap'), prog = () => (window.RA && RA.progress) || { get: () => false, set() {}, clear() {} };
@@ -279,7 +282,7 @@ function paintRoad() {
   rmEl.querySelectorAll('.rm-node').forEach((el) => { const id = el.dataset.id, ok = P.get(id); el.classList.toggle('done', ok); el.classList.toggle('next', id === next); el.querySelector('input').checked = ok; el.querySelector('.lbl').textContent = ok ? L('Done', 'Fait') : L('Mark as done', 'Marquer comme fait'); });
   const pct = Math.round((done / RM_ORDER.length) * 100);
   $('rmProg').innerHTML = `<div class="rm-count"><b>${done}</b> / ${RM_ORDER.length} <span>${L('pages finished', 'pages terminées')}</span></div><div class="rm-bar"><i style="width:${pct}%"></i></div><div class="rm-actions">${next ? `<a class="btn" href="${RM[next].href}">${done ? L('Continue', 'Continuer') : L('Start', 'Commencer')}: ${RM[next].t[+FR]} →</a>` : `<span class="rm-win">${L('Everything is done, congratulations!', 'Tout est terminé, bravo !')}</span>`}${done ? `<button type="button" class="btn ghost" id="rmReset">${L('Reset', 'Réinitialiser')}</button>` : ''}</div>`;
-  const rs = $('rmReset'); if (rs) rs.addEventListener('click', () => { if (confirm(L('Clear your progress?', 'Effacer votre progression ?'))) prog().clear([...RM_ORDER, 'lesson-all']); });
+  const rs = $('rmReset'); if (rs) rs.addEventListener('click', () => { if (confirm(L('Clear your progress?', 'Effacer votre progression ?'))) prog().clear(Object.keys(prog().all ? prog().all() : {})); });
 }
 rmEl.addEventListener('change', (e) => { const i = e.target.closest('input[data-id]'); if (i) prog().set(i.dataset.id, i.checked); });
 addEventListener('ra-progress', paintRoad); paintRoad();
