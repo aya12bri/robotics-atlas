@@ -19,9 +19,9 @@
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];
   const UI = {
-    en: { home: 'Home', learn: 'Learn', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
+    en: { home: 'Home', learn: 'Learn', start: 'Where to start', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
           foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels' },
-    fr: { home: 'Accueil', learn: 'Apprendre', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
+    fr: { home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
           foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues' }
   };
 
@@ -147,7 +147,7 @@
   if (!document.querySelector('link[href*="fonts.googleapis"]')) {
     const f = document.createElement('link');
     f.rel = 'stylesheet';
-    f.href = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap';
+    f.href = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap';
     head.appendChild(f);
   }
   if (!head.querySelector('link[rel~=icon]')) {
@@ -169,15 +169,16 @@
     const nav = document.createElement('header');
     nav.className = 'site-nav';
     nav.innerHTML =
+      '<nav class="nav-l" aria-label="Main">' +
+      link('index.html', ui.home) + link('learn.html', ui.learn) + `<a href="index.html#start">${ui.start}</a>` + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
-      '<nav class="nav-links" aria-label="Main">' +
-      link('index.html', ui.home) + link('learn.html', ui.learn) +
-      `<div class="dd"><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false">${ui.robots} ▾</button><div class="dd-menu">` +
-      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + '</div></div></nav>' +
+      '<div class="nav-r">' +
+      `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
+      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + '</div></div>' +
       '<div class="nav-tools">' +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
       `<button class="icon-btn theme-btn" type="button" aria-label="${ui.theme}" title="${ui.theme}"></button>` +
-      `<button class="icon-btn nav-toggle" type="button" aria-label="${ui.menu}" aria-expanded="false">☰</button></div>`;
+      `<button class="icon-btn nav-toggle" type="button" aria-label="${ui.menu}" aria-expanded="false">☰</button></div></div>`;
     document.body.insertBefore(nav, document.body.firstChild);
 
     const themeBtn = nav.querySelector('.theme-btn');
@@ -192,12 +193,12 @@
       store.set('ra-lang', b.dataset.lang);
       location.reload();                                                    // the pages are built in JavaScript: reload keeps everything consistent
     }));
-    const links = nav.querySelector('.nav-links'), toggle = nav.querySelector('.nav-toggle');
+    const links = nav.querySelector('.nav-l'), toggle = nav.querySelector('.nav-toggle');
     const ddBtn = nav.querySelector('.dd-btn'), dd = nav.querySelector('.dd');
-    toggle.addEventListener('click', () => { const o = links.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(o)); });
+    toggle.addEventListener('click', () => { const o = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(o)); });
     ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
     document.addEventListener('click', () => { dd.classList.remove('open'); ddBtn.setAttribute('aria-expanded', 'false'); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { dd.classList.remove('open'); links.classList.remove('open'); } });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { dd.classList.remove('open'); nav.classList.remove('open'); } });
 
     const foot = document.createElement('footer');
     foot.className = 'site-foot';
@@ -208,6 +209,7 @@
       pager = `<div class="pager"><a href="${p[0]}">← ${p[1][lang]}</a><a href="${n[0]}">${n[1][lang]} →</a></div>`;
     }
     foot.innerHTML = pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
+      `<p class="by">${ui.by} <a href="https://github.com/aya12bri">Aya Briksine</a></p>` +
       `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a></p>`;
     document.body.appendChild(foot);
 
@@ -272,9 +274,50 @@
     }
   }
 
+  // ---------------------------------------------------------------- smooth scrolling between sections, and the active link in the bar
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let anim = 0;
+  function smoothTo(y) {
+    const y0 = window.scrollY, dist = y - y0;
+    if (reduceMotion || Math.abs(dist) < 2) { window.scrollTo(0, y); return; }
+    const dur = Math.min(1300, 550 + Math.abs(dist) * 0.35), t0 = performance.now(), id = ++anim;
+    root.classList.add('scrolling');
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    (function step(now) {
+      if (id !== anim) return;
+      const k = Math.min(1, (now - t0) / dur);
+      window.scrollTo(0, y0 + dist * ease(k));
+      if (k < 1) requestAnimationFrame(step); else root.classList.remove('scrolling');
+    })(t0);
+  }
+  ['wheel', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, () => { anim++; root.classList.remove('scrolling'); }, { passive: true }));
+  function wireScroll() {
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest && e.target.closest('a[href]'); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const u = new URL(a.href, location.href); if (u.origin !== location.origin || u.pathname !== location.pathname) return;
+      let y = null;
+      if (u.hash) { const t = document.getElementById(u.hash.slice(1)); if (t) y = t.getBoundingClientRect().top + window.scrollY - (t.matches('.scene-sec') ? 0 : 84); }
+      else if (/index\.html$|\/$/.test(u.pathname) && !u.search) y = 0;
+      if (y === null) return;
+      e.preventDefault(); history.replaceState(null, '', u.hash || u.pathname); smoothTo(Math.max(0, y)); document.querySelector('.site-nav').classList.remove('open');
+    });
+    if (here !== 'index.html') return;
+    const map = [['top', 'index.html'], ['gallery', 'index.html#gallery'], ['start', 'index.html#start']];
+    const marks = () => {
+      const mid = window.scrollY + innerHeight / 2; let cur = 'top';
+      for (const [id] of map) { const el = document.getElementById(id); if (el && el.offsetTop <= mid) cur = id; }
+      document.querySelectorAll('.nav-l a, .dd-link').forEach((a) => {
+        const h = a.getAttribute('href'), on = (cur === 'top' && h === 'index.html') || (cur === 'gallery' && h === 'index.html#gallery') || (cur === 'start' && h === 'index.html#start');
+        if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+      });
+    };
+    window.addEventListener('scroll', marks, { passive: true }); marks();
+  }
+
   function init() {
     build();
     robotPage();
+    wireScroll();
     if (lang === 'fr') loadDictionaries(startTranslation);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
