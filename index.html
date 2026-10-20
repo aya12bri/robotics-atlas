@@ -9,156 +9,121 @@
     <script src="nav.js" defer></script>
   </head>
   <body>
-    <section class="hero">
-      <div>
-        <h1>Robotics Atlas</h1>
-        <p class="lead">Every main type of robot, drawn the way engineers draw it: a <strong>kinematic diagram</strong>, its <strong>DH and DHM tables</strong>, and a <strong>3D model</strong> you move with sliders. No prior knowledge needed.</p>
+    <section class="opening" id="opening">
+      <canvas id="openCanvas" aria-hidden="true"></canvas>
+      <h1 class="kinetic" aria-label="Robotics Atlas"><span class="row">Robotics</span><span class="row">Atlas</span></h1>
+      <div class="opening-foot">
+        <p>Every main type of robot, drawn the way engineers draw it: a <strong>kinematic diagram</strong>, its <strong>DH and DHM tables</strong>, and a <strong>3D model</strong> you move with sliders. No prior knowledge needed.</p>
         <div class="cta">
           <a class="btn" href="learn.html">Start with the basics</a>
-          <a class="btn ghost" href="#robots">Browse the robots</a>
+          <a class="btn ghost" href="#atlas">Browse the robots</a>
         </div>
       </div>
-      <figure class="live">
-        <svg id="liveSvg" viewBox="0 0 480 340" role="img" aria-label="Two-link arm following the pointer">
-          <defs>
-            <pattern id="liveGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#ffffff" stroke-opacity="0.06"/></pattern>
-            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V8" stroke="#9fb0c3" stroke-width="1.4"/></pattern>
-          </defs>
-          <rect width="480" height="340" fill="url(#liveGrid)"/>
-          <circle id="liveOuter" cx="110" cy="238" r="240" fill="none" stroke="#9fb0c3" stroke-opacity="0.35" stroke-dasharray="4 5"/>
-          <rect x="0" y="262" width="480" height="14" fill="url(#hatch)" opacity="0.55"/>
-          <line x1="0" y1="262" x2="480" y2="262" stroke="#9fb0c3" stroke-width="1.5"/>
-          <path d="M92 262 L110 238 L128 262 Z" fill="#1b2633" stroke="#e8eef5" stroke-width="2"/>
-          <g id="liveArm">
-            <line id="liveL1" stroke="#ff9f43" stroke-width="9" stroke-linecap="round"/>
-            <line id="liveL2" stroke="#ff9f43" stroke-width="9" stroke-linecap="round"/>
-            <g id="liveJ1"><circle r="14" fill="#1b2633" stroke="#e8eef5" stroke-width="2.5"/><circle r="3.4" fill="#e8eef5"/></g>
-            <g id="liveJ2"><circle r="14" fill="#1b2633" stroke="#e8eef5" stroke-width="2.5"/><circle r="3.4" fill="#e8eef5"/></g>
-            <circle id="liveTip" r="6" fill="#e8eef5"/>
-          </g>
-          <g id="liveTarget" stroke="#5aa9ff" stroke-width="1.6"><line x1="-9" x2="9"/><line y1="-9" y2="9"/></g>
-          <text id="liveT1" fill="#ffffff" font-size="15" font-family="IBM Plex Mono, monospace"></text>
-          <text id="liveT2" fill="#ffffff" font-size="15" font-family="IBM Plex Mono, monospace"></text>
-          <text id="liveOut" x="16" y="26" fill="#cfd8e3" font-size="14" font-family="IBM Plex Mono, monospace"></text>
-        </svg>
-        <figcaption>Move your pointer over the drawing: the arm solves its inverse kinematics live.</figcaption>
-      </figure>
     </section>
 
-    <h2 id="robots">The robots</h2>
-    <div class="chips" id="chips">
-      <button class="on" data-f="all">All</button>
-      <button data-f="serial">Serial arms</button>
-      <button data-f="cartesian">Cartesian</button>
-      <button data-f="parallel">Parallel</button>
-      <button data-f="mobile">Mobile</button>
-    </div>
-    <div class="plates" id="grid">
-      <a class="plate" data-kind="serial" href="arm.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="52" width="20" height="6" rx="2"/><path d="M18 52 V38 L36 20 L54 24"/><circle cx="18" cy="38" r="3.5"/><circle cx="36" cy="20" r="3.5"/><path d="M54 24 l4 -4 M54 24 l4 4"/></svg>
-        <div>
+    <section class="atlas" id="atlas">
+      <header class="atlas-head">
+        <h2>Eight kinds of robots</h2>
+        <p>Scroll. The drawing follows the robot you are reading about.</p>
+      </header>
+      <div class="chapters">
+        <article class="chapter" id="plate-1">
+          <div class="num">01 / 08</div>
           <h3>3-DOF robot arm</h3>
           <p class="rtag"><span class="notation">R-R-R</span>3 degrees of freedom, serial arm</p>
           <p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd>
-          <dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd>
-        </dl>
-        <span class="plate-go">3D model</span>
-      </a>
-      <a class="plate" data-kind="cartesian" href="gantry.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M8 56 V10 H56 V56"/><path d="M8 24 H56"/><rect x="28" y="20" width="10" height="8" rx="1"/><path d="M33 28 V44 M29 44 H37"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd>
+            <dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd>
+          </dl>
+          <a class="btn go" href="arm.html">Open the 3D model</a>
+        </article>
+        <article class="chapter" id="plate-2">
+          <div class="num">02 / 08</div>
           <h3>Cartesian gantry</h3>
           <p class="rtag"><span class="notation">P-P-P</span>3 degrees of freedom, three sliding axes</p>
           <p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd>
-          <dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd>
-        </dl>
-        <span class="plate-go">3D model</span>
-      </a>
-      <a class="plate" data-kind="serial" href="scara.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="50" width="16" height="8" rx="2"/><path d="M16 50 V34 H34 L48 40"/><circle cx="16" cy="34" r="3.5"/><circle cx="34" cy="34" r="3.5"/><path d="M48 40 V56 M44 56 H52"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd>
+            <dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd>
+          </dl>
+          <a class="btn go" href="gantry.html">Open the 3D model</a>
+        </article>
+        <article class="chapter" id="plate-3">
+          <div class="num">03 / 08</div>
           <h3>SCARA</h3>
           <p class="rtag"><span class="notation">R-R-P-R</span>4 degrees of freedom, serial arm</p>
           <p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>Electronics assembly, screwing, dispensing, packaging, fast pick and place.</dd>
-          <dt>End effectors</dt><dd>Pinch gripper, vacuum nozzle, screwdriver, glue dispenser.</dd>
-        </dl>
-        <span class="plate-go">3D model and pick and place</span>
-      </a>
-      <a class="plate" data-kind="serial" href="articulated.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="52" width="22" height="6" rx="2"/><path d="M21 52 V34 L21 22 L42 12 L54 18"/><circle cx="21" cy="34" r="3.5"/><circle cx="21" cy="22" r="3.5"/><circle cx="42" cy="12" r="3.5"/><path d="M54 18 l5 -3 M54 18 l1 6"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>Electronics assembly, screwing, dispensing, packaging, fast pick and place.</dd>
+            <dt>End effectors</dt><dd>Pinch gripper, vacuum nozzle, screwdriver, glue dispenser.</dd>
+          </dl>
+          <a class="btn go" href="scara.html">Open the 3D model and the pick-and-place demo</a>
+        </article>
+        <article class="chapter" id="plate-4">
+          <div class="num">04 / 08</div>
           <h3>6-axis industrial robot</h3>
           <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, serial arm</p>
           <p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd>
-          <dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd>
-        </dl>
-        <span class="plate-go">3D model and pick and place</span>
-      </a>
-      <a class="plate" data-kind="serial" href="cobot.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="52" width="22" height="6" rx="2"/><path d="M19 52 V36 L40 24"/><circle cx="19" cy="36" r="5"/><circle cx="40" cy="24" r="5"/><path d="M44 27 L54 44 M50 44 H58"/><path d="M52 8 a8 8 0 0 1 8 8" stroke-dasharray="2 4"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd>
+            <dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd>
+          </dl>
+          <a class="btn go" href="articulated.html">Open the 3D model and the pick-and-place demo</a>
+        </article>
+        <article class="chapter" id="plate-5">
+          <div class="num">05 / 08</div>
           <h3>Collaborative robot (UR5)</h3>
           <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, works next to people</p>
           <p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd>
-          <dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd>
-        </dl>
-        <span class="plate-go">3D model and pick and place</span>
-      </a>
-      <a class="plate" data-kind="parallel" href="delta.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12 H54 L32 22 Z"/><path d="M14 13 L26 44 M50 13 L38 44 M32 21 L32 44"/><path d="M24 44 H40 L32 54 Z"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd>
+            <dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd>
+          </dl>
+          <a class="btn go" href="cobot.html">Open the 3D model and the pick-and-place demo</a>
+        </article>
+        <article class="chapter" id="plate-6">
+          <div class="num">06 / 08</div>
           <h3>Delta robot</h3>
           <p class="rtag"><span class="notation">3 × R</span>parallel robot, 3 arms and 1 optional rotation</p>
           <p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd>
-          <dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd>
-        </dl>
-        <span class="plate-go">3D model and pick and place</span>
-      </a>
-      <a class="plate" data-kind="mobile" href="mobile.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="26" width="44" height="18" rx="4"/><circle cx="20" cy="48" r="6"/><circle cx="44" cy="48" r="6"/><path d="M44 26 V16 H36"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd>
+            <dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd>
+          </dl>
+          <a class="btn go" href="delta.html">Open the 3D model and the pick-and-place demo</a>
+        </article>
+        <article class="chapter" id="plate-7">
+          <div class="num">07 / 08</div>
           <h3>Mobile robot (differential drive)</h3>
           <p class="rtag"><span class="notation">2 wheels</span>mobile robot, x, y and heading</p>
           <p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p>
-        </div>
-        <dl>
-          <dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd>
-          <dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd>
-        </dl>
-        <span class="plate-go">3D model and programs</span>
-      </a>
-      <a class="plate" data-kind="mobile" href="wheels.html">
-        <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><circle cx="32" cy="32" r="6"/><path d="M32 10 V26 M32 38 V54 M10 32 H26 M38 32 H54"/></svg>
-        <div>
+          <dl>
+            <dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd>
+            <dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd>
+          </dl>
+          <a class="btn go" href="mobile.html">Open the 3D model and the programs</a>
+        </article>
+        <article class="chapter" id="plate-8">
+          <div class="num">08 / 08</div>
           <h3>Wheels and mobile bases</h3>
           <p class="rtag"><span class="notation">5 wheels</span>reference and drive simulator</p>
           <p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p>
+          <dl>
+            <dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd>
+            <dt>End effectors</dt><dd>None: this page is about the base.</dd>
+          </dl>
+          <a class="btn go" href="wheels.html">Open the wheel catalogue and simulator</a>
+        </article>
+      </div>
+      <aside class="stage" aria-hidden="true">
+        <div class="stage-frame">
+          <canvas id="stageCanvas"></canvas>
+          <div class="stage-label" id="stageLabel">01 / 08</div>
+          <div class="stage-ticks" id="ticks"></div>
         </div>
-        <dl>
-          <dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd>
-          <dt>End effectors</dt><dd>None: this page is about the base.</dd>
-        </dl>
-        <span class="plate-go">Wheel catalogue and simulator</span>
-      </a>
-    </div>
+      </aside>
+    </section>
 
     <h2>Where to start?</h2>
     <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
@@ -188,62 +153,175 @@
     </div>
 
     <script>
-      // filter chips
-      (function () {
-        const chips = document.querySelectorAll('#chips button'), rows = document.querySelectorAll('#grid .plate');
-        chips.forEach((b) => b.addEventListener('click', () => {
-          chips.forEach((c) => c.classList.toggle('on', c === b));
-          rows.forEach((c) => c.classList.toggle('hide', b.dataset.f !== 'all' && c.dataset.kind !== b.dataset.f));
-        }));
-      })();
+(function () {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TAU = Math.PI * 2, lerp = (a, b, k) => a + (b - a) * k, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const $ = (id) => document.getElementById(id);
 
-      // the drawing in the first screen: a two-link arm, base at (110, 238), and its inverse kinematics
-      (function () {
-        const svg = document.getElementById('liveSvg'), $ = (id) => document.getElementById(id);
-        const O = { x: 110, y: 238 }, L1 = 130, L2 = 110, D2R = Math.PI / 180;
-        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        let target = { x: 300, y: 130 }, cur = { a: 0.9, b: -1.3 }, lastMove = -1e9;
-        function solve(x, y) {                                          // elbow up: two-link closed form
-          let dx = x - O.x, dy = O.y - y;                                // maths axes: x right, y up
-          const r = Math.hypot(dx, dy), maxr = (L1 + L2) * 0.999, minr = Math.abs(L1 - L2) * 1.001 + 1;
-          const k = r > maxr ? maxr / r : r < minr ? minr / (r || 1) : 1;
-          dx *= k; dy *= k;
-          const c2 = (dx * dx + dy * dy - L1 * L1 - L2 * L2) / (2 * L1 * L2);
-          const q2 = -Math.acos(Math.max(-1, Math.min(1, c2)));
-          const q1 = Math.atan2(dy, dx) - Math.atan2(L2 * Math.sin(q2), L1 + L2 * Math.cos(q2));
-          return { a: q1, b: q2, x: O.x + dx, y: O.y - dy };
-        }
-        function draw(s, t) {
-          const e = { x: O.x + L1 * Math.cos(s.a), y: O.y - L1 * Math.sin(s.a) };
-          const p = { x: e.x + L2 * Math.cos(s.a + s.b), y: e.y - L2 * Math.sin(s.a + s.b) };
-          const set = (id, o) => { for (const k in o) $(id).setAttribute(k, o[k]); };
-          set('liveL1', { x1: O.x, y1: O.y, x2: e.x, y2: e.y }); set('liveL2', { x1: e.x, y1: e.y, x2: p.x, y2: p.y });
-          $('liveJ1').setAttribute('transform', `translate(${O.x} ${O.y})`); $('liveJ2').setAttribute('transform', `translate(${e.x} ${e.y})`);
-          set('liveTip', { cx: p.x, cy: p.y });
-          $('liveTarget').setAttribute('transform', `translate(${t.x} ${t.y})`);
-          set('liveT1', { x: O.x - 56, y: O.y + 34 }); $('liveT1').textContent = 'θ1';
-          set('liveT2', { x: e.x + 20, y: e.y - 16 }); $('liveT2').textContent = 'θ2';
-          $('liveOut').textContent = `θ1 = ${(s.a / D2R).toFixed(1)}°   θ2 = ${(s.b / D2R).toFixed(1)}°`;
-        }
-        function toSvg(ev) {
-          const r = svg.getBoundingClientRect();
-          return { x: ((ev.clientX - r.left) / r.width) * 480, y: ((ev.clientY - r.top) / r.height) * 340 };
-        }
-        svg.addEventListener('pointermove', (ev) => { target = toSvg(ev); lastMove = performance.now(); if (reduce) tick(0); });
-        svg.addEventListener('pointerdown', (ev) => { target = toSvg(ev); lastMove = performance.now(); if (reduce) tick(0); });
-        function tick(now) {
-          if (!reduce && now - lastMove > 2500) {                       // nobody is playing: the arm draws a slow loop by itself
-            const t = now / 1000;
-            target = { x: 290 + 110 * Math.cos(t * 0.5), y: 140 + 70 * Math.sin(t * 0.8) };
-          }
-          const s = solve(target.x, target.y);
-          if (reduce) { cur = s; } else { cur.a += (s.a - cur.a) * 0.14; cur.b += (s.b - cur.b) * 0.14; }
-          draw(cur, s);
-          if (!reduce) requestAnimationFrame(tick);
-        }
-        tick(0);
-        if (!reduce) requestAnimationFrame(tick);
-      })();
+  // ---------- one shared "target": the pointer, or an autopilot when nobody plays ----------
+  const pointer = { x: 0, y: 0, last: -1e9, has: false };
+  addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.last = performance.now(); pointer.has = true; }, { passive: true });
+
+  // ---------- 1. the opening ----------
+  const opening = $('opening'), oc = $('openCanvas'), octx = oc.getContext('2d');
+  const letters = [];
+  document.querySelectorAll('.kinetic .row').forEach((row, r) => {
+    const txt = row.textContent.trim(); row.textContent = '';
+    [...txt].forEach((c, i) => {
+      const s = document.createElement('span'); s.className = 'ch'; s.setAttribute('aria-hidden', 'true'); s.textContent = c;
+      s.style.setProperty('--i', String(r * 8 + i)); row.appendChild(s); letters.push({ el: s, w: 62, g: 800 });
+    });
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('loaded')));
+  let ow = 0, oh = 0, dpr = 1, colText = '#ececec', colHl = '#ff9f43', colLine = 'rgba(255,255,255,.16)', frame = 0;
+  function sizeOpen() { dpr = Math.min(2, devicePixelRatio || 1); ow = opening.clientWidth; oh = opening.clientHeight; oc.width = ow * dpr; oc.height = oh * dpr; }
+  sizeOpen(); addEventListener('resize', sizeOpen);
+  const arm = { a: 1.0, b: -1.4, born: performance.now() };
+  function drawOpening(now) {
+    if (frame++ % 20 === 0) { const cs = getComputedStyle(root); colText = cs.getPropertyValue('--text').trim() || colText; colHl = cs.getPropertyValue('--hl').trim() || colHl; colLine = cs.getPropertyValue('--line').trim() || colLine; }
+    const rect = opening.getBoundingClientRect();
+    let tx, ty;
+    if (pointer.has && now - pointer.last < 2500) { tx = pointer.x - rect.left; ty = pointer.y - rect.top; }
+    else { const t = now / 1000; tx = ow * (0.58 + 0.2 * Math.cos(t * 0.45)); ty = oh * (0.34 + 0.16 * Math.sin(t * 0.7)); }
+    const base = { x: ow * 0.16, y: oh * 0.60 };
+    const L1 = Math.min(ow * 0.30, oh * 0.5), L2 = Math.min(ow * 0.26, oh * 0.42);
+    let dx = tx - base.x, dy = base.y - ty;
+    const r = Math.hypot(dx, dy) || 1, mx = (L1 + L2) * 0.998, mn = Math.abs(L1 - L2) * 1.01 + 2, k = r > mx ? mx / r : r < mn ? mn / r : 1;
+    dx *= k; dy *= k;
+    const c2 = clamp((dx * dx + dy * dy - L1 * L1 - L2 * L2) / (2 * L1 * L2), -1, 1), q2 = -Math.acos(c2);
+    const q1 = Math.atan2(dy, dx) - Math.atan2(L2 * Math.sin(q2), L1 + L2 * Math.cos(q2));
+    arm.a = lerp(arm.a, q1, reduce ? 1 : 0.12); arm.b = lerp(arm.b, q2, reduce ? 1 : 0.12);
+    const born = clamp((now - arm.born - 700) / 1100, 0, 1), e = 1 - Math.pow(1 - born, 3);
+    octx.setTransform(dpr, 0, 0, dpr, 0, 0); octx.clearRect(0, 0, ow, oh);
+    octx.globalAlpha = e;
+    octx.lineCap = 'round';
+    // workspace
+    octx.strokeStyle = colLine; octx.lineWidth = 1.2; octx.setLineDash([5, 7]);
+    octx.beginPath(); octx.arc(base.x, base.y, L1 + L2, 0, TAU); octx.stroke();
+    octx.beginPath(); octx.arc(base.x, base.y, Math.abs(L1 - L2), 0, TAU); octx.stroke(); octx.setLineDash([]);
+    // ground and base
+    octx.beginPath(); octx.moveTo(0, base.y + 26); octx.lineTo(ow, base.y + 26); octx.stroke();
+    // links
+    const el = { x: base.x + L1 * Math.cos(arm.a) * e, y: base.y - L1 * Math.sin(arm.a) * e };
+    const tp = { x: el.x + L2 * Math.cos(arm.a + arm.b) * e, y: el.y - L2 * Math.sin(arm.a + arm.b) * e };
+    octx.strokeStyle = colHl; octx.lineWidth = Math.max(10, ow * 0.011);
+    octx.beginPath(); octx.moveTo(base.x, base.y); octx.lineTo(el.x, el.y); octx.lineTo(tp.x, tp.y); octx.stroke();
+    const jr = Math.max(16, ow * 0.017);
+    for (const p of [base, el]) {
+      octx.fillStyle = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; octx.strokeStyle = colText; octx.lineWidth = 3;
+      octx.beginPath(); octx.arc(p.x, p.y, jr, 0, TAU); octx.fill(); octx.stroke();
+      octx.fillStyle = colText; octx.beginPath(); octx.arc(p.x, p.y, jr * 0.25, 0, TAU); octx.fill();
+    }
+    octx.fillStyle = colText; octx.beginPath(); octx.arc(tp.x, tp.y, jr * 0.4, 0, TAU); octx.fill();
+    octx.globalAlpha = 1;
+    // the letters lean towards the arm tip
+    if (!reduce) for (const L of letters) {
+      const b = L.el.getBoundingClientRect(), cx = b.left + b.width / 2 - rect.left, cy = b.top + b.height / 2 - rect.top;
+      const d = Math.hypot(cx - tp.x, (cy - tp.y) * 0.7), infl = Math.exp(-Math.pow(d / (ow * 0.15), 2));
+      L.w = lerp(L.w, 62 + infl * 63, 0.16); L.g = lerp(L.g, 800 - infl * 330, 0.16);
+      L.el.style.fontVariationSettings = `'wdth' ${L.w.toFixed(1)}, 'wght' ${L.g.toFixed(0)}`;
+    }
+  }
+
+  // ---------- 2. the atlas: eight animated drawings ----------
+  const stage = $('stageCanvas'), sctx = stage.getContext('2d'), chapters = [...document.querySelectorAll('.chapter')];
+  const ticks = $('ticks'), slabel = $('stageLabel');
+  chapters.forEach(() => ticks.appendChild(document.createElement('i')));
+  let sw = 0, sh = 0, active = 0, switched = performance.now(), trail = [];
+  function sizeStage() { const r = stage.parentElement.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); sw = r.width; sh = r.height; stage.width = sw * dpr; stage.height = sh * dpr; }
+  sizeStage(); addEventListener('resize', sizeStage);
+  const OR = '#ff9f43', INK = '#ececec', DIM = '#8a8a8a', PANEL = '#262626';
+  const P = (x, y) => [x, y];
+  function ln(a, b, w, c) { sctx.strokeStyle = c || OR; sctx.lineWidth = w || 9; sctx.lineCap = 'round'; sctx.beginPath(); sctx.moveTo(a[0], a[1]); sctx.lineTo(b[0], b[1]); sctx.stroke(); }
+  function joint(p, r) { r = r || 11; sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.beginPath(); sctx.arc(p[0], p[1], r, 0, TAU); sctx.fill(); sctx.stroke(); sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(p[0], p[1], r * 0.26, 0, TAU); sctx.fill(); }
+  function dot(p, r) { sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(p[0], p[1], r || 5, 0, TAU); sctx.fill(); }
+  function ground(y, x0, x1) { ln([x0, y], [x1, y], 2, INK); sctx.strokeStyle = DIM; sctx.lineWidth = 1.4; for (let x = x0; x < x1; x += 13) { sctx.beginPath(); sctx.moveTo(x, y); sctx.lineTo(x - 9, y + 11); sctx.stroke(); } }
+  function txt(s, x, y, c) { sctx.fillStyle = c || DIM; sctx.font = '14px "IBM Plex Mono", monospace'; sctx.fillText(s, x, y); }
+  function chain(base, lens, angs) { const pts = [base]; let a = 0, p = base; lens.forEach((l, i) => { a += angs[i]; p = [p[0] + l * Math.cos(a), p[1] - l * Math.sin(a)]; pts.push(p); }); return pts; }
+  function circInter(c0, r0, c1, r1, sign) { const dx = c1[0] - c0[0], dy = c1[1] - c0[1], d = Math.hypot(dx, dy), a = (r0 * r0 - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, r0 * r0 - a * a)); const mx = c0[0] + a * dx / d, my = c0[1] + a * dy / d; return [mx + sign * h * dy / d, my - sign * h * dx / d]; }
+
+  const DRAW = [
+    (t) => { // 3-DOF arm
+      ground(432, 90, 330); sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(160, 410, 80, 22);
+      const pts = chain([200, 410], [150, 130, 80], [1.15 + 0.35 * Math.sin(t * 0.9), -1.1 + 0.5 * Math.sin(t * 1.2 + 1), 0.3 * Math.sin(t * 0.7)]);
+      for (let i = 0; i < 3; i++) ln(pts[i], pts[i + 1]);
+      pts.slice(0, 3).forEach((p) => joint(p)); dot(pts[3]); txt('q1', 150, 400); txt('q2', pts[1][0] + 18, pts[1][1] - 10); txt('q3', pts[2][0] + 14, pts[2][1] - 10);
+    },
+    (t) => { // gantry
+      ground(440, 60, 580); ln([120, 110], [120, 440], 12, DIM); ln([520, 110], [520, 440], 12, DIM); ln([100, 110], [540, 110], 14, DIM);
+      const x = 320 + 150 * Math.sin(t * 0.8), z = 70 + 90 * (0.5 + 0.5 * Math.sin(t * 1.7)); sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.fillRect(x - 26, 92, 52, 36); sctx.strokeRect(x - 26, 92, 52, 36);
+      ln([x, 128], [x, 128 + z], 10); ln([x - 16, 128 + z], [x + 16, 128 + z], 6, INK); ln([x - 16, 128 + z], [x - 16, 140 + z], 6, INK); ln([x + 16, 128 + z], [x + 16, 140 + z], 6, INK);
+      sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(250, 410, 70, 30); sctx.strokeRect(380, 395, 60, 45); txt('q1', x - 8, 84); txt('q3', x + 20, 128 + z / 2);
+    },
+    (t) => { // SCARA, top view
+      const c = [320, 270], a = t * 0.6, b = 1.5 * Math.sin(t * 0.9) + 0.2, L1 = 140, L2 = 110;
+      sctx.strokeStyle = DIM; sctx.lineWidth = 1.2; sctx.setLineDash([5, 7]); sctx.beginPath(); sctx.arc(c[0], c[1], L1 + L2, 0, TAU); sctx.stroke(); sctx.beginPath(); sctx.arc(c[0], c[1], L1 - L2, 0, TAU); sctx.stroke(); sctx.setLineDash([]);
+      const e = [c[0] + L1 * Math.cos(a), c[1] - L1 * Math.sin(a)], p = [e[0] + L2 * Math.cos(a + b), e[1] - L2 * Math.sin(a + b)];
+      trail.push(p); if (trail.length > 90) trail.shift(); sctx.strokeStyle = 'rgba(255,159,67,.35)'; sctx.lineWidth = 2; sctx.beginPath(); trail.forEach((q, i) => (i ? sctx.lineTo(q[0], q[1]) : sctx.moveTo(q[0], q[1]))); sctx.stroke();
+      ln(c, e); ln(e, p); joint(c, 14); joint(e); sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(p[0] - 9, p[1] - 9, 18, 18); txt('q1', c[0] - 40, c[1] + 34); txt('q2', e[0] + 14, e[1] - 12);
+    },
+    (t) => { // 6-axis, side view
+      ground(440, 70, 330); sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(140, 412, 80, 28);
+      const sh = [180, 350]; ln([180, 412], sh, 18, '#d9d9d9');
+      const pts = chain(sh, [150, 140, 34, 34], [1.1 + 0.3 * Math.sin(t * 0.8), -1.15 + 0.4 * Math.sin(t * 1.1), 0.3 * Math.sin(t * 1.5), 0.4 * Math.sin(t * 1.9)]);
+      for (let i = 0; i < 4; i++) ln(pts[i], pts[i + 1], i < 2 ? 14 : 9); pts.slice(0, 5).forEach((p, i) => joint(p, i < 3 ? 11 : 7));
+      dot(pts[4], 6); txt('q1…q6', 150, 468);
+    },
+    (t) => { // cobot
+      ground(440, 70, 330); sctx.fillStyle = '#d9d9d9'; sctx.fillRect(150, 400, 60, 40);
+      const sh = [180, 370]; ln([180, 400], sh, 26, '#d9d9d9');
+      const pts = chain(sh, [150, 130, 44], [1.05 + 0.3 * Math.sin(t * 0.8), -1.2 + 0.45 * Math.sin(t * 1.1), 0.35 * Math.sin(t * 1.4)]);
+      for (let i = 0; i < 3; i++) ln(pts[i], pts[i + 1], 24, '#d9d9d9'); pts.slice(0, 4).forEach((p) => { sctx.fillStyle = OR; sctx.beginPath(); sctx.arc(p[0], p[1], 15, 0, TAU); sctx.fill(); sctx.fillStyle = PANEL; sctx.beginPath(); sctx.arc(p[0], p[1], 4, 0, TAU); sctx.fill(); });
+      sctx.strokeStyle = DIM; sctx.lineWidth = 1.4; sctx.setLineDash([6, 6]); sctx.beginPath(); sctx.arc(180, 370, 330, -1.2, -0.1); sctx.stroke(); sctx.setLineDash([]); txt('limited force and speed', 360, 150);
+    },
+    (t) => { // delta
+      for (let x = 120; x < 520; x += 12) { sctx.strokeStyle = DIM; sctx.lineWidth = 1.2; sctx.beginPath(); sctx.moveTo(x, 78); sctx.lineTo(x + 10, 66); sctx.stroke(); } ln([120, 78], [520, 78], 3, INK);
+      const px = 320 + 80 * Math.cos(t * 1.1), py = 330 + 50 * Math.sin(t * 1.7), M = [[240, 78], [400, 78]], A = [[px - 34, py], [px + 34, py]];
+      M.forEach((m, i) => { const e = circInter(m, 110, A[i], 200, i === 0 ? 1 : -1); const lo = circInter(m, 110, A[i], 200, i === 0 ? -1 : 1); const el = (i === 0 ? (e[0] < lo[0] ? e : lo) : (e[0] > lo[0] ? e : lo)); ln(m, el, 10); for (const o of [-5, 5]) ln([el[0] + o, el[1]], [A[i][0] + o, A[i][1]], 2.5, INK); joint(m, 13); joint(el, 8); });
+      ln([320, 78], [px, py - 14], 3, DIM); ln(A[0], A[1], 12); ln([px, py], [px, py + 40], 6, INK); ln([px - 14, py + 40], [px + 14, py + 40], 5, INK);
+      sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(190, 430, 260, 18); txt('three motors, one platform', 215, 472);
+    },
+    (t) => { // mobile, top view
+      const w = t * 0.5, x = 320 + 190 * Math.sin(w), y = 270 + 120 * Math.sin(2 * w), dx = 190 * Math.cos(w), dy = 240 * Math.cos(2 * w), h = Math.atan2(dy, dx);
+      trail.push([x, y]); if (trail.length > 160) trail.shift(); sctx.strokeStyle = 'rgba(255,159,67,.4)'; sctx.lineWidth = 2; sctx.beginPath(); trail.forEach((q, i) => (i ? sctx.lineTo(q[0], q[1]) : sctx.moveTo(q[0], q[1]))); sctx.stroke();
+      sctx.save(); sctx.translate(x, y); sctx.rotate(h); sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.fillRect(-34, -22, 68, 44); sctx.strokeRect(-34, -22, 68, 44);
+      sctx.fillStyle = OR; sctx.fillRect(-14, -31, 28, 9); sctx.fillRect(-14, 22, 28, 9); sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(-30, 0, 3, 0, TAU); sctx.fill(); sctx.beginPath(); sctx.moveTo(34, 0); sctx.lineTo(18, -8); sctx.lineTo(18, 8); sctx.closePath(); sctx.fill(); sctx.restore();
+      txt('vL', 40, 60); txt('vR', 40, 80); txt('x, y, heading', 40, 500);
+    },
+    (t) => { // Mecanum wheel
+      const c = [320, 250], R = 118, ang = t * 0.9; sctx.strokeStyle = INK; sctx.lineWidth = 3; sctx.beginPath(); sctx.arc(c[0], c[1], R, 0, TAU); sctx.stroke(); sctx.beginPath(); sctx.arc(c[0], c[1], R - 34, 0, TAU); sctx.stroke();
+      for (let k = 0; k < 12; k++) { const a = ang + k * TAU / 12; sctx.save(); sctx.translate(c[0] + (R - 17) * Math.cos(a), c[1] + (R - 17) * Math.sin(a)); sctx.rotate(a + Math.PI / 2 + Math.PI / 4); sctx.fillStyle = OR; sctx.beginPath(); sctx.ellipse(0, 0, 26, 10, 0, 0, TAU); sctx.fill(); sctx.restore(); }
+      for (let k = 0; k < 6; k++) { const a = ang + k * TAU / 6; ln(c, [c[0] + (R - 38) * Math.cos(a), c[1] + (R - 38) * Math.sin(a)], 3, DIM); } joint(c, 20);
+      ground(c[1] + R + 6, 100, 540); ln([430, 400], [500, 340], 3, INK); txt('rollers at 45°', 380, 430);
+    }
+  ];
+  function setActive(i) { if (i === active) return; active = i; switched = performance.now(); trail = []; paintChapters(); }
+  function paintChapters() {
+    chapters.forEach((c, k) => c.classList.toggle('on', k === active)); [...ticks.children].forEach((t, k) => t.classList.toggle('on', k === active));
+    slabel.textContent = `${String(active + 1).padStart(2, '0')} / ${String(chapters.length).padStart(2, '0')}`;
+  }
+  function pickChapter() { const mid = innerHeight * (innerWidth < 900 ? 0.62 : 0.5); let best = 0, bd = 1e9; chapters.forEach((c, k) => { const r = c.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = k; } }); setActive(best); }
+  addEventListener('scroll', pickChapter, { passive: true }); addEventListener('resize', pickChapter); paintChapters(); pickChapter();
+  function drawStage(now) {
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0); sctx.clearRect(0, 0, sw, sh);
+    const s = Math.min(sw / 640, sh / 520), fade = reduce ? 1 : clamp((now - switched) / 450, 0, 1);
+    sctx.save(); sctx.translate((sw - 640 * s) / 2, (sh - 520 * s) / 2 + (1 - fade) * 14); sctx.scale(s, s); sctx.globalAlpha = fade;
+    DRAW[active](reduce ? 1.2 : now / 1000); sctx.restore();
+  }
+
+  // ---------- one loop, only for what is on screen ----------
+  let openVisible = true, stageVisible = false;
+  new IntersectionObserver((e) => { openVisible = e[0].isIntersecting; }).observe(opening);
+  new IntersectionObserver((e) => { stageVisible = e[0].isIntersecting; }).observe(stage.parentElement);
+  function loop(now) { if (openVisible && !document.hidden) drawOpening(now); if (stageVisible && !document.hidden && !reduce) drawStage(now); requestAnimationFrame(loop); }
+  if (reduce) { drawOpening(performance.now()); drawStage(performance.now()); addEventListener('scroll', () => drawStage(performance.now()), { passive: true }); addEventListener('pointermove', () => drawOpening(performance.now() + 5000), { passive: true }); }
+  requestAnimationFrame(loop);
+
+  // theme changes: repaint colours at once
+  new MutationObserver(() => { frame = 0; }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+
     </script>
   </body>
 </html>

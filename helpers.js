@@ -141,7 +141,7 @@ const RB = (function () {
   function label(svg, x, y, str, color = '#cfd8e3', size = 16, anchor = 'start') {
     const t = shape(svg, 'text', {
       x, y, fill: color, 'font-size': size, 'text-anchor': anchor,
-      stroke: '#1b2633', 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round'
+      stroke: '#262626', 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round'
     });
     t.textContent = str;
     return t;

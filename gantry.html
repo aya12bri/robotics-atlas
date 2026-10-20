@@ -48,7 +48,7 @@
       </label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
-         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
     <p>
       Each square is a sliding joint (prismatic), and the grey bar is its full travel.
       The orange line is the path from the base to the tool: first along q1, then q2, then q3.
@@ -111,7 +111,7 @@ z0 = q1             (along the long rails)</pre>
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#1b2633');
+      scene.background = new THREE.Color('#262626');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(2.0, 1.5, 1.6);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -120,11 +120,11 @@ z0 = q1             (along the long rails)</pre>
       const orbit = new OrbitControls(camera, renderer.domElement);
       orbit.target.set(0.5, 0.55, -0.4);
 
-      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2));
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      scene.add(new THREE.GridHelper(6, 12, '#667788', '#334455'));
+      scene.add(new THREE.GridHelper(6, 12, '#7a7a7a', '#3a3a3a'));
 
       const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
       const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
