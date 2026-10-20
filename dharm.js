@@ -18,7 +18,7 @@ const DHArm = (function () {
     const matLink = mat(look.link, 0.45, 0.2);
     const matJoint = mat(look.joint, 0.35, 0.35);
     const matCap = mat(look.cap, 0.5, 0.1);
-    const matBase = mat('#4a5568', 0.6, 0.3);
+    const matBase = mat('#4a4a4a', 0.6, 0.3);
 
     const root = new THREE.Group();                       // Y-up wrapper: this is what you add to the scene
     const zup = new THREE.Group();
@@ -72,7 +72,7 @@ const DHArm = (function () {
       });
       root.updateMatrixWorld(true);
     }
-    return { root, frames, setPose, materials: { link: matLink, joint: matJoint, cap: matCap } };
+    return { root, frames, rot: R, setPose, materials: { link: matLink, joint: matJoint, cap: matCap } };
   }
 
   // ---------------------------------------------------------------------------------------------

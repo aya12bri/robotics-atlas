@@ -6,238 +6,144 @@
     <title>Robotics Atlas — robots, kinematics and 3D models</title>
     <meta name="description" content="An illustrated atlas of robot types: tasks, kinematic diagrams, DH tables and interactive 3D models." />
     <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+    </script>
+    <script src="helpers.js"></script>
+    <script src="dharm.js"></script>
     <script src="nav.js" defer></script>
   </head>
-  <body>
-    <section class="opening" id="opening">
-      <canvas id="openCanvas" aria-hidden="true"></canvas>
-      <h1 class="kinetic" aria-label="Robotics Atlas"><span class="row">Robotics</span><span class="row">Atlas</span></h1>
-      <div class="opening-foot">
-        <p>Every main type of robot, drawn the way engineers draw it: a <strong>kinematic diagram</strong>, its <strong>DH and DHM tables</strong>, and a <strong>3D model</strong> you move with sliders. No prior knowledge needed.</p>
-        <div class="cta">
-          <a class="btn" href="learn.html">Start with the basics</a>
-          <a class="btn ghost" href="#atlas">Browse the robots</a>
+  <body class="home">
+    <canvas id="gl" class="wide" aria-hidden="true"></canvas>
+    <div class="progress wide" id="progress" aria-hidden="true"></div>
+    <div class="jtag wide" id="jt0"></div>
+    <div class="jtag wide" id="jt1"></div>
+    <div class="jtag wide" id="jt2"></div>
+    <div class="jtag wide" id="jt3"></div>
+    <div class="jtag wide" id="jt4"></div>
+    <div class="jtag wide" id="jt5"></div>
+
+    <section class="scene-sec hero wide">
+      <div class="wrap">
+        <h1 class="hero-title" aria-label="Robotics Atlas"><span class="row">Robotics</span><span class="row">Atlas</span></h1>
+        <div class="hero-foot">
+          <p>Every main type of robot, drawn the way engineers draw it: a <strong>kinematic diagram</strong>, its <strong>DH and DHM tables</strong>, and a <strong>3D model</strong> you move with sliders. No prior knowledge needed.</p>
+          <div class="cta">
+            <a class="btn" href="learn.html">Start with the basics</a>
+            <a class="btn ghost" href="#robots">Browse the robots</a>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true">Scroll</div>
+    </section>
+
+    <section class="scene-sec wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">01 / 04</p>
+        <h2>Every robot is a chain of joints</h2>
+        <p>Each tag is one joint. A joint turns (R) or slides (P): its value is an angle or a distance. Six joints are enough to put a tool anywhere, at any angle.</p>
+        <p>The highlighted joint moves, the others wait.</p>
+      </div></div>
+    </section>
+
+    <section class="scene-sec wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">02 / 04</p>
+        <h2>Frames, then one table</h2>
+        <p>Attach a frame to every joint: z along the joint axis, x along the common perpendicular. Four numbers per joint describe the whole robot. This is the DH table, and the angles in it are live.</p>
+        <table class="dh"><thead><tr><th>i</th><th>θ</th><th>d</th><th>a</th><th>α</th></tr></thead><tbody id="dhBody"></tbody></table>
+      </div></div>
+    </section>
+
+    <section class="scene-sec wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">03 / 04</p>
+        <h2>Say where, the robot finds how</h2>
+        <p>Move your pointer. The blue marker is the target, and the robot solves its inverse kinematics on every frame to put the tool on it.</p>
+        <div class="read" id="readIK"></div>
+      </div></div>
+    </section>
+
+    <section class="scene-sec wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">04 / 04</p>
+        <h2>Pick, carry, place</h2>
+        <p>Four poses computed by the same solver: above the cube, on the cube, above the second pad, and on it. The robot pages let you take control.</p>
+        <div class="read" id="readDemo"></div>
+      </div></div>
+    </section>
+
+    <section class="scene-sec end wide" id="robots">
+      <div class="wrap">
+        <h2 class="robots-h">Choose a robot</h2>
+        <p class="robots-sub">Eight machines, each with its kinematic diagram, its DH tables and a 3D model. Hover a card to see it move.</p>
+        <div class="rgrid">
+        <a class="rc" href="arm.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>3-DOF robot arm</h3><span class="notation">R-R-R</span><p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p></div></a>
+        <a class="rc" href="gantry.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Cartesian gantry</h3><span class="notation">P-P-P</span><p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p></div></a>
+        <a class="rc" href="scara.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>SCARA</h3><span class="notation">R-R-P-R</span><p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p></div></a>
+        <a class="rc" href="articulated.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>6-axis industrial robot</h3><span class="notation">6 × R</span><p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p></div></a>
+        <a class="rc" href="cobot.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Collaborative robot (UR5)</h3><span class="notation">6 × R</span><p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p></div></a>
+        <a class="rc" href="delta.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Delta robot</h3><span class="notation">3 × R</span><p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p></div></a>
+        <a class="rc" href="mobile.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Mobile robot (differential drive)</h3><span class="notation">2 wheels</span><p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p></div></a>
+        <a class="rc" href="wheels.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Wheels and mobile bases</h3><span class="notation">5 wheels</span><p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p></div></a>
+        </div>
+
+        <h2>Where to start?</h2>
+        <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
+        <ol class="path">
+          <li><a href="learn.html">Learn the basics</a><br>Joints, degrees of freedom, frames, DH.</li>
+          <li><a href="arm.html">3-DOF arm</a><br>Your first kinematic diagram.</li>
+          <li><a href="gantry.html">Cartesian gantry</a><br>Prismatic joints.</li>
+          <li><a href="scara.html">SCARA</a><br>Mixed joints, closed-form inverse kinematics.</li>
+          <li><a href="articulated.html">6-axis robot</a><br>The wrist, singularities, numerical IK.</li>
+          <li><a href="cobot.html">Cobot</a><br>Offset wrist and safety.</li>
+          <li><a href="delta.html">Delta robot</a><br>Parallel robots and closed loops.</li>
+          <li><a href="mobile.html">Mobile robot</a><br>Wheels, then <a href="wheels.html">drive types</a>.</li>
+        </ol>
+
+        <h2>Robots side by side</h2>
+        <div class="cmp-wrap">
+          <table class="dh">
+            <tr><th>Robot</th><th>Joints</th><th>DOF</th><th>Speed</th><th>Payload</th><th>Workspace</th><th>Typical job</th></tr>
+            <tr><td>3-DOF arm</td><td>R-R-R</td><td>3</td><td>Medium</td><td>Low</td><td>Sphere-like</td><td>Teaching, light handling</td></tr>
+            <tr><td>Cartesian gantry</td><td>P-P-P</td><td>3</td><td>Medium</td><td>Medium to high</td><td>Box</td><td>CNC, 3D printing, picking</td></tr>
+            <tr><td>SCARA</td><td>R-R-P-R</td><td>4</td><td>High</td><td>Low to medium</td><td>Cylinder, flat</td><td>Assembly from above</td></tr>
+            <tr><td>6-axis industrial</td><td>6 × R</td><td>6</td><td>High</td><td>5 to 1000+ kg</td><td>Large sphere</td><td>Welding, painting, handling</td></tr>
+            <tr><td>Cobot</td><td>6 × R</td><td>6</td><td>Limited (safety)</td><td>3 to 25 kg</td><td>Sphere, 0.5 to 1.7 m</td><td>Work next to people</td></tr>
+            <tr><td>Delta</td><td>3 × R (parallel)</td><td>3 + 1</td><td>Very high</td><td>0.1 to 8 kg</td><td>Dome, small</td><td>Conveyor pick and place</td></tr>
+            <tr><td>Mobile (differential)</td><td>2 driven wheels</td><td>3 (x, y, θ) with 2 inputs</td><td>Medium</td><td>Depends on the base</td><td>Unlimited floor</td><td>Transport, cleaning</td></tr>
+          </table>
         </div>
       </div>
     </section>
 
-    <section class="atlas" id="atlas">
-      <header class="atlas-head">
-        <h2>Eight kinds of robots</h2>
-        <p>Scroll. The drawing follows the robot you are reading about.</p>
-      </header>
-      <div class="chapters">
-        <article class="chapter" id="plate-1">
-          <div class="num">01 / 08</div>
-          <h3>3-DOF robot arm</h3>
-          <p class="rtag"><span class="notation">R-R-R</span>3 degrees of freedom, serial arm</p>
-          <p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p>
-          <dl>
-            <dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd>
-            <dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd>
-          </dl>
-          <a class="btn go" href="arm.html">Open the 3D model</a>
-        </article>
-        <article class="chapter" id="plate-2">
-          <div class="num">02 / 08</div>
-          <h3>Cartesian gantry</h3>
-          <p class="rtag"><span class="notation">P-P-P</span>3 degrees of freedom, three sliding axes</p>
-          <p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p>
-          <dl>
-            <dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd>
-            <dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd>
-          </dl>
-          <a class="btn go" href="gantry.html">Open the 3D model</a>
-        </article>
-        <article class="chapter" id="plate-3">
-          <div class="num">03 / 08</div>
-          <h3>SCARA</h3>
-          <p class="rtag"><span class="notation">R-R-P-R</span>4 degrees of freedom, serial arm</p>
-          <p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p>
-          <dl>
-            <dt>Used in</dt><dd>Electronics assembly, screwing, dispensing, packaging, fast pick and place.</dd>
-            <dt>End effectors</dt><dd>Pinch gripper, vacuum nozzle, screwdriver, glue dispenser.</dd>
-          </dl>
-          <a class="btn go" href="scara.html">Open the 3D model and the pick-and-place demo</a>
-        </article>
-        <article class="chapter" id="plate-4">
-          <div class="num">04 / 08</div>
-          <h3>6-axis industrial robot</h3>
-          <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, serial arm</p>
-          <p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p>
-          <dl>
-            <dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd>
-            <dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd>
-          </dl>
-          <a class="btn go" href="articulated.html">Open the 3D model and the pick-and-place demo</a>
-        </article>
-        <article class="chapter" id="plate-5">
-          <div class="num">05 / 08</div>
-          <h3>Collaborative robot (UR5)</h3>
-          <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, works next to people</p>
-          <p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p>
-          <dl>
-            <dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd>
-            <dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd>
-          </dl>
-          <a class="btn go" href="cobot.html">Open the 3D model and the pick-and-place demo</a>
-        </article>
-        <article class="chapter" id="plate-6">
-          <div class="num">06 / 08</div>
-          <h3>Delta robot</h3>
-          <p class="rtag"><span class="notation">3 × R</span>parallel robot, 3 arms and 1 optional rotation</p>
-          <p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p>
-          <dl>
-            <dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd>
-            <dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd>
-          </dl>
-          <a class="btn go" href="delta.html">Open the 3D model and the pick-and-place demo</a>
-        </article>
-        <article class="chapter" id="plate-7">
-          <div class="num">07 / 08</div>
-          <h3>Mobile robot (differential drive)</h3>
-          <p class="rtag"><span class="notation">2 wheels</span>mobile robot, x, y and heading</p>
-          <p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p>
-          <dl>
-            <dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd>
-            <dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd>
-          </dl>
-          <a class="btn go" href="mobile.html">Open the 3D model and the programs</a>
-        </article>
-        <article class="chapter" id="plate-8">
-          <div class="num">08 / 08</div>
-          <h3>Wheels and mobile bases</h3>
-          <p class="rtag"><span class="notation">5 wheels</span>reference and drive simulator</p>
-          <p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p>
-          <dl>
-            <dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd>
-            <dt>End effectors</dt><dd>None: this page is about the base.</dd>
-          </dl>
-          <a class="btn go" href="wheels.html">Open the wheel catalogue and simulator</a>
-        </article>
-      </div>
-      <aside class="stage" aria-hidden="true">
-        <div class="stage-frame">
-          <canvas id="stageCanvas"></canvas>
-          <div class="stage-label" id="stageLabel">01 / 08</div>
-          <div class="stage-ticks" id="ticks"></div>
-        </div>
-      </aside>
-    </section>
+    <script type="module">
+import * as THREE from 'three';
+const root = document.documentElement, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (id) => document.getElementById(id), TAU = Math.PI * 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, k) => a + (b - a) * k, smooth = (t) => t * t * (3 - 2 * t);
+const touch = matchMedia('(pointer: coarse)').matches;
 
-    <h2>Where to start?</h2>
-    <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
-    <ol class="path">
-      <li><a href="learn.html">Learn the basics</a><br>Joints, degrees of freedom, frames, DH.</li>
-      <li><a href="arm.html">3-DOF arm</a><br>Your first kinematic diagram.</li>
-      <li><a href="gantry.html">Cartesian gantry</a><br>Prismatic joints.</li>
-      <li><a href="scara.html">SCARA</a><br>Mixed joints, closed-form inverse kinematics.</li>
-      <li><a href="articulated.html">6-axis robot</a><br>The wrist, singularities, numerical IK.</li>
-      <li><a href="cobot.html">Cobot</a><br>Offset wrist and safety.</li>
-      <li><a href="delta.html">Delta robot</a><br>Parallel robots and closed loops.</li>
-      <li><a href="mobile.html">Mobile robot</a><br>Wheels, then <a href="wheels.html">drive types</a>.</li>
-    </ol>
+// ---------- title: one orchestrated entrance ----------
+document.querySelectorAll('.hero-title .row').forEach((row, r) => {
+  const txt = row.textContent.trim(); row.textContent = '';
+  [...txt].forEach((c, i) => { const s = document.createElement('span'); s.className = 'ch'; s.setAttribute('aria-hidden', 'true'); s.textContent = c; s.style.setProperty('--i', String(r * 8 + i)); row.appendChild(s); });
+});
+requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('loaded')));
 
-    <h2>Robots side by side</h2>
-    <div class="cmp-wrap">
-      <table class="dh">
-        <tr><th>Robot</th><th>Joints</th><th>DOF</th><th>Speed</th><th>Payload</th><th>Workspace</th><th>Typical job</th></tr>
-        <tr><td>3-DOF arm</td><td>R-R-R</td><td>3</td><td>Medium</td><td>Low</td><td>Sphere-like</td><td>Teaching, light handling</td></tr>
-        <tr><td>Cartesian gantry</td><td>P-P-P</td><td>3</td><td>Medium</td><td>Medium to high</td><td>Box</td><td>CNC, 3D printing, picking</td></tr>
-        <tr><td>SCARA</td><td>R-R-P-R</td><td>4</td><td>High</td><td>Low to medium</td><td>Cylinder, flat</td><td>Assembly from above</td></tr>
-        <tr><td>6-axis industrial</td><td>6 × R</td><td>6</td><td>High</td><td>5 to 1000+ kg</td><td>Large sphere</td><td>Welding, painting, handling</td></tr>
-        <tr><td>Cobot</td><td>6 × R</td><td>6</td><td>Limited (safety)</td><td>3 to 25 kg</td><td>Sphere, 0.5 to 1.7 m</td><td>Work next to people</td></tr>
-        <tr><td>Delta</td><td>3 × R (parallel)</td><td>3 + 1</td><td>Very high</td><td>0.1 to 8 kg</td><td>Dome, small</td><td>Conveyor pick and place</td></tr>
-        <tr><td>Mobile (differential)</td><td>2 driven wheels</td><td>3 (x, y, θ) with 2 inputs</td><td>Medium</td><td>Depends on the base</td><td>Unlimited floor</td><td>Transport, cleaning</td></tr>
-      </table>
-    </div>
+// ---------- shared pointer ----------
+const pointer = { nx: 0, ny: 0, last: -1e9 };
+addEventListener('pointermove', (e) => { pointer.nx = (e.clientX / innerWidth) * 2 - 1; pointer.ny = -((e.clientY / innerHeight) * 2 - 1); pointer.last = performance.now(); }, { passive: true });
 
-    <script>
-(function () {
-  const root = document.documentElement;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const TAU = Math.PI * 2, lerp = (a, b, k) => a + (b - a) * k, clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const $ = (id) => document.getElementById(id);
-
-  // ---------- one shared "target": the pointer, or an autopilot when nobody plays ----------
-  const pointer = { x: 0, y: 0, last: -1e9, has: false };
-  addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; pointer.last = performance.now(); pointer.has = true; }, { passive: true });
-
-  // ---------- 1. the opening ----------
-  const opening = $('opening'), oc = $('openCanvas'), octx = oc.getContext('2d');
-  const letters = [];
-  document.querySelectorAll('.kinetic .row').forEach((row, r) => {
-    const txt = row.textContent.trim(); row.textContent = '';
-    [...txt].forEach((c, i) => {
-      const s = document.createElement('span'); s.className = 'ch'; s.setAttribute('aria-hidden', 'true'); s.textContent = c;
-      s.style.setProperty('--i', String(r * 8 + i)); row.appendChild(s); letters.push({ el: s, w: 62, g: 800 });
-    });
-  });
-  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('loaded')));
-  let ow = 0, oh = 0, dpr = 1, colText = '#ececec', colHl = '#ff9f43', colLine = 'rgba(255,255,255,.16)', frame = 0;
-  function sizeOpen() { dpr = Math.min(2, devicePixelRatio || 1); ow = opening.clientWidth; oh = opening.clientHeight; oc.width = ow * dpr; oc.height = oh * dpr; }
-  sizeOpen(); addEventListener('resize', sizeOpen);
-  const arm = { a: 1.0, b: -1.4, born: performance.now() };
-  function drawOpening(now) {
-    if (frame++ % 20 === 0) { const cs = getComputedStyle(root); colText = cs.getPropertyValue('--text').trim() || colText; colHl = cs.getPropertyValue('--hl').trim() || colHl; colLine = cs.getPropertyValue('--line').trim() || colLine; }
-    const rect = opening.getBoundingClientRect();
-    let tx, ty;
-    if (pointer.has && now - pointer.last < 2500) { tx = pointer.x - rect.left; ty = pointer.y - rect.top; }
-    else { const t = now / 1000; tx = ow * (0.58 + 0.2 * Math.cos(t * 0.45)); ty = oh * (0.34 + 0.16 * Math.sin(t * 0.7)); }
-    const base = { x: ow * 0.16, y: oh * 0.60 };
-    const L1 = Math.min(ow * 0.30, oh * 0.5), L2 = Math.min(ow * 0.26, oh * 0.42);
-    let dx = tx - base.x, dy = base.y - ty;
-    const r = Math.hypot(dx, dy) || 1, mx = (L1 + L2) * 0.998, mn = Math.abs(L1 - L2) * 1.01 + 2, k = r > mx ? mx / r : r < mn ? mn / r : 1;
-    dx *= k; dy *= k;
-    const c2 = clamp((dx * dx + dy * dy - L1 * L1 - L2 * L2) / (2 * L1 * L2), -1, 1), q2 = -Math.acos(c2);
-    const q1 = Math.atan2(dy, dx) - Math.atan2(L2 * Math.sin(q2), L1 + L2 * Math.cos(q2));
-    arm.a = lerp(arm.a, q1, reduce ? 1 : 0.12); arm.b = lerp(arm.b, q2, reduce ? 1 : 0.12);
-    const born = clamp((now - arm.born - 700) / 1100, 0, 1), e = 1 - Math.pow(1 - born, 3);
-    octx.setTransform(dpr, 0, 0, dpr, 0, 0); octx.clearRect(0, 0, ow, oh);
-    octx.globalAlpha = e;
-    octx.lineCap = 'round';
-    // workspace
-    octx.strokeStyle = colLine; octx.lineWidth = 1.2; octx.setLineDash([5, 7]);
-    octx.beginPath(); octx.arc(base.x, base.y, L1 + L2, 0, TAU); octx.stroke();
-    octx.beginPath(); octx.arc(base.x, base.y, Math.abs(L1 - L2), 0, TAU); octx.stroke(); octx.setLineDash([]);
-    // ground and base
-    octx.beginPath(); octx.moveTo(0, base.y + 26); octx.lineTo(ow, base.y + 26); octx.stroke();
-    // links
-    const el = { x: base.x + L1 * Math.cos(arm.a) * e, y: base.y - L1 * Math.sin(arm.a) * e };
-    const tp = { x: el.x + L2 * Math.cos(arm.a + arm.b) * e, y: el.y - L2 * Math.sin(arm.a + arm.b) * e };
-    octx.strokeStyle = colHl; octx.lineWidth = Math.max(10, ow * 0.011);
-    octx.beginPath(); octx.moveTo(base.x, base.y); octx.lineTo(el.x, el.y); octx.lineTo(tp.x, tp.y); octx.stroke();
-    const jr = Math.max(16, ow * 0.017);
-    for (const p of [base, el]) {
-      octx.fillStyle = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; octx.strokeStyle = colText; octx.lineWidth = 3;
-      octx.beginPath(); octx.arc(p.x, p.y, jr, 0, TAU); octx.fill(); octx.stroke();
-      octx.fillStyle = colText; octx.beginPath(); octx.arc(p.x, p.y, jr * 0.25, 0, TAU); octx.fill();
-    }
-    octx.fillStyle = colText; octx.beginPath(); octx.arc(tp.x, tp.y, jr * 0.4, 0, TAU); octx.fill();
-    octx.globalAlpha = 1;
-    // the letters lean towards the arm tip
-    if (!reduce) for (const L of letters) {
-      const b = L.el.getBoundingClientRect(), cx = b.left + b.width / 2 - rect.left, cy = b.top + b.height / 2 - rect.top;
-      const d = Math.hypot(cx - tp.x, (cy - tp.y) * 0.7), infl = Math.exp(-Math.pow(d / (ow * 0.15), 2));
-      L.w = lerp(L.w, 62 + infl * 63, 0.16); L.g = lerp(L.g, 800 - infl * 330, 0.16);
-      L.el.style.fontVariationSettings = `'wdth' ${L.w.toFixed(1)}, 'wght' ${L.g.toFixed(0)}`;
-    }
-  }
-
-  // ---------- 2. the atlas: eight animated drawings ----------
-  const stage = $('stageCanvas'), sctx = stage.getContext('2d'), chapters = [...document.querySelectorAll('.chapter')];
-  const ticks = $('ticks'), slabel = $('stageLabel');
-  chapters.forEach(() => ticks.appendChild(document.createElement('i')));
-  let sw = 0, sh = 0, active = 0, switched = performance.now(), trail = [];
-  function sizeStage() { const r = stage.parentElement.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); sw = r.width; sh = r.height; stage.width = sw * dpr; stage.height = sh * dpr; }
-  sizeStage(); addEventListener('resize', sizeStage);
+// ---------- 2D drawings for the cards (kinematic diagrams) ----------
+let sctx = null, trail = [];
   const OR = '#ff9f43', INK = '#ececec', DIM = '#8a8a8a', PANEL = '#262626';
   const P = (x, y) => [x, y];
   function ln(a, b, w, c) { sctx.strokeStyle = c || OR; sctx.lineWidth = w || 9; sctx.lineCap = 'round'; sctx.beginPath(); sctx.moveTo(a[0], a[1]); sctx.lineTo(b[0], b[1]); sctx.stroke(); }
   function joint(p, r) { r = r || 11; sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.beginPath(); sctx.arc(p[0], p[1], r, 0, TAU); sctx.fill(); sctx.stroke(); sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(p[0], p[1], r * 0.26, 0, TAU); sctx.fill(); }
   function dot(p, r) { sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(p[0], p[1], r || 5, 0, TAU); sctx.fill(); }
   function ground(y, x0, x1) { ln([x0, y], [x1, y], 2, INK); sctx.strokeStyle = DIM; sctx.lineWidth = 1.4; for (let x = x0; x < x1; x += 13) { sctx.beginPath(); sctx.moveTo(x, y); sctx.lineTo(x - 9, y + 11); sctx.stroke(); } }
-  function txt(s, x, y, c) { sctx.fillStyle = c || DIM; sctx.font = '14px "IBM Plex Mono", monospace'; sctx.fillText(s, x, y); }
+  function txt(s, x, y, c) { sctx.fillStyle = c || DIM; sctx.font = '19px "IBM Plex Mono", monospace'; sctx.fillText(s, x, y); }
   function chain(base, lens, angs) { const pts = [base]; let a = 0, p = base; lens.forEach((l, i) => { a += angs[i]; p = [p[0] + l * Math.cos(a), p[1] - l * Math.sin(a)]; pts.push(p); }); return pts; }
   function circInter(c0, r0, c1, r1, sign) { const dx = c1[0] - c0[0], dy = c1[1] - c0[1], d = Math.hypot(dx, dy), a = (r0 * r0 - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, r0 * r0 - a * a)); const mx = c0[0] + a * dx / d, my = c0[1] + a * dy / d; return [mx + sign * h * dy / d, my - sign * h * dx / d]; }
 
@@ -296,31 +202,173 @@
       ground(c[1] + R + 6, 100, 540); ln([430, 400], [500, 340], 3, INK); txt('rollers at 45°', 380, 430);
     }
   ];
-  function setActive(i) { if (i === active) return; active = i; switched = performance.now(); trail = []; paintChapters(); }
-  function paintChapters() {
-    chapters.forEach((c, k) => c.classList.toggle('on', k === active)); [...ticks.children].forEach((t, k) => t.classList.toggle('on', k === active));
-    slabel.textContent = `${String(active + 1).padStart(2, '0')} / ${String(chapters.length).padStart(2, '0')}`;
-  }
-  function pickChapter() { const mid = innerHeight * (innerWidth < 900 ? 0.62 : 0.5); let best = 0, bd = 1e9; chapters.forEach((c, k) => { const r = c.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = k; } }); setActive(best); }
-  addEventListener('scroll', pickChapter, { passive: true }); addEventListener('resize', pickChapter); paintChapters(); pickChapter();
-  function drawStage(now) {
-    sctx.setTransform(dpr, 0, 0, dpr, 0, 0); sctx.clearRect(0, 0, sw, sh);
-    const s = Math.min(sw / 640, sh / 520), fade = reduce ? 1 : clamp((now - switched) / 450, 0, 1);
-    sctx.save(); sctx.translate((sw - 640 * s) / 2, (sh - 520 * s) / 2 + (1 - fade) * 14); sctx.scale(s, s); sctx.globalAlpha = fade;
-    DRAW[active](reduce ? 1.2 : now / 1000); sctx.restore();
-  }
 
-  // ---------- one loop, only for what is on screen ----------
-  let openVisible = true, stageVisible = false;
-  new IntersectionObserver((e) => { openVisible = e[0].isIntersecting; }).observe(opening);
-  new IntersectionObserver((e) => { stageVisible = e[0].isIntersecting; }).observe(stage.parentElement);
-  function loop(now) { if (openVisible && !document.hidden) drawOpening(now); if (stageVisible && !document.hidden && !reduce) drawStage(now); requestAnimationFrame(loop); }
-  if (reduce) { drawOpening(performance.now()); drawStage(performance.now()); addEventListener('scroll', () => drawStage(performance.now()), { passive: true }); addEventListener('pointermove', () => drawOpening(performance.now() + 5000), { passive: true }); }
-  requestAnimationFrame(loop);
+const cardEls = [...document.querySelectorAll('.rc')];
+const cards = cardEls.map((el, i) => ({ el, cv: el.querySelector('canvas'), trail: [], run: false }));
+function drawCard(c, i, t) {
+  const cv = c.cv, ctx = cv.getContext('2d'); sctx = ctx; trail = c.trail;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+  const s = Math.min(cv.width / 640, cv.height / 520); ctx.translate((cv.width - 640 * s) / 2, (cv.height - 520 * s) / 2); ctx.scale(s, s);
+  DRAW[i](t); ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+cards.forEach((c, i) => {
+  drawCard(c, i, 1.2 + i * 0.7);
+  const go = () => { if (c.run || reduce) return; c.run = true; const t0 = performance.now(); (function f(now) { if (!c.run) return; drawCard(c, i, 1.2 + i * 0.7 + (now - t0) / 1000); requestAnimationFrame(f); })(t0); };
+  const stop = () => { c.run = false; };
+  c.el.addEventListener('pointerenter', go); c.el.addEventListener('focus', go); c.el.addEventListener('pointerleave', stop); c.el.addEventListener('blur', stop);
+});
 
-  // theme changes: repaint colours at once
-  new MutationObserver(() => { frame = 0; }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
-})();
+// ---------- 3D scene ----------
+const STD = [
+  { th: ['q1', (q) => q[0]],           d: ['d1', 0.40], a: ['0', 0],      al: ['90', 90] },
+  { th: ['q2 + 90', (q) => q[1] + 90], d: ['0', 0],     a: ['a2', 0.45], al: ['0', 0] },
+  { th: ['q3 + 90', (q) => q[2] + 90], d: ['0', 0],     a: ['0', 0],      al: ['90', 90] },
+  { th: ['q4', (q) => q[3]],           d: ['d4', 0.45], a: ['0', 0],      al: ['−90', -90] },
+  { th: ['q5', (q) => q[4]],           d: ['0', 0],     a: ['0', 0],      al: ['90', 90] },
+  { th: ['q6', (q) => q[5]],           d: ['d6', 0.15], a: ['0', 0],      al: ['0', 0] }
+];
+const LIMITS = [[-170, 170], [-100, 60], [-140, 50], [-180, 180], [-115, 115], [-180, 180]];
+const NEUTRAL = [10, -50, -60, 0, -40, 0];
+let renderer = null;
+try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alpha: true }); } catch (e) { $('gl').remove(); }
+const secs = [...document.querySelectorAll('.scene-sec')], N = secs.length;
+const prog = $('progress'); secs.forEach(() => prog.appendChild(document.createElement('i')));
+const tagEls = [0, 1, 2, 3, 4, 5].map((i) => $('jt' + i));
+
+if (renderer) {
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1)); renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.1, 80);
+  scene.fog = new THREE.Fog(0x1f1f1f, 5, 12);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.05));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.0); sun.position.set(3.2, 5.5, 2.4); sun.castShadow = true;
+  sun.shadow.mapSize.set(1536, 1536); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.receiveShadow = true; scene.add(floor);
+  const grid = new THREE.GridHelper(12, 24, 0x777777, 0x666666); grid.position.y = 0.002; grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
+
+  const arm = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14,
+    sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.10 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
+  scene.add(arm.root);
+  const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43', roughness: 0.4 }), tcp = arm.frames[6], fingers = [];
+  const palm = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.05, 0.02), orange); palm.position.z = -0.07; tcp.add(palm);
+  for (const side of [-1, 1]) { const f = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.05, 0.06), orange); f.position.set(side * 0.065, 0, -0.03); tcp.add(f); fingers.push({ m: f, side }); }
+  const jointMats = arm.rot.map((g) => { const h = g.children.find((c) => c.isMesh), m = h.material.clone(); h.material = m; return m; });
+  arm.root.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  const axes = arm.frames.map((f) => { const a = new THREE.AxesHelper(0.22); a.visible = false; f.add(a); return a; });
+
+  // target marker, pads and cube
+  const ACC = new THREE.Color('#2f6bff');
+  const target = new THREE.Group(); const core = new THREE.Mesh(new THREE.SphereGeometry(0.03, 20, 14), new THREE.MeshBasicMaterial({ color: ACC }));
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(0.075, 20, 14), new THREE.MeshBasicMaterial({ color: ACC, transparent: true, opacity: 0.22, depthWrite: false }));
+  target.add(core, halo); target.visible = false; scene.add(target);
+  const PAD_A = { x: 0.60, y: -0.30 }, PAD_B = { x: 0.60, y: 0.30 }, CUBE = 0.06, ZG = 0.03, ZU = 0.30;
+  const padMat = new THREE.MeshStandardMaterial({ color: '#3b3b3b', roughness: 0.8 }), place = new THREE.Group(); scene.add(place);
+  for (const p of [PAD_A, PAD_B]) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.006, 0.16), padMat); m.position.set(p.x, 0.003, -p.y); m.receiveShadow = true; place.add(m); }
+  const cube = new THREE.Mesh(new THREE.BoxGeometry(CUBE, CUBE, CUBE), new THREE.MeshStandardMaterial({ color: ACC, roughness: 0.35 })); cube.castShadow = true; scene.add(cube);
+  const resetCube = () => { scene.attach(cube); cube.rotation.set(0, 0, 0); cube.position.set(PAD_A.x, CUBE / 2, -PAD_A.y); };
+  resetCube(); place.visible = false; cube.visible = false;
+
+  // inverse kinematics poses for the demo (same solver as the 6-axis page)
+  const poses = {}; let prev = [-20, -30, -70, 0, 20, 0];
+  for (const [name, p] of [['Aup', [PAD_A.x, PAD_A.y, ZU]], ['Adown', [PAD_A.x, PAD_A.y, ZG]], ['Bup', [PAD_B.x, PAD_B.y, ZU]], ['Bdown', [PAD_B.x, PAD_B.y, ZG]]]) {
+    const r = DHArm.solveIK(STD, name === 'Bup' ? poses.Aup : prev, { p, z: [0, 0, -1], x: [1, 0, 0] }, { limits: LIMITS }); poses[name] = r.q; prev = r.q;
+  }
+  const cyc = (s, d) => [
+    { to: poses[s + 'up'], dur: 1.6, text: `Move above pad ${s}` }, { to: poses[s + 'down'], dur: 0.8, text: 'Go down to the cube' },
+    { to: poses[s + 'down'], dur: 0.5, text: 'Close the gripper', start: () => { grip = 0; }, end: () => tcp.attach(cube) }, { to: poses[s + 'up'], dur: 0.8, text: 'Lift the cube' },
+    { to: poses[d + 'up'], dur: 1.8, text: `Carry the cube above pad ${d}` }, { to: poses[d + 'down'], dur: 0.8, text: 'Go down' },
+    { to: poses[d + 'down'], dur: 0.5, text: 'Open the gripper', start: () => { grip = 1; }, end: () => { scene.attach(cube); cube.position.y = CUBE / 2; cube.rotation.set(0, 0, 0); where = d; } },
+    { to: poses[d + 'up'], dur: 0.8, text: 'Go back up' }];
+  let where = 'A', segs = [], si = 0, el = 0, from = null, grip = 1, gripNow = 1;
+
+  // state
+  const q = NEUTRAL.slice(), qGoal = NEUTRAL.slice(); let lastIK = { posErr: 0, p: [0.5, 0, 0.5] };
+  const DESK = () => innerWidth > 900;
+  const KF = [   // camera: position, look-at, shift of the robot to the right (desktop)
+    { p: [2.3, 1.25, 2.7], l: [0.2, 0.62, 0], s: 0.95 },
+    { p: [2.1, 1.2, 2.6], l: [0.1, 0.68, 0], s: 0.55 },
+    { p: [-1.9, 1.35, 2.5], l: [0.15, 0.7, 0], s: 0.82 },
+    { p: [3.1, 0.95, 0.35], l: [0.05, 0.7, 0], s: 0.8 },
+    { p: [1.3, 2.5, 2.2], l: [0.3, 0.25, 0], s: 0.72 },
+    { p: [4.8, 2.6, 5.0], l: [0, 0.5, 0], s: 0 }];
+  const cam = { p: new THREE.Vector3(...KF[0].p), l: new THREE.Vector3(...KF[0].l) };
+  const ray = new THREE.Raycaster(), plane = new THREE.Plane(), dir = new THREE.Vector3(), hit = new THREE.Vector3(), P0 = new THREE.Vector3(0.55, 0.65, 0), v3 = new THREE.Vector3();
+  function pointerTarget(scale, t) {
+    const idle = touch || performance.now() - pointer.last > 3500;
+    const nx = idle ? 0.55 * Math.sin(t * 0.5) : pointer.nx * scale, ny = idle ? 0.35 * Math.sin(t * 0.8 + 1) : pointer.ny * scale;
+    ray.setFromCamera({ x: nx, y: ny }, camera); camera.getWorldDirection(dir); plane.setFromNormalAndCoplanarPoint(dir, P0);
+    if (!ray.ray.intersectPlane(plane, hit)) hit.copy(P0);
+    let p = [hit.x, -hit.z, hit.y]; const s0 = [0, 0, 0.4]; let v = [p[0] - s0[0], p[1] - s0[1], p[2] - s0[2]]; const len = Math.hypot(...v), k = clamp(len, 0.32, 0.86) / (len || 1);
+    p = [s0[0] + v[0] * k, s0[1] + v[1] * k, Math.max(0.14, s0[2] + v[2] * k)]; return p;
+  }
+  const mid = () => innerHeight / 2;
+  function frac() {
+    const c = secs.map((s) => { const r = s.getBoundingClientRect(); return r.top + r.height / 2; });
+    if (mid() <= c[0]) return 0; if (mid() >= c[N - 1]) return N - 1;
+    for (let i = 0; i < N - 1; i++) if (mid() < c[i + 1]) return i + (mid() - c[i]) / (c[i + 1] - c[i]);
+    return N - 1;
+  }
+  const dhBody = $('dhBody'), readIK = $('readIK'), readDemo = $('readDemo'); let lastTxt = {};
+  const setTxt = (el, key, s) => { if (lastTxt[key] !== s) { lastTxt[key] = s; el.textContent = s; } };
+  dhBody.innerHTML = STD.map((r, i) => `<tr><td>${i + 1}</td><td id="th${i}">0</td><td>${r.d[1]}</td><td>${r.a[1]}</td><td>${r.al[1]}°</td></tr>`).join('');
+  const thCells = STD.map((_, i) => $('th' + i));
+  const themeCols = () => { const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
+    const bg = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; scene.fog.color.set(bg);
+    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
+    grid.material.color.set(dark ? 0x808080 : 0x7a7a7a); grid.material.opacity = dark ? 0.3 : 0.45; floor.material.opacity = dark ? 0.35 : 0.22; };
+  themeCols(); new MutationObserver(themeCols).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  matchMedia('(prefers-color-scheme: light)').addEventListener('change', themeCols);
+
+  function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  size(); addEventListener('resize', size);
+  const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+  function frame(now) {
+    requestAnimationFrame(frame); if (!visible) return;
+    const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now; const t = now / 1000, f = frac(), mode = Math.round(f);
+    // camera
+    const k0 = Math.floor(f), k1 = Math.min(N - 1, k0 + 1), e = reduce ? Math.round(f - k0) : smooth(f - k0), A = KF[k0], B = KF[k1];
+    const tp = v3.set(...A.p).lerp(new THREE.Vector3(...B.p), e).clone(), tl = new THREE.Vector3(...A.l).lerp(new THREE.Vector3(...B.l), e);
+    if (!DESK()) tp.sub(tl).multiplyScalar(1.45).add(tl);
+    const sh = lerp(A.s, B.s, e), fw = tl.clone().sub(tp).normalize(), right = new THREE.Vector3().crossVectors(fw, new THREE.Vector3(0, 1, 0)).normalize();
+    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= 0.5;
+    tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
+    const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
+    // arm goals per section
+    const hl = Math.floor(t / 2.4) % 6;
+    if (mode !== cur.mode) { cur.mode = mode; [...prog.children].forEach((d, i) => d.classList.toggle('on', i === mode)); if (mode !== 4) { segs = []; resetCube(); grip = 1; } if (mode === 4) { where = 'A'; resetCube(); segs = cyc('A', 'B'); si = 0; el = 0; from = q.slice(); } }
+    let usedIK = false;
+    if (mode === 0 || mode === 3 || mode === 5) {
+      const p = pointerTarget(mode === 3 ? 1.0 : 0.6, t); target.visible = mode === 3; target.position.set(p[0], p[2], -p[1]); halo.scale.setScalar(1 + 0.12 * Math.sin(t * 3));
+      const r = DHArm.solveIK(STD, q, { p }, { limits: LIMITS, iters: 14, wOri: 0 }); for (let i = 0; i < 6; i++) qGoal[i] = r.q[i]; lastIK = { posErr: r.posErr, p }; usedIK = true;
+    } else { target.visible = false; }
+    if (mode === 1) for (let i = 0; i < 6; i++) qGoal[i] = NEUTRAL[i] + (i === hl ? 34 * Math.sin(t * 1.5) : 0);
+    if (mode === 2) { const w = [25 * Math.sin(t * 0.5), 14 * Math.sin(t * 0.7 + 1), 16 * Math.sin(t * 0.6 + 2), 40 * Math.sin(t * 0.8), 25 * Math.sin(t * 0.9), 60 * Math.sin(t * 1.1)]; for (let i = 0; i < 6; i++) qGoal[i] = NEUTRAL[i] + w[i]; }
+    if (mode === 4 && segs.length) {
+      el += dt; const s = segs[si], k = Math.min(el / s.dur, 1), ee = smooth(k); if (el === dt && s.start) s.start();
+      for (let i = 0; i < 6; i++) qGoal[i] = from[i] + (s.to[i] - from[i]) * ee;
+      if (k >= 1) { if (s.end) s.end(); si++; if (si >= segs.length) { segs = cyc(where, where === 'A' ? 'B' : 'A'); si = 0; } el = 0; from = qGoal.slice(); if (segs[si].start) segs[si].start(); }
+      setTxt(readDemo, 'demo', `Demo: ${segs[si].text}`);
+    }
+    const rate = usedIK && mode === 3 ? 1 : mode === 4 ? 1 : 1 - Math.exp(-dt * 4);
+    for (let i = 0; i < 6; i++) q[i] = lerp(q[i], qGoal[i], rate);
+    arm.setPose(q);
+    gripNow = lerp(gripNow, grip, 1 - Math.exp(-dt * 8)); for (const fg of fingers) fg.m.position.x = fg.side * (0.04 + 0.025 * gripNow);
+    place.visible = mode === 4; cube.visible = mode === 4;
+    // frames and tags
+    axes.forEach((a, i) => { a.visible = mode === 2; });
+    jointMats.forEach((m, i) => m.color.set(mode === 1 && i === hl ? '#2f6bff' : '#ff9f43'));
+    tagEls.forEach((tg, i) => {
+      const on = (mode === 1 || mode === 2) && Math.abs(f - mode) < 0.3; tg.classList.toggle('on', on); tg.classList.toggle('hl', mode === 1 && i === hl);
+      if (on) { arm.rot[i].getWorldPosition(v3); v3.project(camera); tg.style.transform = `translate(${((v3.x + 1) / 2) * innerWidth + 14}px, ${((1 - v3.y) / 2) * innerHeight - 12}px)`; tg.innerHTML = `q${i + 1} <b>${q[i].toFixed(0)}°</b>`; }
+    });
+    if (mode === 2) thCells.forEach((c, i) => setTxt(c, 'th' + i, (q[i] + (i === 1 || i === 2 ? 90 : 0)).toFixed(1) + '°'));
+    if (mode === 3) setTxt(readIK, 'ik', `target  x ${lastIK.p[0].toFixed(2)}  y ${lastIK.p[1].toFixed(2)}  z ${lastIK.p[2].toFixed(2)}\nerror   ${(lastIK.posErr * 1000).toFixed(1)} mm`);
+    renderer.render(scene, camera);
+  }
+  if (reduce) { frame(performance.now()); addEventListener('scroll', () => frame(performance.now()), { passive: true }); } else requestAnimationFrame(frame);
+}
 
     </script>
   </body>
