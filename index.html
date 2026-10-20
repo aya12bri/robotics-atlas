@@ -32,7 +32,9 @@
             <a class="btn ghost" href="#gallery">Browse the robots</a>
           </div>
         </div>
+        <ul class="chips" id="chips"></ul>
       </div>
+      <div class="ticker" id="ticker" aria-hidden="true"></div>
       <div class="scroll-cue" aria-hidden="true">Scroll</div>
     </section>
 
@@ -149,32 +151,35 @@
     </section>
 
     <section class="scene-sec end wide">
-      <div class="wrap">
-        <h2>Where to start?</h2>
-        <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
-        <ol class="path">
-          <li><a href="learn.html">Learn the basics</a><br>Joints, degrees of freedom, frames, DH.</li>
-          <li><a href="arm.html">3-DOF arm</a><br>Your first kinematic diagram.</li>
-          <li><a href="gantry.html">Cartesian gantry</a><br>Prismatic joints.</li>
-          <li><a href="scara.html">SCARA</a><br>Mixed joints, closed-form inverse kinematics.</li>
-          <li><a href="articulated.html">6-axis robot</a><br>The wrist, singularities, numerical IK.</li>
-          <li><a href="cobot.html">Cobot</a><br>Offset wrist and safety.</li>
-          <li><a href="delta.html">Delta robot</a><br>Parallel robots and closed loops.</li>
-          <li><a href="mobile.html">Mobile robot</a><br>Wheels, then <a href="wheels.html">drive types</a>.</li>
-        </ol>
-
-        <h2>Robots side by side</h2>
-        <div class="cmp-wrap">
-          <table class="dh">
-            <tr><th>Robot</th><th>Joints</th><th>DOF</th><th>Speed</th><th>Payload</th><th>Workspace</th><th>Typical job</th></tr>
-            <tr><td>3-DOF arm</td><td>R-R-R</td><td>3</td><td>Medium</td><td>Low</td><td>Sphere-like</td><td>Teaching, light handling</td></tr>
-            <tr><td>Cartesian gantry</td><td>P-P-P</td><td>3</td><td>Medium</td><td>Medium to high</td><td>Box</td><td>CNC, 3D printing, picking</td></tr>
-            <tr><td>SCARA</td><td>R-R-P-R</td><td>4</td><td>High</td><td>Low to medium</td><td>Cylinder, flat</td><td>Assembly from above</td></tr>
-            <tr><td>6-axis industrial</td><td>6 × R</td><td>6</td><td>High</td><td>5 to 1000+ kg</td><td>Large sphere</td><td>Welding, painting, handling</td></tr>
-            <tr><td>Cobot</td><td>6 × R</td><td>6</td><td>Limited (safety)</td><td>3 to 25 kg</td><td>Sphere, 0.5 to 1.7 m</td><td>Work next to people</td></tr>
-            <tr><td>Delta</td><td>3 × R (parallel)</td><td>3 + 1</td><td>Very high</td><td>0.1 to 8 kg</td><td>Dome, small</td><td>Conveyor pick and place</td></tr>
-            <tr><td>Mobile (differential)</td><td>2 driven wheels</td><td>3 (x, y, θ) with 2 inputs</td><td>Medium</td><td>Depends on the base</td><td>Unlimited floor</td><td>Transport, cleaning</td></tr>
-          </table>
+      <div class="wrap end-grid">
+        <div class="end-col">
+          <h2>Where to start?</h2>
+          <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
+          <ol class="path">
+            <li><a href="learn.html">Learn the basics</a><br>Joints, degrees of freedom, frames, DH.</li>
+            <li><a href="arm.html">3-DOF arm</a><br>Your first kinematic diagram.</li>
+            <li><a href="gantry.html">Cartesian gantry</a><br>Prismatic joints.</li>
+            <li><a href="scara.html">SCARA</a><br>Mixed joints, closed-form inverse kinematics.</li>
+            <li><a href="articulated.html">6-axis robot</a><br>The wrist, singularities, numerical IK.</li>
+            <li><a href="cobot.html">Cobot</a><br>Offset wrist and safety.</li>
+            <li><a href="delta.html">Delta robot</a><br>Parallel robots and closed loops.</li>
+            <li><a href="mobile.html">Mobile robot</a><br>Wheels, then <a href="wheels.html">drive types</a>.</li>
+          </ol>
+        </div>
+        <div class="end-col">
+          <h2>Robots side by side</h2>
+          <div class="cmp-wrap">
+            <table class="dh">
+              <tr><th>Robot</th><th>Joints</th><th>DOF</th><th>Speed</th><th>Payload</th><th>Workspace</th><th>Typical job</th></tr>
+              <tr><td>3-DOF arm</td><td>R-R-R</td><td>3</td><td>Medium</td><td>Low</td><td>Sphere-like</td><td>Teaching, light handling</td></tr>
+              <tr><td>Cartesian gantry</td><td>P-P-P</td><td>3</td><td>Medium</td><td>Medium to high</td><td>Box</td><td>CNC, 3D printing, picking</td></tr>
+              <tr><td>SCARA</td><td>R-R-P-R</td><td>4</td><td>High</td><td>Low to medium</td><td>Cylinder, flat</td><td>Assembly from above</td></tr>
+              <tr><td>6-axis industrial</td><td>6 × R</td><td>6</td><td>High</td><td>5 to 1000+ kg</td><td>Large sphere</td><td>Welding, painting, handling</td></tr>
+              <tr><td>Cobot</td><td>6 × R</td><td>6</td><td>Limited (safety)</td><td>3 to 25 kg</td><td>Sphere, 0.5 to 1.7 m</td><td>Work next to people</td></tr>
+              <tr><td>Delta</td><td>3 × R (parallel)</td><td>3 + 1</td><td>Very high</td><td>0.1 to 8 kg</td><td>Dome, small</td><td>Conveyor pick and place</td></tr>
+              <tr><td>Mobile (differential)</td><td>2 driven wheels</td><td>3 (x, y, θ) with 2 inputs</td><td>Medium</td><td>Depends on the base</td><td>Unlimited floor</td><td>Transport, cleaning</td></tr>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -213,11 +218,14 @@ try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alp
 const FR = RA_LANG() === 'fr', L = (en, fr) => (FR ? fr : en);
 function RA_LANG() { return (window.RA && window.RA.lang) || document.documentElement.lang || 'en'; }
 const secHero = $('top'), secTour = $('tour'), secGal = $('gallery'), secEnd = document.querySelector('.scene-sec.end');
+const NAMES = [['3-DOF arm', 'Bras 3 axes'], ['Cartesian gantry', 'Robot cartésien'], ['SCARA', 'SCARA'], ['6-axis robot', 'Robot 6 axes'], ['Cobot UR5', 'Cobot UR5'], ['Delta', 'Delta'], ['Mobile robot', 'Robot mobile'], ['Mecanum wheel', 'Roue Mecanum']];
+$('chips').innerHTML = [L('8 types of robots', '8 types de robots'), L('Live 3D models', 'Modèles 3D en direct'), L('DH and DHM tables', 'Tableaux DH et DHM'), L('English and French', 'Français et anglais')].map((t) => `<li>${t}</li>`).join('');
+{ const row = NAMES.map((n) => `<span>${L(n[0], n[1])}</span>`).join(''); $('ticker').innerHTML = `<div class="track">${row}${row}</div>`; }
 const ui = { step: 1, gi: 0, auto: !reduce, last: 0 };          // tour step (1..4) and gallery index (0..7)
 const tourPanels = [...document.querySelectorAll('#tourFader .panel')], cards = [...document.querySelectorAll('#galCards .card')];
 const stepper = $('stepper'), dots = $('galDots');
 const setFade = (list, k) => list.forEach((p, i) => p.classList.toggle('on', i === k));
-function setStep(n, manual) { ui.step = ((n - 1 + 4) % 4) + 1; if (manual) ui.auto = false; ui.last = performance.now(); setFade(tourPanels, ui.step - 1); [...stepper.querySelectorAll('[data-n]')].forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === ui.step))); }
+function setStep(n, manual) { ui.step = ((n - 1 + 4) % 4) + 1; if (manual) ui.auto = false; ui.last = performance.now(); const bar = stepper.querySelector('.bar'); if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; bar.classList.toggle('run', ui.auto); } setFade(tourPanels, ui.step - 1); [...stepper.querySelectorAll('[data-n]')].forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === ui.step))); }
 function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
 stepper.innerHTML = `<button type="button" class="arr" data-d="-1" aria-label="${L('Previous step', 'Étape précédente')}">←</button>` + [1, 2, 3, 4].map((n) => `<button type="button" data-n="${n}" aria-label="${L('Step', 'Étape')} ${n}">0${n}</button>`).join('') + `<button type="button" class="arr" data-d="1" aria-label="${L('Next step', 'Étape suivante')}">→</button>`;
 stepper.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; setStep(b.dataset.n ? +b.dataset.n : ui.step + +b.dataset.d, true); });
@@ -226,6 +234,7 @@ dots.addEventListener('click', (e) => { const b = e.target.closest('button'); if
 $('galPrev').setAttribute('aria-label', L('Previous robot', 'Robot précédent')); $('galNext').setAttribute('aria-label', L('Next robot', 'Robot suivant'));
 $('galPrev').textContent = '←'; $('galNext').textContent = '→';
 $('galPrev').addEventListener('click', () => setGal(ui.gi - 1)); $('galNext').addEventListener('click', () => setGal(ui.gi + 1));
+stepper.insertAdjacentHTML('beforeend', '<i class="bar"></i>');
 setStep(1); setGal(0);
 // which of the three screens is in view
 let zone = 0;
@@ -387,7 +396,7 @@ if (renderer) {
   const DESK = () => innerWidth > 900;
   const GL = [[0.55, 3.0, 1], [0.7, 3.4, -1], [0.62, 3.0, 1], [0.62, 3.2, -1], [0.55, 3.0, 1], [0.8, 3.4, -1], [0.25, 2.7, 1], [0.6, 3.2, -1]];
   const KF = [   // camera: position, look-at, shift of the robot to the right (desktop)
-    { p: [2.3, 1.25, 2.7], l: [0.2, 0.62, 0], s: 0.95 },
+    { p: [2.0, 1.2, 2.35], l: [0.2, 0.62, 0], s: 0.95 },
     { p: [2.1, 1.2, 2.6], l: [0.1, 0.68, 0], s: 0.55 },
     { p: [-1.9, 1.35, 2.5], l: [0.15, 0.7, 0], s: 0.82 },
     { p: [3.1, 0.95, 0.35], l: [0.05, 0.7, 0], s: 0.8 },
@@ -429,10 +438,10 @@ if (renderer) {
     acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
     // camera
     const K = KF[mode === 5 ? 6 + ui.gi : mode], tp = new THREE.Vector3(...K.p), tl = new THREE.Vector3(...K.l);
-    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 2.0 : 1.5) : mode === 5 ? 1.65 : 1).add(tl);
+    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 2.0 : 1.5) : mode === 5 ? 1.3 : 1).add(tl);
     const sh = K.s, fw = tl.clone().sub(tp).normalize(), right = new THREE.Vector3().crossVectors(fw, new THREE.Vector3(0, 1, 0)).normalize();
-    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= mode === 0 ? 0.95 : mode === 5 ? 0.8 : 0.85;   // phones: the robot sits above the text
-    if (mode === 5 && DESK()) tl.y -= 0.6;          // the robot sits above the card
+    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= mode === 0 ? 1.15 : mode === 5 ? 0.8 : 0.85;   // phones: the robot sits above the text
+    if (mode === 5 && DESK()) tl.y -= 0.5;          // the robot sits above the card
     tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
     const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
     // past the gallery the page is plain text: stop drawing
