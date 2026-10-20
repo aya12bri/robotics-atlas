@@ -71,12 +71,7 @@
     </section>
 
     <section class="scene-sec gal wide" id="gallery">
-      <div class="gal-names" id="galNames" aria-hidden="true"></div>
       <div class="wrap">
-        <div class="gal-head">
-          <h2>Meet the family</h2>
-          <p>Eight kinds of robots, from a simple arm to a single wheel. Use the arrows, the dots or your keyboard to move from one to the next.</p>
-        </div>
         <button class="gal-arrow prev" id="galPrev" type="button"></button>
         <button class="gal-arrow next" id="galNext" type="button"></button>
         <div class="gal-foot">
@@ -239,8 +234,8 @@ const tourPanels = [...document.querySelectorAll('#tourFader .panel')], cards = 
 const stepper = $('stepper'), dots = $('galDots');
 const setFade = (list, k) => list.forEach((p, i) => p.classList.toggle('on', i === k));
 function setStep(n, manual) { ui.step = ((n - 1 + 4) % 4) + 1; if (manual) ui.auto = false; ui.last = performance.now(); const bar = stepper.querySelector('.bar'); if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; bar.classList.toggle('run', ui.auto); } setFade(tourPanels, ui.step - 1); [...stepper.querySelectorAll('[data-n]')].forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === ui.step))); }
-const gnames = $('galNames'); gnames.innerHTML = cards.map((c) => `<div class="gname">${c.querySelector('h2').innerHTML}</div>`).join(''); const gnEls = [...gnames.children];
-function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); setFade(gnEls, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
+const gnEls = [];
+function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
 stepper.innerHTML = `<button type="button" class="arr" data-d="-1" aria-label="${L('Previous step', 'Étape précédente')}">←</button>` + [1, 2, 3, 4].map((n) => `<button type="button" data-n="${n}" aria-label="${L('Step', 'Étape')} ${n}">0${n}</button>`).join('') + `<button type="button" class="arr" data-d="1" aria-label="${L('Next step', 'Étape suivante')}">→</button>`;
 stepper.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; setStep(b.dataset.n ? +b.dataset.n : ui.step + +b.dataset.d, true); });
 dots.innerHTML = cards.map((c) => `<button type="button" aria-label="${c.querySelector('h2').textContent}"></button>`).join('');
@@ -288,16 +283,8 @@ function paintRoad() {
 }
 rmEl.addEventListener('change', (e) => { const i = e.target.closest('input[data-id]'); if (i) prog().set(i.dataset.id, i.checked); });
 addEventListener('ra-progress', paintRoad); paintRoad();
-// ---------- the bar under the navigation: where you are, jump to any screen, light 3D mode ----------
-{ const items = [['top', L('Intro', 'Intro')], ['tour', L('How it works', 'Comment ça marche')], ['gallery', L('The robots', 'Les robots')], ['start', L('Roadmap', 'Parcours')], ['sign', L('About', 'À propos')]];
-  const hud = document.createElement('nav'); hud.className = 'hud wide'; hud.setAttribute('aria-label', L('Sections', 'Sections'));
-  hud.innerHTML = items.map(([id, name], i) => `<button type="button" data-id="${id}" aria-label="${name}"><b>0${i + 1}</b><span>${name}</span></button>`).join('') + `<i class="sep"></i><button type="button" id="hudLite" class="lite" aria-pressed="false" title="${L('Switch between full and light 3D (faster on slow computers)', 'Passer de la 3D complète à la 3D légère (plus rapide sur un ordinateur lent)')}">⚡<span></span></button>`;
-  document.body.appendChild(hud);
-  hud.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'hudLite') { window.__setLite && window.__setLite(b.getAttribute('aria-pressed') !== 'true'); return; } const y = $(b.dataset.id).offsetTop; if (window.RA && RA.smoothTo) RA.smoothTo(y); else scrollTo(0, y); });
-  const mark = () => { const m = scrollY + innerHeight * 0.45; let cur = 'top'; items.forEach(([id]) => { if ($(id).offsetTop <= m) cur = id; }); hud.querySelectorAll('button[data-id]').forEach((b) => b.classList.toggle('on', b.dataset.id === cur)); };
-  addEventListener('scroll', mark, { passive: true }); mark(); }
 // ---------- smooth hand-over between the screens: each one fades and drifts as it leaves or arrives ----------
-const FADE = [[secHero, [...secHero.querySelectorAll('.hero-front, .hero-title, .ticker')]], [secTour, [secTour.querySelector('.wrap')]], [secGal, [secGal.querySelector('.wrap'), $('galNames')]]];
+const FADE = [[secHero, [...secHero.querySelectorAll('.hero-front, .hero-title, .ticker')]], [secTour, [secTour.querySelector('.wrap')]], [secGal, [secGal.querySelector('.wrap')]]];
 let fadeRaf = 0;
 function applyFades() {
   fadeRaf = 0; const vh = innerHeight;
@@ -376,6 +363,7 @@ if (renderer) {
   resetCube(); place.visible = false; cube.visible = false;
 
   // ---------- the gallery: eight robots on pedestals, far from the hero robot ----------
+  const FIT_H = 1.3, FIT_W = 1.5;                                   // every gallery robot is scaled to fit this box
   const GAL_Z = -22, GX = (i) => (i - 3.5) * 2.0, galY = 0.12;
   const gal = new THREE.Group(); scene.add(gal);
   const stdMat = (c, r, m) => new THREE.MeshStandardMaterial({ color: c, roughness: r === undefined ? 0.45 : r, metalness: m === undefined ? 0.2 : m });
@@ -462,6 +450,14 @@ if (renderer) {
     g.rotation.y = -0.5; shadowed(g); models.push({ i: 7, update: (t) => { w.rotation.z = -t * 0.9; } }); }
 
 
+  // same size for every robot: measure each model once, then scale it to fit the same box (the pedestal keeps its size)
+  gal.children.forEach((g, i) => {
+    const content = new THREE.Group(); [...g.children].slice(2).forEach((c) => content.add(c)); g.add(content);
+    const m = models.find((q) => q.i === i), bb = new THREE.Box3();
+    for (let t = 0; t < 12; t += 0.4) { if (m) m.update(t); scene.updateMatrixWorld(true); bb.union(new THREE.Box3().setFromObject(content)); }     // largest extent over a whole animation
+    if (m) m.update(0); const sz = bb.getSize(new THREE.Vector3()), s = clamp(Math.min(FIT_H / Math.max(sz.y - galY, 0.2), FIT_W / Math.max(sz.x, sz.z, 0.2)), 0.35, 3);
+    content.scale.setScalar(s); content.position.y = galY - s * Math.max(bb.min.y, 0); g.userData.fit = content;
+  });
   // every pedestal gets its own materials so that the neighbours can turn grey and dark
   const pedMats = gal.children.map((g) => { const list = []; g.traverse((o) => { if (o.isMesh && o.material && !Array.isArray(o.material)) { const link = galLinks.includes(o.material); o.material = o.material.clone(); o.material.userData.base = o.material.color.clone(); o.material.userData.link = link; list.push(o.material); } }); return list; });
   const grey = new THREE.Color(), setGrey = (i, f) => pedMats[i].forEach((m) => { const b = m.userData.base, y = b.r * 0.3 + b.g * 0.59 + b.b * 0.11; m.color.copy(b); grey.setRGB(y, y, y); m.color.lerp(grey, f * 0.88).multiplyScalar(1 - 0.5 * f); });
@@ -483,7 +479,7 @@ if (renderer) {
   // state
   const q = NEUTRAL.slice(), qGoal = NEUTRAL.slice(); let lastIK = { posErr: 0, p: [0.5, 0, 0.5] };
   const DESK = () => innerWidth > 900;
-  const GL = [[0.55, 4.9, 1], [0.7, 4.5, -1], [0.62, 4.0, 1], [0.8, 4.3, -1], [0.55, 3.6, 1], [0.8, 4.6, -1], [0.25, 3.5, 1], [0.5, 5.4, -1]];
+  const GL = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => [0.12 + FIT_H / 2, 4.4, i % 2 ? -1 : 1]);          // the same framing for every robot
   const KF = [   // camera: position, look-at, shift of the robot to the right (desktop)
     { p: [1.0, 0.9, 2.7], l: [0, 0.62, 0], s: 0 },
     { p: [2.1, 1.2, 2.6], l: [0.1, 0.68, 0], s: 0.55 },
@@ -521,13 +517,12 @@ if (renderer) {
   // quality levels: 0 full, 1 lighter, 2 lite (the visitor can also choose it with the button in the top bar)
   const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
   let stored = null; try { stored = localStorage.getItem('ra-lite'); } catch (e) { /* private mode */ }
-  let quality = stored === '1' ? 2 : stored === '0' ? 0 : LITE ? 2 : LOW_END ? 1 : 0, capMs = 0;
+  let quality = 2, capMs = 0;                                      // the light version only: fast everywhere
   function applyQuality(q) {
     quality = q; renderer.setPixelRatio(q === 0 ? Math.min(1.25, devicePixelRatio || 1) : 1); capMs = q >= 2 ? 33 : 0;
     dust.visible = q < 2; smoke.children.forEach((s, i) => { s.userData.off = q >= 1 && i > 5; s.visible = !s.userData.off; if (q >= 2 && i > 2) { s.userData.off = true; s.visible = false; } }); size();
     document.documentElement.classList.toggle('lite3d', q >= 2); const lb = document.getElementById('hudLite'); if (lb) { lb.setAttribute('aria-pressed', String(q >= 2)); lb.querySelector('span').textContent = q >= 2 ? L('Lite 3D', '3D léger') : L('Full 3D', '3D complète'); }
   }
-  window.__setLite = (on) => { try { localStorage.setItem('ra-lite', on ? '1' : '0'); } catch (e) { /* private mode */ } applyQuality(on ? 2 : 0); };
   applyQuality(quality);
   let lastDraw = 0, acc = 0, cnt = 0; const glEl = $('gl'); const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
@@ -548,7 +543,7 @@ if (renderer) {
     if (capMs && now - lastDraw < capMs - 2) return; lastDraw = now;          // lite mode: 30 images per second are enough
     const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now;
     // adaptive quality: if the machine is slow, draw fewer pixels, then drop the shadows
-    acc += dt; cnt++; if (cnt === 45) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.026 && quality < 2) applyQuality(quality + 1); }   // slow machine: draw less, then less again
+    acc += dt; cnt++; if (cnt === 45) { acc = 0; cnt = 0; }   // slow machine: draw less, then less again
     const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
     // camera
     // the camera glides between the three screens while you scroll (no jump)
@@ -587,7 +582,7 @@ if (renderer) {
       gpos = lerp(gpos, ui.gi, 1 - Math.exp(-dt * 5));
       for (const m of models) {
         const ad = Math.abs(m.i - gpos), g = gal.children[m.i], near = ad < 3.2; g.visible = near; if (!near) continue;
-        g.scale.setScalar(1.08 - 0.74 * smooth(Math.min(ad, 1)) - 0.08 * Math.min(Math.max(ad - 1, 0), 1));       // the one in front is big, its neighbours smaller
+        g.scale.setScalar(1.0 - 0.72 * smooth(Math.min(ad, 1)) - 0.08 * Math.min(Math.max(ad - 1, 0), 1));       // the one in front is big, its neighbours smaller
         const f = Math.min(1, ad); if (greyDirty || Math.abs(f - (g.userData.f === undefined ? -1 : g.userData.f)) > 0.004) { g.userData.f = f; setGrey(m.i, f); }
         m.update(t);
       }

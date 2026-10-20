@@ -19,9 +19,9 @@
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];
   const UI = {
-    en: { home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
+    en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
           foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels' },
-    fr: { home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
+    fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
           foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues' }
   };
 
@@ -180,7 +180,7 @@
     nav.className = 'site-nav';
     nav.innerHTML =
       '<nav class="nav-l" aria-label="Main">' +
-      link('index.html', ui.home) + link('learn.html', ui.learn) + `<a href="index.html#start">${ui.start}</a>` + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#start">${ui.secRoad}</a>` + link('learn.html', ui.learn) : link('index.html', ui.home) + link('learn.html', ui.learn) + `<a href="index.html#start">${ui.start}</a>`) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<div class="nav-r">' +
       `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
@@ -319,12 +319,12 @@
       e.preventDefault(); history.replaceState(null, '', u.hash || u.pathname); smoothTo(Math.max(0, y)); document.querySelector('.site-nav').classList.remove('open');
     });
     if (here !== 'index.html') return;
-    const map = [['top', 'index.html'], ['gallery', 'index.html#gallery'], ['start', 'index.html#start']];
+    const map = [['top', 'index.html'], ['tour', 'index.html#tour'], ['gallery', 'index.html#gallery'], ['start', 'index.html#start'], ['sign', 'index.html#start']];
     const marks = () => {
       const mid = window.scrollY + innerHeight / 2; let cur = 'top';
       for (const [id] of map) { const el = document.getElementById(id); if (el && el.offsetTop <= mid) cur = id; }
       document.querySelectorAll('.nav-l a, .dd-link').forEach((a) => {
-        const h = a.getAttribute('href'), on = (cur === 'top' && h === 'index.html') || (cur === 'gallery' && h === 'index.html#gallery') || (cur === 'start' && h === 'index.html#start');
+        const h = a.getAttribute('href'), cur2 = map.find((m) => m[0] === cur)[1], on = h === cur2 && !(a.classList.contains('dd-link') && cur !== 'gallery');
         if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
       });
     };
