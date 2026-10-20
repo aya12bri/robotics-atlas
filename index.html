@@ -184,8 +184,9 @@
         <div class="sign-row">
           <svg class="sign-mark" viewBox="0 0 120 120" aria-hidden="true"><g class="a1"><circle cx="30" cy="92" r="13" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="30" cy="92" r="4.5" fill="currentColor"/><path d="M38 83 L66 50" stroke="var(--hl)" stroke-width="9" stroke-linecap="round"/><g class="a2"><circle cx="66" cy="50" r="9" fill="none" stroke="currentColor" stroke-width="5"/><path d="M73 44 L98 24" stroke="var(--hl)" stroke-width="8" stroke-linecap="round"/></g></g></svg>
           <p>Robotics Atlas is a learning project about robots, their kinematics and their uses. Made with care, three.js and a lot of coffee.</p>
-          <a class="btn ghost" href="https://github.com/aya12bri/robotics-atlas">See the code on GitHub</a>
+          <a class="btn ghost gh" href="https://github.com/aya12bri/robotics-atlas" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>GitHub repository</a>
         </div>
+        <p class="social" id="signSocial"></p>
       </div>
     </section>
 
@@ -246,6 +247,7 @@ $('galPrev').addEventListener('click', () => setGal(ui.gi - 1)); $('galNext').ad
 stepper.insertAdjacentHTML('beforeend', '<i class="bar"></i>');
 setStep(1); setGal(0);
 new IntersectionObserver((en) => en.forEach((x) => { if (x.isIntersecting) x.target.classList.add('in'); }), { threshold: 0.35 }).observe($('sign'));
+$('signSocial').innerHTML = (window.RA_SOCIAL || []).map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('');
 // ---------- the roadmap: nodes with a checkbox, saved in the browser ----------
 const RM = {
   learn: { href: 'learn.html', tag: ['Basics', 'Bases'], min: 45, lv: 1, t: ['Learn the basics', 'Apprendre les bases'], d: ['Joints, degrees of freedom, frames and the DH table.', 'Liaisons, degrés de liberté, repères et tableau DH.'] },
