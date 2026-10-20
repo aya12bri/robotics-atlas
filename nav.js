@@ -147,19 +147,20 @@
   if (!document.querySelector('link[href*="fonts.googleapis"]')) {
     const f = document.createElement('link');
     f.rel = 'stylesheet';
-    f.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';
+    f.href = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap';
     head.appendChild(f);
   }
   if (!head.querySelector('link[rel~=icon]')) {
     const ic = document.createElement('link');
     ic.rel = 'icon';
-    ic.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#g)"/><path d="M8 24 L14 12 L24 9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="24" r="2.6" fill="#fff"/></svg>');
+    ic.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#0d1a2b"/><circle cx="10" cy="22" r="5.5" fill="none" stroke="#86b6ff" stroke-width="2.4"/><circle cx="10" cy="22" r="1.8" fill="#86b6ff"/><path d="M14 18 L25 8" stroke="#86b6ff" stroke-width="3.4" stroke-linecap="round"/></svg>');
     head.appendChild(ic);
   }
 
   // ---------------------------------------------------------------- build the page chrome
   function build() {
-    const LOGO = '<span class="logo"><svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true"><path d="M8 24 L14 12 L24 9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="24" r="2.8" fill="currentColor"/><circle cx="14" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/></svg></span>';
+    // the mark is a joint seen along its axis (circle with a dot) and the link that leaves it
+    const LOGO = '<svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><circle cx="9" cy="23" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="9" cy="23" r="1.9" fill="currentColor"/><path d="M13.5 18.7 L25 8" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>';
     const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
     const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
     const link = (href, text) => `<a href="${href}"${here === href ? ' aria-current="page"' : ''}>${text}</a>`;
