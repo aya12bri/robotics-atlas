@@ -650,3 +650,16 @@ html, body { overflow-x: clip; }
 .hud .lite span { max-width: 6rem; } .hud .lite[aria-pressed='true'] { color: var(--hl); }
 @media (max-width: 900px) { .hud { top: 4.5rem; } .hud button { padding: 0 0.45rem; } .hud .lite span { display: none; } .scene-sec.gal { padding-top: 7.6rem; } }
 .hero-front, .hero-title, .ticker, .scene-sec.tour .wrap, .scene-sec.gal .wrap, .gal-names { will-change: opacity, translate; }
+
+/* ---- simple gallery: only the name and the button ---- */
+.gal-cards .card > .step, .gal-cards .card > .rtag, .gal-cards .card > p, .gal-cards .card > dl { display: none !important; }
+.scene-sec.gal { padding-top: 6rem; padding-bottom: 1.6rem; }
+.gal-cards .card { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; text-align: center; padding: 0; }
+.gal-cards .card h2 { margin: 0; font-size: clamp(2rem, 4.2vw, 3.4rem); font-stretch: 78%; }
+.gal-cards .card .btn { margin: 0; }
+.gal-foot::before { top: -2rem; }
+.gal-arrow { top: 38%; }
+.hud { display: none !important; }
+@media (max-width: 900px) { .gal-cards .card h2 { font-size: 1.9rem; } .gal-cards .card .btn { width: auto; } }
+
+.scene-sec.gal > .wrap { justify-content: flex-end; }
