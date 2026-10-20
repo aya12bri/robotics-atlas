@@ -595,10 +595,18 @@ if (renderer) {
     // frames and tags
     axes.forEach((a, i) => { a.visible = mode === 2; });
     jointMats.forEach((m, i) => m.color.set(mode === 1 && i === hl ? '#2f6bff' : '#ff9f43'));
-    tagEls.forEach((tg, i) => {
-      const on = mode === 1 || mode === 2; tg.classList.toggle('on', on); tg.classList.toggle('hl', mode === 1 && i === hl);
-      if (on) { arm.rot[i].getWorldPosition(v3); v3.project(camera); tg.style.transform = `translate(${((v3.x + 1) / 2) * innerWidth + 14}px, ${((1 - v3.y) / 2) * innerHeight - 12}px)`; tg.innerHTML = `q${i + 1} <b>${q[i].toFixed(0)}°</b>`; }
-    });
+    {
+      const on = mode === 1 || mode === 2, placed = [];
+      tagEls.forEach((tg, i) => {
+        tg.classList.toggle('on', on); tg.classList.toggle('hl', mode === 1 && i === hl);
+        if (!on) return;
+        arm.rot[i].getWorldPosition(v3); v3.project(camera);
+        let x = ((v3.x + 1) / 2) * innerWidth + 14, y = ((1 - v3.y) / 2) * innerHeight - 12;
+        // several joints share the same point (q2 and q3, q4 q5 and q6): move a tag down until it no longer covers another one
+        for (let k = 0; k < 8 && placed.some((p) => Math.abs(p[0] - x) < 78 && Math.abs(p[1] - y) < 26); k++) y += 26;
+        placed.push([x, y]); tg.style.transform = `translate(${x}px, ${y}px)`; tg.innerHTML = `q${i + 1} <b>${q[i].toFixed(0)}°</b>`;
+      });
+    }
     if (mode === 2) thCells.forEach((c, i) => setTxt(c, 'th' + i, (q[i] + (i === 1 || i === 2 ? 90 : 0)).toFixed(1) + '°'));
     if (mode === 3) setTxt(readIK, 'ik', `target  x ${lastIK.p[0].toFixed(2)}  y ${lastIK.p[1].toFixed(2)}  z ${lastIK.p[2].toFixed(2)}\nerror   ${(lastIK.posErr * 1000).toFixed(1)} mm`);
     renderer.render(scene, camera);
