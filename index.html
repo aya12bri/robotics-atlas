@@ -228,7 +228,7 @@ const STD = [
 const LIMITS = [[-170, 170], [-100, 60], [-140, 50], [-180, 180], [-115, 115], [-180, 180]];
 const NEUTRAL = [10, -50, -60, 0, -40, 0];
 let renderer = null;
-try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alpha: true }); } catch (e) { $('gl').remove(); }
+try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: (devicePixelRatio || 1) < 1.5, alpha: true, powerPreference: 'high-performance' }); } catch (e) { $('gl').remove(); }
 const FR = RA_LANG() === 'fr', L = (en, fr) => (FR ? fr : en);
 function RA_LANG() { return (window.RA && window.RA.lang) || document.documentElement.lang || 'en'; }
 const secHero = $('top'), secTour = $('tour'), secGal = $('gallery'), secEnd = document.querySelector('.scene-sec.end');
@@ -288,13 +288,23 @@ function paintRoad() {
 }
 rmEl.addEventListener('change', (e) => { const i = e.target.closest('input[data-id]'); if (i) prog().set(i.dataset.id, i.checked); });
 addEventListener('ra-progress', paintRoad); paintRoad();
-// ---------- a rail on the right: jump to any screen ----------
-{ const items = [['top', L('Top', 'Haut')], ['tour', L('How it works', 'Comment ça marche')], ['gallery', L('The robots', 'Les robots')], ['start', L('Roadmap', 'Parcours')], ['sign', L('About', 'À propos')]];
-  const rail = document.createElement('nav'); rail.className = 'rail wide'; rail.setAttribute('aria-label', L('Sections', 'Sections'));
-  rail.innerHTML = items.map(([id, name]) => `<button type="button" data-id="${id}" aria-label="${name}"><span>${name}</span></button>`).join(''); document.body.appendChild(rail);
-  rail.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; const y = $(b.dataset.id).offsetTop; if (window.RA && RA.smoothTo) RA.smoothTo(y); else scrollTo(0, y); });
-  const mark = () => { const m = scrollY + innerHeight * 0.45; let cur = 'top'; items.forEach(([id]) => { if ($(id).offsetTop <= m) cur = id; }); rail.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.id === cur)); };
+// ---------- the bar under the navigation: where you are, jump to any screen, light 3D mode ----------
+{ const items = [['top', L('Intro', 'Intro')], ['tour', L('How it works', 'Comment ça marche')], ['gallery', L('The robots', 'Les robots')], ['start', L('Roadmap', 'Parcours')], ['sign', L('About', 'À propos')]];
+  const hud = document.createElement('nav'); hud.className = 'hud wide'; hud.setAttribute('aria-label', L('Sections', 'Sections'));
+  hud.innerHTML = items.map(([id, name], i) => `<button type="button" data-id="${id}" aria-label="${name}"><b>0${i + 1}</b><span>${name}</span></button>`).join('') + `<i class="sep"></i><button type="button" id="hudLite" class="lite" aria-pressed="false" title="${L('Switch between full and light 3D (faster on slow computers)', 'Passer de la 3D complète à la 3D légère (plus rapide sur un ordinateur lent)')}">⚡<span></span></button>`;
+  document.body.appendChild(hud);
+  hud.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'hudLite') { window.__setLite && window.__setLite(b.getAttribute('aria-pressed') !== 'true'); return; } const y = $(b.dataset.id).offsetTop; if (window.RA && RA.smoothTo) RA.smoothTo(y); else scrollTo(0, y); });
+  const mark = () => { const m = scrollY + innerHeight * 0.45; let cur = 'top'; items.forEach(([id]) => { if ($(id).offsetTop <= m) cur = id; }); hud.querySelectorAll('button[data-id]').forEach((b) => b.classList.toggle('on', b.dataset.id === cur)); };
   addEventListener('scroll', mark, { passive: true }); mark(); }
+// ---------- smooth hand-over between the screens: each one fades and drifts as it leaves or arrives ----------
+const FADE = [[secHero, [...secHero.querySelectorAll('.hero-front, .hero-title, .ticker')]], [secTour, [secTour.querySelector('.wrap')]], [secGal, [secGal.querySelector('.wrap'), $('galNames')]]];
+let fadeRaf = 0;
+function applyFades() {
+  fadeRaf = 0; const vh = innerHeight;
+  FADE.forEach(([sec, els]) => { const r = sec.getBoundingClientRect(), c = (r.top + r.height / 2 - vh / 2) / vh, o = clamp(1.6 - Math.abs(c) * 1.7, 0, 1), ty = reduce ? 0 : clamp(c, -1, 1) * -40;
+    els.forEach((el) => { el.style.opacity = o.toFixed(3); el.style.translate = `0 ${ty.toFixed(1)}px`; el.style.visibility = o < 0.01 ? 'hidden' : ''; }); });
+}
+addEventListener('scroll', () => { if (!fadeRaf) fadeRaf = requestAnimationFrame(applyFades); }, { passive: true }); addEventListener('resize', applyFades); applyFades();
 // which of the three screens is in view
 let zone = 0;
 const readZone = () => { const y = scrollY + innerHeight / 2; zone = y < secTour.offsetTop ? 0 : y < secGal.offsetTop ? 1 : y < secEnd.offsetTop ? 2 : 3; };
@@ -310,18 +320,19 @@ const tagEls = [0, 1, 2, 3, 4, 5].map((i) => $('jt' + i));
 
 if (renderer) {
   const LITE = innerWidth < 900;                                  // phones and small screens: cheaper rendering
-  renderer.setPixelRatio(Math.min(LITE ? 1.25 : 1.5, devicePixelRatio || 1)); renderer.setClearColor(0x000000, 0);
-  renderer.shadowMap.enabled = !LITE; renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.setClearColor(0x000000, 0); renderer.shadowMap.enabled = false;                    // no real-time shadows: a soft blob under the robot is enough and much cheaper
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.1, 80);
   scene.fog = new THREE.Fog(0x1f1f1f, 5, 12);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.05));
-  const sun = new THREE.DirectionalLight(0xffffff, 2.0); sun.position.set(3.2, 5.5, 2.4); sun.castShadow = true;
+  const sun = new THREE.DirectionalLight(0xffffff, 2.0); sun.position.set(3.2, 5.5, 2.4); sun.castShadow = false;
   scene.add(sun.target); sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.receiveShadow = true; scene.add(floor);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.visible = false; scene.add(floor);
+  const blobTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 4, 64, 64, 62); gr.addColorStop(0, 'rgba(0,0,0,0.6)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
+  const blob = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false })); blob.position.y = 0.004; scene.add(blob);
   const grid = new THREE.GridHelper(60, 60, 0x777777, 0x666666); grid.position.set(0, 0.002, -10); grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
 
   // atmosphere: drifting dust that follows the camera, and two slow rings behind the hero robot
-  const dustN = LITE ? 160 : 320, dustPos = new Float32Array(dustN * 3);
+  const dustN = LITE ? 90 : 200, dustPos = new Float32Array(dustN * 3);
   for (let i = 0; i < dustN; i++) { dustPos[i * 3] = (Math.random() - 0.5) * 14; dustPos[i * 3 + 1] = Math.random() * 5; dustPos[i * 3 + 2] = (Math.random() - 0.5) * 14; }
   const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
   const dustMat = new THREE.PointsMaterial({ color: 0x6b97ff, size: 0.028, transparent: true, opacity: 0.55, depthWrite: false });
@@ -482,6 +493,7 @@ if (renderer) {
     { p: [GX(0) - 5, 1.7, GAL_Z + 5.5], l: [GX(0) + 1.2, 0.7, GAL_Z], s: 0.3 },
     ...GL.map(([y, d, sd], i) => ({ p: [GX(i) + sd * 0.5, y + 0.55, GAL_Z + d + 0.4], l: [GX(i), y, GAL_Z], s: 0 })),
     { p: [0, 3.4, GAL_Z + 9], l: [0, 0.6, GAL_Z], s: 0 }];
+  for (let i = 1; i <= 4; i++) { const k = KF[i], d = k.p.map((v, j) => (v - k.l[j]) * 1.25); k.p = k.l.map((v, j) => v + d[j]); k.s = 0.2 * Math.hypot(...d); }   // tour: farther, centred in the free space
   const cam = { p: new THREE.Vector3(...KF[0].p), l: new THREE.Vector3(...KF[0].l) };
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(), dir = new THREE.Vector3(), hit = new THREE.Vector3(), P0 = new THREE.Vector3(0.55, 0.65, 0), v3 = new THREE.Vector3();
   function pointerTarget(scale, t) {
@@ -506,30 +518,52 @@ if (renderer) {
 
   function size() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
   size(); addEventListener('resize', size);
-  let lastDraw = 0, quality = 0, acc = 0, cnt = 0; const glEl = $('gl'); const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
+  // quality levels: 0 full, 1 lighter, 2 lite (the visitor can also choose it with the button in the top bar)
+  const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+  let stored = null; try { stored = localStorage.getItem('ra-lite'); } catch (e) { /* private mode */ }
+  let quality = stored === '1' ? 2 : stored === '0' ? 0 : LITE ? 2 : LOW_END ? 1 : 0, capMs = 0;
+  function applyQuality(q) {
+    quality = q; renderer.setPixelRatio(q === 0 ? Math.min(1.25, devicePixelRatio || 1) : 1); capMs = q >= 2 ? 33 : 0;
+    dust.visible = q < 2; smoke.children.forEach((s, i) => { s.userData.off = q >= 1 && i > 5; s.visible = !s.userData.off; if (q >= 2 && i > 2) { s.userData.off = true; s.visible = false; } }); size();
+    document.documentElement.classList.toggle('lite3d', q >= 2); const lb = document.getElementById('hudLite'); if (lb) { lb.setAttribute('aria-pressed', String(q >= 2)); lb.querySelector('span').textContent = q >= 2 ? L('Lite 3D', '3D léger') : L('Full 3D', '3D complète'); }
+  }
+  window.__setLite = (on) => { try { localStorage.setItem('ra-lite', on ? '1' : '0'); } catch (e) { /* private mode */ } applyQuality(on ? 2 : 0); };
+  applyQuality(quality);
+  let lastDraw = 0, acc = 0, cnt = 0; const glEl = $('gl'); const cur = { mode: -1 }; let tPrev = performance.now(), visible = true;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
+  const camA = { p: new THREE.Vector3(), l: new THREE.Vector3() }, camB = { p: new THREE.Vector3(), l: new THREE.Vector3() };
+  function camFor(mode, out) {                                      // camera position and target for one screen
+    const K = KF[mode === 5 ? 6 + ui.gi : mode], tp = out.p.set(...K.p), tl = out.l.set(...K.l);
+    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 1.5 : mode === 0 ? 1.9 : 1.7) : 1).add(tl);
+    const fw = tmpF.copy(tl).sub(tp).normalize(), right = tmpR.crossVectors(fw, tmpU).normalize();
+    if (mode === 0 && DESK()) tl.y -= 0.5;
+    if (DESK()) tl.addScaledVector(right, -K.s); else tl.y -= mode === 0 ? 1.3 : mode === 5 ? 0.55 : 1.15;   // phones: the robot sits above the text
+    if (mode === 5 && DESK()) tl.y -= 0.32;                          // the robot sits above the card
+    return out;
+  }
+  const tmpF = new THREE.Vector3(), tmpR = new THREE.Vector3(), tmpU = new THREE.Vector3(0, 1, 0);
   function frame(now) {
     requestAnimationFrame(frame); if (!visible) return;
-    if (LITE && now - lastDraw < 30) return; lastDraw = now;          // phones: 30 images per second are enough
+    if (capMs && now - lastDraw < capMs - 2) return; lastDraw = now;          // lite mode: 30 images per second are enough
     const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now;
     // adaptive quality: if the machine is slow, draw fewer pixels, then drop the shadows
-    acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
+    acc += dt; cnt++; if (cnt === 45) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.026 && quality < 2) applyQuality(quality + 1); }   // slow machine: draw less, then less again
+    const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
     // camera
-    const K = KF[mode === 5 ? 6 + ui.gi : mode], tp = new THREE.Vector3(...K.p), tl = new THREE.Vector3(...K.l);
-    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 1.5 : mode === 0 ? 1.9 : 1.7) : mode === 5 ? 1 : 1).add(tl);
-    const sh = K.s, fw = tl.clone().sub(tp).normalize(), right = new THREE.Vector3().crossVectors(fw, new THREE.Vector3(0, 1, 0)).normalize();
-    if (mode === 0 && DESK()) tl.y -= 0.5;
-    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= mode === 0 ? 1.3 : mode === 5 ? 0.55 : 1.15;   // phones: the robot sits above the text
-    if (mode === 5 && DESK()) tl.y -= 0.32;          // the robot sits above the card
-    tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
+    // the camera glides between the three screens while you scroll (no jump)
+    const t1 = secTour.offsetTop, t2 = secGal.offsetTop, y = scrollY, fS = y <= 0 ? 0 : y < t1 ? y / t1 : y < t2 ? 1 + (y - t1) / (t2 - t1) : 2, ia = Math.min(1, Math.floor(fS)), ee = reduce ? Math.round(fS - ia) : smooth(fS - ia);
+    const sm = (i) => (i === 0 ? 0 : i === 1 ? ui.step : 5);
+    camFor(sm(ia), camA); camFor(sm(ia + 1), camB);
+    const tp = camA.p.lerp(camB.p, ee), tl = camA.l.lerp(camB.l, ee);
+    tp.x += pointer.nx * 0.18; tp.y += pointer.ny * 0.1;
     const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
     // past the gallery the page is plain text: stop drawing
     const idle3d = zone >= 3; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) { tagEls.forEach((tg) => tg.classList.remove('on')); return; }
     dust.position.set(cam.l.x, 0, cam.l.z); dust.rotation.y = t * 0.03; rings.visible = mode <= 4; rings.rotation.z = t * 0.08; rings.rotation.y = Math.sin(t * 0.2) * 0.4;
     grid.visible = mode >= 1 && mode <= 4; smokeAmt = lerp(smokeAmt, mode === 0 ? 1 : mode <= 4 ? 0.35 : 0, 1 - Math.exp(-dt * 2.5)); smoke.visible = smokeAmt > 0.01;
-    if (smoke.visible) smoke.children.forEach((s, i) => { const u = s.userData, ph = (t * 0.04 + i * 0.13) % 1; u.a += dt * u.sp; s.position.x = Math.cos(u.a) * u.r * 1.5; s.position.y = u.y + 0.18 * Math.sin(t * 0.35 + u.ph) + ph * 0.5; s.scale.setScalar(u.sz * (1 + 0.08 * Math.sin(t * 0.5 + u.ph))); s.material.opacity = smokeAmt * (0.15 - 0.06 * ph); s.material.rotation += dt * 0.03; });
-    arm.root.visible = mode <= 4; place.visible = mode === 4; gal.visible = mode === 5;
+    if (smoke.visible) smoke.children.forEach((s, i) => { if (s.userData.off) return; const u = s.userData, ph = (t * 0.04 + i * 0.13) % 1; u.a += dt * u.sp; s.position.x = Math.cos(u.a) * u.r * 1.5; s.position.y = u.y + 0.18 * Math.sin(t * 0.35 + u.ph) + ph * 0.5; s.scale.setScalar(u.sz * (1 + 0.08 * Math.sin(t * 0.5 + u.ph))); s.material.opacity = smokeAmt * (0.15 - 0.06 * ph); s.material.rotation += dt * 0.03; });
+    blob.visible = mode <= 4; arm.root.visible = mode <= 4; place.visible = mode === 4; gal.visible = mode === 5;
     // arm goals per section
     const hl = Math.floor(t / 2.4) % 6;
     if (mode !== cur.mode) { cur.mode = mode; if (mode !== 4) { segs = []; resetCube(); grip = 1; } if (mode === 4) { where = 'A'; resetCube(); segs = cyc('A', 'B'); si = 0; el = 0; from = q.slice(); } }
