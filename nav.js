@@ -339,8 +339,23 @@
     window.addEventListener('scroll', marks, { passive: true }); marks();
   }
 
+  // ---------------------------------------------------------------- if the 3D engine cannot be loaded, say so (and offer a reload) instead of leaving empty boxes
+  function watch3d() {
+    const needs = document.querySelector('script[type="importmap"]'); if (!needs) return;
+    const fail = () => {
+      if (document.getElementById('err3d')) return;
+      const b = document.createElement('div'); b.id = 'err3d'; b.className = 'err3d'; b.setAttribute('role', 'alert');
+      b.innerHTML = `<span>${lang === 'fr' ? 'Le moteur 3D n\'a pas pu se charger (connexion lente ou interrompue).' : 'The 3D engine could not be loaded (slow or interrupted connection).'}</span><button type="button">${lang === 'fr' ? 'Recharger' : 'Reload'}</button>`;
+      b.querySelector('button').addEventListener('click', () => location.reload()); document.body.appendChild(b);
+    };
+    window.addEventListener('unhandledrejection', (e) => { if (/dynamically imported|Failed to fetch|module script|import/i.test(String(e.reason && (e.reason.message || e.reason)))) fail(); });
+    window.addEventListener('error', (e) => { if (e.target && e.target.tagName === 'SCRIPT' && e.target.type === 'module') fail(); }, true);
+    setTimeout(() => { import('./vendor/three.module.min.js').catch(fail); }, 4000);          // already cached when everything worked: no extra download
+  }
+
   function init() {
     build();
+    watch3d();
     robotPage();
     wireScroll();
     if (lang === 'fr') loadDictionaries(startTranslation);

@@ -16,14 +16,13 @@
         border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem;
       }
     </style>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" />
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js" />
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
     <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
         }
       }
     </script>
