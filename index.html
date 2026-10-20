@@ -587,7 +587,7 @@ if (renderer) {
       gpos = lerp(gpos, ui.gi, 1 - Math.exp(-dt * 5));
       for (const m of models) {
         const ad = Math.abs(m.i - gpos), g = gal.children[m.i], near = ad < 3.2; g.visible = near; if (!near) continue;
-        g.scale.setScalar(1.22 - 0.52 * Math.min(ad, 1) - 0.1 * Math.min(Math.max(ad - 1, 0), 1));       // the one in front is big, its neighbours smaller
+        g.scale.setScalar(1.08 - 0.74 * smooth(Math.min(ad, 1)) - 0.08 * Math.min(Math.max(ad - 1, 0), 1));       // the one in front is big, its neighbours smaller
         const f = Math.min(1, ad); if (greyDirty || Math.abs(f - (g.userData.f === undefined ? -1 : g.userData.f)) > 0.004) { g.userData.f = f; setGrey(m.i, f); }
         m.update(t);
       }
