@@ -391,10 +391,10 @@ body.home::after { display: none; }
 @media (max-width: 900px) { .hero-title .row.small { text-align: center; padding-right: 0; padding-left: 0.8em; } }
 
 /* ---- the robot gallery, full screen: a giant outlined name behind the robot, the text in the corners, small dots ---- */
-.scene-sec.gal { z-index: auto; padding: 6.4rem var(--pad) 1.4rem; }
+.scene-sec.gal { z-index: auto; padding: 8.8rem var(--pad) 1.4rem; }
 .gal-names { position: absolute; left: 0; right: 0; top: 41%; transform: translateY(-50%); z-index: -1; pointer-events: none; user-select: none; }
-.gname { position: absolute; left: 0; right: 0; top: 50%; padding: 0 3vw; transform: translateY(-50%) scale(0.96); text-align: center; text-transform: uppercase; font-family: var(--display); font-weight: 800; font-stretch: 64%; font-size: clamp(3.2rem, 11.5vw, 12.5rem); line-height: 0.84; letter-spacing: -0.005em; color: color-mix(in srgb, var(--text) 5%, transparent); -webkit-text-stroke: 1.5px color-mix(in srgb, var(--text) 30%, transparent); opacity: 0; transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-.gname.on { opacity: 1; transform: translateY(-50%) scale(1); }
+.gname { position: absolute; left: 0; right: 0; top: 50%; padding: 0 3vw; transform: translateY(-50%); text-align: center; text-transform: uppercase; font-family: var(--display); font-weight: 800; font-stretch: 64%; font-size: clamp(3.2rem, 11.5vw, 12.5rem); line-height: 0.84; letter-spacing: -0.005em; color: color-mix(in srgb, var(--text) 9%, transparent); opacity: 0; transition: opacity 0.45s ease; will-change: opacity; }
+.gname.on { opacity: 1; }
 .gal-head { max-width: 24rem; position: relative; z-index: 1; }
 .gal-head h2 { font-size: 0.85rem; font-family: var(--mono); font-stretch: 100%; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.3rem; }
 .gal-head p { font-size: 0.88rem; }
@@ -638,3 +638,15 @@ html, body { overflow-x: clip; }
 .lesson, .gloss, .finish { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 .panel, .chips li, .ticker, .stepper button, .gal-dots button, .gal-arrow { background-color: color-mix(in srgb, var(--bg) 86%, transparent); }
 .ticker { background-color: color-mix(in srgb, var(--bg) 88%, transparent); }
+
+/* ---- the bar under the navigation (where you are) ---- */
+.rail { display: none !important; }
+.hud { position: fixed; top: 4.9rem; left: 50%; transform: translateX(-50%); z-index: 45; display: flex; align-items: center; gap: 0.2rem; padding: 0.25rem; border-radius: 99px; background: color-mix(in srgb, var(--bg) 88%, transparent); border: 1px solid var(--border); max-width: calc(100% - 1.2rem); }
+.hud button { display: flex; align-items: center; gap: 0.35rem; height: 1.8rem; padding: 0 0.6rem; border-radius: 99px; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); background: none; border: 0; min-height: 0; cursor: pointer; white-space: nowrap; transition: background 0.25s, color 0.25s; }
+.hud button b { font-weight: 500; } .hud button span { max-width: 0; overflow: hidden; transition: max-width 0.35s ease; }
+.hud button:hover { color: var(--text); background: color-mix(in srgb, var(--text) 10%, transparent); }
+.hud button.on { background: var(--btn); color: #fff; } .hud button.on span { max-width: 11rem; }
+.hud .sep { width: 1px; height: 1rem; background: var(--border); margin: 0 0.2rem; }
+.hud .lite span { max-width: 6rem; } .hud .lite[aria-pressed='true'] { color: var(--hl); }
+@media (max-width: 900px) { .hud { top: 4.5rem; } .hud button { padding: 0 0.45rem; } .hud .lite span { display: none; } .scene-sec.gal { padding-top: 7.6rem; } }
+.hero-front, .hero-title, .ticker, .scene-sec.tour .wrap, .scene-sec.gal .wrap, .gal-names { will-change: opacity, translate; }
