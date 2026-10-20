@@ -59,7 +59,7 @@
       </label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
-         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
     <p>
       Each joint is drawn with its symbol: a <strong>circle</strong> when its axis points towards you or away from you,
       and a <strong>thick bar</strong> along its axis otherwise. The orange line goes from the base to the tool.
@@ -154,7 +154,7 @@
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#1b2633');
+      scene.background = new THREE.Color('#262626');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(1.5, 1.05, 1.4);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -163,11 +163,11 @@
       const orbit = new OrbitControls(camera, renderer.domElement);
       orbit.target.set(0.3, 0.45, 0);
 
-      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2));
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      scene.add(new THREE.GridHelper(4, 16, '#667788', '#334455'));
+      scene.add(new THREE.GridHelper(4, 16, '#7a7a7a', '#3a3a3a'));
 
       // the robot is generated from the STD table above
       const arm = DHArm.build(THREE, STD, {
@@ -246,7 +246,7 @@
         const [x, y] = P;
         const du = dot(axis, view.right), dv = dot(axis, view.up), dw = dot(axis, view.toward);
         if (Math.hypot(du, dv) < 0.35) {                    // the axis points at the viewer (or away): a circle
-          RB.shape(svg, 'circle', { cx: x, cy: y, r: 13, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+          RB.shape(svg, 'circle', { cx: x, cy: y, r: 13, fill: '#262626', stroke: '#e8eef5', 'stroke-width': 2.5 });
           if (dw > 0) {
             RB.shape(svg, 'circle', { cx: x, cy: y, r: 3, fill: '#e8eef5' });
           } else {
@@ -255,7 +255,7 @@
           }
         } else {                                            // the axis lies in the picture: a bar along it
           const ang = (Math.atan2(-dv, du) * 180) / Math.PI;
-          RB.shape(svg, 'rect', { x: x - 15, y: y - 6, width: 30, height: 12, rx: 2, fill: '#1b2633',
+          RB.shape(svg, 'rect', { x: x - 15, y: y - 6, width: 30, height: 12, rx: 2, fill: '#262626',
                                   stroke: '#e8eef5', 'stroke-width': 2.5, transform: `rotate(${ang} ${x} ${y})` });
         }
         RB.label(svg, x + LABELS[i][0], y + LABELS[i][1], `q${i + 1}`, '#ffffff', 17, LABELS[i][2]);
@@ -283,7 +283,7 @@
         svg.innerHTML = '';
         if (view.ground) {
           const a = view.map(-1.2, 0), b = view.map(1.2, 0);
-          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#667788', 'stroke-width': 2 });
+          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#7a7a7a', 'stroke-width': 2 });
         }
         // pads A and B, and the cube
         for (const [pad, name] of [[PAD_A, 'A'], [PAD_B, 'B']]) {

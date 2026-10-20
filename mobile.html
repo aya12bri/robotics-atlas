@@ -67,7 +67,7 @@
       <label><input type="checkbox" id="iccBox" checked /> Show the ICC (centre of the turn)</label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
-         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
     <p>
       The two small rectangles are the wheels, and the arrows on them show each wheel's speed.
       <span class="legend-x">x<sub>R</sub> red</span> points forward and
@@ -141,7 +141,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#1b2633');
+      scene.background = new THREE.Color('#262626');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(0.0, 3.0, 3.1);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -150,11 +150,11 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
       const orbit = new OrbitControls(camera, renderer.domElement);
       orbit.target.set(0, 0, 0);
 
-      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2));
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      scene.add(new THREE.GridHelper(2 * ARENA, 8, '#667788', '#334455'));
+      scene.add(new THREE.GridHelper(2 * ARENA, 8, '#7a7a7a', '#3a3a3a'));
       const dark = new THREE.MeshStandardMaterial({ color: '#4a5568' });
       for (const [w, d, x, z] of [[2 * ARENA, 0.05, 0, ARENA], [2 * ARENA, 0.05, 0, -ARENA],
                                   [0.05, 2 * ARENA, ARENA, 0], [0.05, 2 * ARENA, -ARENA, 0]]) {
@@ -330,12 +330,12 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
         const half = ARENA * SCALE;
         const o = mapXY(0, 0);
         RB.shape(svg, 'rect', { x: o[0] - half, y: o[1] - half, width: 2 * half, height: 2 * half, fill: 'none',
-                                stroke: '#667788', 'stroke-width': 2, 'stroke-dasharray': '6 4' });
+                                stroke: '#7a7a7a', 'stroke-width': 2, 'stroke-dasharray': '6 4' });
         for (let k = -ARENA + 1; k < ARENA; k++) {          // 1 m grid
           RB.shape(svg, 'line', { x1: o[0] + k * SCALE, y1: o[1] - half, x2: o[0] + k * SCALE, y2: o[1] + half, stroke: '#2c3b4d', 'stroke-width': 1 });
           RB.shape(svg, 'line', { x1: o[0] - half, y1: o[1] + k * SCALE, x2: o[0] + half, y2: o[1] + k * SCALE, stroke: '#2c3b4d', 'stroke-width': 1 });
         }
-        RB.label(svg, o[0] - half + 8, o[1] - half + 20, 'grid: 1 square = 1 m', '#667788', 13);
+        RB.label(svg, o[0] - half + 8, o[1] - half + 20, 'grid: 1 square = 1 m', '#7a7a7a', 13);
         // path driven
         const stride = Math.ceil(sim.trail.length / 600);
         const pts = sim.trail.filter((_, i) => i % stride === 0 || i === sim.trail.length - 1)

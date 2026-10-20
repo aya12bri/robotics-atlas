@@ -153,7 +153,7 @@
   if (!head.querySelector('link[rel~=icon]')) {
     const ic = document.createElement('link');
     ic.rel = 'icon';
-    ic.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#0d1a2b"/><circle cx="10" cy="22" r="5.5" fill="none" stroke="#86b6ff" stroke-width="2.4"/><circle cx="10" cy="22" r="1.8" fill="#86b6ff"/><path d="M14 18 L25 8" stroke="#86b6ff" stroke-width="3.4" stroke-linecap="round"/></svg>');
+    ic.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#1f1f1f"/><circle cx="10" cy="22" r="5.5" fill="none" stroke="#ececec" stroke-width="2.4"/><circle cx="10" cy="22" r="1.8" fill="#ececec"/><path d="M14 18 L25 8" stroke="#ff9f43" stroke-width="3.6" stroke-linecap="round"/></svg>');
     head.appendChild(ic);
   }
 

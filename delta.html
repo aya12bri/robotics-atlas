@@ -71,7 +71,7 @@
       </label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
-         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
     <p>
       Each leg is: a <strong>revolute joint</strong> at the base (circle or thick bar, with the angle θ),
       an <strong>upper arm</strong> (orange line), then a <strong>parallelogram</strong> of two rods (the two light lines) ending on the
@@ -251,7 +251,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#1b2633');
+      scene.background = new THREE.Color('#262626');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(1.25, 0.95, 1.35);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -260,11 +260,11 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       const orbit = new OrbitControls(camera, renderer.domElement);
       orbit.target.set(0, 0.42, 0);
 
-      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2));
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      scene.add(new THREE.GridHelper(4, 16, '#667788', '#334455'));
+      scene.add(new THREE.GridHelper(4, 16, '#7a7a7a', '#3a3a3a'));
 
       // base frame {0} (x, y, z up) -> scene (X, Y, Z) = (x, H + z, -y)
       const S = (p) => new THREE.Vector3(p[0], H + p[2], -p[1]);
@@ -381,7 +381,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
         const [x, y] = P;
         const du = dot(axis, view.right), dv = dot(axis, view.up), dw = dot(axis, view.toward);
         if (Math.hypot(du, dv) < 0.35) {
-          RB.shape(svg, 'circle', { cx: x, cy: y, r: 11, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+          RB.shape(svg, 'circle', { cx: x, cy: y, r: 11, fill: '#262626', stroke: '#e8eef5', 'stroke-width': 2.5 });
           if (dw > 0) RB.shape(svg, 'circle', { cx: x, cy: y, r: 3, fill: '#e8eef5' });
           else {
             RB.shape(svg, 'line', { x1: x - 4, y1: y - 4, x2: x + 4, y2: y + 4, stroke: '#e8eef5', 'stroke-width': 2.5 });
@@ -389,7 +389,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
           }
         } else {
           const ang = (Math.atan2(-dv, du) * 180) / Math.PI;
-          RB.shape(svg, 'rect', { x: x - 14, y: y - 5, width: 28, height: 10, rx: 2, fill: '#1b2633',
+          RB.shape(svg, 'rect', { x: x - 14, y: y - 5, width: 28, height: 10, rx: 2, fill: '#262626',
                                   stroke: '#e8eef5', 'stroke-width': 2.5, transform: `rotate(${ang} ${x} ${y})` });
         }
         RB.label(svg, x + dx, y + dy, name, '#ffffff', 16, dx < 0 ? 'end' : 'start');
@@ -440,9 +440,9 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
         svg.innerHTML = '';
         if (view.ground) {
           const a = view.map(-0.45, FLOOR), b = view.map(0.45, FLOOR);
-          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#667788', 'stroke-width': 2 });
+          RB.shape(svg, 'line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: '#7a7a7a', 'stroke-width': 2 });
           const c = view.map(-0.45, 0.1), d = view.map(0.45, 0.1);
-          RB.shape(svg, 'line', { x1: c[0], y1: c[1], x2: d[0], y2: d[1], stroke: '#667788', 'stroke-width': 4 });
+          RB.shape(svg, 'line', { x1: c[0], y1: c[1], x2: d[0], y2: d[1], stroke: '#7a7a7a', 'stroke-width': 4 });
         }
         for (const [pad, name] of [[PAD_A, 'A'], [PAD_B, 'B']]) {
           const c = Pm([pad.x, pad.y, FLOOR]);
@@ -458,7 +458,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
         const Es = [0, 1, 2].map((k) => add(P, radial[k], RE));
         const poly = (pts, stroke, w, extra = {}) => RB.shape(svg, 'polygon', { points: pts.map((p) => Pm(p).join(',')).join(' '),
           fill: 'none', stroke, 'stroke-width': w, 'stroke-linejoin': 'round', ...extra });
-        poly(Bs, '#667788', 2);                                               // base triangle
+        poly(Bs, '#7a7a7a', 2);                                               // base triangle
         poly(Es, '#e8eef5', 3);                                               // effector triangle
         for (let k = 0; k < 3; k++) {
           const J = elbowOf(k, th[k]);
@@ -472,7 +472,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
           RB.shape(svg, 'line', { x1: p0[0], y1: p0[1], x2: p1[0], y2: p1[1], stroke: '#ff9f43', 'stroke-width': 6, 'stroke-linecap': 'round' });
           for (const b of [Ja, Jb, Ea, Eb]) {                                  // ball joints
             const p = Pm(b);
-            RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 3.5, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 1.5 });
+            RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 3.5, fill: '#262626', stroke: '#e8eef5', 'stroke-width': 1.5 });
           }
         }
         const lab = [[-22, -16], [22, -16], [-22, 30]];

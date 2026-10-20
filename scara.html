@@ -46,7 +46,7 @@
       <label>Show: <select id="frameSel"></select></label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
-         style="width:100%;max-width:720px;background:#1b2633;border-radius:6px"></svg>
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
     <p>
       Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
       <span class="legend-z">z blue</span>. A circle with a dot ⊙ is an axis pointing <em>at you</em>,
@@ -116,7 +116,7 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#1b2633');
+      scene.background = new THREE.Color('#262626');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(1.9, 1.4, 1.7);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -125,11 +125,11 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
       const orbit = new OrbitControls(camera, renderer.domElement);
       orbit.target.set(0.45, 0.3, -0.15);
 
-      scene.add(new THREE.HemisphereLight('#ffffff', '#334455', 1.2));
+      scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2));
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      scene.add(new THREE.GridHelper(6, 12, '#667788', '#334455'));
+      scene.add(new THREE.GridHelper(6, 12, '#7a7a7a', '#3a3a3a'));
 
       const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
       const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
@@ -227,7 +227,7 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
       let q = [30, 60, 0.1, 0];
 
       function revolute(p, name) {
-        RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 13, fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+        RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 13, fill: '#262626', stroke: '#e8eef5', 'stroke-width': 2.5 });
         RB.shape(svg, 'circle', { cx: p[0], cy: p[1], r: 3, fill: '#e8eef5' });
         RB.label(svg, p[0] - 18, p[1] - 18, name, '#ffffff', 18, 'end');
       }
@@ -264,7 +264,7 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
         revolute(O[0], 'q1');
         revolute(O[1], 'q2');
         RB.shape(svg, 'rect', { x: O[2][0] - 13, y: O[2][1] - 13, width: 26, height: 26,
-                                fill: '#1b2633', stroke: '#e8eef5', 'stroke-width': 2.5 });
+                                fill: '#262626', stroke: '#e8eef5', 'stroke-width': 2.5 });
         RB.label(svg, O[2][0] - 18, O[2][1] + 34, 'q3 (slide)', '#ffffff', 18, 'end');
         // q4: a short bar along the tool's x axis
         RB.shape(svg, 'line', { x1: O[4][0], y1: O[4][1], x2: O[4][0] + 30 * tcp[0][0], y2: O[4][1] - 30 * tcp[1][0],
