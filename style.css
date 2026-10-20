@@ -678,3 +678,6 @@ html, body { overflow-x: clip; }
 @media (max-width: 900px) {
   .scene-sec.tour { align-items: flex-end; padding-top: 5.5rem; padding-bottom: 1.4rem; }
 }
+
+.err3d { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); z-index: 200; display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 1rem; max-width: calc(100% - 1.6rem); border-radius: 14px; background: var(--surface); border: 1px solid var(--bad); color: var(--text); font-size: 0.9rem; box-shadow: 0 14px 40px -12px rgba(0, 0, 0, 0.6); }
+.err3d button { padding: 0.35rem 0.9rem; min-height: 0; }

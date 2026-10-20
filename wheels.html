@@ -55,11 +55,10 @@
       #wlPolar svg { width: 100%; max-width: 220px; display: block; margin: 0 auto; } .plkey { font-size: 0.72rem; color: var(--muted); text-align: center; margin: 0.4rem 0 0; max-width: none; } .plkey span { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 0.2rem 0 0.4rem; vertical-align: -1px; }
       @media (max-width: 1000px) { .wl-main { grid-template-columns: 1fr; } .wl-sim { grid-template-columns: 1fr; } .wl-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } .wl-view { height: 400px; } .sc { grid-template-columns: 7.5rem 1fr 2.4rem; } }
     </style>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" />
-    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js" />
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
     <script type="importmap">
-      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
     </script>
     <script src="helpers.js"></script>
   <script src="nav.js" defer></script></head>
