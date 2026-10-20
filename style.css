@@ -617,3 +617,19 @@ table.dh.center td, table.dh.center th { text-align: center; }
 table.dh.center { width: auto; min-width: min(100%, 26rem); margin: 0.8rem auto; } .cmp-wrap:has(table.center) { overflow-x: auto; }
 
 .lessons, .lesson { min-width: 0; } .lesson { overflow-x: clip; } .eq, .cmp-wrap { max-width: 100%; }
+
+.scene-sec .wrap { min-width: 0; }
+
+/* ---- phones: nothing may be wider than the screen ---- */
+html, body { overflow-x: clip; }
+.scene-sec { overflow-x: clip; }
+.gname { overflow-wrap: anywhere; }
+@media (max-width: 900px) { .gname { font-size: clamp(2.4rem, 13vw, 5rem); line-height: 0.9; } }
+
+@media (max-width: 900px) {
+  body.home .to-top { display: none; }
+  .panel { padding: 0.9rem 1rem; } .panel h2 { font-size: 1.45rem; margin-bottom: 0.5rem; } .panel p { font-size: 0.92rem; margin-bottom: 0.5rem; } .panel .read { font-size: 0.78rem; margin-top: 0.3rem; padding-top: 0.5rem; }
+  .panel table.dh { font-size: 0.72rem; } .panel table.dh th, .panel table.dh td { padding: 0.15rem 0.4rem; }
+  .stage { row-gap: 1.2rem; }
+}
+@media (max-width: 700px) { .cmp-wrap td, .cmp-wrap th, table.dh td, table.dh th { overflow-wrap: anywhere; } .lesson, .box { overflow-wrap: break-word; } }
