@@ -15,7 +15,6 @@
   </head>
   <body class="home">
     <canvas id="gl" class="wide" aria-hidden="true"></canvas>
-    <div class="progress wide" id="progress" aria-hidden="true"></div>
     <div class="jtag wide" id="jt0"></div>
     <div class="jtag wide" id="jt1"></div>
     <div class="jtag wide" id="jt2"></div>
@@ -23,7 +22,7 @@
     <div class="jtag wide" id="jt4"></div>
     <div class="jtag wide" id="jt5"></div>
 
-    <section class="scene-sec hero wide">
+    <section class="scene-sec hero wide" id="top">
       <div class="wrap">
         <h1 class="hero-title" aria-label="Robotics Atlas"><span class="row">Robotics</span><span class="row">Atlas</span></h1>
         <div class="hero-foot">
@@ -37,127 +36,116 @@
       <div class="scroll-cue" aria-hidden="true">Scroll</div>
     </section>
 
-    <section class="scene-sec wide">
-      <div class="wrap"><div class="panel">
+    <section class="scene-sec tour wide" id="tour">
+      <div class="wrap">
+        <div class="fader" id="tourFader">
+          <div class="panel fade on" data-step="1">
         <p class="step">01 / 04</p>
         <h2>Every robot is a chain of joints</h2>
         <p>Each tag is one joint. A joint turns (R) or slides (P): its value is an angle or a distance. Six joints are enough to put a tool anywhere, at any angle.</p>
         <p>The highlighted joint moves, the others wait.</p>
-      </div></div>
-    </section>
-
-    <section class="scene-sec wide">
-      <div class="wrap"><div class="panel">
+      </div>
+          <div class="panel fade" data-step="2">
         <p class="step">02 / 04</p>
         <h2>Frames, then one table</h2>
         <p>Attach a frame to every joint: z along the joint axis, x along the common perpendicular. Four numbers per joint describe the whole robot. This is the DH table, and the angles in it are live.</p>
         <table class="dh"><thead><tr><th>i</th><th>θ</th><th>d</th><th>a</th><th>α</th></tr></thead><tbody id="dhBody"></tbody></table>
-      </div></div>
-    </section>
-
-    <section class="scene-sec wide">
-      <div class="wrap"><div class="panel">
+      </div>
+          <div class="panel fade" data-step="3">
         <p class="step">03 / 04</p>
         <h2>Say where, the robot finds how</h2>
         <p>Move your pointer. The blue marker is the target, and the robot solves its inverse kinematics on every frame to put the tool on it.</p>
         <div class="read" id="readIK"></div>
-      </div></div>
-    </section>
-
-    <section class="scene-sec wide">
-      <div class="wrap"><div class="panel">
+      </div>
+          <div class="panel fade" data-step="4">
         <p class="step">04 / 04</p>
         <h2>Pick, carry, place</h2>
         <p>Four poses computed by the same solver: above the cube, on the cube, above the second pad, and on it. The robot pages let you take control.</p>
         <div class="read" id="readDemo"></div>
-      </div></div>
+      </div>
+        </div>
+        <div class="stepper" id="stepper" role="group"></div>
+      </div>
     </section>
 
     <section class="scene-sec gal wide" id="gallery">
-      <div class="wrap"><div class="panel">
-        <h2>Meet the family</h2>
-        <p>Eight kinds of robots, from a simple arm to a single wheel. Keep scrolling: the camera walks along the gallery and every machine moves the way it really does.</p>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      <div class="wrap">
+        <div class="gal-head">
+          <h2>Meet the family</h2>
+          <p>Eight kinds of robots, from a simple arm to a single wheel. Use the arrows, the dots or your keyboard to move from one to the next.</p>
+        </div>
+        <button class="gal-arrow prev" id="galPrev" type="button"></button>
+        <button class="gal-arrow next" id="galNext" type="button"></button>
+        <div class="gal-foot">
+          <div class="gal-dots" id="galDots" role="group"></div>
+          <div class="gal-cards" id="galCards">
+          <article class="panel card fade on" data-i="0">
         <p class="step">1 / 8</p>
         <h2>3-DOF robot arm</h2>
         <p class="rtag"><span class="notation">R-R-R</span>3 degrees of freedom, serial arm</p>
         <p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p>
         <dl><dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd><dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd></dl>
         <a class="btn" href="arm.html">Open the 3D model</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="1">
         <p class="step">2 / 8</p>
         <h2>Cartesian gantry</h2>
         <p class="rtag"><span class="notation">P-P-P</span>3 degrees of freedom, three sliding axes</p>
         <p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p>
         <dl><dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd><dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd></dl>
         <a class="btn" href="gantry.html">Open the 3D model</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="2">
         <p class="step">3 / 8</p>
         <h2>SCARA</h2>
         <p class="rtag"><span class="notation">R-R-P-R</span>4 degrees of freedom, serial arm</p>
         <p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p>
         <dl><dt>Used in</dt><dd>Electronics assembly, screwing, dispensing, packaging, fast pick and place.</dd><dt>End effectors</dt><dd>Pinch gripper, vacuum nozzle, screwdriver, glue dispenser.</dd></dl>
         <a class="btn" href="scara.html">Open the 3D model and the pick-and-place demo</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="3">
         <p class="step">4 / 8</p>
         <h2>6-axis industrial robot</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, serial arm</p>
         <p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p>
         <dl><dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd><dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd></dl>
         <a class="btn" href="articulated.html">Open the 3D model and the pick-and-place demo</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="4">
         <p class="step">5 / 8</p>
         <h2>Collaborative robot (UR5)</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, works next to people</p>
         <p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p>
         <dl><dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd><dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd></dl>
         <a class="btn" href="cobot.html">Open the 3D model and the pick-and-place demo</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="5">
         <p class="step">6 / 8</p>
         <h2>Delta robot</h2>
         <p class="rtag"><span class="notation">3 × R</span>parallel robot, 3 arms and 1 optional rotation</p>
         <p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p>
         <dl><dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd><dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd></dl>
         <a class="btn" href="delta.html">Open the 3D model and the pick-and-place demo</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="6">
         <p class="step">7 / 8</p>
         <h2>Mobile robot (differential drive)</h2>
         <p class="rtag"><span class="notation">2 wheels</span>mobile robot, x, y and heading</p>
         <p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p>
         <dl><dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd><dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd></dl>
         <a class="btn" href="mobile.html">Open the 3D model and the programs</a>
-      </div></div>
-    </section>
-    <section class="scene-sec gal wide">
-      <div class="wrap"><div class="panel">
+      </article>
+          <article class="panel card fade" data-i="7">
         <p class="step">8 / 8</p>
         <h2>Wheels and mobile bases</h2>
         <p class="rtag"><span class="notation">5 wheels</span>reference and drive simulator</p>
         <p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p>
         <dl><dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd><dt>End effectors</dt><dd>None: this page is about the base.</dd></dl>
         <a class="btn" href="wheels.html">Open the wheel catalogue and simulator</a>
-      </div></div>
+      </article>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="scene-sec end wide">
@@ -222,8 +210,32 @@ const LIMITS = [[-170, 170], [-100, 60], [-140, 50], [-180, 180], [-115, 115], [
 const NEUTRAL = [10, -50, -60, 0, -40, 0];
 let renderer = null;
 try { renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, alpha: true }); } catch (e) { $('gl').remove(); }
-const secs = [...document.querySelectorAll('.scene-sec')], N = secs.length;
-const prog = $('progress'); secs.forEach((sec, i) => { const d = document.createElement('i'); d.addEventListener('click', () => sec.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })); prog.appendChild(d); });
+const FR = RA_LANG() === 'fr', L = (en, fr) => (FR ? fr : en);
+function RA_LANG() { return (window.RA && window.RA.lang) || document.documentElement.lang || 'en'; }
+const secHero = $('top'), secTour = $('tour'), secGal = $('gallery'), secEnd = document.querySelector('.scene-sec.end');
+const ui = { step: 1, gi: 0, auto: !reduce, last: 0 };          // tour step (1..4) and gallery index (0..7)
+const tourPanels = [...document.querySelectorAll('#tourFader .panel')], cards = [...document.querySelectorAll('#galCards .card')];
+const stepper = $('stepper'), dots = $('galDots');
+const setFade = (list, k) => list.forEach((p, i) => p.classList.toggle('on', i === k));
+function setStep(n, manual) { ui.step = ((n - 1 + 4) % 4) + 1; if (manual) ui.auto = false; ui.last = performance.now(); setFade(tourPanels, ui.step - 1); [...stepper.querySelectorAll('[data-n]')].forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === ui.step))); }
+function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
+stepper.innerHTML = `<button type="button" class="arr" data-d="-1" aria-label="${L('Previous step', 'Étape précédente')}">←</button>` + [1, 2, 3, 4].map((n) => `<button type="button" data-n="${n}" aria-label="${L('Step', 'Étape')} ${n}">0${n}</button>`).join('') + `<button type="button" class="arr" data-d="1" aria-label="${L('Next step', 'Étape suivante')}">→</button>`;
+stepper.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; setStep(b.dataset.n ? +b.dataset.n : ui.step + +b.dataset.d, true); });
+dots.innerHTML = cards.map((c, i) => `<button type="button" aria-label="${c.querySelector('h2').textContent}">${i + 1}</button>`).join('');
+dots.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setGal([...dots.children].indexOf(b)); });
+$('galPrev').setAttribute('aria-label', L('Previous robot', 'Robot précédent')); $('galNext').setAttribute('aria-label', L('Next robot', 'Robot suivant'));
+$('galPrev').textContent = '←'; $('galNext').textContent = '→';
+$('galPrev').addEventListener('click', () => setGal(ui.gi - 1)); $('galNext').addEventListener('click', () => setGal(ui.gi + 1));
+setStep(1); setGal(0);
+// which of the three screens is in view
+let zone = 0;
+const readZone = () => { const y = scrollY + innerHeight / 2; zone = y < secTour.offsetTop ? 0 : y < secGal.offsetTop ? 1 : y < secEnd.offsetTop ? 2 : 3; };
+readZone(); addEventListener('scroll', readZone, { passive: true }); addEventListener('resize', readZone);
+// keyboard and swipe move the step or the robot of the screen in view
+addEventListener('keydown', (e) => { if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return; const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; if (zone === 1) setStep(ui.step + d, true); else if (zone === 2) setGal(ui.gi + d); });
+let sx = null; addEventListener('pointerdown', (e) => { sx = e.clientX; });
+addEventListener('pointerup', (e) => { if (sx === null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) < 60 || e.target.closest('input,select,a,button,table')) return; if (zone === 1) setStep(ui.step - Math.sign(dx), true); else if (zone === 2) setGal(ui.gi - Math.sign(dx)); });
+setInterval(() => { if (zone === 1 && ui.auto && !document.hidden && performance.now() - ui.last > 8500) setStep(ui.step + 1); }, 500);
 const tagEls = [0, 1, 2, 3, 4, 5].map((i) => $('jt' + i));
 
 if (renderer) {
@@ -237,6 +249,16 @@ if (renderer) {
   scene.add(sun.target); sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.receiveShadow = true; scene.add(floor);
   const grid = new THREE.GridHelper(60, 60, 0x777777, 0x666666); grid.position.set(0, 0.002, -10); grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
+
+  // atmosphere: drifting dust that follows the camera, and two slow rings behind the hero robot
+  const dustN = LITE ? 160 : 320, dustPos = new Float32Array(dustN * 3);
+  for (let i = 0; i < dustN; i++) { dustPos[i * 3] = (Math.random() - 0.5) * 14; dustPos[i * 3 + 1] = Math.random() * 5; dustPos[i * 3 + 2] = (Math.random() - 0.5) * 14; }
+  const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({ color: 0x6b97ff, size: 0.028, transparent: true, opacity: 0.55, depthWrite: false });
+  const dust = new THREE.Points(dustGeo, dustMat); scene.add(dust);
+  const rings = new THREE.Group(); rings.position.set(0.3, 0.75, -1.6); scene.add(rings);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x2f6bff, transparent: true, opacity: 0.22, depthWrite: false });
+  [[1.9, 0.006, 0.4], [2.5, 0.004, -0.9]].forEach(([r, w, tilt]) => { const m = new THREE.Mesh(new THREE.TorusGeometry(r, w, 6, 160), ringMat); m.rotation.x = tilt; rings.add(m); });
 
   const arm = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14,
     sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.10 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
@@ -371,7 +393,7 @@ if (renderer) {
     { p: [3.1, 0.95, 0.35], l: [0.05, 0.7, 0], s: 0.8 },
     { p: [1.3, 2.5, 2.2], l: [0.3, 0.25, 0], s: 0.72 },
     { p: [GX(0) - 5, 1.7, GAL_Z + 5.5], l: [GX(0) + 1.2, 0.7, GAL_Z], s: 0.3 },
-    ...GL.map(([y, d, sd], i) => ({ p: [GX(i) + sd * 1.1, y + 0.5, GAL_Z + d], l: [GX(i), y, GAL_Z], s: 0.85 })),
+    ...GL.map(([y, d, sd], i) => ({ p: [GX(i) + sd * 0.5, y + 0.55, GAL_Z + d + 0.4], l: [GX(i), y, GAL_Z], s: 0 })),
     { p: [0, 3.4, GAL_Z + 9], l: [0, 0.6, GAL_Z], s: 0 }];
   const cam = { p: new THREE.Vector3(...KF[0].p), l: new THREE.Vector3(...KF[0].l) };
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(), dir = new THREE.Vector3(), hit = new THREE.Vector3(), P0 = new THREE.Vector3(0.55, 0.65, 0), v3 = new THREE.Vector3();
@@ -384,15 +406,6 @@ if (renderer) {
     p = [s0[0] + v[0] * k, s0[1] + v[1] * k, Math.max(0.14, s0[2] + v[2] * k)]; return p;
   }
   const mid = () => innerHeight / 2;
-  let tops = [];                                                   // section centres in page coordinates, measured once (and on resize)
-  const measure = () => { tops = secs.map((el) => el.offsetTop + el.offsetHeight / 2); };
-  measure(); addEventListener('resize', measure); addEventListener('load', measure);
-  function frac() {
-    const y = scrollY + mid();
-    if (y <= tops[0]) return 0; if (y >= tops[N - 1]) return N - 1;
-    for (let i = 0; i < N - 1; i++) if (y < tops[i + 1]) return i + (y - tops[i]) / (tops[i + 1] - tops[i]);
-    return N - 1;
-  }
   const dhBody = $('dhBody'), readIK = $('readIK'), readDemo = $('readDemo'); let lastTxt = {};
   const setTxt = (el, key, s) => { if (lastTxt[key] !== s) { lastTxt[key] = s; el.textContent = s; } };
   dhBody.innerHTML = STD.map((r, i) => `<tr><td>${i + 1}</td><td id="th${i}">0</td><td>${r.d[1]}</td><td>${r.a[1]}</td><td>${r.al[1]}°</td></tr>`).join('');
@@ -400,7 +413,7 @@ if (renderer) {
   const themeCols = () => { const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const bg = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; scene.fog.color.set(bg);
     arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); galLinks.forEach((m) => m.color.set(dark ? '#d8d8d8' : '#303030')); padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
-    grid.material.color.set(dark ? 0x808080 : 0x7a7a7a); grid.material.opacity = dark ? 0.3 : 0.45; floor.material.opacity = dark ? 0.35 : 0.22; };
+    dustMat.color.set(dark ? 0x6b97ff : 0x1f55e0); ringMat.color.set(dark ? 0x2f6bff : 0x1f55e0); grid.material.color.set(dark ? 0x808080 : 0x7a7a7a); grid.material.opacity = dark ? 0.3 : 0.45; floor.material.opacity = dark ? 0.35 : 0.22; };
   themeCols(); new MutationObserver(themeCols).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', themeCols);
 
@@ -413,21 +426,22 @@ if (renderer) {
     requestAnimationFrame(frame); if (!visible) return;
     const dt = Math.min(0.05, (now - tPrev) / 1000); tPrev = now;
     // adaptive quality: if the machine is slow, draw fewer pixels, then drop the shadows
-    acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, f = frac(), mode = Math.round(f);
+    acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
     // camera
-    const k0 = Math.floor(f), k1 = Math.min(N - 1, k0 + 1), e = reduce ? Math.round(f - k0) : smooth(f - k0), A = KF[k0], B = KF[k1];
-    const tp = v3.set(...A.p).lerp(new THREE.Vector3(...B.p), e).clone(), tl = new THREE.Vector3(...A.l).lerp(new THREE.Vector3(...B.l), e);
-    if (!DESK()) tp.sub(tl).multiplyScalar(1.45).add(tl);
-    const sh = lerp(A.s, B.s, e), fw = tl.clone().sub(tp).normalize(), right = new THREE.Vector3().crossVectors(fw, new THREE.Vector3(0, 1, 0)).normalize();
-    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= 0.5;
+    const K = KF[mode === 5 ? 6 + ui.gi : mode], tp = new THREE.Vector3(...K.p), tl = new THREE.Vector3(...K.l);
+    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 2.0 : 1.5) : mode === 5 ? 1.65 : 1).add(tl);
+    const sh = K.s, fw = tl.clone().sub(tp).normalize(), right = new THREE.Vector3().crossVectors(fw, new THREE.Vector3(0, 1, 0)).normalize();
+    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= mode === 0 ? 0.95 : mode === 5 ? 0.8 : 0.85;   // phones: the robot sits above the text
+    if (mode === 5 && DESK()) tl.y -= 0.6;          // the robot sits above the card
     tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
     const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
     // past the gallery the page is plain text: stop drawing
-    const idle3d = f > N - 1.55; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) return;
-    arm.root.visible = mode <= 5; place.visible = mode === 4; gal.visible = f > 4.2;
+    const idle3d = zone === 3; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) return;
+    dust.position.set(cam.l.x, 0, cam.l.z); dust.rotation.y = t * 0.03; rings.visible = mode <= 4; rings.rotation.z = t * 0.08; rings.rotation.y = Math.sin(t * 0.2) * 0.4;
+    arm.root.visible = mode <= 4; place.visible = mode === 4; gal.visible = mode === 5;
     // arm goals per section
     const hl = Math.floor(t / 2.4) % 6;
-    if (mode !== cur.mode) { cur.mode = mode; [...prog.children].forEach((d, i) => d.classList.toggle('on', i === mode)); if (mode !== 4) { segs = []; resetCube(); grip = 1; } if (mode === 4) { where = 'A'; resetCube(); segs = cyc('A', 'B'); si = 0; el = 0; from = q.slice(); } }
+    if (mode !== cur.mode) { cur.mode = mode; if (mode !== 4) { segs = []; resetCube(); grip = 1; } if (mode === 4) { where = 'A'; resetCube(); segs = cyc('A', 'B'); si = 0; el = 0; from = q.slice(); } }
     let usedIK = false;
     if (mode === 0 || mode === 3) {
       const p = pointerTarget(mode === 3 ? 1.0 : 0.6, t); target.visible = mode === 3; target.position.set(p[0], p[2], -p[1]); halo.scale.setScalar(1 + 0.12 * Math.sin(t * 3));
@@ -444,14 +458,14 @@ if (renderer) {
     const rate = usedIK && mode === 3 ? 1 : mode === 4 ? 1 : 1 - Math.exp(-dt * 4);
     if (mode <= 4) { for (let i = 0; i < 6; i++) q[i] = lerp(q[i], qGoal[i], rate); arm.setPose(q); }
     sun.position.set(cam.l.x + 3.2, 5.5, cam.l.z + 2.4); sun.target.position.copy(cam.l);
-    if (gal.visible) for (const m of models) { const near = Math.abs(GX(m.i) - cam.p.x) < 6; gal.children[m.i].visible = near; if (near) m.update(t); }
+    if (gal.visible) for (const m of models) { const near = Math.abs(GX(m.i) - cam.p.x) < 4.5; gal.children[m.i].visible = near; if (near) m.update(t); }
     gripNow = lerp(gripNow, grip, 1 - Math.exp(-dt * 8)); for (const fg of fingers) fg.m.position.x = fg.side * (0.04 + 0.025 * gripNow);
     cube.visible = mode === 4;
     // frames and tags
     axes.forEach((a, i) => { a.visible = mode === 2; });
     jointMats.forEach((m, i) => m.color.set(mode === 1 && i === hl ? '#2f6bff' : '#ff9f43'));
     tagEls.forEach((tg, i) => {
-      const on = (mode === 1 || mode === 2) && Math.abs(f - mode) < 0.3; tg.classList.toggle('on', on); tg.classList.toggle('hl', mode === 1 && i === hl);
+      const on = mode === 1 || mode === 2; tg.classList.toggle('on', on); tg.classList.toggle('hl', mode === 1 && i === hl);
       if (on) { arm.rot[i].getWorldPosition(v3); v3.project(camera); tg.style.transform = `translate(${((v3.x + 1) / 2) * innerWidth + 14}px, ${((1 - v3.y) / 2) * innerHeight - 12}px)`; tg.innerHTML = `q${i + 1} <b>${q[i].toFixed(0)}°</b>`; }
     });
     if (mode === 2) thCells.forEach((c, i) => setTxt(c, 'th' + i, (q[i] + (i === 1 || i === 2 ? 90 : 0)).toFixed(1) + '°'));
