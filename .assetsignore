@@ -1,0 +1,8 @@
+.git
+.claude
+.mcp.json
+skills-lock.json
+.gitignore
+.assetsignore
+wrangler.jsonc
+node_modules
