@@ -90,5 +90,6 @@ RA.add({
   R(/^x = [-\d.]+ m .*(straight line|robot stopped|turn radius = )/, function (m) {
     return m.input.replace('turn radius =', 'rayon de virage =').replace('(straight line)', '(ligne droite)').replace('robot stopped', "robot à l'arrêt"); });
   R(/^steering (-?[\d.]+)°$/, function (m) { return 'braquage ' + m[1] + '°'; });
+  R(/^target x .*error .* mm$/, function (m) { return m.input.replace('target', 'cible').replace(' error ', '\nerreur '); });
   R(/^wheel (\d)$/, function (m) { return 'roue ' + m[1]; });
 })();
