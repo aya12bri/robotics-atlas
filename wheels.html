@@ -28,7 +28,7 @@
       .wl-view { position: relative; height: 520px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: #262626; }
       .wl-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
       .wl-bar { position: absolute; top: 0.6rem; left: 0.6rem; right: 0.6rem; display: flex; justify-content: space-between; gap: 0.4rem; z-index: 3; }
-      .wl-bar button, .wl-views { background: color-mix(in srgb, #1a1a1a 80%, transparent); backdrop-filter: blur(6px); }
+      .wl-bar button, .wl-views { background: color-mix(in srgb, #1a1a1a 88%, transparent); }
       .wl-bar button { color: #cfd8e3; border: 1px solid #444; border-radius: 99px; padding: 0.25rem 0.8rem; font-size: 0.78rem; min-height: 0; }
       .wl-bar button.on { border-color: var(--btn); color: #fff; }
       .wl-views { display: inline-flex; gap: 0.2rem; padding: 0.15rem; border-radius: 99px; border: 1px solid #444; }
@@ -55,8 +55,11 @@
       #wlPolar svg { width: 100%; max-width: 220px; display: block; margin: 0 auto; } .plkey { font-size: 0.72rem; color: var(--muted); text-align: center; margin: 0.4rem 0 0; max-width: none; } .plkey span { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 0.2rem 0 0.4rem; vertical-align: -1px; }
       @media (max-width: 1000px) { .wl-main { grid-template-columns: 1fr; } .wl-sim { grid-template-columns: 1fr; } .wl-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } .wl-view { height: 400px; } .sc { grid-template-columns: 7.5rem 1fr 2.4rem; } }
     </style>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" />
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js" />
     <script type="importmap">
-      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
     </script>
     <script src="helpers.js"></script>
   <script src="nav.js" defer></script></head>
@@ -683,6 +686,14 @@
       ];
       window.WHEELS = WHEELS; window.wheelIcon = wheelIcon;   // used by wheel-lab.js (the 3D lab)
     </script>
-    <script type="module" src="wheel-lab.js"></script>
+    <script>
+      // the 3D lab (three.js) is below the fold: load it when the browser is idle, or at once if it is close to the screen
+      (function () {
+        let started = false; const go = () => { if (!started) { started = true; import('./wheel-lab.js'); } };
+        const lab = document.getElementById('wlab');
+        if ('IntersectionObserver' in window) new IntersectionObserver((en) => { if (en[0].isIntersecting) go(); }, { rootMargin: '800px' }).observe(lab);
+        (window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(go, { timeout: 3000 });
+      })();
+    </script>
   </body>
 </html>

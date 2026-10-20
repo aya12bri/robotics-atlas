@@ -154,9 +154,10 @@
   // ---------------------------------------------------------------- fonts and favicon
   const head = document.head;
   if (!document.querySelector('link[href*="fonts.googleapis"]')) {
+    ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'].forEach((u) => { const l = document.createElement('link'); l.rel = 'preconnect'; l.href = u; if (u.indexOf('gstatic') > 0) l.crossOrigin = ''; head.appendChild(l); });
     const f = document.createElement('link');
     f.rel = 'stylesheet';
-    f.href = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap';
+    f.href = 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,600..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500' + (pageName === 'index' ? '&family=Mrs+Saint+Delafield' : '') + '&display=swap';
     head.appendChild(f);
   }
   if (!head.querySelector('link[rel~=icon]')) {
