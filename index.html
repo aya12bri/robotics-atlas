@@ -150,23 +150,17 @@
     </section>
 
     <section class="scene-sec end wide" id="start">
-      <div class="wrap end-grid">
-        <div class="end-col">
-          <h2>Where to start?</h2>
-          <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
-          <ol class="path">
-            <li><a href="learn.html">Learn the basics</a><br>Joints, degrees of freedom, frames, DH.</li>
-            <li><a href="arm.html">3-DOF arm</a><br>Your first kinematic diagram.</li>
-            <li><a href="gantry.html">Cartesian gantry</a><br>Prismatic joints.</li>
-            <li><a href="scara.html">SCARA</a><br>Mixed joints, closed-form inverse kinematics.</li>
-            <li><a href="articulated.html">6-axis robot</a><br>The wrist, singularities, numerical IK.</li>
-            <li><a href="cobot.html">Cobot</a><br>Offset wrist and safety.</li>
-            <li><a href="delta.html">Delta robot</a><br>Parallel robots and closed loops.</li>
-            <li><a href="mobile.html">Mobile robot</a><br>Wheels, then <a href="wheels.html">drive types</a>.</li>
-          </ol>
+      <div class="wrap">
+        <div class="rm-head">
+          <div>
+            <h2>Where to start?</h2>
+            <p>You can read the pages in any order. If you are new, follow this roadmap from top to bottom and tick every page you finish.</p>
+          </div>
+          <div class="rm-prog" id="rmProg"></div>
         </div>
-        <div class="end-col">
-          <h2>Robots side by side</h2>
+        <div class="roadmap" id="roadmap"></div>
+        <details class="cmp">
+          <summary>Robots side by side</summary>
           <div class="cmp-wrap">
             <table class="dh">
               <tr><th>Robot</th><th>Joints</th><th>DOF</th><th>Speed</th><th>Payload</th><th>Workspace</th><th>Typical job</th></tr>
@@ -179,7 +173,7 @@
               <tr><td>Mobile (differential)</td><td>2 driven wheels</td><td>3 (x, y, θ) with 2 inputs</td><td>Medium</td><td>Depends on the base</td><td>Unlimited floor</td><td>Transport, cleaning</td></tr>
             </table>
           </div>
-        </div>
+        </details>
       </div>
     </section>
 
@@ -255,24 +249,55 @@ $('galPrev').addEventListener('click', () => setGal(ui.gi - 1)); $('galNext').ad
 stepper.insertAdjacentHTML('beforeend', '<i class="bar"></i>');
 setStep(1); setGal(0);
 new IntersectionObserver((en) => en.forEach((x) => { if (x.isIntersecting) x.target.classList.add('in'); }), { threshold: 0.35 }).observe($('sign'));
+// ---------- the roadmap: nodes with a checkbox, saved in the browser ----------
+const RM = {
+  learn: { href: 'learn.html', tag: ['Basics', 'Bases'], min: 45, lv: 1, t: ['Learn the basics', 'Apprendre les bases'], d: ['Joints, degrees of freedom, frames and the DH table.', 'Liaisons, degrés de liberté, repères et tableau DH.'] },
+  arm: { href: 'arm.html', tag: ['R-R-R', 'R-R-R'], min: 30, lv: 1, t: ['3-DOF arm', 'Bras 3 axes'], d: ['Your first kinematic diagram and DH table.', 'Votre premier schéma cinématique et tableau DH.'] },
+  gantry: { href: 'gantry.html', tag: ['P-P-P', 'P-P-P'], min: 15, lv: 1, t: ['Cartesian gantry', 'Robot cartésien'], d: ['Sliding joints: the simplest kinematics.', 'Liaisons glissières : la cinématique la plus simple.'] },
+  scara: { href: 'scara.html', tag: ['R-R-P-R', 'R-R-P-R'], min: 30, lv: 2, t: ['SCARA', 'SCARA'], d: ['Mixed joints and closed-form inverse kinematics.', 'Liaisons mixtes et cinématique inverse en formule fermée.'] },
+  articulated: { href: 'articulated.html', tag: ['6 × R', '6 × R'], min: 45, lv: 2, t: ['6-axis robot', 'Robot 6 axes'], d: ['The wrist, singularities and numerical IK.', 'Le poignet, les singularités et la cinématique inverse numérique.'] },
+  cobot: { href: 'cobot.html', tag: ['6 × R', '6 × R'], min: 30, lv: 2, t: ['Cobot (UR5)', 'Cobot (UR5)'], d: ['Offset wrist, safety and a real UR5 table.', 'Poignet décalé, sécurité et vrai tableau d\'un UR5.'] },
+  delta: { href: 'delta.html', tag: ['Parallel', 'Parallèle'], min: 45, lv: 3, t: ['Delta robot', 'Robot Delta'], d: ['Parallel robots and closed loops.', 'Robots parallèles et boucles fermées.'] },
+  mobile: { href: 'mobile.html', tag: ['2 wheels', '2 roues'], min: 30, lv: 2, t: ['Mobile robot', 'Robot mobile'], d: ['Wheel speeds, turning circle and odometry.', 'Vitesses des roues, cercle de virage et odométrie.'] },
+  wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
+};
+const RM_ORDER = ['learn', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'mobile', 'wheels'];
+const RM_ROWS = [
+  { phase: ['1 · Start here', '1 · Pour commencer'], c: 'learn' },
+  { phase: ['2 · Serial robots', '2 · Robots série'], c: 'arm', l: 'gantry', r: 'scara' },
+  { c: 'articulated', l: 'cobot' },
+  { phase: ['3 · Parallel robots', '3 · Robots parallèles'], c: 'delta' },
+  { phase: ['4 · Mobile robots', '4 · Robots mobiles'], c: 'mobile', r: 'wheels' }
+];
+const LVL = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
+const rmEl = $('roadmap'), prog = () => (window.RA && RA.progress) || { get: () => false, set() {}, clear() {} };
+const rmNode = (id, cls) => { const n = RM[id]; if (!n) return ''; return `<article class="rm-node ${cls}" data-id="${id}"><div class="rm-top"><span class="rm-tag">${n.tag[+FR]}</span><span class="rm-meta">${n.min} min · <i class="lv l${n.lv}" title="${LVL[n.lv - 1][+FR]}"><b></b><b></b><b></b></i> ${LVL[n.lv - 1][+FR]}</span></div><h3><a href="${n.href}">${n.t[+FR]}</a></h3><p>${n.d[+FR]}</p><div class="rm-bot"><label class="rm-check"><input type="checkbox" data-id="${id}"><span class="box" aria-hidden="true"></span><span class="lbl">${L('Done', 'Fait')}</span></label><a class="rm-go" href="${n.href}">${L('Open', 'Ouvrir')} →</a></div></article>`; };
+rmEl.innerHTML = RM_ROWS.map((r) => (r.phase ? `<div class="rm-phase"><span>${r.phase[+FR]}</span></div>` : '') + `<div class="rm-row"><div class="rm-side l">${r.l ? rmNode(r.l, 'side') : ''}</div><div class="rm-main">${rmNode(r.c, 'main')}</div><div class="rm-side r">${r.r ? rmNode(r.r, 'side') : ''}</div></div>`).join('');
+function paintRoad() {
+  const P = prog(); let done = 0, next = null;
+  RM_ORDER.forEach((id) => { const ok = P.get(id); if (ok) done++; else if (!next) next = id; });
+  rmEl.querySelectorAll('.rm-node').forEach((el) => { const id = el.dataset.id, ok = P.get(id); el.classList.toggle('done', ok); el.classList.toggle('next', id === next); el.querySelector('input').checked = ok; el.querySelector('.lbl').textContent = ok ? L('Done', 'Fait') : L('Mark as done', 'Marquer comme fait'); });
+  const pct = Math.round((done / RM_ORDER.length) * 100);
+  $('rmProg').innerHTML = `<div class="rm-count"><b>${done}</b> / ${RM_ORDER.length} <span>${L('pages finished', 'pages terminées')}</span></div><div class="rm-bar"><i style="width:${pct}%"></i></div><div class="rm-actions">${next ? `<a class="btn" href="${RM[next].href}">${done ? L('Continue', 'Continuer') : L('Start', 'Commencer')}: ${RM[next].t[+FR]} →</a>` : `<span class="rm-win">${L('Everything is done, congratulations!', 'Tout est terminé, bravo !')}</span>`}${done ? `<button type="button" class="btn ghost" id="rmReset">${L('Reset', 'Réinitialiser')}</button>` : ''}</div>`;
+  const rs = $('rmReset'); if (rs) rs.addEventListener('click', () => { if (confirm(L('Clear your progress?', 'Effacer votre progression ?'))) prog().clear([...RM_ORDER, 'lesson-all']); });
+}
+rmEl.addEventListener('change', (e) => { const i = e.target.closest('input[data-id]'); if (i) prog().set(i.dataset.id, i.checked); });
+addEventListener('ra-progress', paintRoad); paintRoad();
+// ---------- a rail on the right: jump to any screen ----------
+{ const items = [['top', L('Top', 'Haut')], ['tour', L('How it works', 'Comment ça marche')], ['gallery', L('The robots', 'Les robots')], ['start', L('Roadmap', 'Parcours')], ['sign', L('About', 'À propos')]];
+  const rail = document.createElement('nav'); rail.className = 'rail wide'; rail.setAttribute('aria-label', L('Sections', 'Sections'));
+  rail.innerHTML = items.map(([id, name]) => `<button type="button" data-id="${id}" aria-label="${name}"><span>${name}</span></button>`).join(''); document.body.appendChild(rail);
+  rail.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; const y = $(b.dataset.id).offsetTop; if (window.RA && RA.smoothTo) RA.smoothTo(y); else scrollTo(0, y); });
+  const mark = () => { const m = scrollY + innerHeight * 0.45; let cur = 'top'; items.forEach(([id]) => { if ($(id).offsetTop <= m) cur = id; }); rail.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.id === cur)); };
+  addEventListener('scroll', mark, { passive: true }); mark(); }
 // which of the three screens is in view
 let zone = 0;
 const readZone = () => { const y = scrollY + innerHeight / 2; zone = y < secTour.offsetTop ? 0 : y < secGal.offsetTop ? 1 : y < secEnd.offsetTop ? 2 : 3; };
 readZone(); addEventListener('scroll', readZone, { passive: true }); addEventListener('resize', readZone);
 // keyboard and swipe move the step or the robot of the screen in view
 addEventListener('keydown', (e) => { if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return; const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; if (zone === 1) setStep(ui.step + d, true); else if (zone === 2) setGal(ui.gi + d); });
-let wheelAt = 0;
-addEventListener('wheel', (e) => {
-  if (zone !== 2 || e.ctrlKey) return;
-  const horiz = Math.abs(e.deltaX) > Math.abs(e.deltaY), d = horiz ? e.deltaX : e.deltaY;
-  if (Math.abs(d) < 8) return;
-  const docked = Math.abs(scrollY - secGal.offsetTop) < innerHeight * 0.12;                       // only while the screen is in place
-  const atEdge = (d > 0 && ui.gi === 7) || (d < 0 && ui.gi === 0);
-  if (!horiz && !docked) return;                                                                  // not in place yet: plain page scroll
-  e.preventDefault(); const now = performance.now(); if (now - wheelAt < 520) return; wheelAt = now;
-  if (!horiz && atEdge) { const to = d > 0 ? secEnd : secTour; if (window.RA && RA.smoothTo) RA.smoothTo(to.offsetTop); else window.scrollTo(0, to.offsetTop); return; }   // after the last robot, glide on to the next screen
-  setGal(ui.gi + Math.sign(d));
-}, { passive: false });
+let wheelAt = 0;                                  // a sideways swipe on a trackpad changes robot; the normal wheel always scrolls the page
+addEventListener('wheel', (e) => { if (zone !== 2 || Math.abs(e.deltaX) < Math.abs(e.deltaY) * 1.5 || Math.abs(e.deltaX) < 20) return; e.preventDefault(); const now = performance.now(); if (now - wheelAt < 520) return; wheelAt = now; setGal(ui.gi + Math.sign(e.deltaX)); }, { passive: false });
 let sx = null; addEventListener('pointerdown', (e) => { sx = e.clientX; });
 addEventListener('pointerup', (e) => { if (sx === null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) < 60 || e.target.closest('input,select,a,button,table')) return; if (zone === 1) setStep(ui.step - Math.sign(dx), true); else if (zone === 2) setGal(ui.gi - Math.sign(dx)); });
 setInterval(() => { if (zone === 1 && ui.auto && !document.hidden && performance.now() - ui.last > 8500) setStep(ui.step + 1); }, 500);
@@ -494,7 +519,7 @@ if (renderer) {
     tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
     const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
     // past the gallery the page is plain text: stop drawing
-    const idle3d = zone >= 3; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) return;
+    const idle3d = zone >= 3; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) { tagEls.forEach((tg) => tg.classList.remove('on')); return; }
     dust.position.set(cam.l.x, 0, cam.l.z); dust.rotation.y = t * 0.03; rings.visible = mode <= 4; rings.rotation.z = t * 0.08; rings.rotation.y = Math.sin(t * 0.2) * 0.4;
     grid.visible = mode >= 1 && mode <= 4; smokeAmt = lerp(smokeAmt, mode === 0 ? 1 : mode <= 4 ? 0.35 : 0, 1 - Math.exp(-dt * 2.5)); smoke.visible = smokeAmt > 0.01;
     if (smoke.visible) smoke.children.forEach((s, i) => { const u = s.userData, ph = (t * 0.04 + i * 0.13) % 1; u.a += dt * u.sp; s.position.x = Math.cos(u.a) * u.r * 1.5; s.position.y = u.y + 0.18 * Math.sin(t * 0.35 + u.ph) + ph * 0.5; s.scale.setScalar(u.sz * (1 + 0.08 * Math.sin(t * 0.5 + u.ph))); s.material.opacity = smokeAmt * (0.15 - 0.06 * ph); s.material.rotation += dt * 0.03; });

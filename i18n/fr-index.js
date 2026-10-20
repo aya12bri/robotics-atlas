@@ -1,5 +1,9 @@
 // Français — page index. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"26uilwih4xd": "Conçu, dessiné et codé par",
+"5pdpyaa4jn": "Robotics Atlas est un projet pour apprendre les robots, leur cinématique et leurs usages. Fait avec soin, three.js et beaucoup de café.",
+"2hk7qx8wzt": "Voir le code sur GitHub",
+"et0heeqxbb": "Vous pouvez lire les pages dans l'ordre que vous voulez. Si vous débutez, suivez ce parcours de haut en bas et cochez chaque page terminée.",
 "9w5qbl7gc": "Huit types de robots, du simple bras à une seule roue. Utilisez les flèches, les points ou le clavier pour passer de l'un à l'autre.",
 "1tfzyr26d4q": "Tous les grands types de robots, dessinés comme les dessinent les ingénieurs : un <strong>schéma cinématique</strong>, ses <strong>tableaux DH et DHM</strong> et un <strong>modèle 3D</strong> que vous déplacez avec des curseurs. Aucun prérequis.",
 "219rlzj2xr7": "<a class=\"btn\" href=\"learn.html\">Commencer par les bases</a> <a class=\"btn ghost\" href=\"#gallery\">Voir les robots</a>",
