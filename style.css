@@ -58,7 +58,7 @@ body > svg { max-width: 100%; }
 ::selection { background: var(--btn); color: #fff; }
 
 h1, h2, h3 { font-family: var(--display); font-stretch: 85%; line-height: 1.08; letter-spacing: -0.005em; scroll-margin-top: 5rem; }
-h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; margin: 1.6rem 0 0.6rem; }
+h1 { text-wrap: balance; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; margin: 1.6rem 0 0.6rem; }
 h2 { font-size: 1.7rem; font-weight: 750; margin: 2.6rem 0 0.7rem; }
 h3 { font-size: 1.2rem; font-weight: 700; margin: 1.4rem 0 0.4rem; }
 p, li { max-width: 74ch; }
@@ -298,3 +298,20 @@ body::after { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 1
   * { transition: none !important; scroll-behavior: auto !important; }
   .hero-title .ch { transform: none; }
 }
+
+/* ---- robot pages ---- */
+.crumbs { font-size: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 auto 0.4rem; }
+.crumbs a { text-decoration: none; font-size: 0.88rem; line-height: 1.5; padding: 0.25rem 0.8rem; border: 1px solid var(--border); border-radius: 999px; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+.crumbs a:hover { border-color: var(--accent); }
+.toc { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem auto 1.4rem; }
+.toc a { font-family: var(--mono); font-size: 0.78rem; text-decoration: none; color: var(--muted); padding: 0.2rem 0.65rem; border-radius: 999px; background: color-mix(in srgb, var(--text) 7%, transparent); }
+.toc a:hover { color: var(--text); background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.stage { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 0 2rem; align-items: start; margin-top: 0.6rem; }
+.stage-main > :first-child { margin-top: 0; }
+.stage-side h2 { margin-top: 0; font-size: 1.35rem; }
+.stage-side .ctl { gap: 0.2rem 0.7rem; }
+.stage-side .ctl-name { width: 100%; font-size: 0.92rem; }
+.stage-side .ctl input[type='range'] { flex: 1; width: auto; min-width: 120px; }
+#view { box-shadow: 0 0 0 1px var(--border), 0 18px 50px -20px rgba(0, 0, 0, 0.55); }
+body > svg#schema, body > svg#zoom, body > svg#arena { display: block; margin: 1rem auto; width: 100%; max-width: 880px !important; box-shadow: 0 0 0 1px var(--border); }
+@media (max-width: 1000px) { .stage { grid-template-columns: 1fr; } }
