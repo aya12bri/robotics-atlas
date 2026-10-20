@@ -673,3 +673,8 @@ html, body { overflow-x: clip; }
 .btn.gh { gap: 0.6rem; } .btn.gh svg { width: 18px; height: 18px; }
 .sign .social { margin-top: 1.6rem !important; }
 .brand svg { border-radius: 9px; }
+
+/* ---- phones: the "How it works" card sits at the bottom, the robot is centred in the free space above it ---- */
+@media (max-width: 900px) {
+  .scene-sec.tour { align-items: flex-end; padding-top: 5.5rem; padding-bottom: 1.4rem; }
+}
