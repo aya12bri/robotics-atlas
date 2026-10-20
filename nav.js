@@ -290,6 +290,7 @@
       if (k < 1) requestAnimationFrame(step); else root.classList.remove('scrolling');
     })(t0);
   }
+  RA.smoothTo = smoothTo;
   ['wheel', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, () => { anim++; root.classList.remove('scrolling'); }, { passive: true }));
   function wireScroll() {
     document.addEventListener('click', (e) => {

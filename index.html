@@ -69,6 +69,7 @@
     </section>
 
     <section class="scene-sec gal wide" id="gallery">
+      <div class="gal-names" id="galNames" aria-hidden="true"></div>
       <div class="wrap">
         <div class="gal-head">
           <h2>Meet the family</h2>
@@ -77,7 +78,6 @@
         <button class="gal-arrow prev" id="galPrev" type="button"></button>
         <button class="gal-arrow next" id="galNext" type="button"></button>
         <div class="gal-foot">
-          <div class="gal-dots" id="galDots" role="group"></div>
           <div class="gal-cards" id="galCards">
           <article class="panel card fade on" data-i="0">
         <p class="step">1 / 8</p>
@@ -144,6 +144,7 @@
         <a class="btn" href="wheels.html">Open the wheel catalogue and simulator</a>
       </article>
           </div>
+          <div class="gal-dots" id="galDots" role="group"></div>
         </div>
       </div>
     </section>
@@ -242,10 +243,11 @@ const tourPanels = [...document.querySelectorAll('#tourFader .panel')], cards = 
 const stepper = $('stepper'), dots = $('galDots');
 const setFade = (list, k) => list.forEach((p, i) => p.classList.toggle('on', i === k));
 function setStep(n, manual) { ui.step = ((n - 1 + 4) % 4) + 1; if (manual) ui.auto = false; ui.last = performance.now(); const bar = stepper.querySelector('.bar'); if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; bar.classList.toggle('run', ui.auto); } setFade(tourPanels, ui.step - 1); [...stepper.querySelectorAll('[data-n]')].forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === ui.step))); }
-function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
+const gnames = $('galNames'); gnames.innerHTML = cards.map((c) => `<div class="gname">${c.querySelector('h2').innerHTML}</div>`).join(''); const gnEls = [...gnames.children];
+function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); setFade(gnEls, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
 stepper.innerHTML = `<button type="button" class="arr" data-d="-1" aria-label="${L('Previous step', 'Étape précédente')}">←</button>` + [1, 2, 3, 4].map((n) => `<button type="button" data-n="${n}" aria-label="${L('Step', 'Étape')} ${n}">0${n}</button>`).join('') + `<button type="button" class="arr" data-d="1" aria-label="${L('Next step', 'Étape suivante')}">→</button>`;
 stepper.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; setStep(b.dataset.n ? +b.dataset.n : ui.step + +b.dataset.d, true); });
-dots.innerHTML = cards.map((c, i) => `<button type="button" aria-label="${c.querySelector('h2').textContent}">${i + 1}</button>`).join('');
+dots.innerHTML = cards.map((c) => `<button type="button" aria-label="${c.querySelector('h2').textContent}"></button>`).join('');
 dots.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setGal([...dots.children].indexOf(b)); });
 $('galPrev').setAttribute('aria-label', L('Previous robot', 'Robot précédent')); $('galNext').setAttribute('aria-label', L('Next robot', 'Robot suivant'));
 $('galPrev').textContent = '←'; $('galNext').textContent = '→';
@@ -259,6 +261,18 @@ const readZone = () => { const y = scrollY + innerHeight / 2; zone = y < secTour
 readZone(); addEventListener('scroll', readZone, { passive: true }); addEventListener('resize', readZone);
 // keyboard and swipe move the step or the robot of the screen in view
 addEventListener('keydown', (e) => { if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return; const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; if (zone === 1) setStep(ui.step + d, true); else if (zone === 2) setGal(ui.gi + d); });
+let wheelAt = 0;
+addEventListener('wheel', (e) => {
+  if (zone !== 2 || e.ctrlKey) return;
+  const horiz = Math.abs(e.deltaX) > Math.abs(e.deltaY), d = horiz ? e.deltaX : e.deltaY;
+  if (Math.abs(d) < 8) return;
+  const docked = Math.abs(scrollY - secGal.offsetTop) < innerHeight * 0.12;                       // only while the screen is in place
+  const atEdge = (d > 0 && ui.gi === 7) || (d < 0 && ui.gi === 0);
+  if (!horiz && !docked) return;                                                                  // not in place yet: plain page scroll
+  e.preventDefault(); const now = performance.now(); if (now - wheelAt < 520) return; wheelAt = now;
+  if (!horiz && atEdge) { const to = d > 0 ? secEnd : secTour; if (window.RA && RA.smoothTo) RA.smoothTo(to.offsetTop); else window.scrollTo(0, to.offsetTop); return; }   // after the last robot, glide on to the next screen
+  setGal(ui.gi + Math.sign(d));
+}, { passive: false });
 let sx = null; addEventListener('pointerdown', (e) => { sx = e.clientX; });
 addEventListener('pointerup', (e) => { if (sx === null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) < 60 || e.target.closest('input,select,a,button,table')) return; if (zone === 1) setStep(ui.step - Math.sign(dx), true); else if (zone === 2) setGal(ui.gi - Math.sign(dx)); });
 setInterval(() => { if (zone === 1 && ui.auto && !document.hidden && performance.now() - ui.last > 8500) setStep(ui.step + 1); }, 500);
@@ -321,7 +335,7 @@ if (renderer) {
   resetCube(); place.visible = false; cube.visible = false;
 
   // ---------- the gallery: eight robots on pedestals, far from the hero robot ----------
-  const GAL_Z = -22, GX = (i) => (i - 3.5) * 2.7, galY = 0.12;
+  const GAL_Z = -22, GX = (i) => (i - 3.5) * 2.0, galY = 0.12;
   const gal = new THREE.Group(); scene.add(gal);
   const stdMat = (c, r, m) => new THREE.MeshStandardMaterial({ color: c, roughness: r === undefined ? 0.45 : r, metalness: m === undefined ? 0.2 : m });
   const mLink = stdMat('#d8d8d8'), mOr = stdMat('#ff9f43', 0.4), mDark = stdMat('#3a3a3a', 0.7), mBlue = stdMat('#2f6bff', 0.35);
@@ -360,7 +374,7 @@ if (renderer) {
     models.push({ i: 2, update: (t) => { sh.rotation.y = 1.1 * Math.sin(t * 0.6); el.rotation.y = 1.3 * Math.sin(t * 0.9 + 1); const z = 0.12 + 0.12 * Math.sin(t * 1.7); quill.position.set(L2, -0.16 - z, 0); } }); shadowed(body); }
   // 4. 6-axis industrial robot
   { const g = pedestal(3); const a = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14, sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.1 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
-    a.root.scale.setScalar(0.8); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
+    a.root.scale.setScalar(1.15); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
     models.push({ i: 3, update: (t) => a.setPose([50 * Math.sin(t * 0.5), -45 + 25 * Math.sin(t * 0.7 + 1), -60 + 30 * Math.sin(t * 0.9), 70 * Math.sin(t * 0.8), -50 + 30 * Math.sin(t * 1.1), 90 * Math.sin(t * 1.3)]) }); }
   // 5. collaborative robot (UR5 numbers)
   { const g = pedestal(4), D1 = 0.089159, A2 = -0.425, A3 = -0.39225, D4 = 0.10915, D5 = 0.09465, D6 = 0.0823;
@@ -407,6 +421,11 @@ if (renderer) {
     g.rotation.y = -0.5; shadowed(g); models.push({ i: 7, update: (t) => { w.rotation.z = -t * 0.9; } }); }
 
 
+  // every pedestal gets its own materials so that the neighbours can turn grey and dark
+  const pedMats = gal.children.map((g) => { const list = []; g.traverse((o) => { if (o.isMesh && o.material && !Array.isArray(o.material)) { const link = galLinks.includes(o.material); o.material = o.material.clone(); o.material.userData.base = o.material.color.clone(); o.material.userData.link = link; list.push(o.material); } }); return list; });
+  const grey = new THREE.Color(), setGrey = (i, f) => pedMats[i].forEach((m) => { const b = m.userData.base, y = b.r * 0.3 + b.g * 0.59 + b.b * 0.11; m.color.copy(b); grey.setRGB(y, y, y); m.color.lerp(grey, f * 0.88).multiplyScalar(1 - 0.5 * f); });
+  let gpos = 0, greyDirty = true;
+
   // inverse kinematics poses for the demo (same solver as the 6-axis page)
   const poses = {}; let prev = [-20, -30, -70, 0, 20, 0];
   for (const [name, p] of [['Aup', [PAD_A.x, PAD_A.y, ZU]], ['Adown', [PAD_A.x, PAD_A.y, ZG]], ['Bup', [PAD_B.x, PAD_B.y, ZU]], ['Bdown', [PAD_B.x, PAD_B.y, ZG]]]) {
@@ -423,7 +442,7 @@ if (renderer) {
   // state
   const q = NEUTRAL.slice(), qGoal = NEUTRAL.slice(); let lastIK = { posErr: 0, p: [0.5, 0, 0.5] };
   const DESK = () => innerWidth > 900;
-  const GL = [[0.55, 3.0, 1], [0.7, 3.4, -1], [0.62, 3.0, 1], [0.62, 3.2, -1], [0.55, 3.0, 1], [0.8, 3.4, -1], [0.25, 2.7, 1], [0.6, 3.2, -1]];
+  const GL = [[0.55, 4.9, 1], [0.7, 4.5, -1], [0.62, 4.0, 1], [0.8, 4.3, -1], [0.55, 3.6, 1], [0.8, 4.6, -1], [0.25, 3.5, 1], [0.5, 5.4, -1]];
   const KF = [   // camera: position, look-at, shift of the robot to the right (desktop)
     { p: [1.0, 0.9, 2.7], l: [0, 0.62, 0], s: 0 },
     { p: [2.1, 1.2, 2.6], l: [0.1, 0.68, 0], s: 0.55 },
@@ -450,7 +469,7 @@ if (renderer) {
   const thCells = STD.map((_, i) => $('th' + i));
   const themeCols = () => { const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const bg = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; scene.fog.color.set(bg);
-    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); galLinks.forEach((m) => m.color.set(dark ? '#d8d8d8' : '#303030')); padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
+    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); galLinks.forEach((m) => m.color.set(dark ? '#d8d8d8' : '#303030')); pedMats.forEach((l) => l.forEach((m) => { if (m.userData.link) m.userData.base.set(dark ? '#d8d8d8' : '#303030'); })); greyDirty = true; padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
     dustMat.color.set(dark ? 0x6b97ff : 0x1f55e0); smokeMats.forEach((m) => m.color.set(dark ? 0xbcd0ff : 0x6f7f9f)); ringMat.color.set(dark ? 0x2f6bff : 0x1f55e0); grid.material.color.set(dark ? 0x808080 : 0x7a7a7a); grid.material.opacity = dark ? 0.3 : 0.45; floor.material.opacity = dark ? 0.35 : 0.22; };
   themeCols(); new MutationObserver(themeCols).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', themeCols);
@@ -467,17 +486,17 @@ if (renderer) {
     acc += dt; cnt++; if (cnt === 40) { const avg = acc / cnt; acc = 0; cnt = 0; if (avg > 0.036 && quality < 2) { quality++; if (quality === 1) { sun.castShadow = false; renderer.setPixelRatio(1); } else renderer.setPixelRatio(0.75); size(); } } const t = now / 1000, mode = zone === 0 ? 0 : zone === 1 ? ui.step : 5;
     // camera
     const K = KF[mode === 5 ? 6 + ui.gi : mode], tp = new THREE.Vector3(...K.p), tl = new THREE.Vector3(...K.l);
-    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 2.0 : 1.5) : mode === 5 ? 1.3 : 1).add(tl);
+    tp.sub(tl).multiplyScalar(!DESK() ? (mode === 5 ? 1.15 : 1.5) : mode === 5 ? 1 : 1).add(tl);
     const sh = K.s, fw = tl.clone().sub(tp).normalize(), right = new THREE.Vector3().crossVectors(fw, new THREE.Vector3(0, 1, 0)).normalize();
     if (mode === 0 && DESK()) tl.y -= 0.5;
-    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= mode === 0 ? 0.95 : mode === 5 ? 0.8 : 0.85;   // phones: the robot sits above the text
-    if (mode === 5 && DESK()) tl.y -= 0.5;          // the robot sits above the card
+    if (DESK()) tl.addScaledVector(right, -sh); else tl.y -= mode === 0 ? 0.95 : mode === 5 ? 0.45 : 0.85;   // phones: the robot sits above the text
+    if (mode === 5 && DESK()) tl.y -= 0.32;          // the robot sits above the card
     tp.addScaledVector(right, pointer.nx * 0.18).y += pointer.ny * 0.1;
     const ck = reduce ? 1 : 1 - Math.exp(-dt * 5); cam.p.lerp(tp, ck); cam.l.lerp(tl, ck); camera.position.copy(cam.p); camera.lookAt(cam.l);
     // past the gallery the page is plain text: stop drawing
     const idle3d = zone >= 3; glEl.style.visibility = idle3d ? 'hidden' : 'visible'; if (idle3d) return;
     dust.position.set(cam.l.x, 0, cam.l.z); dust.rotation.y = t * 0.03; rings.visible = mode <= 4; rings.rotation.z = t * 0.08; rings.rotation.y = Math.sin(t * 0.2) * 0.4;
-    grid.visible = mode !== 0; smokeAmt = lerp(smokeAmt, mode === 0 ? 1 : mode <= 4 ? 0.35 : 0, 1 - Math.exp(-dt * 2.5)); smoke.visible = smokeAmt > 0.01;
+    grid.visible = mode >= 1 && mode <= 4; smokeAmt = lerp(smokeAmt, mode === 0 ? 1 : mode <= 4 ? 0.35 : 0, 1 - Math.exp(-dt * 2.5)); smoke.visible = smokeAmt > 0.01;
     if (smoke.visible) smoke.children.forEach((s, i) => { const u = s.userData, ph = (t * 0.04 + i * 0.13) % 1; u.a += dt * u.sp; s.position.x = Math.cos(u.a) * u.r * 1.5; s.position.y = u.y + 0.18 * Math.sin(t * 0.35 + u.ph) + ph * 0.5; s.scale.setScalar(u.sz * (1 + 0.08 * Math.sin(t * 0.5 + u.ph))); s.material.opacity = smokeAmt * (0.15 - 0.06 * ph); s.material.rotation += dt * 0.03; });
     arm.root.visible = mode <= 4; place.visible = mode === 4; gal.visible = mode === 5;
     // arm goals per section
@@ -499,7 +518,16 @@ if (renderer) {
     const rate = usedIK && mode === 3 ? 1 : mode === 4 ? 1 : 1 - Math.exp(-dt * 4);
     if (mode <= 4) { for (let i = 0; i < 6; i++) q[i] = lerp(q[i], qGoal[i], rate); arm.setPose(q); }
     sun.position.set(cam.l.x + 3.2, 5.5, cam.l.z + 2.4); sun.target.position.copy(cam.l);
-    if (gal.visible) for (const m of models) { const near = Math.abs(GX(m.i) - cam.p.x) < 4.5; gal.children[m.i].visible = near; if (near) m.update(t); }
+    if (gal.visible) {
+      gpos = lerp(gpos, ui.gi, 1 - Math.exp(-dt * 5));
+      for (const m of models) {
+        const ad = Math.abs(m.i - gpos), g = gal.children[m.i], near = ad < 3.2; g.visible = near; if (!near) continue;
+        g.scale.setScalar(1.22 - 0.52 * Math.min(ad, 1) - 0.1 * Math.min(Math.max(ad - 1, 0), 1));       // the one in front is big, its neighbours smaller
+        const f = Math.min(1, ad); if (greyDirty || Math.abs(f - (g.userData.f === undefined ? -1 : g.userData.f)) > 0.004) { g.userData.f = f; setGrey(m.i, f); }
+        m.update(t);
+      }
+      greyDirty = false;
+    }
     gripNow = lerp(gripNow, grip, 1 - Math.exp(-dt * 8)); for (const fg of fingers) fg.m.position.x = fg.side * (0.04 + 0.025 * gripNow);
     cube.visible = mode === 4;
     // frames and tags
