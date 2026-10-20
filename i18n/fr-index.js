@@ -1,6 +1,5 @@
 // Français — page index. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
-"1bbrp2zauep": "Dépôt GitHub",
 "26uilwih4xd": "Conçu, dessiné et codé par",
 "5pdpyaa4jn": "Robotics Atlas est un projet pour apprendre les robots, leur cinématique et leurs usages. Fait avec soin, three.js et beaucoup de café.",
 "2hk7qx8wzt": "Voir le code sur GitHub",
