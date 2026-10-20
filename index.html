@@ -30,7 +30,7 @@
           <p>Every main type of robot, drawn the way engineers draw it: a <strong>kinematic diagram</strong>, its <strong>DH and DHM tables</strong>, and a <strong>3D model</strong> you move with sliders. No prior knowledge needed.</p>
           <div class="cta">
             <a class="btn" href="learn.html">Start with the basics</a>
-            <a class="btn ghost" href="#robots">Browse the robots</a>
+            <a class="btn ghost" href="#gallery">Browse the robots</a>
           </div>
         </div>
       </div>
@@ -73,21 +73,95 @@
       </div></div>
     </section>
 
-    <section class="scene-sec end wide" id="robots">
-      <div class="wrap">
-        <h2 class="robots-h">Choose a robot</h2>
-        <p class="robots-sub">Eight machines, each with its kinematic diagram, its DH tables and a 3D model. Hover a card to see it move.</p>
-        <div class="rgrid">
-        <a class="rc" href="arm.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>3-DOF robot arm</h3><span class="notation">R-R-R</span><p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p></div></a>
-        <a class="rc" href="gantry.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Cartesian gantry</h3><span class="notation">P-P-P</span><p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p></div></a>
-        <a class="rc" href="scara.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>SCARA</h3><span class="notation">R-R-P-R</span><p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p></div></a>
-        <a class="rc" href="articulated.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>6-axis industrial robot</h3><span class="notation">6 × R</span><p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p></div></a>
-        <a class="rc" href="cobot.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Collaborative robot (UR5)</h3><span class="notation">6 × R</span><p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p></div></a>
-        <a class="rc" href="delta.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Delta robot</h3><span class="notation">3 × R</span><p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p></div></a>
-        <a class="rc" href="mobile.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Mobile robot (differential drive)</h3><span class="notation">2 wheels</span><p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p></div></a>
-        <a class="rc" href="wheels.html"><canvas width="480" height="360" aria-hidden="true"></canvas><div class="body"><h3>Wheels and mobile bases</h3><span class="notation">5 wheels</span><p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p></div></a>
-        </div>
+    <section class="scene-sec gal wide" id="gallery">
+      <div class="wrap"><div class="panel">
+        <h2>Meet the family</h2>
+        <p>Eight kinds of robots, from a simple arm to a single wheel. Keep scrolling: the camera walks along the gallery and every machine moves the way it really does.</p>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">1 / 8</p>
+        <h2>3-DOF robot arm</h2>
+        <p class="rtag"><span class="notation">R-R-R</span>3 degrees of freedom, serial arm</p>
+        <p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p>
+        <dl><dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd><dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd></dl>
+        <a class="btn" href="arm.html">Open the 3D model</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">2 / 8</p>
+        <h2>Cartesian gantry</h2>
+        <p class="rtag"><span class="notation">P-P-P</span>3 degrees of freedom, three sliding axes</p>
+        <p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p>
+        <dl><dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd><dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd></dl>
+        <a class="btn" href="gantry.html">Open the 3D model</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">3 / 8</p>
+        <h2>SCARA</h2>
+        <p class="rtag"><span class="notation">R-R-P-R</span>4 degrees of freedom, serial arm</p>
+        <p>Stiff in the vertical direction, flexible in the horizontal plane. Fast and precise assembly from above.</p>
+        <dl><dt>Used in</dt><dd>Electronics assembly, screwing, dispensing, packaging, fast pick and place.</dd><dt>End effectors</dt><dd>Pinch gripper, vacuum nozzle, screwdriver, glue dispenser.</dd></dl>
+        <a class="btn" href="scara.html">Open the 3D model and the pick-and-place demo</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">4 / 8</p>
+        <h2>6-axis industrial robot</h2>
+        <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, serial arm</p>
+        <p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p>
+        <dl><dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd><dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd></dl>
+        <a class="btn" href="articulated.html">Open the 3D model and the pick-and-place demo</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">5 / 8</p>
+        <h2>Collaborative robot (UR5)</h2>
+        <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, works next to people</p>
+        <p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p>
+        <dl><dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd><dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd></dl>
+        <a class="btn" href="cobot.html">Open the 3D model and the pick-and-place demo</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">6 / 8</p>
+        <h2>Delta robot</h2>
+        <p class="rtag"><span class="notation">3 × R</span>parallel robot, 3 arms and 1 optional rotation</p>
+        <p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p>
+        <dl><dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd><dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd></dl>
+        <a class="btn" href="delta.html">Open the 3D model and the pick-and-place demo</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">7 / 8</p>
+        <h2>Mobile robot (differential drive)</h2>
+        <p class="rtag"><span class="notation">2 wheels</span>mobile robot, x, y and heading</p>
+        <p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p>
+        <dl><dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd><dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd></dl>
+        <a class="btn" href="mobile.html">Open the 3D model and the programs</a>
+      </div></div>
+    </section>
+    <section class="scene-sec gal wide">
+      <div class="wrap"><div class="panel">
+        <p class="step">8 / 8</p>
+        <h2>Wheels and mobile bases</h2>
+        <p class="rtag"><span class="notation">5 wheels</span>reference and drive simulator</p>
+        <p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p>
+        <dl><dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd><dt>End effectors</dt><dd>None: this page is about the base.</dd></dl>
+        <a class="btn" href="wheels.html">Open the wheel catalogue and simulator</a>
+      </div></div>
+    </section>
 
+    <section class="scene-sec end wide">
+      <div class="wrap">
         <h2>Where to start?</h2>
         <p>You can read the pages in any order. If you are new, this order goes from simple to hard:</p>
         <ol class="path">
@@ -135,89 +209,6 @@ requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('load
 const pointer = { nx: 0, ny: 0, last: -1e9 };
 addEventListener('pointermove', (e) => { pointer.nx = (e.clientX / innerWidth) * 2 - 1; pointer.ny = -((e.clientY / innerHeight) * 2 - 1); pointer.last = performance.now(); }, { passive: true });
 
-// ---------- 2D drawings for the cards (kinematic diagrams) ----------
-let sctx = null, trail = [];
-  const OR = '#ff9f43', INK = '#ececec', DIM = '#8a8a8a', PANEL = '#262626';
-  const P = (x, y) => [x, y];
-  function ln(a, b, w, c) { sctx.strokeStyle = c || OR; sctx.lineWidth = w || 9; sctx.lineCap = 'round'; sctx.beginPath(); sctx.moveTo(a[0], a[1]); sctx.lineTo(b[0], b[1]); sctx.stroke(); }
-  function joint(p, r) { r = r || 11; sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.beginPath(); sctx.arc(p[0], p[1], r, 0, TAU); sctx.fill(); sctx.stroke(); sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(p[0], p[1], r * 0.26, 0, TAU); sctx.fill(); }
-  function dot(p, r) { sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(p[0], p[1], r || 5, 0, TAU); sctx.fill(); }
-  function ground(y, x0, x1) { ln([x0, y], [x1, y], 2, INK); sctx.strokeStyle = DIM; sctx.lineWidth = 1.4; for (let x = x0; x < x1; x += 13) { sctx.beginPath(); sctx.moveTo(x, y); sctx.lineTo(x - 9, y + 11); sctx.stroke(); } }
-  function txt(s, x, y, c) { sctx.fillStyle = c || DIM; sctx.font = '19px "IBM Plex Mono", monospace'; sctx.fillText(s, x, y); }
-  function chain(base, lens, angs) { const pts = [base]; let a = 0, p = base; lens.forEach((l, i) => { a += angs[i]; p = [p[0] + l * Math.cos(a), p[1] - l * Math.sin(a)]; pts.push(p); }); return pts; }
-  function circInter(c0, r0, c1, r1, sign) { const dx = c1[0] - c0[0], dy = c1[1] - c0[1], d = Math.hypot(dx, dy), a = (r0 * r0 - r1 * r1 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, r0 * r0 - a * a)); const mx = c0[0] + a * dx / d, my = c0[1] + a * dy / d; return [mx + sign * h * dy / d, my - sign * h * dx / d]; }
-
-  const DRAW = [
-    (t) => { // 3-DOF arm
-      ground(432, 90, 330); sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(160, 410, 80, 22);
-      const pts = chain([200, 410], [150, 130, 80], [1.15 + 0.35 * Math.sin(t * 0.9), -1.1 + 0.5 * Math.sin(t * 1.2 + 1), 0.3 * Math.sin(t * 0.7)]);
-      for (let i = 0; i < 3; i++) ln(pts[i], pts[i + 1]);
-      pts.slice(0, 3).forEach((p) => joint(p)); dot(pts[3]); txt('q1', 150, 400); txt('q2', pts[1][0] + 18, pts[1][1] - 10); txt('q3', pts[2][0] + 14, pts[2][1] - 10);
-    },
-    (t) => { // gantry
-      ground(440, 60, 580); ln([120, 110], [120, 440], 12, DIM); ln([520, 110], [520, 440], 12, DIM); ln([100, 110], [540, 110], 14, DIM);
-      const x = 320 + 150 * Math.sin(t * 0.8), z = 70 + 90 * (0.5 + 0.5 * Math.sin(t * 1.7)); sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.fillRect(x - 26, 92, 52, 36); sctx.strokeRect(x - 26, 92, 52, 36);
-      ln([x, 128], [x, 128 + z], 10); ln([x - 16, 128 + z], [x + 16, 128 + z], 6, INK); ln([x - 16, 128 + z], [x - 16, 140 + z], 6, INK); ln([x + 16, 128 + z], [x + 16, 140 + z], 6, INK);
-      sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(250, 410, 70, 30); sctx.strokeRect(380, 395, 60, 45); txt('q1', x - 8, 84); txt('q3', x + 20, 128 + z / 2);
-    },
-    (t) => { // SCARA, top view
-      const c = [320, 270], a = t * 0.6, b = 1.5 * Math.sin(t * 0.9) + 0.2, L1 = 140, L2 = 110;
-      sctx.strokeStyle = DIM; sctx.lineWidth = 1.2; sctx.setLineDash([5, 7]); sctx.beginPath(); sctx.arc(c[0], c[1], L1 + L2, 0, TAU); sctx.stroke(); sctx.beginPath(); sctx.arc(c[0], c[1], L1 - L2, 0, TAU); sctx.stroke(); sctx.setLineDash([]);
-      const e = [c[0] + L1 * Math.cos(a), c[1] - L1 * Math.sin(a)], p = [e[0] + L2 * Math.cos(a + b), e[1] - L2 * Math.sin(a + b)];
-      trail.push(p); if (trail.length > 90) trail.shift(); sctx.strokeStyle = 'rgba(255,159,67,.35)'; sctx.lineWidth = 2; sctx.beginPath(); trail.forEach((q, i) => (i ? sctx.lineTo(q[0], q[1]) : sctx.moveTo(q[0], q[1]))); sctx.stroke();
-      ln(c, e); ln(e, p); joint(c, 14); joint(e); sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(p[0] - 9, p[1] - 9, 18, 18); txt('q1', c[0] - 40, c[1] + 34); txt('q2', e[0] + 14, e[1] - 12);
-    },
-    (t) => { // 6-axis, side view
-      ground(440, 70, 330); sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(140, 412, 80, 28);
-      const sh = [180, 350]; ln([180, 412], sh, 18, '#d9d9d9');
-      const pts = chain(sh, [150, 140, 34, 34], [1.1 + 0.3 * Math.sin(t * 0.8), -1.15 + 0.4 * Math.sin(t * 1.1), 0.3 * Math.sin(t * 1.5), 0.4 * Math.sin(t * 1.9)]);
-      for (let i = 0; i < 4; i++) ln(pts[i], pts[i + 1], i < 2 ? 14 : 9); pts.slice(0, 5).forEach((p, i) => joint(p, i < 3 ? 11 : 7));
-      dot(pts[4], 6); txt('q1…q6', 150, 468);
-    },
-    (t) => { // cobot
-      ground(440, 70, 330); sctx.fillStyle = '#d9d9d9'; sctx.fillRect(150, 400, 60, 40);
-      const sh = [180, 370]; ln([180, 400], sh, 26, '#d9d9d9');
-      const pts = chain(sh, [150, 130, 44], [1.05 + 0.3 * Math.sin(t * 0.8), -1.2 + 0.45 * Math.sin(t * 1.1), 0.35 * Math.sin(t * 1.4)]);
-      for (let i = 0; i < 3; i++) ln(pts[i], pts[i + 1], 24, '#d9d9d9'); pts.slice(0, 4).forEach((p) => { sctx.fillStyle = OR; sctx.beginPath(); sctx.arc(p[0], p[1], 15, 0, TAU); sctx.fill(); sctx.fillStyle = PANEL; sctx.beginPath(); sctx.arc(p[0], p[1], 4, 0, TAU); sctx.fill(); });
-      sctx.strokeStyle = DIM; sctx.lineWidth = 1.4; sctx.setLineDash([6, 6]); sctx.beginPath(); sctx.arc(180, 370, 330, -1.2, -0.1); sctx.stroke(); sctx.setLineDash([]); txt('limited force and speed', 360, 150);
-    },
-    (t) => { // delta
-      for (let x = 120; x < 520; x += 12) { sctx.strokeStyle = DIM; sctx.lineWidth = 1.2; sctx.beginPath(); sctx.moveTo(x, 78); sctx.lineTo(x + 10, 66); sctx.stroke(); } ln([120, 78], [520, 78], 3, INK);
-      const px = 320 + 80 * Math.cos(t * 1.1), py = 330 + 50 * Math.sin(t * 1.7), M = [[240, 78], [400, 78]], A = [[px - 34, py], [px + 34, py]];
-      M.forEach((m, i) => { const e = circInter(m, 110, A[i], 200, i === 0 ? 1 : -1); const lo = circInter(m, 110, A[i], 200, i === 0 ? -1 : 1); const el = (i === 0 ? (e[0] < lo[0] ? e : lo) : (e[0] > lo[0] ? e : lo)); ln(m, el, 10); for (const o of [-5, 5]) ln([el[0] + o, el[1]], [A[i][0] + o, A[i][1]], 2.5, INK); joint(m, 13); joint(el, 8); });
-      ln([320, 78], [px, py - 14], 3, DIM); ln(A[0], A[1], 12); ln([px, py], [px, py + 40], 6, INK); ln([px - 14, py + 40], [px + 14, py + 40], 5, INK);
-      sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.strokeRect(190, 430, 260, 18); txt('three motors, one platform', 215, 472);
-    },
-    (t) => { // mobile, top view
-      const w = t * 0.5, x = 320 + 190 * Math.sin(w), y = 270 + 120 * Math.sin(2 * w), dx = 190 * Math.cos(w), dy = 240 * Math.cos(2 * w), h = Math.atan2(dy, dx);
-      trail.push([x, y]); if (trail.length > 160) trail.shift(); sctx.strokeStyle = 'rgba(255,159,67,.4)'; sctx.lineWidth = 2; sctx.beginPath(); trail.forEach((q, i) => (i ? sctx.lineTo(q[0], q[1]) : sctx.moveTo(q[0], q[1]))); sctx.stroke();
-      sctx.save(); sctx.translate(x, y); sctx.rotate(h); sctx.fillStyle = PANEL; sctx.strokeStyle = INK; sctx.lineWidth = 2.5; sctx.fillRect(-34, -22, 68, 44); sctx.strokeRect(-34, -22, 68, 44);
-      sctx.fillStyle = OR; sctx.fillRect(-14, -31, 28, 9); sctx.fillRect(-14, 22, 28, 9); sctx.fillStyle = INK; sctx.beginPath(); sctx.arc(-30, 0, 3, 0, TAU); sctx.fill(); sctx.beginPath(); sctx.moveTo(34, 0); sctx.lineTo(18, -8); sctx.lineTo(18, 8); sctx.closePath(); sctx.fill(); sctx.restore();
-      txt('vL', 40, 60); txt('vR', 40, 80); txt('x, y, heading', 40, 500);
-    },
-    (t) => { // Mecanum wheel
-      const c = [320, 250], R = 118, ang = t * 0.9; sctx.strokeStyle = INK; sctx.lineWidth = 3; sctx.beginPath(); sctx.arc(c[0], c[1], R, 0, TAU); sctx.stroke(); sctx.beginPath(); sctx.arc(c[0], c[1], R - 34, 0, TAU); sctx.stroke();
-      for (let k = 0; k < 12; k++) { const a = ang + k * TAU / 12; sctx.save(); sctx.translate(c[0] + (R - 17) * Math.cos(a), c[1] + (R - 17) * Math.sin(a)); sctx.rotate(a + Math.PI / 2 + Math.PI / 4); sctx.fillStyle = OR; sctx.beginPath(); sctx.ellipse(0, 0, 26, 10, 0, 0, TAU); sctx.fill(); sctx.restore(); }
-      for (let k = 0; k < 6; k++) { const a = ang + k * TAU / 6; ln(c, [c[0] + (R - 38) * Math.cos(a), c[1] + (R - 38) * Math.sin(a)], 3, DIM); } joint(c, 20);
-      ground(c[1] + R + 6, 100, 540); ln([430, 400], [500, 340], 3, INK); txt('rollers at 45°', 380, 430);
-    }
-  ];
-
-const cardEls = [...document.querySelectorAll('.rc')];
-const cards = cardEls.map((el, i) => ({ el, cv: el.querySelector('canvas'), trail: [], run: false }));
-function drawCard(c, i, t) {
-  const cv = c.cv, ctx = cv.getContext('2d'); sctx = ctx; trail = c.trail;
-  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
-  const s = Math.min(cv.width / 640, cv.height / 520); ctx.translate((cv.width - 640 * s) / 2, (cv.height - 520 * s) / 2); ctx.scale(s, s);
-  DRAW[i](t); ctx.setTransform(1, 0, 0, 1, 0, 0);
-}
-cards.forEach((c, i) => {
-  drawCard(c, i, 1.2 + i * 0.7);
-  const go = () => { if (c.run || reduce) return; c.run = true; const t0 = performance.now(); (function f(now) { if (!c.run) return; drawCard(c, i, 1.2 + i * 0.7 + (now - t0) / 1000); requestAnimationFrame(f); })(t0); };
-  const stop = () => { c.run = false; };
-  c.el.addEventListener('pointerenter', go); c.el.addEventListener('focus', go); c.el.addEventListener('pointerleave', stop); c.el.addEventListener('blur', stop);
-});
-
 // ---------- 3D scene ----------
 const STD = [
   { th: ['q1', (q) => q[0]],           d: ['d1', 0.40], a: ['0', 0],      al: ['90', 90] },
@@ -242,9 +233,9 @@ if (renderer) {
   scene.fog = new THREE.Fog(0x1f1f1f, 5, 12);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.05));
   const sun = new THREE.DirectionalLight(0xffffff, 2.0); sun.position.set(3.2, 5.5, 2.4); sun.castShadow = true;
-  sun.shadow.mapSize.set(1536, 1536); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.receiveShadow = true; scene.add(floor);
-  const grid = new THREE.GridHelper(12, 24, 0x777777, 0x666666); grid.position.y = 0.002; grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
+  scene.add(sun.target); sun.shadow.mapSize.set(1536, 1536); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 }); sun.shadow.bias = -0.0004; scene.add(sun);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.3 })); floor.receiveShadow = true; scene.add(floor);
+  const grid = new THREE.GridHelper(80, 160, 0x777777, 0x666666); grid.position.set(0, 0.002, -10); grid.material.transparent = true; grid.material.opacity = 0.35; scene.add(grid);
 
   const arm = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14,
     sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.10 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
@@ -268,6 +259,93 @@ if (renderer) {
   const resetCube = () => { scene.attach(cube); cube.rotation.set(0, 0, 0); cube.position.set(PAD_A.x, CUBE / 2, -PAD_A.y); };
   resetCube(); place.visible = false; cube.visible = false;
 
+  // ---------- the gallery: eight robots on pedestals, far from the hero robot ----------
+  const GAL_Z = -22, GX = (i) => (i - 3.5) * 2.7, galY = 0.12;
+  const gal = new THREE.Group(); scene.add(gal);
+  const stdMat = (c, r, m) => new THREE.MeshStandardMaterial({ color: c, roughness: r === undefined ? 0.45 : r, metalness: m === undefined ? 0.2 : m });
+  const mLink = stdMat('#d8d8d8'), mOr = stdMat('#ff9f43', 0.4), mDark = stdMat('#3a3a3a', 0.7), mBlue = stdMat('#2f6bff', 0.35);
+  const galLinks = [mLink];
+  const shadowed = (o) => { o.traverse((c) => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } }); return o; };
+  const bx = (w, h, d, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+  const cy = (r, h, m, seg) => new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 32), m);
+  function pedestal(i) {
+    const g = new THREE.Group(); g.position.set(GX(i), 0, GAL_Z);
+    const base = cy(0.8, 0.12, mDark, 72); base.position.y = 0.06; base.receiveShadow = true;
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.014, 8, 120), new THREE.MeshBasicMaterial({ color: '#2f6bff' })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.122;
+    g.add(base, ring); gal.add(g); return g;
+  }
+  const D2R_ = Math.PI / 180, models = [];
+  // 1. 3-DOF arm (same DH table as its page)
+  { const g = pedestal(0), A3 = [
+      { th: ['q1', (q) => q[0]], d: ['d', 0.5], a: ['0', 0], al: ['90', 90] }, { th: ['q2', (q) => q[1] + 90], d: ['0', 0], a: ['L1', 1.2], al: ['0', 0] }, { th: ['q3', (q) => q[2]], d: ['0', 0], a: ['L2', 1.05], al: ['0', 0] }];
+    const a = DHArm.build(THREE, A3, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.07, baseR: 0.45, sizes: [{ r: 0.2, l: 0.3 }, { r: 0.17, l: 0.26 }, { r: 0.14, l: 0.22 }] });
+    a.root.scale.setScalar(0.42); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
+    models.push({ i: 0, update: (t) => a.setPose([70 * Math.sin(t * 0.5), -25 + 25 * Math.sin(t * 0.8), 50 + 35 * Math.sin(t * 1.1)]) }); }
+  // 2. Cartesian gantry
+  { const g = pedestal(1), top = 1.3; const body = new THREE.Group(); body.position.y = galY; g.add(body);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const p = bx(0.07, top, 0.07, mDark); p.position.set(sx * 0.6, top / 2, sz * 0.42); body.add(p); }
+    for (const sz of [-1, 1]) { const r = bx(1.3, 0.07, 0.07, mLink); r.position.set(0, top, sz * 0.42); body.add(r); }
+    const cross = new THREE.Group(); cross.position.y = top; body.add(cross); const beam = bx(0.07, 0.07, 0.95, mLink); cross.add(beam);
+    const car = new THREE.Group(); cross.add(car); car.add(bx(0.2, 0.12, 0.2, mOr)); const ram = cy(0.03, 0.9, mLink, 16); car.add(ram);
+    const grip = new THREE.Group(); car.add(grip); grip.add(bx(0.14, 0.03, 0.04, mOr)); for (const s of [-1, 1]) { const f = bx(0.02, 0.09, 0.04, mOr); f.position.set(s * 0.06, -0.05, 0); grip.add(f); }
+    const wp = bx(0.4, 0.14, 0.3, mBlue); wp.position.set(0.25, 0.07, -0.1); body.add(wp); const base = bx(1.25, 0.04, 0.85, mDark); base.position.y = 0.02; body.add(base); shadowed(body);
+    models.push({ i: 1, update: (t) => { cross.position.x = 0.38 * Math.sin(t * 0.7); car.position.z = 0.26 * Math.sin(t * 1.1 + 1); const z = 0.28 + 0.2 * (0.5 + 0.5 * Math.sin(t * 1.6)); ram.scale.y = z / 0.9; ram.position.y = -z / 2 - 0.06; grip.position.y = -z - 0.06; } }); }
+  // 3. SCARA
+  { const g = pedestal(2), L1 = 0.5, L2 = 0.42, body = new THREE.Group(); body.position.y = galY; g.add(body);
+    const col = cy(0.12, 0.6, mLink); col.position.y = 0.3; body.add(col); const sh = new THREE.Group(); sh.position.y = 0.66; body.add(sh);
+    const a1 = bx(L1, 0.09, 0.14, mLink); a1.position.x = L1 / 2; sh.add(a1); const j1 = cy(0.09, 0.12, mOr); sh.add(j1);
+    const el = new THREE.Group(); el.position.set(L1, 0.08, 0); sh.add(el); const a2 = bx(L2, 0.08, 0.12, mLink); a2.position.x = L2 / 2; el.add(a2); el.add(cy(0.075, 0.1, mOr));
+    const qh = cy(0.04, 0.12, mDark); qh.position.set(L2, 0.02, 0); el.add(qh); const quill = cy(0.022, 0.55, mLink, 16); el.add(quill);
+    models.push({ i: 2, update: (t) => { sh.rotation.y = 1.1 * Math.sin(t * 0.6); el.rotation.y = 1.3 * Math.sin(t * 0.9 + 1); const z = 0.12 + 0.12 * Math.sin(t * 1.7); quill.position.set(L2, -0.16 - z, 0); } }); shadowed(body); }
+  // 4. 6-axis industrial robot
+  { const g = pedestal(3); const a = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14, sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.1 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
+    a.root.scale.setScalar(0.8); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
+    models.push({ i: 3, update: (t) => a.setPose([50 * Math.sin(t * 0.5), -45 + 25 * Math.sin(t * 0.7 + 1), -60 + 30 * Math.sin(t * 0.9), 70 * Math.sin(t * 0.8), -50 + 30 * Math.sin(t * 1.1), 90 * Math.sin(t * 1.3)]) }); }
+  // 5. collaborative robot (UR5 numbers)
+  { const g = pedestal(4), D1 = 0.089159, A2 = -0.425, A3 = -0.39225, D4 = 0.10915, D5 = 0.09465, D6 = 0.0823;
+    const UR = [{ th: ['q1', (q) => q[0]], d: ['d', D1], a: ['0', 0], al: ['90', 90] }, { th: ['q2', (q) => q[1]], d: ['0', 0], a: ['a', A2], al: ['0', 0] }, { th: ['q3', (q) => q[2]], d: ['0', 0], a: ['a', A3], al: ['0', 0] },
+      { th: ['q4', (q) => q[3]], d: ['d', D4], a: ['0', 0], al: ['90', 90] }, { th: ['q5', (q) => q[4]], d: ['d', D5], a: ['0', 0], al: ['-90', -90] }, { th: ['q6', (q) => q[5]], d: ['d', D6], a: ['0', 0], al: ['0', 0] }];
+    const a = DHArm.build(THREE, UR, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.045, baseR: 0.1, sizes: [{ r: 0.065, l: 0.12 }, { r: 0.065, l: 0.12 }, { r: 0.058, l: 0.11 }, { r: 0.042, l: 0.09 }, { r: 0.042, l: 0.09 }, { r: 0.042, l: 0.08 }] });
+    a.root.scale.setScalar(1.0); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
+    models.push({ i: 4, update: (t) => a.setPose([60 * Math.sin(t * 0.5), -90 + 25 * Math.sin(t * 0.8), 90 + 30 * Math.sin(t * 0.7 + 1), -90 + 40 * Math.sin(t * 0.9), -90 + 30 * Math.sin(t * 1.1), 120 * Math.sin(t * 1.2)]) }); }
+  // 6. Delta robot (the closed-form inverse kinematics of its page)
+  { const g = pedestal(5), RB = 0.16, RE = 0.05, L = 0.28, LL = 0.55, W = 0.07, R = RB - RE, PHI = [0, 120, 240].map((d) => d * D2R_), S = 1.3, H = 0.74;
+    const body = new THREE.Group(); body.position.y = galY; body.scale.setScalar(S); g.add(body);
+    const plate = bx(0.8, 0.03, 0.8, mDark); plate.position.y = H + 0.1; body.add(plate);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const p = bx(0.03, H + 0.1, 0.03, mDark); p.position.set(sx * 0.37, (H + 0.1) / 2, sz * 0.37); body.add(p); }
+    const Wp = (p) => new THREE.Vector3(p[0], H + p[2], -p[1]);
+    const rodMesh = (r, m) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 1, 12), m); body.add(o); return o; };
+    const setRod = (o, a, b) => { const d = b.clone().sub(a), len = d.length(); o.position.copy(a).addScaledVector(d, 0.5); o.scale.set(1, Math.max(len, 1e-5), 1); o.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); };
+    const legs = [0, 1, 2].map((i) => ({ up: rodMesh(0.016, mLink), cr: rodMesh(0.011, mLink), eb: rodMesh(0.011, mOr), f1: rodMesh(0.008, mDark), f2: rodMesh(0.008, mDark) }));
+    for (let i = 0; i < 3; i++) { const m = cy(0.035, 0.11, mOr, 20); m.position.copy(Wp([RB * Math.cos(PHI[i]), RB * Math.sin(PHI[i]), 0])); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), Wp([-Math.sin(PHI[i]), Math.cos(PHI[i]), 0]).sub(Wp([0, 0, 0])).normalize()); body.add(m); }
+    const eff = cy(RE + 0.012, 0.02, mBlue, 24); body.add(eff);
+    const ik = (P) => PHI.map((ph) => { const c = Math.cos(ph), s = Math.sin(ph), x0 = c * P[0] + s * P[1], y0 = -s * P[0] + c * P[1], z0 = P[2]; const A = -2 * L * (x0 - R), B = 2 * L * z0, C = -((x0 - R) ** 2 + y0 * y0 + z0 * z0 + L * L - LL * LL), m = Math.hypot(A, B); if (Math.abs(C) > m) return 0.3;
+      const t0 = Math.atan2(B, A), d = Math.acos(C / m), w = (t) => Math.atan2(Math.sin(t), Math.cos(t)); return [w(t0 + d), w(t0 - d)].sort((p, q) => Math.cos(q) - Math.cos(p))[0]; });
+    models.push({ i: 5, update: (t) => {
+      const P = [0.14 * Math.cos(t * 1.2), 0.14 * Math.sin(t * 1.2), -0.5 + 0.07 * Math.sin(t * 2.4)], th = ik(P);
+      for (let i = 0; i < 3; i++) { const c = Math.cos(PHI[i]), s = Math.sin(PHI[i]), ra = [c, s, 0], ta = [-s, c, 0], B = [RB * c, RB * s, 0], rad = RB + L * Math.cos(th[i]), J = [rad * c, rad * s, -L * Math.sin(th[i])];
+        const E = [P[0] + RE * c, P[1] + RE * s, P[2]], add = (p, q, k) => [p[0] + q[0] * k, p[1] + q[1] * k, p[2] + q[2] * k], Ja = add(J, ta, -W / 2), Jb = add(J, ta, W / 2), Ea = add(E, ta, -W / 2), Eb = add(E, ta, W / 2), lg = legs[i];
+        setRod(lg.up, Wp(B), Wp(J)); setRod(lg.cr, Wp(Ja), Wp(Jb)); setRod(lg.eb, Wp(Ea), Wp(Eb)); setRod(lg.f1, Wp(Ja), Wp(Ea)); setRod(lg.f2, Wp(Jb), Wp(Eb)); }
+      eff.position.copy(Wp(P)); } }); shadowed(body); }
+  // 7. Mobile robot, differential drive, drawing its path
+  { const g = pedestal(6), bot = new THREE.Group(); bot.position.y = galY; g.add(bot);
+    const body = bx(0.46, 0.1, 0.32, mLink); body.position.y = 0.12; const top = cy(0.07, 0.07, mOr, 24); top.position.set(0.1, 0.2, 0); const lid = cy(0.035, 0.03, mDark, 20); lid.position.set(0.1, 0.25, 0);
+    const wl = [-1, 1].map((s) => { const w = cy(0.075, 0.05, mDark, 28); w.rotation.x = Math.PI / 2; w.position.set(0, 0.075, s * 0.19); bot.add(w); return w; });
+    const caster = new THREE.Mesh(new THREE.SphereGeometry(0.035, 14, 10), mDark); caster.position.set(-0.17, 0.035, 0); bot.add(body, top, lid, caster); shadowed(bot);
+    const N = 160, pos = new Float32Array(N * 3), tg = new THREE.BufferGeometry(); tg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const trail = new THREE.Line(tg, new THREE.LineBasicMaterial({ color: '#2f6bff' })); trail.position.y = galY + 0.01; g.add(trail);
+    let n = 0, last = -1;
+    models.push({ i: 6, update: (t) => { const w = t * 0.55, x = 0.46 * Math.sin(w), z = 0.46 * Math.sin(2 * w) * 0.8, dx = 0.46 * Math.cos(w), dz = 0.74 * Math.cos(2 * w) * 0.8;
+      bot.position.set(x, galY, z); bot.rotation.y = -Math.atan2(dz, dx); wl.forEach((m, k) => { m.rotation.y = t * 6 * (k ? 1.1 : 0.9); });
+      if (Math.floor(t * 30) !== last) { last = Math.floor(t * 30); if (n < N) n++; for (let k = (n - 1) * 3; k >= 3; k--) pos[k] = pos[k - 3]; pos[0] = x; pos[1] = 0; pos[2] = z; tg.attributes.position.needsUpdate = true; tg.setDrawRange(0, n); } } }); }
+  // 8. Mecanum wheel
+  { const g = pedestal(7), w = new THREE.Group(); w.position.set(0, galY + 0.6, 0); g.add(w); const rim = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.05, 16, 56), mDark); w.add(rim);
+    const hub = cy(0.12, 0.16, mLink, 28); hub.rotation.x = Math.PI / 2; w.add(hub); for (let k = 0; k < 6; k++) { const sp = bx(0.34, 0.03, 0.03, mLink); sp.position.set(0.19 * Math.cos(k * 1.0472), 0.19 * Math.sin(k * 1.0472), 0); sp.rotation.z = k * 1.0472; w.add(sp); }
+    for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, r = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.15, 4, 12), mOr), tvec = new THREE.Vector3(-Math.sin(a), Math.cos(a), 0), dirv = tvec.clone().multiplyScalar(Math.SQRT1_2).add(new THREE.Vector3(0, 0, Math.SQRT1_2));
+      r.position.set(0.44 * Math.cos(a), 0.44 * Math.sin(a), 0); r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dirv); w.add(r); }
+    const fork = new THREE.Group(); g.add(fork); fork.position.y = galY; for (const s of [-1, 1]) { const f = bx(0.05, 1.2, 0.05, mDark); f.position.set(0, 0.6, s * 0.14); fork.add(f); } const bar = bx(0.06, 0.06, 0.34, mDark); bar.position.set(0, 1.18, 0); fork.add(bar);
+    g.rotation.y = -0.5; shadowed(g); models.push({ i: 7, update: (t) => { w.rotation.z = -t * 0.9; } }); }
+
+
   // inverse kinematics poses for the demo (same solver as the 6-axis page)
   const poses = {}; let prev = [-20, -30, -70, 0, 20, 0];
   for (const [name, p] of [['Aup', [PAD_A.x, PAD_A.y, ZU]], ['Adown', [PAD_A.x, PAD_A.y, ZG]], ['Bup', [PAD_B.x, PAD_B.y, ZU]], ['Bdown', [PAD_B.x, PAD_B.y, ZG]]]) {
@@ -284,13 +362,16 @@ if (renderer) {
   // state
   const q = NEUTRAL.slice(), qGoal = NEUTRAL.slice(); let lastIK = { posErr: 0, p: [0.5, 0, 0.5] };
   const DESK = () => innerWidth > 900;
+  const GL = [[0.55, 3.0, 1], [0.7, 3.4, -1], [0.62, 3.0, 1], [0.62, 3.2, -1], [0.55, 3.0, 1], [0.8, 3.4, -1], [0.25, 2.7, 1], [0.6, 3.2, -1]];
   const KF = [   // camera: position, look-at, shift of the robot to the right (desktop)
     { p: [2.3, 1.25, 2.7], l: [0.2, 0.62, 0], s: 0.95 },
     { p: [2.1, 1.2, 2.6], l: [0.1, 0.68, 0], s: 0.55 },
     { p: [-1.9, 1.35, 2.5], l: [0.15, 0.7, 0], s: 0.82 },
     { p: [3.1, 0.95, 0.35], l: [0.05, 0.7, 0], s: 0.8 },
     { p: [1.3, 2.5, 2.2], l: [0.3, 0.25, 0], s: 0.72 },
-    { p: [4.8, 2.6, 5.0], l: [0, 0.5, 0], s: 0 }];
+    { p: [GX(0) - 5, 1.7, GAL_Z + 5.5], l: [GX(0) + 1.2, 0.7, GAL_Z], s: 0.3 },
+    ...GL.map(([y, d, sd], i) => ({ p: [GX(i) + sd * 1.1, y + 0.5, GAL_Z + d], l: [GX(i), y, GAL_Z], s: 0.85 })),
+    { p: [0, 3.4, GAL_Z + 9], l: [0, 0.6, GAL_Z], s: 0 }];
   const cam = { p: new THREE.Vector3(...KF[0].p), l: new THREE.Vector3(...KF[0].l) };
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(), dir = new THREE.Vector3(), hit = new THREE.Vector3(), P0 = new THREE.Vector3(0.55, 0.65, 0), v3 = new THREE.Vector3();
   function pointerTarget(scale, t) {
@@ -314,7 +395,7 @@ if (renderer) {
   const thCells = STD.map((_, i) => $('th' + i));
   const themeCols = () => { const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const bg = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; scene.fog.color.set(bg);
-    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
+    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); galLinks.forEach((m) => m.color.set(dark ? '#d8d8d8' : '#303030')); padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
     grid.material.color.set(dark ? 0x808080 : 0x7a7a7a); grid.material.opacity = dark ? 0.3 : 0.45; floor.material.opacity = dark ? 0.35 : 0.22; };
   themeCols(); new MutationObserver(themeCols).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', themeCols);
@@ -339,7 +420,7 @@ if (renderer) {
     const hl = Math.floor(t / 2.4) % 6;
     if (mode !== cur.mode) { cur.mode = mode; [...prog.children].forEach((d, i) => d.classList.toggle('on', i === mode)); if (mode !== 4) { segs = []; resetCube(); grip = 1; } if (mode === 4) { where = 'A'; resetCube(); segs = cyc('A', 'B'); si = 0; el = 0; from = q.slice(); } }
     let usedIK = false;
-    if (mode === 0 || mode === 3 || mode === 5) {
+    if (mode === 0 || mode === 3) {
       const p = pointerTarget(mode === 3 ? 1.0 : 0.6, t); target.visible = mode === 3; target.position.set(p[0], p[2], -p[1]); halo.scale.setScalar(1 + 0.12 * Math.sin(t * 3));
       const r = DHArm.solveIK(STD, q, { p }, { limits: LIMITS, iters: 14, wOri: 0 }); for (let i = 0; i < 6; i++) qGoal[i] = r.q[i]; lastIK = { posErr: r.posErr, p }; usedIK = true;
     } else { target.visible = false; }
@@ -352,8 +433,9 @@ if (renderer) {
       setTxt(readDemo, 'demo', `Demo: ${segs[si].text}`);
     }
     const rate = usedIK && mode === 3 ? 1 : mode === 4 ? 1 : 1 - Math.exp(-dt * 4);
-    for (let i = 0; i < 6; i++) q[i] = lerp(q[i], qGoal[i], rate);
-    arm.setPose(q);
+    if (mode <= 4) { for (let i = 0; i < 6; i++) q[i] = lerp(q[i], qGoal[i], rate); arm.setPose(q); }
+    sun.position.set(cam.l.x + 3.2, 5.5, cam.l.z + 2.4); sun.target.position.copy(cam.l);
+    if (mode >= 5) for (const m of models) if (Math.abs(GX(m.i) - cam.p.x) < 8) m.update(t);
     gripNow = lerp(gripNow, grip, 1 - Math.exp(-dt * 8)); for (const fg of fingers) fg.m.position.x = fg.side * (0.04 + 0.025 * gripNow);
     place.visible = mode === 4; cube.visible = mode === 4;
     // frames and tags
