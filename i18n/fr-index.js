@@ -1,5 +1,6 @@
 // Français — page index. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"9w5qbl7gc": "Huit types de robots, du simple bras à une seule roue. Utilisez les flèches, les points ou le clavier pour passer de l'un à l'autre.",
 "1tfzyr26d4q": "Tous les grands types de robots, dessinés comme les dessinent les ingénieurs : un <strong>schéma cinématique</strong>, ses <strong>tableaux DH et DHM</strong> et un <strong>modèle 3D</strong> que vous déplacez avec des curseurs. Aucun prérequis.",
 "219rlzj2xr7": "<a class=\"btn\" href=\"learn.html\">Commencer par les bases</a> <a class=\"btn ghost\" href=\"#gallery\">Voir les robots</a>",
 "s9qfj1394": "Défiler",

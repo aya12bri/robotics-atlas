@@ -220,8 +220,61 @@
     onScroll();
   }
 
+
+  // ---------------------------------------------------------------- robot pages: header, "on this page" chips, 3D view next to the controls, diagram fitted and centred
+  function robotPage() {
+    const body = document.body, h1 = body.querySelector('h1'), view = document.getElementById('view'), controls = document.getElementById('controls');
+    if (h1 && h1.nextElementSibling && h1.nextElementSibling.tagName === 'P' && h1.nextElementSibling.querySelector('a[href="index.html"]')) h1.nextElementSibling.classList.add('crumbs');
+    // 3D view on the left, joints and sliders on the right (stacked on small screens)
+    if (view && controls && view.parentNode === body && controls.parentNode === body) {
+      const kids = [...body.children], iv = kids.indexOf(view), ic = kids.indexOf(controls);
+      const ih = kids.findIndex((el, i) => i > iv && el.tagName === 'H2');
+      if (ih > iv && ic > ih) {
+        const stage = document.createElement('div'), main = document.createElement('div'), side = document.createElement('div');
+        stage.className = 'stage'; main.className = 'stage-main'; side.className = 'stage-side';
+        body.insertBefore(stage, view); stage.append(main, side);
+        kids.slice(iv, ih).forEach((el) => main.appendChild(el));
+        kids.slice(ih, ic + 1).forEach((el) => side.appendChild(el));
+      }
+    }
+    // chips that jump to each section
+    const heads = [...body.querySelectorAll('h2')].filter((h) => !h.closest('.stage-side') && !h.closest('.robot') && h.textContent.trim());
+    if (h1 && heads.length > 2) {
+      const toc = document.createElement('nav'); toc.className = 'toc'; toc.setAttribute('aria-label', lang === 'fr' ? 'Sur cette page' : 'On this page');
+      const short = (h) => h.textContent.replace(/^\d+\.\s*/, '').replace(/\s*\(.*$/, '').replace(/,\s*(side|top|front) view$/i, '').trim() || h.textContent.trim();
+      heads.forEach((h, i) => {
+        if (!h.id) h.id = 'sec' + (i + 1);
+        const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = short(h); toc.appendChild(a);
+        new MutationObserver(() => { const s = short(h); if (a.textContent !== s) a.textContent = s; }).observe(h, { childList: true, characterData: true, subtree: true });   // follows the language
+      });
+      const anchor = h1.nextElementSibling && h1.nextElementSibling.classList.contains('crumbs') ? h1.nextElementSibling : h1;
+      anchor.after(toc);
+    }
+    // the kinematic diagram: zoom on the robot (the box only grows, so it does not jitter) and centre it
+    const svg = document.getElementById('schema');
+    if (svg && svg.viewBox && svg.viewBox.baseVal) {
+      let box = null, pending = false;
+      const apply = () => {
+        pending = false;
+        try {
+          const b = svg.getBBox(); if (!b.width || !b.height) return;
+          box = box ? { x0: Math.min(box.x0, b.x), y0: Math.min(box.y0, b.y), x1: Math.max(box.x1, b.x + b.width), y1: Math.max(box.y1, b.y + b.height) } : { x0: b.x, y0: b.y, x1: b.x + b.width, y1: b.y + b.height };
+          const pad = 44, R = 700 / 420; let w = box.x1 - box.x0 + 2 * pad, h = box.y1 - box.y0 + 2 * pad;
+          if (w / h < R) w = h * R; else h = w / R;
+          w = Math.min(Math.max(w, 330), 900); h = w / R;
+          const cx = (box.x0 + box.x1) / 2, cy = (box.y0 + box.y1) / 2;
+          svg.setAttribute('viewBox', [cx - w / 2, cy - h / 2, w, h].map((v) => v.toFixed(1)).join(' '));
+        } catch (e) { /* svg not displayed yet */ }
+      };
+      new MutationObserver((ms) => { if (ms.every((m) => m.target === svg && m.attributeName === 'viewBox')) return; if (!pending) { pending = true; requestAnimationFrame(apply); } })
+        .observe(svg, { childList: true, subtree: true, attributes: true, characterData: true });
+      document.addEventListener('change', () => { box = null; });
+    }
+  }
+
   function init() {
     build();
+    robotPage();
     if (lang === 'fr') loadDictionaries(startTranslation);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
