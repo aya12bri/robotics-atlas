@@ -6,3 +6,4 @@ skills-lock.json
 .assetsignore
 wrangler.jsonc
 node_modules
+tools

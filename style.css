@@ -563,7 +563,7 @@ details.quiz .q { margin: 0.7rem 0 0.3rem; font-weight: 600; } details.quiz .a {
 @media (max-width: 560px) { .lesson-nav ol { columns: 1; } .lesson { padding: 1.2rem 1.1rem; } .lesson-head h2 { font-size: 1.25rem; } .goal { flex-direction: column; gap: 0.2rem; } }
 
 /* ---- learn: course cards, boxes, equations, figures, widgets ---- */
-.courses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; margin: 1.2rem auto 1.6rem; }
+.courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; margin: 1.2rem auto 1.6rem; }
 .course { position: relative; display: flex; flex-direction: column; gap: 0.2rem; padding: 0.9rem 1.1rem 1.7rem; border-radius: 14px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--text); text-decoration: none; transition: border-color 0.2s, transform 0.2s; }
 .course:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
 .course b { font-family: var(--display); font-stretch: 85%; font-size: 1.1rem; } .course span { color: var(--muted); font-size: 0.85rem; line-height: 1.4; }
