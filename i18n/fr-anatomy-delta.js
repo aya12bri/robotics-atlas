@@ -1,0 +1,28 @@
+// Français — anatomy-delta.html (généré par tools/build-anatomy.mjs)
+RA.add({
+ "me24j7soxg": "Bras 1 (moteur)",
+ "1zh7uiitbq": "Le moteur, fixé sur la plaque supérieure, balance le bras vers le haut et vers le bas. Les trois moteurs sont fixés sur la base : les pièces mobiles sont très légères, c'est pourquoi le Delta est si rapide.",
+ "qnac7eey01": "Bras 2 (moteur)",
+ "gkq5i6zfwf": "Comme le bras 1, 120° plus loin autour de la base. Les trois jambes se résolvent indépendamment.",
+ "b4k59eq7e3": "Bras 3 (moteur)",
+ "1zi4yxznolf": "Pareil, à 240°. Quand les trois moteurs tournent du même angle, l'effecteur monte ou descend en ligne droite.",
+ "4gkud4vjs": "Parallélogrammes (passifs)",
+ "2gd7fsqle3z": "Deux tiges parallèles par bras, avec des rotules aux deux bouts. Elles gardent l'effecteur parallèle à la plaque supérieure : il ne s'incline jamais. Ces liaisons n'ont pas de moteur.",
+ "1p2vhz50n71": "Effecteur",
+ "17dvgrayzex": "La petite plateforme mobile avec l'outil (ici une ventouse). Elle a 3 degrés de liberté : x, y et z. Un quatrième moteur facultatif au centre peut faire tourner l'outil.",
+ "1ykvwzzkh7a": "Anatomie d'un robot Delta (3D)",
+ "murrp4rwtk": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"delta.html\" style=\"color:#ff9f43\">Page du robot Delta</a>",
+ "h1csbxpftu": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "2b15vcuym2x": "Rayons X (intérieur)",
+ "1t4gay0hv3u": "Animer l'axe choisi",
+ "1mq8o3plxrz": "Rotation automatique",
+ "25uumblpfb9": "Centrer l'effecteur (angles égaux)",
+ "2554s8khkhe": "Réinitialiser",
+ "3wdlt8mcgb": "Que contient chaque articulation ?",
+ "x7hoe4ppzx": "<strong>Trois servomoteurs avec réducteurs</strong> sur la plaque supérieure : ils sont fixes, donc seuls les bras légers bougent.",
+ "1t6k9trbgfa": "<strong>Bras et tiges en fibre de carbone</strong> : très légers, donc des accélérations de plusieurs g sont possibles et plus de 100 prises par minute.",
+ "kn2nijwjhh": "<strong>Rotules</strong> aux extrémités des tiges, maintenues par des ressorts : pas de jeu, donc l'effecteur reste rigide.",
+ "1rbqk57plyo": "<strong>Arbre télescopique central</strong> (facultatif, vu aux rayons X) : un quatrième axe qui fait tourner l'outil, entraîné par un moteur sur la plaque supérieure.",
+ "237fp3e4qar": "<strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.",
+ "2b353wowzel": "Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l'intérieur réel dépend de la marque."
+});

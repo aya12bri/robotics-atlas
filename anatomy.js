@@ -14,9 +14,14 @@ const CFG = {
   scara: { n: 4, col: [ALLCOL[0], ALLCOL[1], ALLCOL[3], ALLCOL[5]], lim: [[-130, 130], [-145, 145], [0, 30], [-180, 180]], home: [30, 60, 10, 0], unit: ['°', '°', ' cm', '°'],
     playBase: [30, 60, 15, 0], playAmp: [60, 50, 14, 120], cam: [1.7, 1.4, 1.9], target: [0.45, 0.45, 0], special: [1, 0] },
   cobot: { n: 6, col: ALLCOL, lim: [[-180, 180], [-100, 100], [-150, 150], [-180, 180], [-120, 120], [-180, 180]], home: [0, 30, 40, -90, 90, 0], unit: ['°', '°', '°', '°', '°', '°'],
-    playBase: [0, 30, 40, -90, 60, 0], playAmp: [70, 25, 25, 80, 45, 120], cam: [1.0, 0.75, 1.15], target: [0.28, 0.33, 0], special: [4, 0] }
+    playBase: [0, 30, 40, -90, 60, 0], playAmp: [70, 25, 25, 80, 45, 120], cam: [1.0, 0.75, 1.15], target: [0.28, 0.33, 0], special: [4, 0] },
+  delta: { n: 5, nq: 3, col: ALLCOL.slice(0, 5), lim: [[-25, 75], [-25, 75], [-25, 75]], home: [25, 25, 25], unit: ['°', '°', '°'], dec: 0,
+    playBase: [25, 25, 25], playAmp: [40, 40, 40], cam: [1.35, 0.95, 1.5], target: [0, 0.4, 0], special: [[0, 25], [1, 25], [2, 25]] },
+  mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
+    playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
-const COL = CFG.col, LIM = CFG.lim, N = CFG.n;
+const COL = CFG.col, LIM = CFG.lim, N = CFG.n, NQ = CFG.nq || CFG.n;
+const DEC = CFG.dec || 0;
 const q = CFG.home.slice();
 
 const box = document.getElementById('anatView');
@@ -34,7 +39,7 @@ orbit.enableDamping = true;
 scene.add(new THREE.HemisphereLight('#ffffff', '#4a4a4a', 1.5));
 const sun = new THREE.DirectionalLight('#ffffff', 1.7); sun.position.set(3, 5, 2); scene.add(sun);
 const fill = new THREE.DirectionalLight('#8fb4ff', 0.5); fill.position.set(-3, 2, -3); scene.add(fill);
-scene.add(new THREE.GridHelper(4, 16, '#6a6a6a', '#383838'));
+scene.add(new THREE.GridHelper(CFG.grid || 4, (CFG.grid || 4) * 4, '#6a6a6a', '#383838'));
 
 // ------------------------------------------------------------------ materials and helpers
 const shells = [];                                           // materials that become transparent in X-ray mode
@@ -70,12 +75,13 @@ function controller(parent, pos, rotY) {
 
 // joint rings, rotation / sliding axes and anchors for the labels (filled by the models)
 const rings = [], axes = [], anchors = [];
-function ring(i, parent, pos, axis, r) {
+function ring(i, parent, pos, axis, r, opt) {
+  opt = opt || {};
   const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4 });
   const t = mesh(new THREE.TorusGeometry(r, 0.012, 12, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
-  rings[i] = t;
+  rings[i] = t; if (opt.xray) { t.visible = false; t.userData.xray = true; }
   const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), parent, pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
-  a.visible = false; axes[i] = a;
+  a.visible = false; axes[i] = a; if (opt.noAxis) a.userData.none = true;
   const an = new THREE.Object3D(); an.position.set(...pos); parent.add(an); anchors[i] = an;
 }
 
@@ -192,38 +198,140 @@ function buildCobot() {
   ring(3, g3, [FA, 0, 0], 'z', 0.085); ring(4, g4, [0, -0.109, 0], 'y', 0.085); ring(5, g5, [0, 0, 0.095], 'z', 0.075);
   return () => { g1.rotation.y = q[0] * D2R; g2.rotation.z = -q[1] * D2R; g3.rotation.z = q[2] * D2R; g4.rotation.z = q[3] * D2R; g5.rotation.y = q[4] * D2R; g6.rotation.z = q[5] * D2R; };
 }
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot }[KIND]();
+
+// ------------------------------------------------------------------ model 4: Delta robot (3 arms, parallelograms)
+function buildDelta() {
+  const RB = 0.16, RE = 0.05, LU = 0.28, LF = 0.55, W = 0.07, H = 0.74;
+  const PHI = [0, 120, 240].map((d) => d * D2R);
+  const Uv = (i) => new THREE.Vector3(Math.cos(PHI[i]), 0, Math.sin(PHI[i])), Tv = (i) => new THREE.Vector3(-Math.sin(PHI[i]), 0, Math.cos(PHI[i]));
+  const robot = group(scene);
+  for (let i = 0; i < 3; i++) { const a = PHI[i] + Math.PI / 3; cyl(0.014, H + 0.08, BASE, robot, [0.27 * Math.cos(a), (H + 0.08) / 2, 0.27 * Math.sin(a)]); }
+  mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.025, 3), BASE, robot, [0, H + 0.075, 0], [0, -Math.PI / 2 + 0.0, 0]);
+  cyl(0.05, 0.03, DARK, robot, [0, H + 0.1, 0]);
+  const arms = [], elbowBars = [];
+  for (let i = 0; i < 3; i++) {
+    const leg = group(robot); leg.rotation.y = -PHI[i];
+    cyl(0.048, 0.13, DARK, leg, [RB, H, 0], 'z'); boxm(0.06, 0.07, 0.12, BASE, leg, [RB, H + 0.045, 0]);
+    drive(leg, [RB, H, 0], 'z', 0.04, 0.9);
+    const arm = group(leg, [RB, H, 0]); arms.push(arm);
+    boxm(LU, 0.035, 0.045, ORANGE, arm, [LU / 2, 0, 0]);
+    cyl(0.013, W + 0.03, DARK, arm, [LU, 0, 0], 'z');
+    for (const s of [-1, 1]) mesh(new THREE.SphereGeometry(0.017, 16, 12), SILVER, arm, [LU, 0, s * W / 2]);
+    ring(i, leg, [RB, H, 0], 'z', 0.08);
+  }
+  const rods = []; for (let k = 0; k < 6; k++) rods.push(mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 1, 12), new THREE.MeshStandardMaterial({ color: '#cfd6df', metalness: 0.3, roughness: 0.4 }), robot));
+  const eff = group(robot);
+  mesh(new THREE.CylinderGeometry(RE + 0.02, RE + 0.02, 0.016, 3), ORANGE, eff, [0, 0, 0], [0, -Math.PI / 2, 0]);
+  cyl(0.012, 0.05, SILVER, eff, [0, -0.033, 0]); mesh(new THREE.CylinderGeometry(0.014, 0.03, 0.03, 20), BLACK, eff, [0, -0.07, 0]);
+  const shaft = xr(cyl(0.01, 1, SILVER, robot, [0, 0, 0]));
+  for (let i = 0; i < 3; i++) for (const s of [-1, 1]) mesh(new THREE.SphereGeometry(0.017, 16, 12), SILVER, eff, Uv(i).clone().multiplyScalar(RE).add(Tv(i).clone().multiplyScalar(s * W / 2)).toArray());
+  ring(3, robot, [0, 0, 0], 'y', 0.06, { noAxis: true }); ring(4, eff, [0, 0, 0], 'y', 0.075, { noAxis: true });
+  const ringP = rings[3];
+  const yAxis = new THREE.Vector3(0, 1, 0);
+  const P = new THREE.Vector3(0, H - 0.5, 0), out = { text: '' };
+  const place = (m, A, B) => { const d = B.clone().sub(A), len = d.length(); m.position.copy(A).addScaledVector(d, 0.5); m.scale.set(1, len, 1); m.quaternion.setFromUnitVectors(yAxis, d.normalize()); };
+  function pose() {
+    const E = [], C = [];
+    for (let i = 0; i < 3; i++) { const th = q[i] * D2R; arms[i].rotation.z = -th; const e = Uv(i).clone().multiplyScalar(RB + LU * Math.cos(th)); e.y = H - LU * Math.sin(th); E.push(e); C.push(e.clone().addScaledVector(Uv(i), -RE)); }
+    // trilateration of the three spheres (centres C, radius LF): the effector is the lower intersection
+    const ex = C[1].clone().sub(C[0]), d = ex.length(); ex.normalize();
+    const t3 = C[2].clone().sub(C[0]), ii = ex.dot(t3), ey = t3.clone().addScaledVector(ex, -ii), j = ey.length(); ey.normalize();
+    const ez = new THREE.Vector3().crossVectors(ex, ey);
+    const x = d / 2, y = (ii * ii + j * j) / (2 * j) - (ii / j) * x, zz = LF * LF - x * x - y * y;
+    if (zz >= 0) {
+      const z = Math.sqrt(zz), a = C[0].clone().addScaledVector(ex, x).addScaledVector(ey, y), p1 = a.clone().addScaledVector(ez, z), p2 = a.clone().addScaledVector(ez, -z);
+      P.copy(p1.y < p2.y ? p1 : p2);
+    }
+    eff.position.copy(P); shaft.visible = xray; place(shaft, new THREE.Vector3(0, H + 0.1, 0), P);
+    for (let i = 0; i < 3; i++) for (let k = 0; k < 2; k++) { const s = k ? 1 : -1, off = Tv(i).clone().multiplyScalar(s * W / 2); place(rods[i * 2 + k], E[i].clone().add(off), P.clone().addScaledVector(Uv(i), RE).add(off)); }
+    const mid = E[0].clone().add(P.clone().addScaledVector(Uv(0), RE)).multiplyScalar(0.5); ringP.position.copy(mid); anchors[3].position.copy(mid); ringP.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), P.clone().addScaledVector(Uv(0), RE).sub(E[0]).normalize());
+    out.text = L('effector: x = ', 'effecteur : x = ') + Math.round(P.x * 1000) + ' mm, z = ' + Math.round(P.z * 1000) + ' mm, ' + L('height below the plate = ', 'hauteur sous la plaque = ') + Math.round((H - P.y) * 1000) + ' mm';
+  }
+  pose.readout = () => out.text;
+  return pose;
+}
+
+// ------------------------------------------------------------------ model 5: differential-drive mobile robot
+function buildMobile() {
+  const R = 0.07, TR = 0.40;
+  const robot = group(scene), body = group(robot);
+  boxm(0.46, 0.07, 0.32, ORANGE, body, [0, 0.105, 0]); boxm(0.40, 0.02, 0.30, DARK, body, [0, 0.15, 0]); boxm(0.02, 0.05, 0.30, DARK, body, [0.24, 0.1, 0]);
+  cyl(0.012, 0.07, DARK, body, [0.05, 0.195, 0]);
+  const lid = group(body, [0.05, 0.24, 0]); cyl(0.045, 0.045, DARK, lid, [0, 0, 0]); cyl(0.047, 0.012, SILVER, lid, [0, 0.015, 0]); boxm(0.02, 0.02, 0.03, ORANGE, lid, [0.04, 0, 0]);
+  xr(boxm(0.20, 0.05, 0.16, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), body, [-0.05, 0.09, 0]));
+  xr(boxm(0.18, 0.012, 0.12, new THREE.MeshStandardMaterial({ color: '#1f8f4a' }), body, [0.09, 0.138, 0]));
+  for (let i = 0; i < 6; i++) xr(boxm(0.03, 0.014, 0.025, i % 2 ? BLACK : SILVER, body, [0.04 + (i % 3) * 0.05, 0.146, -0.03 + Math.floor(i / 3) * 0.06]));
+  for (const s of [-1, 1]) { drive(body, [0, 0.085, s * 0.115], 'z', 0.03, 0.8); xr(cyl(0.028, 0.008, SILVER, body, [0, 0.085, s * 0.07], 'z')); }
+  cable(body, [[-0.1, 0.1, 0.0], [0.0, 0.13, 0.05], [0.1, 0.14, 0.04]], 0.006); cable(body, [[0.05, 0.14, 0.0], [0.05, 0.19, 0.0], [0.05, 0.23, 0.0]], 0.006);
+  const mkWheel = (z) => { const g = group(robot, [0, R, z]); cyl(R, 0.04, BLACK, g, [0, 0, 0], 'z'); cyl(0.045, 0.044, SILVER, g, [0, 0, 0], 'z');
+    for (let k = 0; k < 5; k++) { const sp = boxm(0.07, 0.012, 0.046, DARK, g, [0, 0, 0]); sp.rotation.z = k * Math.PI / 5; } return g; };
+  const wl = mkWheel(-TR / 2), wr = mkWheel(TR / 2);
+  mesh(new THREE.SphereGeometry(0.035, 20, 16), SILVER, robot, [-0.19, 0.035, 0]); cyl(0.012, 0.04, DARK, robot, [-0.19, 0.07, 0]);
+  ring(0, robot, [0, R, -TR / 2], 'z', 0.1); ring(1, robot, [0, R, TR / 2], 'z', 0.1);
+  ring(2, robot, [-0.19, 0.04, 0], 'y', 0.06, { noAxis: true }); ring(3, body, [0.05, 0.24, 0], 'y', 0.075, { noAxis: true });
+  ring(4, body, [-0.05, 0.09, 0], 'y', 0.13, { noAxis: true, xray: true }); ring(5, body, [0.09, 0.138, 0], 'y', 0.11, { noAxis: true, xray: true });
+  const trail = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: '#ff9f43' })); scene.add(trail);
+  const pts = []; let acc = 0;
+  const st = { x: 0, z: 0, th: 0, wl: 0, wr: 0 };
+  const info = { text: '' };
+  const prev = new THREE.Vector3();
+  function pose() { robot.position.set(st.x, 0, st.z); robot.rotation.y = st.th; wl.rotation.z = -st.wl; wr.rotation.z = -st.wr; }
+  pose.tick = (dt) => {
+    const wL = q[0], wR = q[1], v = R * (wL + wR) / 2, om = R * (wR - wL) / TR;
+    st.wl += wL * dt; st.wr += wR * dt; prev.copy(robot.position);
+    st.th += om * dt; st.x += v * Math.cos(st.th) * dt; st.z -= v * Math.sin(st.th) * dt;
+    pose(); lid.rotation.y += 6 * dt;
+    const dp = robot.position.clone().sub(prev); camera.position.add(dp); orbit.target.add(dp);
+    acc += dt; if (acc > 0.05 && (Math.abs(v) > 1e-3 || Math.abs(om) > 1e-3)) { acc = 0; pts.push(st.x, 0.004, st.z); if (pts.length > 3 * 1500) pts.splice(0, 3); trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); trail.geometry.computeBoundingSphere(); }
+    const rad = Math.abs(wR - wL) < 1e-6 ? '∞' : (TR / 2 * (wL + wR) / (wR - wL)).toFixed(2) + ' m';
+    info.text = 'v = ' + v.toFixed(2) + ' m/s, ω = ' + om.toFixed(2) + ' rad/s, ' + L('turning radius = ', 'rayon de virage = ') + rad;
+  };
+  pose.reset = () => { st.x = st.z = st.th = 0; pts.length = 0; trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3)); pose(); };
+  pose.readout = () => info.text;
+  return pose;
+}
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile }[KIND]();
 
 // ------------------------------------------------------------------ interface
-let sel = -1, xray = false, spin = false, play = false, t0 = 0;
-const tags = COL.map((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'antag'; b.textContent = 'J' + (i + 1); b.style.background = c; b.setAttribute('aria-label', 'J' + (i + 1)); b.addEventListener('click', () => select(i === sel ? -1 : i)); box.appendChild(b); return b; });
+let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
 const cards = [].slice.call(document.querySelectorAll('.ancard'));
-const sliders = cards.map((c, i) => { const s = c.querySelector('input[type=range]'); s.min = LIM[i][0]; s.max = LIM[i][1]; s.value = q[i]; const o = c.querySelector('output'); const show = () => { o.textContent = Math.round(q[i]) + CFG.unit[i]; }; show(); s.addEventListener('input', () => { q[i] = +s.value; show(); pose(); select(i); play = false; syncBtn(); }); c._show = show; return s; });
+const tags = cards.map((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'antag'; const lab = c.querySelector('.ann').textContent; b.textContent = lab; b.style.background = COL[i]; b.setAttribute('aria-label', lab); b.addEventListener('click', () => select(i === sel ? -1 : i)); box.appendChild(b); return b; });
+const sliders = cards.map((c, i) => { const s = c.querySelector('input[type=range]'); if (!s) { c.classList.add('info'); return null; } s.min = LIM[i][0]; s.max = LIM[i][1]; s.step = CFG.step || 1; s.value = q[i]; const o = c.querySelector('output'); const show = () => { o.textContent = q[i].toFixed(DEC) + CFG.unit[i]; }; show(); s.addEventListener('input', () => { q[i] = +s.value; show(); pose(); select(i); play = false; syncBtn(); }); c._show = show; return s; });
 cards.forEach((c, i) => c.querySelector('.anhead').addEventListener('click', () => select(i === sel ? -1 : i)));
+const readout = document.createElement('div'); readout.className = 'anout'; box.appendChild(readout);
 function select(i) {
   sel = i;
   cards.forEach((c, k) => c.classList.toggle('on', k === i)); tags.forEach((t, k) => t.classList.toggle('on', k === i));
   rings.forEach((r, k) => { r.material.emissiveIntensity = k === i ? 1.4 : 0.35; r.scale.setScalar(k === i ? 1.12 : 1); });
-  axes.forEach((a, k) => { a.visible = k === i; });
+  axes.forEach((a, k) => { a.visible = k === i && !a.userData.none; });
+  if (i >= 0 && rings[i] && rings[i].userData.xray && !xray) setXray(true);
 }
 const $ = (id) => document.getElementById(id);
 function setXray(on) {
   xray = on; shells.forEach((m) => { m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; });
-  inner.forEach((m) => { m.visible = on; }); $('xrayBtn').classList.toggle('on', on); $('xrayBtn').setAttribute('aria-pressed', on);
+  inner.forEach((m) => { m.visible = on; }); rings.forEach((r) => { if (r.userData.xray) r.visible = on; });
+  $('xrayBtn').classList.toggle('on', on); $('xrayBtn').setAttribute('aria-pressed', on);
 }
 function syncBtn() { $('playBtn').classList.toggle('on', play); $('playBtn').setAttribute('aria-pressed', play); $('spinBtn').classList.toggle('on', spin); $('spinBtn').setAttribute('aria-pressed', spin); }
+function setQ(i, v) { q[i] = v; if (sliders[i]) { sliders[i].value = v; cards[i]._show(); } }
 $('xrayBtn').addEventListener('click', () => setXray(!xray));
 $('spinBtn').addEventListener('click', () => { spin = !spin; syncBtn(); });
-$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0) select(0); syncBtn(); });
-$('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => { q[i] = v; sliders[i].value = v; cards[i]._show(); }); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
-$('wristBtn').addEventListener('click', () => { const [i, v] = CFG.special; q[i] = v; sliders[i].value = v; cards[i]._show(); pose(); select(i); play = false; syncBtn(); });
+$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn) select(0); syncBtn(); });
+$('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
+$('wristBtn').addEventListener('click', () => { const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); select(sp[0][0]); play = false; syncBtn(); });
 
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);
 const v = new THREE.Vector3();
 function loop(now) {
   requestAnimationFrame(loop);
-  if (play && sel >= 0) { q[sel] = CFG.playBase[sel] + CFG.playAmp[sel] * Math.sin((now - t0) / 700); sliders[sel].value = q[sel]; cards[sel]._show(); pose(); }
+  const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
+  if (play) {
+    if (CFG.playFn) CFG.playFn(now).forEach((val, i) => setQ(i, val));
+    else if (sel >= 0 && sel < NQ) setQ(sel, CFG.playBase[sel] + CFG.playAmp[sel] * Math.sin((now - t0) / 700));
+  }
+  if (pose.tick) pose.tick(dt); else if (play) pose();
+  if (pose.readout) readout.textContent = pose.readout();
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
   renderer.render(scene, camera);
   const w = box.clientWidth, h = box.clientHeight;

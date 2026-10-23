@@ -66,6 +66,47 @@ const ROBOTS = {
       ['<strong>Cables</strong> run inside the tubes, with the controller in a separate box connected by one cable.', 'Les <strong>câbles</strong> passent dans les tubes, avec le contrôleur dans un boîtier séparé relié par un seul câble.'],
       ['<strong>Rounded shapes, light weight, limited force</strong>: made to work next to people (see “How a cobot stays safe”).', '<strong>Formes arrondies, poids faible, force limitée</strong> : fait pour travailler à côté des personnes (voir « Comment un cobot reste sûr »).']
     ]
+  },
+  delta: {
+    file: 'anatomy-delta', robotPage: 'delta', before: '<h2>Serial robot or parallel robot?</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
+    title: ['Anatomy of a Delta robot (3D)', 'Anatomie d\'un robot Delta (3D)'], back: ['Delta robot page', 'Page du robot Delta'],
+    special: ['Centre the effector (equal angles)', 'Centrer l\'effecteur (angles égaux)'],
+    note: ['The motor angles θ are measured as on the Delta page: 0° when the upper arm is horizontal, positive downward. The effector position is computed live from the three angles (forward kinematics). The model is simplified: the real inside depends on the make.', 'Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l\'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
+    joints: [
+      ['Arm 1 (motor)', 'Bras 1 (moteur)', 'The motor, fixed on the top plate, swings the upper arm up and down. All three motors are fixed on the base: the moving parts are very light, which is why the Delta is so fast.', 'Le moteur, fixé sur la plaque supérieure, balance le bras vers le haut et vers le bas. Les trois moteurs sont fixés sur la base : les pièces mobiles sont très légères, c\'est pourquoi le Delta est si rapide.'],
+      ['Arm 2 (motor)', 'Bras 2 (moteur)', 'Same as arm 1, 120° further around the base. The three legs are solved independently.', 'Comme le bras 1, 120° plus loin autour de la base. Les trois jambes se résolvent indépendamment.'],
+      ['Arm 3 (motor)', 'Bras 3 (moteur)', 'Same, at 240°. When the three motors turn together by the same angle, the effector goes straight up or down.', 'Pareil, à 240°. Quand les trois moteurs tournent du même angle, l\'effecteur monte ou descend en ligne droite.'],
+      ['Parallelograms (passive)', 'Parallélogrammes (passifs)', 'Two parallel rods per arm, with ball joints at both ends. They keep the effector parallel to the top plate: it never tilts. These joints have no motor.', 'Deux tiges parallèles par bras, avec des rotules aux deux bouts. Elles gardent l\'effecteur parallèle à la plaque supérieure : il ne s\'incline jamais. Ces liaisons n\'ont pas de moteur.', false],
+      ['Effector', 'Effecteur', 'The small moving platform with the tool (here a suction cup). It has 3 degrees of freedom: x, y and z. An optional fourth motor in the centre can turn the tool.', 'La petite plateforme mobile avec l\'outil (ici une ventouse). Elle a 3 degrés de liberté : x, y et z. Un quatrième moteur facultatif au centre peut faire tourner l\'outil.', false]
+    ],
+    inside: [
+      ['<strong>Three servo motors with gearboxes</strong> on the top plate: they are fixed, so only the light arms move.', '<strong>Trois servomoteurs avec réducteurs</strong> sur la plaque supérieure : ils sont fixes, donc seuls les bras légers bougent.'],
+      ['<strong>Carbon-fibre arms and rods</strong>: very light, so accelerations of several g are possible and more than 100 picks per minute.', '<strong>Bras et tiges en fibre de carbone</strong> : très légers, donc des accélérations de plusieurs g sont possibles et plus de 100 prises par minute.'],
+      ['<strong>Ball joints</strong> at the ends of the rods, held by springs: no play, so the effector stays rigid.', '<strong>Rotules</strong> aux extrémités des tiges, maintenues par des ressorts : pas de jeu, donc l\'effecteur reste rigide.'],
+      ['<strong>Central telescopic shaft</strong> (optional, seen in X-ray): a fourth axis that turns the tool, driven by a motor on the top plate.', '<strong>Arbre télescopique central</strong> (facultatif, vu aux rayons X) : un quatrième axe qui fait tourner l\'outil, entraîné par un moteur sur la plaque supérieure.'],
+      ['<strong>Controller and camera</strong>: usually a vision system above the conveyor tells the robot where each product is.', '<strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.']
+    ]
+  },
+  mobile: {
+    file: 'anatomy-mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], back: ['Mobile robot page', 'Page du robot mobile'],
+    special: ['Spin on the spot', 'Tourner sur place'],
+    note: ['The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.', 'Les vitesses des roues sont en rad/s : v = r (ωG + ωD) / 2 et ω = r (ωD − ωG) / L, avec r = 0,07 m et L = 0,40 m comme sur la page du robot mobile. La ligne orange est le chemin parcouru par le robot (odométrie). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
+    joints: [
+      ['Left wheel and motor', 'Roue gauche et moteur', 'A gear motor turns the left wheel. The slider sets its speed (positive = forward). Its encoder measures the real speed.', 'Un motoréducteur fait tourner la roue gauche. Le curseur règle sa vitesse (positif = vers l\'avant). Son codeur mesure la vitesse réelle.'],
+      ['Right wheel and motor', 'Roue droite et moteur', 'Same on the right. If the right wheel is faster, the robot turns left; with opposite speeds it spins on the spot.', 'Pareil à droite. Si la roue droite est plus rapide, le robot tourne à gauche ; avec des vitesses opposées il tourne sur place.'],
+      ['Caster wheel', 'Roue folle', 'A free ball or swivel wheel with no motor: a third support point so the robot does not tip over.', 'Une bille ou une roue pivotante libre, sans moteur : un troisième point d\'appui pour que le robot ne bascule pas.', false],
+      ['Lidar and sensors', 'Lidar et capteurs', 'The lidar (a rotating laser) measures distances all around to see obstacles and build a map. The front bumper and an IMU (gyroscope) complete the sensors.', 'Le lidar (un laser rotatif) mesure les distances tout autour pour voir les obstacles et construire une carte. Le pare-chocs avant et une centrale inertielle (gyroscope) complètent les capteurs.', false],
+      ['Battery', 'Batterie', 'The heaviest part: it sits low, between the wheels, to keep the robot stable. Its capacity sets the autonomy. Seen in X-ray.', 'La partie la plus lourde : elle est placée bas, entre les roues, pour garder le robot stable. Sa capacité fixe l\'autonomie. Visible aux rayons X.', false],
+      ['Controller', 'Contrôleur', 'A microcontroller runs the fast loops (PID on the wheel speeds, using the encoders) and a small computer runs navigation and mapping. Seen in X-ray.', 'Un microcontrôleur exécute les boucles rapides (PID sur les vitesses des roues, avec les codeurs) et un petit ordinateur exécute la navigation et la cartographie. Visible aux rayons X.', false]
+    ],
+    inside: [
+      ['<strong>Two gear motors with encoders</strong>: the encoders measure each wheel speed for the PID loops and for the odometry (which drifts, see the course on perception).', '<strong>Deux motoréducteurs avec codeurs</strong> : les codeurs mesurent la vitesse de chaque roue pour les boucles PID et pour l\'odométrie (qui dérive, voir le cours sur la perception).'],
+      ['<strong>Caster</strong>: a free wheel, the third point of support.', '<strong>Roue folle</strong> : une roue libre, le troisième point d\'appui.'],
+      ['<strong>Battery</strong> placed low, and <strong>motor drivers</strong> (H-bridges) that turn the controller commands into motor current.', '<strong>Batterie</strong> placée bas, et <strong>variateurs de moteurs</strong> (ponts en H) qui transforment les ordres du contrôleur en courant moteur.'],
+      ['<strong>Small computer</strong> (single-board) for navigation, mapping and communication, for example with ROS 2.', '<strong>Petit ordinateur</strong> (monocarte) pour la navigation, la cartographie et la communication, par exemple avec ROS 2.'],
+      ['<strong>Sensors</strong>: lidar for obstacles and maps, bumpers and cliff sensors for safety, IMU for the heading.', '<strong>Capteurs</strong> : lidar pour les obstacles et les cartes, pare-chocs et capteurs de vide pour la sécurité, centrale inertielle pour le cap.']
+    ]
   }
 };
 
@@ -80,7 +121,7 @@ const NOTE = ['The angles of this 3D model are those of the drawing, with a zero
 
 for (const [key, R] of Object.entries(ROBOTS)) {
   reset();
-  const cards = R.joints.map((j, i) => `<div class="ancard" style="--c:${R.cols[i]}"><button type="button" class="anhead"><span class="ann">J${i + 1}</span><b>${tx(j[0], j[1])}</b></button><p>${tx(j[2], j[3])}</p><label class="ansl"><input type="range" step="1" aria-label="J${i + 1}"><output></output></label></div>`).join('\n        ');
+  const cards = R.joints.map((j, i) => { const lab = R.labels ? R.labels[i] : 'J' + (i + 1); return `<div class="ancard" style="--c:${R.cols[i]}"><button type="button" class="anhead"><span class="ann">${lab}</span><b>${tx(j[0], j[1])}</b></button><p>${tx(j[2], j[3])}</p>${j[4] === false ? '' : `<label class="ansl"><input type="range" step="1" aria-label="${lab}"><output></output></label>`}</div>`; }).join('\n        ');
   const html = `<!DOCTYPE html>
 <html>
   <head>
@@ -102,6 +143,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
       .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
       .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
       @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
     </style>
@@ -130,7 +172,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     </div>
     <h2>${tx('What is inside each joint?', 'Que contient chaque articulation ?')}</h2>
     ${UL(R.inside)}
-    ${P(...NOTE)}
+    ${P(...(R.note || NOTE))}
     <script type="module" src="anatomy.js"></script>
   </body>
 </html>
