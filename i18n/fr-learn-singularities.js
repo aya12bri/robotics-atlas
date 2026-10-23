@@ -428,6 +428,7 @@ RA.add({
  "2f72ohy0q63": "Les deux à la fois : seulement dans des architectures particulières.",
  "8tpr6coj99": "Géométries particulières.",
  "15es9o3o8b7": "C'est un miroir du cas série : pour un robot série, la pose singulière perd une direction d'outil (type 1) ; un robot parallèle a ce problème <em>et</em> le problème inverse. C'est pourquoi un robot parallèle est toujours conçu avec une carte de son espace de travail sans singularités, et pourquoi le volume utile d'un robot Delta est un petit dôme par rapport à la taille de son bâti.",
+ "v96kcdnd6v": "Voir une plateforme de Stewart en 3D : changez sa pose et regardez les six longueurs de vérins →",
  "1xbbj789o13": "8.5 L'aide-mémoire",
  "1oqllywyjwo": "Cause probable",
  "6s9ix47mcp": "Premier remède",
