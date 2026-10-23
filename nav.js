@@ -18,6 +18,16 @@
     ['mobile.html',     { en: 'Mobile robot',             fr: 'Robot mobile' },             '2 wheels / roues'],
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];
+  // the 3D "anatomy" pages (in the menu, not in the previous / next pager)
+  const ANATOMY = [
+    ['anatomy.html',         { en: '6-axis industrial robot',  fr: 'Robot industriel 6 axes' }],
+    ['anatomy-scara.html',   { en: 'SCARA',                    fr: 'SCARA' }],
+    ['anatomy-cobot.html',   { en: 'Collaborative robot',      fr: 'Robot collaboratif' }],
+    ['anatomy-delta.html',   { en: 'Delta robot',              fr: 'Robot Delta' }],
+    ['anatomy-gantry.html',  { en: 'Cartesian gantry',         fr: 'Robot cartésien' }],
+    ['anatomy-mobile.html',  { en: 'Mobile robot',             fr: 'Robot mobile' }],
+    ['anatomy-wheels.html',  { en: 'Wheels',                   fr: 'Roues' }]
+  ];
   const SOCIAL = [
     ['LinkedIn', 'https://www.linkedin.com/in/aya-briksine/', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>'],
     ['GitHub', 'https://github.com/aya12bri', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>'],
@@ -26,9 +36,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', anatomy: 'Anatomy in 3D' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', anatomy: 'Anatomie en 3D' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -191,7 +201,7 @@
       (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#start">${ui.secRoad}</a>` + link('learn.html', ui.learn) : link('index.html', ui.home) + link('learn.html', ui.learn) + `<a href="index.html#start">${ui.start}</a>`) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
       '<div class="nav-r">' +
       `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
-      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + '</div></div>' +
+      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>' +
       '<div class="nav-tools">' +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
       `<button class="icon-btn theme-btn" type="button" aria-label="${ui.theme}" title="${ui.theme}"></button>` +

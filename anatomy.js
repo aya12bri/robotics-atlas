@@ -17,6 +17,10 @@ const CFG = {
     playBase: [0, 30, 40, -90, 60, 0], playAmp: [70, 25, 25, 80, 45, 120], cam: [1.0, 0.75, 1.15], target: [0.28, 0.33, 0], special: [4, 0] },
   delta: { n: 5, nq: 3, col: ALLCOL.slice(0, 5), lim: [[-25, 75], [-25, 75], [-25, 75]], home: [25, 25, 25], unit: ['°', '°', '°'], dec: 0,
     playBase: [25, 25, 25], playAmp: [40, 40, 40], cam: [1.35, 0.95, 1.5], target: [0, 0.4, 0], special: [[0, 25], [1, 25], [2, 25]] },
+  gantry: { n: 5, nq: 3, col: ALLCOL.slice(0, 5), lim: [[0, 100], [0, 80], [0, 45]], home: [50, 40, 20], unit: [' cm', ' cm', ' cm'], dec: 0,
+    playBase: [50, 40, 22], playAmp: [45, 35, 20], cam: [2.3, 1.5, 1.7], target: [0.5, 0.5, -0.4], special: [[0, 100], [1, 80], [2, 45]] },
+  wheels: { n: 7, nq: 3, col: [...ALLCOL, '#f1c40f'], lim: [[-12, 12], [-90, 90], [-90, 90]], home: [4, 0, 0], unit: [' rad/s', '°', '°'], dec: 0, grid: 10,
+    playBase: [4, 0, 0], playAmp: [8, 70, 70], cam: [0.5, 1.8, 3.9], target: [0, 0.3, 0], special: [[1, 90], [2, 90]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -80,7 +84,7 @@ function ring(i, parent, pos, axis, r, opt) {
   const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4 });
   const t = mesh(new THREE.TorusGeometry(r, 0.012, 12, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
   rings[i] = t; if (opt.xray) { t.visible = false; t.userData.xray = true; }
-  const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), parent, pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
+  const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, opt.len || 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), opt.axisParent || parent, opt.axisPos || pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
   a.visible = false; axes[i] = a; if (opt.noAxis) a.userData.none = true;
   const an = new THREE.Object3D(); an.position.set(...pos); parent.add(an); anchors[i] = an;
 }
@@ -290,7 +294,120 @@ function buildMobile() {
   pose.readout = () => info.text;
   return pose;
 }
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile }[KIND]();
+
+// ------------------------------------------------------------------ model 6: Cartesian gantry (P-P-P)
+function buildGantry() {
+  const ZH = 0.95, XA = -0.1, XB = 1.1, ZA = 0.05, ZB = -0.85;           // frame height, rail ends, rail positions (scene z = -y)
+  const robot = group(scene);
+  for (const x of [XA, XB]) for (const z of [ZA, ZB]) { cyl(0.025, ZH, BASE, robot, [x, ZH / 2, z]); boxm(0.14, 0.02, 0.14, DARK, robot, [x, 0.01, z]); }
+  for (const z of [ZA, ZB]) { boxm(XB - XA + 0.05, 0.05, 0.05, BASE, robot, [(XA + XB) / 2, ZH, z]); xr(boxm(XB - XA, 0.006, 0.012, BLACK, robot, [(XA + XB) / 2, ZH + 0.03, z + (z > -0.4 ? -0.015 : 0.015)])); }
+  boxm(0.5, 0.55, 0.3, DARK, robot, [XB + 0.4, 0.275, ZB + 0.15]);       // the controller cabinet
+  xr(boxm(0.2, 0.26, 0.012, new THREE.MeshStandardMaterial({ color: '#1f8f4a' }), robot, [XB + 0.4, 0.3, ZB + 0.31]));
+  drive(robot, [XA - 0.06, ZH, ZA], 'x', 0.04, 0.9);
+  cable(robot, [[XB + 0.2, 0.3, ZB + 0.1], [XB + 0.1, 0.1, ZB + 0.05], [XB, ZH - 0.2, ZB + 0.02], [XB, ZH + 0.02, ZB + 0.02]], 0.007);
+  const gX = group(robot, [0.5, ZH, 0]);                                 // J1: the bridge moves along X
+  for (const z of [ZA, ZB]) { boxm(0.1, 0.09, 0.09, ORANGE, gX, [0, 0, z]); xr(boxm(0.1, 0.02, 0.02, SILVER, gX, [0, 0.055, z])); }
+  const BL = ZA - ZB;
+  boxm(0.07, 0.09, BL, ORANGE, gX, [0, -0.02, (ZA + ZB) / 2]);
+  drive(gX, [0, 0.07, ZB + 0.1], 'z', 0.04, 0.9);
+  xr(boxm(0.012, 0.006, BL, BLACK, gX, [0, 0.03, (ZA + ZB) / 2]));
+  const gY = group(gX, [0, -0.02, -0.4]);                                // J2: the carriage moves along the bridge
+  boxm(0.17, 0.1, 0.14, DARK, gY, [0, -0.07, 0]);
+  drive(gY, [0.0, 0.06, 0.0], 'y', 0.04, 0.8);
+  cable(gY, [[0.07, 0.0, -0.03], [0.2, 0.0, -0.1], [0.28, -0.05, -0.3]], 0.006);
+  const gZ = group(gY, [0, 0.02 - 0.2, 0]);                                    // J3: the vertical axis moves down
+  cyl(0.026, 0.55, SILVER, gZ, [0, 0.275, 0]);
+  xr(cyl(0.01, 0.5, COPPER, gZ, [0, 0.275, 0]));                          // the ball screw
+  cyl(0.04, 0.03, DARK, gZ, [0, -0.015, 0]);
+  boxm(0.14, 0.03, 0.05, DARK, gZ, [0, -0.045, 0]);
+  for (const s of [-1, 1]) boxm(0.018, 0.1, 0.04, DARK, gZ, [s * 0.06, -0.1, 0]);
+  ring(0, gX, [0, 0, ZA], 'x', 0.07, { axisParent: robot, axisPos: [0.5, ZH, ZA], len: 1.3 });
+  ring(1, gY, [0, -0.02, 0], 'z', 0.09, { axisParent: gX, axisPos: [0, -0.02, -0.4], len: 1.1 });
+  ring(2, gY, [0, -0.17, 0], 'y', 0.05, { axisParent: gY, axisPos: [0, -0.5, 0], len: 0.85 });
+  ring(3, robot, [XA, 0.25, ZA], 'y', 0.07, { noAxis: true }); ring(4, gZ, [0, -0.08, 0], 'y', 0.09, { noAxis: true });
+  const info = { text: '' };
+  function pose() {
+    gX.position.x = q[0] / 100; gY.position.z = -q[1] / 100; gZ.position.y = 0.02 - q[2] / 100;
+    info.text = L('tool: x = ', 'outil : x = ') + Math.round(q[0]) + ' cm, y = ' + Math.round(q[1]) + ' cm, ' + L('height above the floor = ', 'hauteur au-dessus du sol = ') + Math.round((ZH - 0.15 - q[2] / 100) * 100) + ' cm';
+  }
+  pose.readout = () => info.text;
+  return pose;
+}
+
+
+// ------------------------------------------------------------------ model 7: a showroom of seven wheel types
+function buildWheels() {
+  const R = 0.15, W = 0.06, SP = 0.78, X0 = -3 * SP;
+  const slot = (k) => { const g = group(scene, k < 4 ? [(k - 1.5) * 0.78, 0, 0.5] : [(k - 5) * 0.78, 0, -0.5]); boxm(0.64, 0.01, 0.4, DARK, g, [0, 0.005, 0]); return g; };
+  const spinners = [], trackers = [];
+  const tire = (parent, pos, r, w) => {
+    const g = group(parent, pos);
+    cyl(r, w, BLACK, g, [0, 0, 0], 'z'); cyl(r * 0.68, w * 1.05, SILVER, g, [0, 0, 0], 'z'); cyl(r * 0.28, w * 1.2, ORANGE, g, [0, 0, 0], 'z');
+    for (let i = 0; i < 5; i++) { const sp = boxm(r * 1.2, r * 0.12, w * 0.9, DARK, g, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; }
+    xr(mesh(new THREE.TorusGeometry(r * 0.3, 0.008, 8, 24), SILVER, g, [0, 0, w * 0.58]));          // bearing
+    const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(r * 0.22, w * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(r * 0.12, w * 1.9, COPPER, m, [0, 0, 0]));   // hub motor
+    return g;
+  };
+  const fork = (parent, r, w, h) => { for (const s of [-1, 1]) boxm(0.012, h, r * 0.5, DARK, parent, [0, r + (h - r) / 2, s * (w / 2 + 0.014)]); boxm(r * 0.5, 0.012, w + 0.05, DARK, parent, [0, r + (h - r) + 0.006, 0]); };
+  const plate = (parent, y) => boxm(0.34, 0.025, 0.3, BASE, parent, [0, y, 0]);
+  // 0: fixed wheel
+  const s0 = slot(0); const w0 = tire(s0, [0, R, 0], R, W); fork(s0, R, W, R * 2 + 0.1); plate(s0, R * 2 + 0.12); spinners.push(w0);
+  ring(0, s0, [0, R, 0], 'z', R + 0.05, { noAxis: true });
+  // 1: castor
+  const s1 = slot(1); boxm(0.3, 0.025, 0.3, BASE, s1, [0, 0.4, 0]); cyl(0.03, 0.12, SILVER, s1, [0, 0.33, 0]);
+  xr(mesh(new THREE.TorusGeometry(0.05, 0.012, 8, 24), SILVER, s1, [0, 0.3, 0], [Math.PI / 2, 0, 0]));
+  const sw1 = group(s1, [0, 0.28, 0]); boxm(0.14, 0.02, 0.06, DARK, sw1, [-0.05, 0, 0]);
+  const gg = group(sw1, [0, -0.28, 0]), w1 = tire(gg, [-0.1, 0.1, 0], 0.1, 0.045); fork(group(gg, [-0.1, 0, 0]), 0.1, 0.045, 0.26); spinners.push(w1);
+  ring(1, s1, [0, 0.28, 0], 'y', 0.09, { len: 0.5, axisPos: [0, 0.3, 0] });
+  // 2: steered drive wheel
+  const s2 = slot(2); boxm(0.3, 0.025, 0.3, BASE, s2, [0, 0.62, 0]); cyl(0.07, 0.08, BLUE, s2, [0, 0.69, 0]);
+  xr(cyl(0.05, 0.12, MOTOR, s2, [0, 0.74, 0])); xr(cyl(0.065, 0.015, SILVER, s2, [0, 0.62, 0]));
+  const sw2 = group(s2, [0, 0, 0]); const w2 = tire(sw2, [0, R, 0], R, W); fork(sw2, R, W, R * 2 + 0.1); boxm(0.06, 0.2, 0.06, DARK, sw2, [0, 0.5, 0]); cyl(0.04, 0.05, ORANGE, sw2, [0, 0.52, 0]); spinners.push(w2);
+  ring(2, s2, [0, 0.6, 0], 'y', 0.1, { len: 0.7, axisPos: [0, 0.4, 0] });
+  // 3, 4: omni and mecanum wheels (free rollers around the rim)
+  const rollerWheel = (k, tilt) => {
+    const sl = slot(k), g = group(sl, [0, R, 0]), N = 12;
+    cyl(R * 0.72, W * 1.1, SILVER, g, [0, 0, 0], 'z'); cyl(R * 0.25, W * 1.3, ORANGE, g, [0, 0, 0], 'z');
+    const Y = new THREE.Vector3(0, 1, 0), rolls = [];
+    for (let i = 0; i < N; i++) {
+      const a = i / N * Math.PI * 2, tg = new THREE.Vector3(-Math.sin(a), Math.cos(a), 0), ax = tilt ? tg.clone().multiplyScalar(Math.cos(Math.PI / 4)).add(new THREE.Vector3(0, 0, Math.sin(Math.PI / 4))).normalize() : tg;
+      const r = mesh(new THREE.CapsuleGeometry(0.027, tilt ? 0.05 : 0.035, 6, 14), BLACK, g, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0]); r.quaternion.setFromUnitVectors(Y, ax); rolls.push(r);
+      xr(mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.09, 8), SILVER, g, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0])).quaternion.setFromUnitVectors(Y, ax);
+    }
+    const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(R * 0.2, W * 1.6, MOTOR, m, [0, 0, 0]));
+    fork(sl, R, W, R * 2 + 0.1); plate(sl, R * 2 + 0.12); spinners.push(g); return sl;
+  };
+  const s3 = rollerWheel(3, false), s4 = rollerWheel(4, true);
+  ring(3, s3, [0, R, 0], 'z', R + 0.05, { noAxis: true }); ring(4, s4, [0, R, 0], 'z', R + 0.05, { noAxis: true });
+  // 5: ball wheel
+  const s5 = slot(5), tc = document.createElement('canvas'); tc.width = 256; tc.height = 128; const t = tc.getContext('2d'); t.fillStyle = '#d8d8d8'; t.fillRect(0, 0, 256, 128); t.fillStyle = '#ff9a1f'; for (let i = 0; i < 8; i++) t.fillRect(i * 32, 0, 14, 128);
+  const tex = new THREE.CanvasTexture(tc), ball = new THREE.Mesh(new THREE.SphereGeometry(R * 0.95, 40, 28), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.35, metalness: 0.1 })); ball.position.y = R + 0.01; s5.add(ball); spinners.push(ball);
+  mesh(new THREE.TorusGeometry(R * 0.8, 0.03, 10, 40), DARK, s5, [0, R * 1.5, 0], [Math.PI / 2, 0, 0]); plate(s5, R * 2 + 0.2); cyl(0.025, 0.2, DARK, s5, [0, R * 2 + 0.1, 0]);
+  for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + 0.3, rol = cyl(0.04, 0.045, ORANGE, s5, [Math.cos(a) * R * 0.78, R * 1.42, Math.sin(a) * R * 0.78]); rol.rotation.set(0, -a, Math.PI / 2.6); xr(cyl(0.03, 0.08, MOTOR, s5, [Math.cos(a) * R * 1.05, R * 1.7, Math.sin(a) * R * 1.05])); }
+  ring(5, s5, [0, R, 0], 'z', R + 0.05, { noAxis: true });
+  // 6: track
+  const s6 = slot(6), TL = 0.34, TR = 0.1, Pn = 2 * TL + 2 * Math.PI * TR, NB = 30, belt = [];
+  for (const sx of [-1, 1]) { cyl(TR * 0.82, 0.14, SILVER, s6, [sx * TL / 2, TR + 0.01, 0], 'z'); cyl(TR * 0.4, 0.16, ORANGE, s6, [sx * TL / 2, TR + 0.01, 0], 'z'); }
+  for (let k = -1; k <= 1; k++) cyl(0.04, 0.12, DARK, s6, [k * TL / 2.2, 0.05, 0], 'z');
+  for (let i = 0; i < NB; i++) { const b = boxm(0.045, 0.014, 0.16, i % 2 ? BLACK : DARK, s6, [0, 0, 0]); belt.push(b); }
+  const place = (off) => belt.forEach((b, i) => { let u = ((i * Pn / NB) + off) % Pn; if (u < 0) u += Pn; let x, y, a; const cy = TR + 0.01;
+    if (u < TL) { x = TL / 2 - u; y = cy - TR; a = 0; } else if (u < TL + Math.PI * TR) { const tt = (u - TL) / TR; x = -TL / 2 - Math.sin(tt) * TR; y = cy - Math.cos(tt) * TR; a = tt; }
+    else if (u < 2 * TL + Math.PI * TR) { x = -TL / 2 + (u - TL - Math.PI * TR); y = cy + TR; a = Math.PI; } else { const tt = (u - 2 * TL - Math.PI * TR) / TR; x = TL / 2 + Math.sin(tt) * TR; y = cy + Math.cos(tt) * TR; a = Math.PI + tt; }
+    b.position.set(x, y, 0); b.rotation.z = a; });
+  place(0); trackers.push({ place, P: Pn }); boxm(0.46, 0.04, 0.22, BASE, s6, [0, 0.27, 0]);
+  xr(cyl(TR * 0.3, 0.12, MOTOR, s6, [TL / 2, TR + 0.01, 0.0], 'z'));
+  ring(6, s6, [0, TR + 0.01, 0], 'z', 0.2, { noAxis: true });
+  const st = { a: 0, trk: 0 }, castorWheel = w1;
+  function pose() {
+    sw1.rotation.y = q[1] * D2R; sw2.rotation.y = q[2] * D2R;
+    spinners.forEach((g) => { g.rotation.z = -st.a; }); ball.rotation.z = -st.a; ball.rotation.y = 0;
+    trackers.forEach((tk) => tk.place(st.trk));
+  }
+  pose.tick = (dt) => { st.a += q[0] * dt; st.trk += q[0] * 0.1 * dt; pose(); };
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels }[KIND]();
 
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;

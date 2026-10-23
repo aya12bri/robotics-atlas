@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of the wheels (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="wheels">
+    <h1>Anatomy of the wheels (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="wheels.html" style="color:#ff9f43">Wheels page</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Push sideways (castor and steering at 90°)</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Fixed wheel</b></button><p>It rolls forward only and cannot slide sideways. The simplest and most common wheel: the wheels of a differential-drive robot. This slider sets the rolling speed of all the wheels.</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Castor wheel</b></button><p>A small free wheel behind a vertical pivot: it swivels by itself and trails behind. It has no motor and only supports the robot. The slider swivels it.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Steered drive wheel</b></button><p>A driven wheel that a second motor turns about a vertical axis: it can point anywhere (swerve drive; cars use the same idea). The slider steers it.</p><label class="ansl"><input type="range" step="1" aria-label="3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Omni wheel</b></button><p>Small free rollers around the rim, in line with the rotation: the wheel drives forward and slides sideways freely. Used on holonomic bases with 3 or 4 wheels.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Mecanum wheel</b></button><p>Rollers at 45° around the rim: with four such wheels the robot moves in any direction by combining the wheel speeds. It needs a flat floor and a suspension.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Ball wheel</b></button><p>A ball driven by three rollers: it rolls in any direction, so a robot can even balance on it (ballbot). Complex and costly.</p></div>
+        <div class="ancard" style="--c:#f1c40f"><button type="button" class="anhead"><span class="ann">7</span><b>Track (crawler)</b></button><p>A belt around sprockets: large contact area, good on soft or rough ground, turns by skidding. Used on rovers for sand, snow, mud or stairs.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Tyre</strong>: rubber, polyurethane or foam on a rim; the material sets grip, noise and floor wear (see the tyre table above).</li><li><strong>Hub motor, gearbox and bearing</strong>: the motor can sit inside the hub (hub motor) or beside the wheel with a belt or gears (seen in X-ray).</li><li><strong>Encoder</strong> on the motor or the axle measures the wheel rotation for the odometry.</li><li><strong>Swivel bearing</strong>: castors and steered wheels turn on a bearing; a steering motor with a slip ring passes the wires through the rotating joint.</li><li><strong>Rollers</strong>: omni and mecanum wheels carry 8 to 16 free rollers on small axles; the gaps between rollers cause vibration at speed.</li></ul>
+    <p>The seven wheel types stand in a row at the same scale. The first slider sets the rolling speed of all the wheels (and of the track), the second swivels the castor, the third steers the driven wheel. The model is simplified: see the lab above on the wheels page to watch how each wheel behaves when pushed.</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>

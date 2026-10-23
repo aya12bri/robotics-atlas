@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a Cartesian gantry (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="gantry">
+    <h1>Anatomy of a Cartesian gantry (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="gantry.html" style="color:#ff9f43">Cartesian gantry page</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Far corner of the workspace</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>X axis (along the rails)</b></button><p>The whole bridge slides along two parallel rails, driven by a motor and a belt (or a rack and pinion). A prismatic joint (P).</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Y axis (across)</b></button><p>The carriage slides along the beam of the bridge, across the rails.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Z axis (down)</b></button><p>A vertical rod, driven by a ball screw, goes down to the part. The tool is at its end.</p><label class="ansl"><input type="range" step="1" aria-label="3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Frame and rails (fixed)</b></button><p>The posts and the rails carry everything. Their stiffness decides the precision. The frame is fixed to the floor.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Gripper</b></button><p>The tool at the end of the Z axis. A Cartesian robot cannot orient it, unless a fourth rotary axis is added.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Three motors</strong> (servo or stepper), one per axis, with <strong>belts, rack and pinion or ball screws</strong> that turn the rotation into a straight motion (seen in X-ray).</li><li><strong>Linear guides</strong>: rails with recirculating-ball carriages that carry the load and give a straight, rigid motion.</li><li><strong>Limit switches and homing</strong>: incremental encoders do not know the position at power-on, so each axis first goes to a switch.</li><li><strong>Cable chains</strong> carry the cables of the moving axes without breaking them.</li><li><strong>Controller</strong>: often a PLC or a CNC controller in a cabinet next to the frame; the same machine is a 3D printer or a milling machine when the tool changes.</li></ul>
+    <p>The three travels are in cm as on the gantry page: the tool position is simply (q1, q2, height). The three joints are prismatic (P): there is no angle. The model is simplified: the real inside depends on the make.</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>

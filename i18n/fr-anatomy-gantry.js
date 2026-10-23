@@ -1,0 +1,28 @@
+// Français — anatomy-gantry.html (généré par tools/build-anatomy.mjs)
+RA.add({
+ "1j0tk6smfno": "Axe X (le long des rails)",
+ "c70tv3gbdj": "Tout le pont coulisse le long de deux rails parallèles, entraîné par un moteur et une courroie (ou une crémaillère). Une liaison prismatique (P).",
+ "1i1dtylgyrr": "Axe Y (en travers)",
+ "17gug7wdalb": "Le chariot coulisse le long de la poutre du pont, en travers des rails.",
+ "294bpkcdyi8": "Axe Z (vers le bas)",
+ "1nl4xt33sat": "Une tige verticale, entraînée par une vis à billes, descend vers la pièce. L'outil est à son extrémité.",
+ "2eeqewx7rvk": "Bâti et rails (fixes)",
+ "1pkdo0l8uk8": "Les montants et les rails portent tout. Leur rigidité décide de la précision. Le bâti est fixé au sol.",
+ "1p9gd06oio5": "Pince",
+ "pdq2fnvmk": "L'outil au bout de l'axe Z. Un robot cartésien ne peut pas l'orienter, sauf si l'on ajoute un quatrième axe rotatif.",
+ "kp4g8owos5": "Anatomie d'un robot cartésien (3D)",
+ "cx47g2trwz": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"gantry.html\" style=\"color:#ff9f43\">Page du robot cartésien</a>",
+ "h1csbxpftu": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "2b15vcuym2x": "Rayons X (intérieur)",
+ "1t4gay0hv3u": "Animer l'axe choisi",
+ "1mq8o3plxrz": "Rotation automatique",
+ "1yweyp8v4ak": "Coin opposé de l'espace de travail",
+ "2554s8khkhe": "Réinitialiser",
+ "3wdlt8mcgb": "Que contient chaque articulation ?",
+ "j828f2ieme": "<strong>Trois moteurs</strong> (servo ou pas à pas), un par axe, avec des <strong>courroies, une crémaillère ou des vis à billes</strong> qui transforment la rotation en mouvement droit (vus aux rayons X).",
+ "61oupgk07j": "<strong>Guidages linéaires</strong> : des rails avec des patins à recirculation de billes qui portent la charge et donnent un mouvement droit et rigide.",
+ "1241q8r3tof": "<strong>Fins de course et prise d'origine</strong> : les codeurs incrémentaux ne connaissent pas la position à la mise sous tension, donc chaque axe va d'abord sur un contacteur.",
+ "7xm9pvp10": "<strong>Chaînes porte-câbles</strong> qui guident les câbles des axes mobiles sans les casser.",
+ "t6caf3eqxk": "<strong>Contrôleur</strong> : souvent un automate ou une commande numérique dans une armoire à côté du bâti ; la même machine devient une imprimante 3D ou une fraiseuse quand l'outil change.",
+ "13xkqmck4hx": "Les trois courses sont en cm comme sur la page du robot cartésien : la position de l'outil est simplement (q1, q2, hauteur). Les trois liaisons sont prismatiques (P) : il n'y a aucun angle. Le modèle est simplifié : l'intérieur réel dépend de la marque."
+});
