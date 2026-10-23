@@ -87,10 +87,11 @@ function controller(parent, pos, rotY) {
 
 // joint rings, rotation / sliding axes and anchors for the labels (filled by the models)
 const rings = [], axes = [], anchors = [];
+const RING_FAINT = 0.22;      // the joint rings are only a hint: faint until their part is selected, so they do not hide the components
 function ring(i, parent, pos, axis, r, opt) {
   opt = opt || {};
-  const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4 });
-  const t = mesh(new THREE.TorusGeometry(r, 0.012, 12, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
+  const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4, transparent: true, opacity: RING_FAINT, depthWrite: false });
+  const t = mesh(new THREE.TorusGeometry(r, 0.007, 12, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
   rings[i] = t; if (opt.xray) { t.visible = false; t.userData.xray = true; }
   const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, opt.len || 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), opt.axisParent || parent, opt.axisPos || pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
   a.visible = false; axes[i] = a; if (opt.noAxis) a.userData.none = true;
@@ -752,7 +753,7 @@ const readout = document.createElement('div'); readout.className = 'anout'; box.
 function select(i) {
   sel = i;
   cards.forEach((c, k) => c.classList.toggle('on', k === i)); tags.forEach((t, k) => t.classList.toggle('on', k === i));
-  rings.forEach((r, k) => { r.material.emissiveIntensity = k === i ? 1.4 : 0.35; r.scale.setScalar(k === i ? 1.12 : 1); });
+  rings.forEach((r, k) => { r.material.emissiveIntensity = k === i ? 1.4 : 0.35; r.material.opacity = k === i ? 1 : RING_FAINT; r.material.depthWrite = k === i; r.scale.setScalar(k === i ? 1.12 : 1); });
   axes.forEach((a, k) => { a.visible = k === i && !a.userData.none; });
   if (i >= 0 && rings[i] && rings[i].userData.xray && !xray) setXray(true);
   if (pose.onSelect) pose.onSelect(i);
