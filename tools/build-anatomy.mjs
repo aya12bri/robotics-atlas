@@ -260,7 +260,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <link rel="stylesheet" href="style.css" />
     <style>
       .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
-      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView { position: sticky; top: 76px; width: 100%; height: min(580px, calc(100vh - 96px)); min-height: 340px; border-radius: 12px; overflow: hidden; touch-action: none; }
       #anatView canvas { display: block; }
       .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
       .antag.on { transform: translate(-50%, -50%) scale(1.3); }
@@ -275,7 +275,8 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
       .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
-      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+      .ancard:not(.info):not(.on) p { display: none; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { position: relative; top: auto; height: 400px; } .ancard:not(.info):not(.on) p { display: block; } }
     </style>
     <link rel="modulepreload" href="vendor/three.module.min.js" />
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
@@ -286,7 +287,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   <body data-robot="${key}">
     <h1>${tx(...R.title)}</h1>
     <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
-    <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
+    <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
     <div class="toolbar">
       <button id="xrayBtn" type="button" aria-pressed="false">${tx('X-ray (inside)', 'Rayons X (intérieur)')}</button>
       <button id="playBtn" type="button" aria-pressed="false">${tx('Animate the selected axis', 'Animer l\'axe choisi')}</button>
