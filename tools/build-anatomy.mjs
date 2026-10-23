@@ -129,6 +129,29 @@ const ROBOTS = {
       ['<strong>Rollers</strong>: omni and mecanum wheels carry 8 to 16 free rollers on small axles; the gaps between rollers cause vibration at speed.', '<strong>Galets</strong> : les roues omni et Mecanum portent 8 à 16 galets libres sur de petits axes ; les espaces entre galets provoquent des vibrations à vitesse élevée.']
     ]
   },
+  drives: {
+    file: 'anatomy-drives', robotPage: 'wheels', link: ['See the drive configurations in 3D →', 'Voir les configurations de motorisation en 3D →'], before: '<h2>3. Drive four robots yourself</h2>', cols: [...ALLCOL, '#f1c40f', '#e67e22'], panel: true,
+    title: ['Anatomy of the drive configurations (3D)', 'Anatomie des configurations de motorisation (3D)'], back: ['Wheels page', 'Page des roues'],
+    special: ['Slide sideways (vy only)', 'Glisser de côté (vy seul)'],
+    note: ['The wheel speeds are computed live from the three commands (vx forward, vy to the left, ω turning left) with the inverse kinematics of each configuration, and the robot drives for real; the orange line is its path. A configuration that cannot do a motion (a sideways slide, for example) ignores it and says so. The model is simplified: wheel radius 0.07 m, see the wheels page for the equations.', 'Les vitesses des roues sont calculées en direct à partir des trois commandes (vx vers l\'avant, vy vers la gauche, ω de rotation vers la gauche) avec la cinématique inverse de chaque configuration, et le robot roule pour de vrai ; la ligne orange est son chemin. Une configuration qui ne peut pas faire un mouvement (un glissement latéral, par exemple) l\'ignore et le dit. Le modèle est simplifié : rayon de roue 0,07 m, voir la page des roues pour les équations.'],
+    cmd: ['Command of the robot', 'Commande du robot', 'Choose how the robot body must move; the wheels follow. Then pick a configuration below to compare.', 'Choisissez comment le corps du robot doit bouger ; les roues suivent. Puis choisissez une configuration ci-dessous pour comparer.', ['vx (forward)', 'vx (avant)'], ['vy (to the left)', 'vy (vers la gauche)'], ['ω (turn left)', 'ω (tourner à gauche)']],
+    joints: [
+      ['Differential drive', 'Entraînement différentiel', '(δm, δs) = (2, 0). Two driven fixed wheels and a castor. Turns by driving the wheels at different speeds. Cannot slide sideways: not holonomic.', '(δm, δs) = (2, 0). Deux roues fixes motrices et une roue folle. Tourne en faisant rouler les roues à des vitesses différentes. Ne peut pas glisser de côté : non holonome.', false],
+      ['Tricycle', 'Tricycle', '(δm, δs) = (1, 1). One steered and driven front wheel, two fixed rear wheels. Tow tractors and AGV forklifts. Not holonomic.', '(δm, δs) = (1, 1). Une roue avant orientable et motrice, deux roues arrière fixes. Tracteurs de remorquage et chariots AGV. Non holonome.', false],
+      ['Car-like (Ackermann)', 'Type voiture (Ackermann)', '(δm, δs) = (1, 1). Two steered front wheels, two driven rear wheels. The inner wheel turns more than the outer one. Cannot turn on the spot.', '(δm, δs) = (1, 1). Deux roues avant orientables, deux roues arrière motrices. La roue intérieure tourne plus que l\'extérieure. Ne peut pas tourner sur place.', false],
+      ['Synchro drive', 'Entraînement synchro', '(δm, δs) = (1, 1). Three wheels, all steered and driven together by a common mechanism: the robot goes in any direction without turning its body.', '(δm, δs) = (1, 1). Trois roues, toutes orientées et entraînées ensemble par un mécanisme commun : le robot va dans toutes les directions sans tourner son corps.', false],
+      ['3 omni wheels (kiwi)', '3 roues omni (kiwi)', '(δm, δs) = (3, 0). Three omni wheels at 120°. Holonomic: any motion, instantly. Used in RoboCup and small platforms.', '(δm, δs) = (3, 0). Trois roues omni à 120°. Holonome : tous les mouvements, instantanément. Utilisé en RoboCup et sur de petites plateformes.', false],
+      ['4 Mecanum wheels', '4 roues Mecanum', '(δm, δs) = (3, 0). Four Mecanum wheels in an X layout. Holonomic: sideways motion comes from the wheel speed combination. Needs a flat floor.', '(δm, δs) = (3, 0). Quatre roues Mecanum en X. Holonome : le mouvement latéral vient de la combinaison des vitesses des roues. Demande un sol plat.', false],
+      ['Swerve drive', 'Entraînement swerve', '(δm, δs) = (2, 1). Four wheels, each steered and driven. Holonomic once the wheels have turned. Competition robots and heavy AGVs.', '(δm, δs) = (2, 1). Quatre roues, chacune orientable et motrice. Holonome une fois les roues tournées. Robots de compétition et AGV lourds.', false],
+      ['Skid-steer / tracked', 'Direction par glissement / chenilles', '(δm, δs) = (2, 0). Two tracks (or four fixed wheels) that turn by slipping on the ground. Rugged but the slipping makes the odometry poor.', '(δm, δs) = (2, 0). Deux chenilles (ou quatre roues fixes) qui tournent en glissant sur le sol. Robuste, mais le glissement dégrade l\'odométrie.', false]
+    ],
+    inside: [
+      ['<strong>Wheel motors</strong>: each driven wheel has a motor and a gearbox (in the hub or beside it) and an encoder; the controller computes every wheel speed from the commanded body motion (inverse kinematics).', '<strong>Moteurs de roues</strong> : chaque roue motrice a un moteur, un réducteur (dans le moyeu ou à côté) et un codeur ; le contrôleur calcule la vitesse de chaque roue à partir du mouvement commandé du corps (cinématique inverse).'],
+      ['<strong>Steering motors</strong> (seen in X-ray on the steered wheels): a second motor and a slip ring per wheel; they make swerve modules heavy and expensive.', '<strong>Moteurs d\'orientation</strong> (vus aux rayons X sur les roues orientables) : un deuxième moteur et une bague collectrice par roue ; ils rendent les modules swerve lourds et chers.'],
+      ['<strong>Rollers</strong> of omni and Mecanum wheels: free rollers that let a wheel slide in one direction while it drives in the other.', '<strong>Galets</strong> des roues omni et Mecanum : des galets libres qui laissent une roue glisser dans une direction pendant qu\'elle entraîne dans l\'autre.'],
+      ['<strong>Suspension and floor</strong>: three wheels always touch the floor; four wheels need a suspension (or a rocker) so that all of them keep their grip.', '<strong>Suspension et sol</strong> : trois roues touchent toujours le sol ; quatre roues demandent une suspension (ou un balancier) pour qu\'elles gardent toutes leur adhérence.']
+    ]
+  },
   mobile: {
     file: 'anatomy-mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], back: ['Mobile robot page', 'Page du robot mobile'],
@@ -163,7 +186,8 @@ const NOTE = ['The angles of this 3D model are those of the drawing, with a zero
 
 for (const [key, R] of Object.entries(ROBOTS)) {
   reset();
-  const cards = R.joints.map((j, i) => { const lab = R.labels ? R.labels[i] : 'J' + (i + 1); return `<div class="ancard" style="--c:${R.cols[i]}"><button type="button" class="anhead"><span class="ann">${lab}</span><b>${tx(j[0], j[1])}</b></button><p>${tx(j[2], j[3])}</p>${j[4] === false ? '' : `<label class="ansl"><input type="range" step="1" aria-label="${lab}"><output></output></label>`}</div>`; }).join('\n        ');
+  const cards = R.joints.map((j, i) => { const lab = R.labels ? R.labels[i] : (R.panel ? String(i + 1) : 'J' + (i + 1)); return `<div class="ancard${R.panel ? ' ancfg' : ''}" style="--c:${R.cols[i]}"><button type="button" class="anhead"><span class="ann">${lab}</span><b>${tx(j[0], j[1])}</b></button><p>${tx(j[2], j[3])}</p>${j[4] === false ? '' : `<label class="ansl"><input type="range" step="1" aria-label="${lab}"><output></output></label>`}</div>`; }).join('\n        ');
+  const cmdCard = R.panel ? `<div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">${tx(R.cmd[0], R.cmd[1])}</b><p>${tx(R.cmd[2], R.cmd[3])}</p>${[4, 5, 6].map((k, n) => `<label class="ansl ansl3"><span>${tx(R.cmd[k][0], R.cmd[k][1])}</span><input type="range" aria-label="q${n}"><output></output></label>`).join('')}</div>\n        ` : '';
   const html = `<!DOCTYPE html>
 <html>
   <head>
@@ -185,7 +209,8 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
       .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
       .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
-      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
       @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
     </style>
@@ -209,7 +234,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <div class="anat">
       <div id="anatView"></div>
       <div class="ancards">
-        ${cards}
+        ${cmdCard}${cards}
       </div>
     </div>
     <h2>${tx('What is inside each joint?', 'Que contient chaque articulation ?')}</h2>
@@ -226,9 +251,10 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   fs.writeFileSync(path.join(root, 'i18n', `fr-${R.file}.js`), `// Français — ${R.file}.html (généré par tools/build-anatomy.mjs)\nRA.add(${JSON.stringify(dict, null, 1)});\n`);
 
   // link from the robot page (and its French text)
+  const LK = R.link || LINK;
   const rp = path.join(root, R.robotPage + '.html'); let h = fs.readFileSync(rp, 'utf8');
-  if (h.indexOf(`href="${R.file}.html"`) < 0) { h = h.replace('    ' + R.before, `    <p class="try"><a href="${R.file}.html">${LINK[0]}</a></p>\n\n    ${R.before}`); fs.writeFileSync(rp, h); }
-  const lk = { [(await hashAll(R.robotPage + '.html', [LINK[0]]))[0]]: LINK[1] };
+  if (h.indexOf(`href="${R.file}.html"`) < 0) { h = h.replace('    ' + R.before, `    <p class="try"><a href="${R.file}.html">${LK[0]}</a></p>\n\n    ${R.before}`); fs.writeFileSync(rp, h); }
+  const lk = {}; for (const r2 of Object.values(ROBOTS)) if (r2.robotPage === R.robotPage) { const L2 = r2.link || LINK; lk[(await hashAll(R.robotPage + '.html', [L2[0]]))[0]] = L2[1]; }
   const f = path.join(root, 'i18n', `fr-${R.robotPage}.js`);
   const s = fs.readFileSync(f, 'utf8').replace(/\n?\/\/ BEGIN anatomy[\s\S]*?\/\/ END anatomy\n?/, '\n');
   fs.writeFileSync(f, s.trimEnd() + `\n// BEGIN anatomy (generated by tools/build-anatomy.mjs)\nRA.add(${JSON.stringify(lk)});\n// END anatomy\n`);
