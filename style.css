@@ -701,6 +701,6 @@ html, body { overflow-x: clip; }
 /* tour: the step buttons sit above the card (fixed place), so the card never leaves a gap between itself and the buttons */
 @media (min-width: 901px) {
   .scene-sec.tour > .wrap { display: flex; flex-direction: column; padding-bottom: 7.1rem; }   /* balances the buttons above and the nav-sized top padding of the section: the card itself sits on the middle line of the screen */
-  .scene-sec.tour .stepper { order: -1; margin: 0 0 1rem; }
+  .scene-sec.tour .stepper { order: -1; margin: 0 0 1rem; align-self: center; justify-content: center; }   /* the step buttons sit in the middle of the page, above the card and the robot */
   .fader > .panel { align-self: center; }
 }
