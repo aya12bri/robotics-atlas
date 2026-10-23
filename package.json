@@ -1,0 +1,9 @@
+{
+  "name": "robotics-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Robotics Atlas: a static learning site about robots (served as static assets by Cloudflare Workers).",
+  "scripts": {
+    "build": "echo \"Static site: nothing to build\""
+  }
+}
