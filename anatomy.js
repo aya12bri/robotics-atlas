@@ -17,6 +17,8 @@ const CFG = {
     playBase: [0, 30, 40, -90, 60, 0], playAmp: [70, 25, 25, 80, 45, 120], cam: [1.0, 0.75, 1.15], target: [0.28, 0.33, 0], special: [4, 0] },
   delta: { n: 5, nq: 3, col: ALLCOL.slice(0, 5), lim: [[-25, 75], [-25, 75], [-25, 75]], home: [25, 25, 25], unit: ['°', '°', '°'], dec: 0,
     playBase: [25, 25, 25], playAmp: [40, 40, 40], cam: [1.35, 0.95, 1.5], target: [0, 0.4, 0], special: [[0, 25], [1, 25], [2, 25]] },
+  gantry: { n: 5, nq: 3, col: ALLCOL.slice(0, 5), lim: [[0, 100], [0, 80], [0, 45]], home: [50, 40, 20], unit: [' cm', ' cm', ' cm'], dec: 0,
+    playBase: [50, 40, 22], playAmp: [45, 35, 20], cam: [2.3, 1.5, 1.7], target: [0.5, 0.5, -0.4], special: [[0, 100], [1, 80], [2, 45]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -80,7 +82,7 @@ function ring(i, parent, pos, axis, r, opt) {
   const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4 });
   const t = mesh(new THREE.TorusGeometry(r, 0.012, 12, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
   rings[i] = t; if (opt.xray) { t.visible = false; t.userData.xray = true; }
-  const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), parent, pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
+  const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, opt.len || 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), opt.axisParent || parent, opt.axisPos || pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
   a.visible = false; axes[i] = a; if (opt.noAxis) a.userData.none = true;
   const an = new THREE.Object3D(); an.position.set(...pos); parent.add(an); anchors[i] = an;
 }
@@ -290,7 +292,47 @@ function buildMobile() {
   pose.readout = () => info.text;
   return pose;
 }
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile }[KIND]();
+
+// ------------------------------------------------------------------ model 6: Cartesian gantry (P-P-P)
+function buildGantry() {
+  const ZH = 0.95, XA = -0.1, XB = 1.1, ZA = 0.05, ZB = -0.85;           // frame height, rail ends, rail positions (scene z = -y)
+  const robot = group(scene);
+  for (const x of [XA, XB]) for (const z of [ZA, ZB]) { cyl(0.025, ZH, BASE, robot, [x, ZH / 2, z]); boxm(0.14, 0.02, 0.14, DARK, robot, [x, 0.01, z]); }
+  for (const z of [ZA, ZB]) { boxm(XB - XA + 0.05, 0.05, 0.05, BASE, robot, [(XA + XB) / 2, ZH, z]); xr(boxm(XB - XA, 0.006, 0.012, BLACK, robot, [(XA + XB) / 2, ZH + 0.03, z + (z > -0.4 ? -0.015 : 0.015)])); }
+  boxm(0.5, 0.55, 0.3, DARK, robot, [XB + 0.4, 0.275, ZB + 0.15]);       // the controller cabinet
+  xr(boxm(0.2, 0.26, 0.012, new THREE.MeshStandardMaterial({ color: '#1f8f4a' }), robot, [XB + 0.4, 0.3, ZB + 0.31]));
+  drive(robot, [XA - 0.06, ZH, ZA], 'x', 0.04, 0.9);
+  cable(robot, [[XB + 0.2, 0.3, ZB + 0.1], [XB + 0.1, 0.1, ZB + 0.05], [XB, ZH - 0.2, ZB + 0.02], [XB, ZH + 0.02, ZB + 0.02]], 0.007);
+  const gX = group(robot, [0.5, ZH, 0]);                                 // J1: the bridge moves along X
+  for (const z of [ZA, ZB]) { boxm(0.1, 0.09, 0.09, ORANGE, gX, [0, 0, z]); xr(boxm(0.1, 0.02, 0.02, SILVER, gX, [0, 0.055, z])); }
+  const BL = ZA - ZB;
+  boxm(0.07, 0.09, BL, ORANGE, gX, [0, -0.02, (ZA + ZB) / 2]);
+  drive(gX, [0, 0.07, ZB + 0.1], 'z', 0.04, 0.9);
+  xr(boxm(0.012, 0.006, BL, BLACK, gX, [0, 0.03, (ZA + ZB) / 2]));
+  const gY = group(gX, [0, -0.02, -0.4]);                                // J2: the carriage moves along the bridge
+  boxm(0.17, 0.1, 0.14, DARK, gY, [0, -0.07, 0]);
+  drive(gY, [0.0, 0.06, 0.0], 'y', 0.04, 0.8);
+  cable(gY, [[0.07, 0.0, -0.03], [0.2, 0.0, -0.1], [0.28, -0.05, -0.3]], 0.006);
+  const gZ = group(gY, [0, 0.02 - 0.2, 0]);                                    // J3: the vertical axis moves down
+  cyl(0.026, 0.55, SILVER, gZ, [0, 0.275, 0]);
+  xr(cyl(0.01, 0.5, COPPER, gZ, [0, 0.275, 0]));                          // the ball screw
+  cyl(0.04, 0.03, DARK, gZ, [0, -0.015, 0]);
+  boxm(0.14, 0.03, 0.05, DARK, gZ, [0, -0.045, 0]);
+  for (const s of [-1, 1]) boxm(0.018, 0.1, 0.04, DARK, gZ, [s * 0.06, -0.1, 0]);
+  ring(0, gX, [0, 0, ZA], 'x', 0.07, { axisParent: robot, axisPos: [0.5, ZH, ZA], len: 1.3 });
+  ring(1, gY, [0, -0.02, 0], 'z', 0.09, { axisParent: gX, axisPos: [0, -0.02, -0.4], len: 1.1 });
+  ring(2, gY, [0, -0.17, 0], 'y', 0.05, { axisParent: gY, axisPos: [0, -0.5, 0], len: 0.85 });
+  ring(3, robot, [XA, 0.25, ZA], 'y', 0.07, { noAxis: true }); ring(4, gZ, [0, -0.08, 0], 'y', 0.09, { noAxis: true });
+  const info = { text: '' };
+  function pose() {
+    gX.position.x = q[0] / 100; gY.position.z = -q[1] / 100; gZ.position.y = 0.02 - q[2] / 100;
+    info.text = L('tool: x = ', 'outil : x = ') + Math.round(q[0]) + ' cm, y = ' + Math.round(q[1]) + ' cm, ' + L('height above the floor = ', 'hauteur au-dessus du sol = ') + Math.round((ZH - 0.15 - q[2] / 100) * 100) + ' cm';
+  }
+  pose.readout = () => info.text;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry }[KIND]();
 
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;

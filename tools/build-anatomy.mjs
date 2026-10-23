@@ -87,6 +87,26 @@ const ROBOTS = {
       ['<strong>Controller and camera</strong>: usually a vision system above the conveyor tells the robot where each product is.', '<strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.']
     ]
   },
+  gantry: {
+    file: 'anatomy-gantry', robotPage: 'gantry', before: '<h2>Forward kinematics of a gantry</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
+    title: ['Anatomy of a Cartesian gantry (3D)', 'Anatomie d\'un robot cartésien (3D)'], back: ['Cartesian gantry page', 'Page du robot cartésien'],
+    special: ['Far corner of the workspace', 'Coin opposé de l\'espace de travail'],
+    note: ['The three travels are in cm as on the gantry page: the tool position is simply (q1, q2, height). The three joints are prismatic (P): there is no angle. The model is simplified: the real inside depends on the make.', 'Les trois courses sont en cm comme sur la page du robot cartésien : la position de l\'outil est simplement (q1, q2, hauteur). Les trois liaisons sont prismatiques (P) : il n\'y a aucun angle. Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
+    joints: [
+      ['X axis (along the rails)', 'Axe X (le long des rails)', 'The whole bridge slides along two parallel rails, driven by a motor and a belt (or a rack and pinion). A prismatic joint (P).', 'Tout le pont coulisse le long de deux rails parallèles, entraîné par un moteur et une courroie (ou une crémaillère). Une liaison prismatique (P).'],
+      ['Y axis (across)', 'Axe Y (en travers)', 'The carriage slides along the beam of the bridge, across the rails.', 'Le chariot coulisse le long de la poutre du pont, en travers des rails.'],
+      ['Z axis (down)', 'Axe Z (vers le bas)', 'A vertical rod, driven by a ball screw, goes down to the part. The tool is at its end.', 'Une tige verticale, entraînée par une vis à billes, descend vers la pièce. L\'outil est à son extrémité.'],
+      ['Frame and rails (fixed)', 'Bâti et rails (fixes)', 'The posts and the rails carry everything. Their stiffness decides the precision. The frame is fixed to the floor.', 'Les montants et les rails portent tout. Leur rigidité décide de la précision. Le bâti est fixé au sol.', false],
+      ['Gripper', 'Pince', 'The tool at the end of the Z axis. A Cartesian robot cannot orient it, unless a fourth rotary axis is added.', 'L\'outil au bout de l\'axe Z. Un robot cartésien ne peut pas l\'orienter, sauf si l\'on ajoute un quatrième axe rotatif.', false]
+    ],
+    inside: [
+      ['<strong>Three motors</strong> (servo or stepper), one per axis, with <strong>belts, rack and pinion or ball screws</strong> that turn the rotation into a straight motion (seen in X-ray).', '<strong>Trois moteurs</strong> (servo ou pas à pas), un par axe, avec des <strong>courroies, une crémaillère ou des vis à billes</strong> qui transforment la rotation en mouvement droit (vus aux rayons X).'],
+      ['<strong>Linear guides</strong>: rails with recirculating-ball carriages that carry the load and give a straight, rigid motion.', '<strong>Guidages linéaires</strong> : des rails avec des patins à recirculation de billes qui portent la charge et donnent un mouvement droit et rigide.'],
+      ['<strong>Limit switches and homing</strong>: incremental encoders do not know the position at power-on, so each axis first goes to a switch.', '<strong>Fins de course et prise d\'origine</strong> : les codeurs incrémentaux ne connaissent pas la position à la mise sous tension, donc chaque axe va d\'abord sur un contacteur.'],
+      ['<strong>Cable chains</strong> carry the cables of the moving axes without breaking them.', '<strong>Chaînes porte-câbles</strong> qui guident les câbles des axes mobiles sans les casser.'],
+      ['<strong>Controller</strong>: often a PLC or a CNC controller in a cabinet next to the frame; the same machine is a 3D printer or a milling machine when the tool changes.', '<strong>Contrôleur</strong> : souvent un automate ou une commande numérique dans une armoire à côté du bâti ; la même machine devient une imprimante 3D ou une fraiseuse quand l\'outil change.']
+    ]
+  },
   mobile: {
     file: 'anatomy-mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], back: ['Mobile robot page', 'Page du robot mobile'],
