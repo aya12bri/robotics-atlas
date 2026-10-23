@@ -309,6 +309,21 @@ addEventListener('scroll', () => { if (!fadeRaf) fadeRaf = requestAnimationFrame
 let zone = 0;
 const readZone = () => { const y = scrollY + innerHeight / 2; zone = y < secTour.offsetTop ? 0 : y < secGal.offsetTop ? 1 : y < secEnd.offsetTop ? 2 : 3; };
 readZone(); addEventListener('scroll', readZone, { passive: true }); addEventListener('resize', readZone);
+// the first screens are full pages: when the scrolling stops between two of them, glide to the nearest one (below the start of the roadmap the page scrolls freely)
+{
+  let timer = 0, held = false;
+  const settle = () => {
+    timer = 0; if (held || document.hidden) return;
+    const tops = [secHero, secTour, secGal, secEnd].map((el) => el.offsetTop), y = scrollY;
+    if (y > tops[3] + 2) return;
+    const best = tops.reduce((a, b) => (Math.abs(b - y) < Math.abs(a - y) ? b : a));
+    if (Math.abs(best - y) < 3) return;
+    if (window.RA && RA.smoothTo) RA.smoothTo(best); else scrollTo({ top: best, behavior: reduce ? 'auto' : 'smooth' });
+  };
+  const later = () => { clearTimeout(timer); timer = setTimeout(settle, 170); };
+  addEventListener('scroll', later, { passive: true });
+  addEventListener('pointerdown', () => { held = true; }); addEventListener('pointerup', () => { held = false; later(); }); addEventListener('pointercancel', () => { held = false; later(); });
+}
 // keyboard and swipe move the step or the robot of the screen in view
 addEventListener('keydown', (e) => { if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return; const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; if (zone === 1) setStep(ui.step + d, true); else if (zone === 2) setGal(ui.gi + d); });
 let wheelAt = 0;                                  // a sideways swipe on a trackpad changes robot; the normal wheel always scrolls the page
