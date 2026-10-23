@@ -700,6 +700,7 @@ html, body { overflow-x: clip; }
 .panel table.dh.dh-t { font-size: 0.74rem; } .panel table.dh.dh-t th, .panel table.dh.dh-t td { padding: 0.2rem 0.32rem; text-align: center; }
 /* tour: the step buttons sit above the card (fixed place), so the card never leaves a gap between itself and the buttons */
 @media (min-width: 901px) {
-  .scene-sec.tour > .wrap { display: flex; flex-direction: column; }
+  .scene-sec.tour > .wrap { display: flex; flex-direction: column; padding-bottom: 7.1rem; }   /* balances the buttons above and the nav-sized top padding of the section: the card itself sits on the middle line of the screen */
   .scene-sec.tour .stepper { order: -1; margin: 0 0 1rem; }
+  .fader > .panel { align-self: center; }
 }
