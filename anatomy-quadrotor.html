@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a quadrotor (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="quadrotor">
+    <h1>Anatomy of a quadrotor (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Motor 1 failure on / off</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">Pilot commands</b><p>Move the sliders like the sticks of a remote control. At zero the drone hovers where it is.</p><label class="ansl ansl3"><span>climb</span><input type="range" aria-label="q0"><output></output></label><label class="ansl ansl3"><span>roll (right)</span><input type="range" aria-label="q1"><output></output></label><label class="ansl ansl3"><span>pitch (forward)</span><input type="range" aria-label="q2"><output></output></label><label class="ansl ansl3"><span>yaw rate</span><input type="range" aria-label="q3"><output></output></label></div>
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Motors and propellers</b></button><p>Four brushless motors, each with a propeller. Two turn clockwise and two anticlockwise, so that the torques cancel in hover. Thrust grows with the square of the speed.</p></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Frame and arms</b></button><p>A light X frame (carbon fibre or plastic) that holds the motors at equal distance from the centre and carries the landing legs.</p></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Flight controller and IMU</b></button><p>The brain: it reads the gyroscope and accelerometer (IMU) hundreds of times per second and corrects the four motor speeds to keep the attitude. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Speed controllers (ESC)</b></button><p>One electronic speed controller per motor turns the battery current into the three-phase current of the brushless motor. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Battery</b></button><p>A lithium-polymer pack: the heaviest part and the limit of the flight time (10 to 30 minutes). It sits under the centre to keep the drone balanced. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Sensors and payload</b></button><p>GPS and compass for position, barometer for altitude, and here a camera on a gimbal. Other drones carry lidars, sprayers or packages.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Flight control loops</strong>: an inner loop on the angular rates (about 1 kHz), then the attitude loop, then position and altitude; it is a cascade of PID loops like the ones of the control course.</li><li><strong>Mixer</strong>: the controller asks for a total thrust and three torques (roll, pitch, yaw); the mixer turns them into the four motor thrusts. Try the failure button: with one motor lost, three motors cannot give the four wanted values and the drone tumbles.</li><li><strong>State estimation</strong>: the IMU drifts, so the attitude comes from a filter (complementary or Kalman) that fuses the gyroscope, the accelerometer, the compass, and the GPS and barometer for position (perception course).</li><li><strong>Safety</strong>: return-to-home, geofences, failsafe when the radio link is lost, and the rules of the country for flying drones.</li></ul>
+    <p>The drone really flies: a rigid-body simulation (mass 1.2 kg, thrust-to-weight ratio 2) with a flight controller and a mixer that turns your four commands into the four motor thrusts. Roll and pitch are target angles: to go sideways the drone has to tilt first, because it is underactuated (6 degrees of freedom, 4 motors). The two blue propellers turn one way and the two white ones the other way, so that their reaction torques cancel; the yaw command makes them unequal. The model is simplified.</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>
