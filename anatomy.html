@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a 6-axis robot (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="six">
+    <h1>Anatomy of a 6-axis robot (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="articulated.html" style="color:#ff9f43">6-axis robot page</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Wrist singularity (J5 = 0)</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">J1</span><b>Base rotation</b></button><p>Turns the whole robot around its vertical axis. Its motor and gearbox sit in the base.</p><label class="ansl"><input type="range" step="1" aria-label="J1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">J2</span><b>Shoulder</b></button><p>Tilts the upper arm forward and backward. It carries the weight of the whole arm, so it has the biggest motor.</p><label class="ansl"><input type="range" step="1" aria-label="J2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">J3</span><b>Elbow</b></button><p>Extends or folds the forearm.</p><label class="ansl"><input type="range" step="1" aria-label="J3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">J4</span><b>Wrist roll</b></button><p>Rotates the wrist assembly around the forearm axis.</p><label class="ansl"><input type="range" step="1" aria-label="J4"><output></output></label></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">J5</span><b>Wrist pitch</b></button><p>Tilts the tool up and down. When J5 = 0, the axes J4 and J6 line up: a wrist singularity.</p><label class="ansl"><input type="range" step="1" aria-label="J5"><output></output></label></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">J6</span><b>Tool rotation</b></button><p>Spins the gripper or the tool around its own axis: it sets the final tool orientation.</p><label class="ansl"><input type="range" step="1" aria-label="J6"><output></output></label></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Servo motor</strong> (brushless): turns fast with little torque.</li><li><strong>Gearbox</strong> (harmonic or cycloidal): slows the motor down by 50 to 200 times and multiplies the torque by the same factor.</li><li><strong>Encoder and brake</strong>: the encoder measures the angle; the brake holds the arm when the power is off.</li><li><strong>Cable harness</strong>: power and signals pass through the hollow links to the wrist and the tool.</li><li><strong>Controller</strong>: the computer and the drives that run the servo loops (in the base or in a cabinet next to the robot).</li></ul>
+    <p>The angles of this 3D model are those of the drawing, with a zero chosen for display: they differ by a constant from the DH angles of the robot page. The model is simplified: the real inside depends on the make.</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>

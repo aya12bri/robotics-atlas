@@ -1,0 +1,26 @@
+// Français — anatomy-scara.html (généré par tools/build-anatomy.mjs)
+RA.add({
+ "1ew4qteqj24": "Rotation de la base",
+ "2058g6snd2b": "Fait tourner tout le bras autour de la colonne verticale. Le moteur et le réducteur sont dans la colonne.",
+ "23ck0g3kelt": "Rotation du coude",
+ "ojph2azzir": "Fait tourner le second corps autour d'un axe vertical au bout du premier. Avec J1, il place l'outil dans le plan horizontal.",
+ "2cdpzmpn01n": "Coulisse verticale (prismatique)",
+ "t4gldu7uoy": "Une tige coulisse de haut en bas à travers le bout du corps 2, entraînée par une vis à billes. Elle règle la hauteur de l'outil. Le seul axe linéaire.",
+ "1x5axld7ysc": "Rotation de l'outil",
+ "2dlc6bmshn7": "Fait tourner l'outil autour de la tige verticale : il règle l'angle de la pince dans le plan.",
+ "t1n8okhnis": "Anatomie d'un robot SCARA (3D)",
+ "1nr52ek7rtx": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"scara.html\" style=\"color:#ff9f43\">Page du SCARA</a>",
+ "h1csbxpftu": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "2b15vcuym2x": "Rayons X (intérieur)",
+ "1t4gay0hv3u": "Animer l'axe choisi",
+ "1mq8o3plxrz": "Rotation automatique",
+ "8tu8438law": "Bras tendu (J2 = 0)",
+ "2554s8khkhe": "Réinitialiser",
+ "3wdlt8mcgb": "Que contient chaque articulation ?",
+ "267p1bmrj9h": "<strong>Servomoteurs</strong> à la base et au coude, avec des <strong>réducteurs harmoniques</strong> : rigide dans le plan, c'est pourquoi un SCARA est si précis.",
+ "9sj8h86u9j": "<strong>Vis à billes et arbre cannelé</strong> : le bout du corps 2 contient deux moteurs, un pour le mouvement vertical (J3) et un pour la rotation de l'outil (J4), tous deux agissant sur la même tige creuse.",
+ "1lcmfcrmnh3": "<strong>Frein sur J3</strong> : la gravité tire la tige vers le bas, donc le frein la retient quand le courant est coupé.",
+ "2bqu3aazfv5": "<strong>Câbles et air</strong> passent dans la tige creuse jusqu'à la pince (vide ou air comprimé).",
+ "mpmguvjop9": "<strong>Contrôleur</strong> : dans la colonne ou dans un boîtier séparé.",
+ "u5fnq201gh": "Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque."
+});

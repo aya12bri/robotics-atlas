@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a mobile robot (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="mobile">
+    <h1>Anatomy of a mobile robot (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="mobile.html" style="color:#ff9f43">Mobile robot page</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Spin on the spot</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Left wheel and motor</b></button><p>A gear motor turns the left wheel. The slider sets its speed (positive = forward). Its encoder measures the real speed.</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Right wheel and motor</b></button><p>Same on the right. If the right wheel is faster, the robot turns left; with opposite speeds it spins on the spot.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Caster wheel</b></button><p>A free ball or swivel wheel with no motor: a third support point so the robot does not tip over.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Lidar and sensors</b></button><p>The lidar (a rotating laser) measures distances all around to see obstacles and build a map. The front bumper and an IMU (gyroscope) complete the sensors.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Battery</b></button><p>The heaviest part: it sits low, between the wheels, to keep the robot stable. Its capacity sets the autonomy. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Controller</b></button><p>A microcontroller runs the fast loops (PID on the wheel speeds, using the encoders) and a small computer runs navigation and mapping. Seen in X-ray.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Two gear motors with encoders</strong>: the encoders measure each wheel speed for the PID loops and for the odometry (which drifts, see the course on perception).</li><li><strong>Caster</strong>: a free wheel, the third point of support.</li><li><strong>Battery</strong> placed low, and <strong>motor drivers</strong> (H-bridges) that turn the controller commands into motor current.</li><li><strong>Small computer</strong> (single-board) for navigation, mapping and communication, for example with ROS 2.</li><li><strong>Sensors</strong>: lidar for obstacles and maps, bumpers and cliff sensors for safety, IMU for the heading.</li></ul>
+    <p>The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>
