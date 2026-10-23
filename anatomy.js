@@ -25,6 +25,8 @@ const CFG = {
     playFn: (now) => [0.45, 0.4 * Math.sin(now / 1100), 0.9 * Math.cos(now / 1700)], cam: [1.25, 0.95, 1.4], target: [0, 0.15, 0], special: [[0, 0], [1, 0.5], [2, 0]] },
   stewart: { n: 6, nq: 6, cmd: true, col: ALLCOL, lim: [[-25, 25], [-25, 25], [-20, 20], [-20, 20], [-20, 20], [-25, 25]], home: [0, 0, 0, 0, 0, 0], unit: [' cm', ' cm', ' cm', '°', '°', '°'], dec: 0, grid: 4,
     playFn: (now) => [10 * Math.sin(now / 1300), 10 * Math.sin(now / 1700 + 1), 8 * Math.sin(now / 1100), 12 * Math.sin(now / 900), 12 * Math.sin(now / 1500 + 2), 15 * Math.sin(now / 2100)], cam: [2.0, 1.4, 2.3], target: [0, 0.55, 0], special: [[0, 0], [1, 0], [2, 0], [3, 15], [4, 10], [5, 0]] },
+  quadrotor: { n: 6, nq: 4, cmd: true, col: ALLCOL, lim: [[-100, 100], [-25, 25], [-25, 25], [-120, 120]], home: [0, 0, 0, 0], unit: [' %', '°', '°', '°/s'], dec: 0, grid: 40,
+    playFn: (now) => [25 * Math.sin(now / 2600), 14 * Math.sin(now / 1500), 14 * Math.cos(now / 1500), 25 * Math.sin(now / 3000)], cam: [0.9, 0.7, 1.05], target: [0, 0.6, 0], special: [[0, 0]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -545,7 +547,74 @@ function buildStewart() {
   return pose;
 }
 
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart }[KIND]();
+
+// ------------------------------------------------------------------ model 10: quadrotor (flies: rigid-body dynamics + attitude controller + mixer)
+function buildQuadrotor() {
+  const M = 1.2, G = 9.81, ARM = 0.17, KM = 0.02, TMAX = 6, IX = 0.012, IY = 0.022, IZ = 0.012, LEG = 0.1;
+  const a = ARM / Math.SQRT2;
+  const motors = [{ x: a, z: a, s: 1 }, { x: a, z: -a, s: -1 }, { x: -a, z: a, s: -1 }, { x: -a, z: -a, s: 1 }];   // front right, front left, rear right, rear left
+  const drone = group(scene, [0, 0.6, 0]);
+  boxm(0.14, 0.05, 0.14, ORANGE, drone, [0, 0, 0]); boxm(0.1, 0.02, 0.1, DARK, drone, [0, 0.035, 0]);
+  const props = [], discs = [];
+  motors.forEach((m, i) => {
+    const ang = Math.atan2(-m.z, m.x), len = ARM;
+    const arm = boxm(len, 0.018, 0.03, DARK, drone, [m.x / 2, 0, m.z / 2]); arm.rotation.y = ang;
+    cyl(0.024, 0.035, DARK, drone, [m.x, 0.02, m.z]); cyl(0.012, 0.01, SILVER, drone, [m.x, 0.045, m.z]);
+    xr(cyl(0.02, 0.03, COPPER, drone, [m.x, 0.02, m.z])); xr(cyl(0.011, 0.04, MOTOR, drone, [m.x, 0.02, m.z]));
+    xr(boxm(0.05, 0.01, 0.02, new THREE.MeshStandardMaterial({ color: '#1f8f4a' }), drone, [m.x * 0.5, 0.015, m.z * 0.5])).rotation.y = ang;   // ESC
+    const pg = group(drone, [m.x, 0.055, m.z]);
+    const bl = boxm(0.21, 0.004, 0.022, m.s > 0 ? BLUE : BLACK, pg, [0, 0, 0]); bl.rotation.y = 0.3;
+    const d = mesh(new THREE.CircleGeometry(0.105, 32), new THREE.MeshBasicMaterial({ color: m.s > 0 ? '#2f6bff' : '#cfd6df', transparent: true, opacity: 0.16, side: THREE.DoubleSide }), pg, [0, 0.003, 0], [-Math.PI / 2, 0, 0]);
+    props.push({ g: pg, a: 0 }); discs.push(d);
+    cyl(0.006, LEG, DARK, drone, [m.x * 0.6, -LEG / 2 - 0.02, m.z * 0.6]);
+  });
+  mesh(new THREE.SphereGeometry(0.03, 16, 12), BLACK, drone, [0.08, -0.04, 0]); boxm(0.04, 0.03, 0.05, DARK, drone, [0.075, -0.02, 0]);                 // camera on its gimbal
+  xr(boxm(0.1, 0.03, 0.06, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), drone, [-0.01, -0.035, 0]));                                              // battery
+  xr(boxm(0.045, 0.006, 0.045, new THREE.MeshStandardMaterial({ color: '#1f8f4a' }), drone, [0.02, 0.005, 0])); xr(boxm(0.012, 0.008, 0.012, BLACK, drone, [0.02, 0.012, 0]));   // flight controller + IMU
+  cyl(0.025, 0.01, SILVER, drone, [-0.04, 0.055, 0]); cyl(0.003, 0.05, DARK, drone, [-0.06, 0.07, 0]);                                                  // GPS puck and antenna
+  ring(0, drone, [ARM / Math.SQRT2, 0.055, ARM / Math.SQRT2], 'y', 0.12, { noAxis: true }); ring(1, drone, [0, 0, 0], 'y', 0.2, { noAxis: true });
+  ring(2, drone, [0.02, 0.01, 0], 'y', 0.06, { noAxis: true, xray: true }); ring(3, drone, [-a * 0.5, 0.015, -a * 0.5], 'y', 0.05, { noAxis: true, xray: true });
+  ring(4, drone, [-0.01, -0.035, 0], 'y', 0.09, { noAxis: true, xray: true }); ring(5, drone, [0.08, -0.04, 0], 'y', 0.06, { noAxis: true });
+  // ---- rigid body state
+  const st = { p: new THREE.Vector3(0, 0.6, 0), v: new THREE.Vector3(), q: new THREE.Quaternion(), w: new THREE.Vector3(), yaw: 0, fail: false, T: [0, 0, 0, 0] };
+  const info = { text: '' }, prev = new THREE.Vector3(), Y = new THREE.Vector3(0, 1, 0);
+  const qa = new THREE.Quaternion(), qb = new THREE.Quaternion(), qc = new THREE.Quaternion();
+  const inv = new THREE.Quaternion(), tmp = new THREE.Vector3();
+  function step(h) {
+    // attitude set-point: yaw (integrated rate) · roll about the forward axis · pitch about the side axis
+    st.yaw += q[3] * D2R * h;
+    qa.setFromAxisAngle(Y, st.yaw); qb.setFromAxisAngle(new THREE.Vector3(1, 0, 0), q[1] * D2R); qc.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -q[2] * D2R);
+    const qd = qa.clone().multiply(qb).multiply(qc);
+    const qe = qd.clone().multiply(inv.copy(st.q).invert()); if (qe.w < 0) { qe.x = -qe.x; qe.y = -qe.y; qe.z = -qe.z; qe.w = -qe.w; }
+    const werr = new THREE.Vector3(qe.x, qe.y, qe.z).multiplyScalar(2).applyQuaternion(inv.copy(st.q).invert());   // error in body axes
+    const tau = new THREE.Vector3(4.8 * werr.x - 0.43 * st.w.x, 0.05 * (q[3] * D2R - st.w.y) * 1.0, 4.8 * werr.z - 0.43 * st.w.z);
+    const up = Y.clone().applyQuaternion(st.q).y, Tc = M * G * (1 + 0.6 * q[0] / 100) / Math.max(0.5, up);
+    for (let i = 0; i < 4; i++) { const m = motors[i]; let T = Tc / 4 + (-m.z * tau.x) / (4 * a * a) + (m.x * tau.z) / (4 * a * a) + m.s * tau.y / (4 * KM); if (st.fail && i === 0) T = 0; st.T[i] = Math.min(TMAX, Math.max(0, T)); }
+    // forces and torques
+    let F = 0, tx = 0, ty = 0, tz = 0; for (let i = 0; i < 4; i++) { const T = st.T[i], m = motors[i]; F += T; tx += -m.z * T; tz += m.x * T; ty += m.s * KM * T; }
+    const acc = Y.clone().multiplyScalar(F / M).applyQuaternion(st.q).add(new THREE.Vector3(0, -G, 0)).addScaledVector(st.v, -0.5);
+    st.v.addScaledVector(acc, h); st.p.addScaledVector(st.v, h);
+    const wv = st.w, dw = new THREE.Vector3((tx - (IZ - IY) * wv.y * wv.z) / IX, (ty - (IX - IZ) * wv.z * wv.x) / IY, (tz - (IY - IX) * wv.x * wv.y) / IZ);
+    st.w.addScaledVector(dw, h).multiplyScalar(1 - 0.02 * h * 60);
+    const dq = new THREE.Quaternion(st.w.x * h * 0.5, st.w.y * h * 0.5, st.w.z * h * 0.5, 1).normalize(); st.q.multiply(dq).normalize();
+    if (st.p.y < LEG + 0.02) { st.p.y = LEG + 0.02; if (st.v.y < 0) st.v.y = 0; st.v.x *= 0.9; st.v.z *= 0.9; }
+    if (Math.abs(st.p.x) > 18 || Math.abs(st.p.z) > 18) st.v.set(0, 0, 0);
+  }
+  function pose() { drone.position.copy(st.p); drone.quaternion.copy(st.q); }
+  pose.tick = (dt) => {
+    prev.copy(st.p); const n = 4, h = Math.min(dt, 0.04) / n; for (let k = 0; k < n; k++) step(h); pose();
+    props.forEach((pr, i) => { pr.a += (3 + 40 * Math.sqrt(st.T[i] / TMAX)) * dt * motors[i].s; pr.g.rotation.y = pr.a; discs[i].material.opacity = 0.08 + 0.12 * Math.sqrt(st.T[i] / TMAX); });
+    const dp = st.p.clone().sub(prev); camera.position.add(dp); orbit.target.add(dp);
+    const eul = new THREE.Euler().setFromQuaternion(st.q, 'YZX'), tilt = Math.acos(Math.min(1, Y.clone().applyQuaternion(st.q).y)) / D2R;
+    info.text = L('altitude ', 'altitude ') + (st.p.y - LEG - 0.02).toFixed(2) + ' m, ' + L('speed ', 'vitesse ') + Math.hypot(st.v.x, st.v.z).toFixed(1) + ' m/s, ' + L('tilt ', 'inclinaison ') + tilt.toFixed(0) + '°\n' + L('motors: ', 'moteurs : ') + st.T.map((T, i) => 'M' + (i + 1) + ' ' + Math.round(100 * T / TMAX) + '%').join('  ') + (st.fail ? '\n' + L('⚠ motor 1 has failed: the drone cannot hold its attitude', '⚠ le moteur 1 est en panne : le drone ne peut plus tenir son attitude') : '') + (st.p.y <= LEG + 0.03 ? '\n' + L('on the ground', 'au sol') : '');
+  };
+  pose.special = () => { st.fail = !st.fail; };
+  pose.reset = () => { st.p.set(0, 0.6, 0); st.v.set(0, 0, 0); st.w.set(0, 0, 0); st.q.identity(); st.yaw = 0; st.fail = false; pose(); };
+  pose.readout = () => info.text;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor }[KIND]();
 
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
@@ -575,7 +644,7 @@ $('xrayBtn').addEventListener('click', () => setXray(!xray));
 $('spinBtn').addEventListener('click', () => { spin = !spin; syncBtn(); });
 $('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn && !CFG.panel && !CFG.cmd) select(0); syncBtn(); });
 $('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
-$('wristBtn').addEventListener('click', () => { const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel && !CFG.cmd) select(sp[0][0]); play = false; syncBtn(); });
+$('wristBtn').addEventListener('click', () => { if (pose.special) { pose.special(); return; } const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel && !CFG.cmd) select(sp[0][0]); play = false; syncBtn(); });
 
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);
