@@ -502,7 +502,8 @@ if (renderer) {
     { p: [GX(0) - 5, 1.7, GAL_Z + 5.5], l: [GX(0) + 1.2, 0.7, GAL_Z], s: 0.3 },
     ...GL.map(([y, d, sd], i) => ({ p: [GX(i) + sd * 0.5, y + 0.55, GAL_Z + d + 0.4], l: [GX(i), y, GAL_Z], s: 0 })),
     { p: [0, 3.4, GAL_Z + 9], l: [0, 0.6, GAL_Z], s: 0 }];
-  for (let i = 1; i <= 4; i++) { const k = KF[i], d = k.p.map((v, j) => (v - k.l[j]) * 1.25); k.p = k.l.map((v, j) => v + d[j]); k.s = 0.2 * Math.hypot(...d); }   // tour: farther, centred in the free space
+  const TOUR_ZOOM = innerWidth > 900 ? 1.05 : 1.25;      // desktop: a bigger robot beside the card; phones keep the farther view so the arm fits above the card
+  for (let i = 1; i <= 4; i++) { const k = KF[i], d = k.p.map((v, j) => (v - k.l[j]) * TOUR_ZOOM); k.p = k.l.map((v, j) => v + d[j]); k.s = 0.2 * Math.hypot(...d); }   // tour: close enough for a big robot, centred in the free space
   const cam = { p: new THREE.Vector3(...KF[0].p), l: new THREE.Vector3(...KF[0].l) };
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(), dir = new THREE.Vector3(), hit = new THREE.Vector3(), P0 = new THREE.Vector3(0.55, 0.65, 0), v3 = new THREE.Vector3();
   function pointerTarget(scale, t) {
@@ -614,7 +615,7 @@ if (renderer) {
         arm.rot[i].getWorldPosition(v3); v3.project(camera);
         let x = ((v3.x + 1) / 2) * innerWidth + 14, y = ((1 - v3.y) / 2) * innerHeight - 12;
         // several joints share the same point (q2 and q3, q4 q5 and q6): move a tag down until it no longer covers another one
-        for (let k = 0; k < 8 && placed.some((p) => Math.abs(p[0] - x) < 78 && Math.abs(p[1] - y) < 26); k++) y += 26;
+        for (let k = 0; k < 8 && placed.some((p) => Math.abs(p[0] - x) < 78 && Math.abs(p[1] - y) < 24); k++) y += 24;
         placed.push([x, y]); tg.style.transform = `translate(${x}px, ${y}px)`; tg.innerHTML = `q${i + 1} <b>${q[i].toFixed(0)}°</b>`;
       });
     }
