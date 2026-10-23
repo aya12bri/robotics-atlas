@@ -14,7 +14,7 @@ RA.add({
  "21bx7zmovqh": "Fait tourner la pince ou l'outil autour de son propre axe : il règle l'orientation finale de l'outil.",
  "1rptxmzvqro": "Anatomie d'un robot 6 axes (3D)",
  "cqt576wfub": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"articulated.html\" style=\"color:#ff9f43\">Page du robot 6 axes</a>",
- "1wtfaz1x2zl": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe de rotation, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "h1csbxpftu": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",
@@ -26,6 +26,5 @@ RA.add({
  "u2ccjmin1p": "<strong>Codeur et frein</strong> : le codeur mesure l'angle ; le frein retient le bras quand le courant est coupé.",
  "19c5mep2rzy": "<strong>Faisceau de câbles</strong> : l'énergie et les signaux passent dans les corps creux jusqu'au poignet et à l'outil.",
  "wl32w0big5": "<strong>Contrôleur</strong> : l'ordinateur et les variateurs qui exécutent les boucles d'asservissement (dans la base ou dans une armoire à côté du robot).",
- "5e8sn6nygj": "Le modèle est simplifié : l'intérieur réel dépend de la marque. Pour aller plus loin : le cours « Dynamique, actionneurs et commande ».",
- "21xo9ntisyc": "Voir en 3D, avec l'intérieur du robot →"
+ "u5fnq201gh": "Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque."
 });
