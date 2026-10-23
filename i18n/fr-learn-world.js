@@ -119,6 +119,7 @@ RA.add({
  "s6ot1dqzjj": "Faire voler un quadrirotor en 3D et regarder à l'intérieur →",
  "tbtni3pxkp": "1.3 Marcher : le polygone de sustentation",
  "qsw1dg1aux": "Un robot à pattes est <strong>statiquement stable</strong> si la projection verticale de son centre de masse est à l'intérieur du <strong>polygone de sustentation</strong> (la surface entre ses pieds au sol). Un quadrupède qui garde toujours trois pieds au sol avance avec une « marche statique » très sûre ; un trot ou une course lève les pieds, le polygone devient un segment ou disparaît, et le robot n'est plus que <strong>dynamiquement</strong> stable, comme un humain qui court. Les contrôleurs de marche utilisent des modèles simples : le <em>pendule inversé</em> (le corps tombe en avant et le pied est placé pour le rattraper) et le <em>point de moment nul</em> (ZMP), puis la commande corps entier ou des politiques apprises par-dessus.",
+ "1f89tyhh1l5": "Faire marcher un humanoïde en 3D et regarder à l'intérieur →",
  "26eghkwkqvz": "Un quadrirotor de 2 kg fait du sur-place. Quelle poussée donne chaque rotor ?",
  "1lmy29tw1je": "m g / 4 = 2 × 9,81 / 4 ≈ 4,9 N.",
  "qo9ymoyh61": "Pourquoi un quadrirotor est-il « sous-actionné » ?",
