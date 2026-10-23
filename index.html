@@ -502,6 +502,7 @@ if (renderer) {
     { p: [GX(0) - 5, 1.7, GAL_Z + 5.5], l: [GX(0) + 1.2, 0.7, GAL_Z], s: 0.3 },
     ...GL.map(([y, d, sd], i) => ({ p: [GX(i) + sd * 0.5, y + 0.55, GAL_Z + d + 0.4], l: [GX(i), y, GAL_Z], s: 0 })),
     { p: [0, 3.4, GAL_Z + 9], l: [0, 0.6, GAL_Z], s: 0 }];
+  const TOUR_LIFT = 0.3;
   const TOUR_ZOOM = innerWidth > 900 ? 1.05 : 1.25;      // desktop: a bigger robot beside the card; phones keep the farther view so the arm fits above the card
   for (let i = 1; i <= 4; i++) { const k = KF[i], d = k.p.map((v, j) => (v - k.l[j]) * TOUR_ZOOM); k.p = k.l.map((v, j) => v + d[j]); k.s = 0.2 * Math.hypot(...d); }   // tour: close enough for a big robot, centred in the free space
   const cam = { p: new THREE.Vector3(...KF[0].p), l: new THREE.Vector3(...KF[0].l) };
@@ -549,6 +550,7 @@ if (renderer) {
     if (mode === 0 && DESK()) tl.y -= 0.5;
     if (DESK()) tl.addScaledVector(right, -K.s); else tl.y -= mode === 0 ? 1.3 : mode === 5 ? 0.55 : 1.1;   // phones: the robot sits above the text
     if (mode === 5 && DESK()) tl.y -= 0.32;                          // the robot sits above the card
+    if (mode >= 1 && mode <= 4 && DESK()) tl.y -= TOUR_LIFT;         // tour: the robot's middle on the middle line of the screen, like the card
     return out;
   }
   const tmpF = new THREE.Vector3(), tmpR = new THREE.Vector3(), tmpU = new THREE.Vector3(0, 1, 0);
