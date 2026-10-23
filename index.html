@@ -50,7 +50,7 @@
         <p class="step">02 / 04</p>
         <h2>Frames, then one table</h2>
         <p>Attach a frame to every joint: z along the joint axis, x along the common perpendicular. Four numbers per joint describe the whole robot. This is the DH table, and the angles in it are live.</p>
-        <table class="dh"><thead><tr><th>i</th><th>θ</th><th>d</th><th>a</th><th>α</th></tr></thead><tbody id="dhBody"></tbody></table>
+        <table class="dh dh-t"><thead><tr><th>i</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody id="dhBody"></tbody></table>
       </div>
           <div class="panel fade" data-step="3">
         <p class="step">03 / 04</p>
@@ -517,7 +517,7 @@ if (renderer) {
   const mid = () => innerHeight / 2;
   const dhBody = $('dhBody'), readIK = $('readIK'), readDemo = $('readDemo'); let lastTxt = {};
   const setTxt = (el, key, s) => { if (lastTxt[key] !== s) { lastTxt[key] = s; el.textContent = s; } };
-  dhBody.innerHTML = STD.map((r, i) => `<tr><td>${i + 1}</td><td id="th${i}">0</td><td>${r.d[1]}</td><td>${r.a[1]}</td><td>${r.al[1]}°</td></tr>`).join('');
+  dhBody.innerHTML = `<tr><th>θ</th>${STD.map((_, i) => `<td id="th${i}">0</td>`).join('')}</tr><tr><th>d</th>${STD.map((r) => `<td>${r.d[1]}</td>`).join('')}</tr><tr><th>a</th>${STD.map((r) => `<td>${r.a[1]}</td>`).join('')}</tr><tr><th>α</th>${STD.map((r) => `<td>${r.al[1]}°</td>`).join('')}</tr>`;   // one column per joint: a wide, short table
   const thCells = STD.map((_, i) => $('th' + i));
   const themeCols = () => { const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const bg = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; scene.fog.color.set(bg);
