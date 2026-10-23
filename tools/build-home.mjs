@@ -22,7 +22,7 @@ const TILES = [
 ];
 const t = (x) => (Array.isArray(x) ? tx(x[0], x[1]) : tx(x));
 const html = `<!-- anatomy-home -->
-        <div class="anat-home">
+        <div class="anat-home" id="inside">
           <h3>${tx('Look inside the robots', 'Regarder à l\'intérieur des robots')}</h3>
           <p>${tx('Eleven 3D views you can turn with the mouse, with an X-ray mode that shows the motors, gearboxes, controller and cables.', 'Onze vues 3D que l\'on tourne à la souris, avec un mode rayons X qui montre les moteurs, réducteurs, contrôleur et câbles.')}</p>
           <div class="anat-grid">${TILES.map(([h, n, k]) => `<a href="${h}"><img src="thumbs/${h.replace('.html', '.jpg')}" alt="" width="670" height="580" loading="lazy" decoding="async"><b>${t(n)}</b><span>${t(k)}</span></a>`).join('')}</div>
@@ -32,7 +32,7 @@ const html = `<!-- anatomy-home -->
 const file = path.join(root, 'index.html'); let h = fs.readFileSync(file, 'utf8');
 // the tiles sit at the top of the section, right after the gallery, so the 3D views are visible without scrolling to the roadmap
 h = h.replace(/ *<!-- anatomy-home -->[\s\S]*?<!-- \/anatomy-home -->\n/, '');
-h = h.replace('        <div class="rm-head">', '        ' + html + '        <div class="rm-head">');
+h = h.replace(/ *<div class="rm-head"[^>]*>/, (m) => '        ' + html + '        <div class="rm-head" id="road">');
 fs.writeFileSync(file, h);
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });
 const page = await (await browser.newContext()).newPage();
