@@ -152,6 +152,27 @@ const ROBOTS = {
       ['<strong>Suspension and floor</strong>: three wheels always touch the floor; four wheels need a suspension (or a rocker) so that all of them keep their grip.', '<strong>Suspension et sol</strong> : trois roues touchent toujours le sol ; quatre roues demandent une suspension (ou un balancier) pour qu\'elles gardent toutes leur adhérence.']
     ]
   },
+  stewart: {
+    file: 'anatomy-stewart', robotPage: null, backHref: 'learn-singularities.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    title: ['Anatomy of a Stewart platform (3D)', 'Anatomie d\'une plateforme de Stewart (3D)'], back: ['Singularities course', 'Cours sur les singularités'],
+    special: ['Tilt the platform (roll 15°, pitch 10°)', 'Incliner la plateforme (roulis 15°, tangage 10°)'],
+    note: ['The six leg lengths are computed live from the pose of the platform (inverse kinematics: one simple formula per leg, the distance between the base joint and the platform joint). A leg turns red when it leaves its stroke (550 to 950 mm here) and the pose is then not reachable. Angles are roll (about the forward axis), pitch and yaw. The model is simplified: the real inside depends on the make. Stewart platforms also have singular poses (see lesson 8 of the course on singularities).', 'Les six longueurs de vérins sont calculées en direct à partir de la pose de la plateforme (cinématique inverse : une formule simple par vérin, la distance entre la rotule de la base et celle de la plateforme). Un vérin devient rouge quand il sort de sa course (550 à 950 mm ici) et la pose n\'est alors pas atteignable. Les angles sont le roulis (autour de l\'axe avant), le tangage et le lacet. Le modèle est simplifié : l\'intérieur réel dépend de la marque. Les plateformes de Stewart ont aussi des poses singulières (voir la leçon 8 du cours sur les singularités).'],
+    cmd: ['Pose of the platform', 'Pose de la plateforme', 'Six numbers place the platform in space; the six legs follow.', 'Six nombres placent la plateforme dans l\'espace ; les six vérins suivent.', ['x (right)', 'x (droite)'], ['y (forward)', 'y (avant)'], ['z (up)', 'z (haut)'], ['roll', 'roulis'], ['pitch', 'tangage'], ['yaw', 'lacet']],
+    joints: [
+      ['Base', 'Base', 'The fixed frame, bolted to the floor. It carries the six actuators.', 'Le bâti fixe, boulonné au sol. Il porte les six vérins.', false],
+      ['Six linear actuators', 'Six vérins linéaires', 'Six legs whose length changes, each driven by a motor and a ball screw (electric) or by oil (hydraulic). Changing the six lengths moves the platform in all 6 degrees of freedom.', 'Six jambes dont la longueur change, chacune entraînée par un moteur et une vis à billes (électrique) ou par de l\'huile (hydraulique). Changer les six longueurs déplace la plateforme selon les 6 degrés de liberté.', false],
+      ['Base joints (universal)', 'Articulations de la base (cardans)', 'Each leg is held at the base by a universal joint (2 rotations), so that it can tilt in any direction.', 'Chaque jambe est tenue à la base par un cardan (2 rotations), pour pouvoir s\'incliner dans toutes les directions.', false],
+      ['Platform joints (spherical)', 'Articulations de la plateforme (rotules)', 'At the top each leg ends in a spherical joint (3 rotations). The legs come in pairs that share neighbouring points.', 'En haut chaque jambe se termine par une rotule (3 rotations). Les jambes vont par paires qui partagent des points voisins.', false],
+      ['Moving platform', 'Plateforme mobile', 'It carries the load. Its pose has 6 numbers: x, y, z, roll, pitch, yaw. It is very rigid because the six legs share the load.', 'Elle porte la charge. Sa pose a 6 nombres : x, y, z, roulis, tangage, lacet. Elle est très rigide car les six jambes se partagent la charge.', false],
+      ['Payload', 'Charge', 'A flight-simulator cabin, a telescope mirror, a machine tool or a surgical tool: the Stewart platform moves heavy loads with high precision.', 'Une cabine de simulateur de vol, un miroir de télescope, une machine-outil ou un outil chirurgical : la plateforme de Stewart déplace de lourdes charges avec une grande précision.', false]
+    ],
+    inside: [
+      ['<strong>Six electric actuators</strong>: each has a motor and a ball screw inside a sleeve (seen in X-ray); hydraulic versions use oil cylinders for very heavy loads such as flight simulators.', '<strong>Six vérins électriques</strong> : chacun a un moteur et une vis à billes dans un fourreau (vus aux rayons X) ; les versions hydrauliques utilisent des vérins à huile pour les très lourdes charges comme les simulateurs de vol.'],
+      ['<strong>Universal and spherical joints</strong>: low-friction joints without play, because any play shows directly in the platform pose.', '<strong>Cardans et rotules</strong> : des liaisons à faible frottement et sans jeu, car tout jeu se voit directement dans la pose de la plateforme.'],
+      ['<strong>Encoders or linear sensors</strong> measure each leg length; the controller converts the wanted pose into six lengths (inverse kinematics) and runs six position loops.', '<strong>Codeurs ou capteurs linéaires</strong> qui mesurent chaque longueur ; le contrôleur transforme la pose voulue en six longueurs (cinématique inverse) et exécute six boucles de position.'],
+      ['<strong>Forward kinematics is the hard direction</strong>: from six lengths to a pose needs an iterative solution, the opposite of a serial robot.', '<strong>La cinématique directe est le sens difficile</strong> : passer de six longueurs à une pose demande une résolution itérative, l\'inverse d\'un robot série.']
+    ]
+  },
   mobile: {
     file: 'anatomy-mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], back: ['Mobile robot page', 'Page du robot mobile'],
@@ -187,7 +208,7 @@ const NOTE = ['The angles of this 3D model are those of the drawing, with a zero
 for (const [key, R] of Object.entries(ROBOTS)) {
   reset();
   const cards = R.joints.map((j, i) => { const lab = R.labels ? R.labels[i] : (R.panel ? String(i + 1) : 'J' + (i + 1)); return `<div class="ancard${R.panel ? ' ancfg' : ''}" style="--c:${R.cols[i]}"><button type="button" class="anhead"><span class="ann">${lab}</span><b>${tx(j[0], j[1])}</b></button><p>${tx(j[2], j[3])}</p>${j[4] === false ? '' : `<label class="ansl"><input type="range" step="1" aria-label="${lab}"><output></output></label>`}</div>`; }).join('\n        ');
-  const cmdCard = R.panel ? `<div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">${tx(R.cmd[0], R.cmd[1])}</b><p>${tx(R.cmd[2], R.cmd[3])}</p>${[4, 5, 6].map((k, n) => `<label class="ansl ansl3"><span>${tx(R.cmd[k][0], R.cmd[k][1])}</span><input type="range" aria-label="q${n}"><output></output></label>`).join('')}</div>\n        ` : '';
+  const cmdCard = R.cmd ? `<div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">${tx(R.cmd[0], R.cmd[1])}</b><p>${tx(R.cmd[2], R.cmd[3])}</p>${R.cmd.slice(4).map((lab, n) => { const k = n + 4; return `<label class="ansl ansl3"><span>${tx(R.cmd[k][0], R.cmd[k][1])}</span><input type="range" aria-label="q${n}"><output></output></label>`; }).join('')}</div>\n        ` : '';
   const html = `<!DOCTYPE html>
 <html>
   <head>
@@ -222,7 +243,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   <script src="nav.js" defer></script></head>
   <body data-robot="${key}">
     <h1>${tx(...R.title)}</h1>
-    <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.robotPage}.html" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.robotPage}.html" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
+    <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
     <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
     <div class="toolbar">
       <button id="xrayBtn" type="button" aria-pressed="false">${tx('X-ray (inside)', 'Rayons X (intérieur)')}</button>
@@ -250,6 +271,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   const dict = {}; pairs.forEach(([en, fr], i) => { dict[keys[i]] = fr; });
   fs.writeFileSync(path.join(root, 'i18n', `fr-${R.file}.js`), `// Français — ${R.file}.html (généré par tools/build-anatomy.mjs)\nRA.add(${JSON.stringify(dict, null, 1)});\n`);
 
+  if (R.robotPage) {
   // link from the robot page (and its French text)
   const LK = R.link || LINK;
   const rp = path.join(root, R.robotPage + '.html'); let h = fs.readFileSync(rp, 'utf8');
@@ -258,6 +280,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   const f = path.join(root, 'i18n', `fr-${R.robotPage}.js`);
   const s = fs.readFileSync(f, 'utf8').replace(/\n?\/\/ BEGIN anatomy[\s\S]*?\/\/ END anatomy\n?/, '\n');
   fs.writeFileSync(f, s.trimEnd() + `\n// BEGIN anatomy (generated by tools/build-anatomy.mjs)\nRA.add(${JSON.stringify(lk)});\n// END anatomy\n`);
+  }
   console.log(R.file, 'texts', pairs.length);
 }
 await browser.close();

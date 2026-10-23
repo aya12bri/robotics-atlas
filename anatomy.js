@@ -23,6 +23,8 @@ const CFG = {
     playBase: [4, 0, 0], playAmp: [8, 70, 70], cam: [0.5, 1.8, 3.9], target: [0, 0.3, 0], special: [[1, 90], [2, 90]] },
   drives: { n: 8, nq: 3, col: ALLCOL.concat(['#f1c40f', '#e67e22']), lim: [[-1, 1], [-1, 1], [-2, 2]], home: [0.4, 0, 0], unit: [' m/s', ' m/s', ' rad/s'], dec: 2, step: 0.05, grid: 30, panel: true,
     playFn: (now) => [0.45, 0.4 * Math.sin(now / 1100), 0.9 * Math.cos(now / 1700)], cam: [1.25, 0.95, 1.4], target: [0, 0.15, 0], special: [[0, 0], [1, 0.5], [2, 0]] },
+  stewart: { n: 6, nq: 6, cmd: true, col: ALLCOL, lim: [[-25, 25], [-25, 25], [-20, 20], [-20, 20], [-20, 20], [-25, 25]], home: [0, 0, 0, 0, 0, 0], unit: [' cm', ' cm', ' cm', '°', '°', '°'], dec: 0, grid: 4,
+    playFn: (now) => [10 * Math.sin(now / 1300), 10 * Math.sin(now / 1700 + 1), 8 * Math.sin(now / 1100), 12 * Math.sin(now / 900), 12 * Math.sin(now / 1500 + 2), 15 * Math.sin(now / 2100)], cam: [2.0, 1.4, 2.3], target: [0, 0.55, 0], special: [[0, 0], [1, 0], [2, 0], [3, 15], [4, 10], [5, 0]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -501,14 +503,56 @@ function buildDrives() {
   return pose;
 }
 
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives }[KIND]();
+
+// ------------------------------------------------------------------ model 9: Stewart platform (hexapod)
+function buildStewart() {
+  const Rb = 0.5, Rp = 0.3, A = 15 * D2R, C = 15 * D2R, H0 = 0.8, BY = 0.12, LMIN = 0.55, LMAX = 0.95;
+  const bAng = [-A, A, 120 * D2R - A, 120 * D2R + A, 240 * D2R - A, 240 * D2R + A];
+  const pAng = [-60 * D2R + C, 60 * D2R - C, 60 * D2R + C, 180 * D2R - C, 180 * D2R + C, 300 * D2R - C];
+  const pt = (R, a, y) => new THREE.Vector3(R * Math.cos(a), y, -R * Math.sin(a));
+  const Bp = bAng.map((a) => pt(Rb, a, BY)), Pl = pAng.map((a) => pt(Rp, a, 0));
+  const root = group(scene), top = group(root, [0, H0, 0]);
+  cyl(0.6, 0.06, BASE, root, [0, 0.03, 0]); cyl(0.5, 0.012, DARK, root, [0, 0.066, 0]);
+  Bp.forEach((b) => { cyl(0.02, BY - 0.06, DARK, root, [b.x, 0.06 + (BY - 0.06) / 2, b.z]); mesh(new THREE.SphereGeometry(0.032, 16, 12), SILVER, root, [b.x, b.y, b.z]); });
+  cyl(Rp + 0.07, 0.035, ORANGE, top, [0, 0, 0]); boxm(0.42, 0.2, 0.34, BLUE, top, [0, 0.12, 0]); boxm(0.3, 0.02, 0.26, DARK, top, [0, 0.235, 0]);
+  Pl.forEach((p) => mesh(new THREE.SphereGeometry(0.03, 16, 12), SILVER, top, [p.x, p.y, p.z]));
+  const unit = (geo, mat, vis) => { const m = new THREE.Mesh(geo, mat); root.add(m); if (vis === false) xr(m); return m; };
+  const legs = Bp.map(() => {
+    const rodMat = new THREE.MeshStandardMaterial({ color: '#cfd6df', metalness: 0.6, roughness: 0.3 });
+    return { sleeve: unit(new THREE.CylinderGeometry(0.034, 0.034, 1, 20), DARK), rod: unit(new THREE.CylinderGeometry(0.02, 0.02, 1, 14), rodMat), rodMat,
+      motor: unit(new THREE.CylinderGeometry(0.045, 0.045, 1, 16), MOTOR, false), screw: unit(new THREE.CylinderGeometry(0.01, 0.01, 1, 10), COPPER, false) };
+  });
+  ring(0, root, [0, 0.07, 0], 'y', 0.64, { noAxis: true }); ring(1, root, [0, 0.4, 0], 'y', 0.07, { noAxis: true }); ring(2, root, Bp[0].toArray(), 'y', 0.075, { noAxis: true });
+  ring(3, top, Pl[0].toArray(), 'y', 0.075, { noAxis: true }); ring(4, top, [0, 0, 0], 'y', Rp + 0.12, { noAxis: true }); ring(5, top, [0, 0.12, 0], 'y', 0.33, { noAxis: true });
+  const Y = new THREE.Vector3(0, 1, 0), info = { text: '' }, q4 = new THREE.Quaternion(), Pw = Bp.map(() => new THREE.Vector3());
+  const place = (m, a, b) => { const d = b.clone().sub(a), len = d.length(); m.position.copy(a).addScaledVector(d, 0.5); m.scale.set(1, Math.max(len, 1e-4), 1); m.quaternion.setFromUnitVectors(Y, d.normalize()); };
+  function pose() {
+    const T = new THREE.Vector3(q[0] / 100, H0 + q[2] / 100, -q[1] / 100);
+    q4.setFromEuler(new THREE.Euler(q[3] * D2R, q[5] * D2R, q[4] * D2R, 'YZX')); top.position.copy(T); top.quaternion.copy(q4);
+    let bad = 0; const lens = [];
+    for (let k = 0; k < 6; k++) {
+      const P = Pl[k].clone().applyQuaternion(q4).add(T); Pw[k].copy(P); const B = Bp[k], d = P.clone().sub(B), len = d.length(), dir = d.clone().normalize(); lens.push(len);
+      const out = len < LMIN || len > LMAX; if (out) bad++;
+      legs[k].rodMat.color.set(out ? '#ff6b6b' : '#cfd6df'); legs[k].rodMat.emissive.set(out ? '#ff2d2d' : '#000000');
+      const sl = Math.min(0.55, len * 0.6), s1 = B.clone().addScaledVector(dir, sl);
+      place(legs[k].sleeve, B, s1); place(legs[k].rod, B.clone().addScaledVector(dir, sl * 0.9), P); place(legs[k].screw, B, B.clone().addScaledVector(dir, sl * 0.95)); place(legs[k].motor, B.clone().addScaledVector(dir, -0.04), B.clone().addScaledVector(dir, 0.12));
+    }
+    const mid = Bp[0].clone().add(Pw[0]).multiplyScalar(0.5); rings[1].position.copy(mid); anchors[1].position.copy(mid); rings[1].quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), Pw[0].clone().sub(Bp[0]).normalize());
+    const t = (a) => a.map((l) => Math.round(l * 1000)).join('  ');
+    info.text = L('leg lengths (mm): ', 'longueurs des vérins (mm) : ') + t(lens.slice(0, 3)) + '\n' + '                   ' + t(lens.slice(3)) + (bad ? '\n' + L('⚠ ' + bad + ' leg(s) out of stroke (' + Math.round(LMIN * 1000) + '–' + Math.round(LMAX * 1000) + ' mm): the pose is not reachable', '⚠ ' + bad + ' vérin(s) hors course (' + Math.round(LMIN * 1000) + '–' + Math.round(LMAX * 1000) + ' mm) : la pose n\'est pas atteignable') : '');
+  }
+  pose.readout = () => info.text;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart }[KIND]();
 
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
-const cards = [].slice.call(document.querySelectorAll(CFG.panel ? '.ancfg' : '.ancard'));
+const cards = [].slice.call(document.querySelectorAll(CFG.panel ? '.ancfg' : (CFG.cmd ? '.ancard:not(#anCmd)' : '.ancard')));
 const tags = CFG.panel ? [] : cards.map((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'antag'; const lab = c.querySelector('.ann').textContent; b.textContent = lab; b.style.background = COL[i]; b.setAttribute('aria-label', lab); b.addEventListener('click', () => select(i === sel ? -1 : i)); box.appendChild(b); return b; });
-const mkSlider = (s, i, host) => { s.min = LIM[i][0]; s.max = LIM[i][1]; s.step = CFG.step || 1; s.value = q[i]; const o = host.querySelector('output'); const show = () => { o.textContent = q[i].toFixed(DEC) + CFG.unit[i]; }; show(); s.addEventListener('input', () => { q[i] = +s.value; show(); pose(); if (!CFG.panel) select(i); play = false; syncBtn(); }); s._show = show; return s; };
-const sliders = CFG.panel ? [].slice.call(document.querySelectorAll('#anCmd input[type=range]')).map((s, i) => mkSlider(s, i, s.parentNode)) : cards.map((c, i) => { const s = c.querySelector('input[type=range]'); if (!s) { c.classList.add('info'); return null; } return mkSlider(s, i, c); });
+const mkSlider = (s, i, host) => { s.min = LIM[i][0]; s.max = LIM[i][1]; s.step = CFG.step || 1; s.value = q[i]; const o = host.querySelector('output'); const show = () => { o.textContent = q[i].toFixed(DEC) + CFG.unit[i]; }; show(); s.addEventListener('input', () => { q[i] = +s.value; show(); pose(); if (!CFG.panel && !CFG.cmd) select(i); play = false; syncBtn(); }); s._show = show; return s; };
+const sliders = (CFG.panel || CFG.cmd) ? [].slice.call(document.querySelectorAll('#anCmd input[type=range]')).map((s, i) => mkSlider(s, i, s.parentNode)) : cards.map((c, i) => { const s = c.querySelector('input[type=range]'); if (!s) { c.classList.add('info'); return null; } return mkSlider(s, i, c); });
 cards.forEach((c, i) => c.querySelector('.anhead').addEventListener('click', () => select(CFG.panel ? i : (i === sel ? -1 : i))));
 const readout = document.createElement('div'); readout.className = 'anout'; box.appendChild(readout);
 function select(i) {
@@ -529,9 +573,9 @@ function syncBtn() { $('playBtn').classList.toggle('on', play); $('playBtn').set
 function setQ(i, v) { q[i] = v; if (sliders[i]) { sliders[i].value = v; sliders[i]._show(); } }
 $('xrayBtn').addEventListener('click', () => setXray(!xray));
 $('spinBtn').addEventListener('click', () => { spin = !spin; syncBtn(); });
-$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn && !CFG.panel) select(0); syncBtn(); });
+$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn && !CFG.panel && !CFG.cmd) select(0); syncBtn(); });
 $('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
-$('wristBtn').addEventListener('click', () => { const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel) select(sp[0][0]); play = false; syncBtn(); });
+$('wristBtn').addEventListener('click', () => { const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel && !CFG.cmd) select(sp[0][0]); play = false; syncBtn(); });
 
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);

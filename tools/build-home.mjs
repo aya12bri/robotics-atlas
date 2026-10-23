@@ -15,20 +15,21 @@ const TILES = [
   ['anatomy-gantry.html', ['Cartesian gantry', 'Robot cartésien'], 'P-P-P'],
   ['anatomy-mobile.html', ['Mobile robot', 'Robot mobile'], ['2 wheels', '2 roues']],
   ['anatomy-wheels.html', ['Wheels', 'Roues'], ['7 types', '7 types']],
-  ['anatomy-drives.html', ['Drive configurations', 'Configurations de motorisation'], ['8 layouts', '8 configurations']]
+  ['anatomy-drives.html', ['Drive configurations', 'Configurations de motorisation'], ['8 layouts', '8 configurations']],
+  ['anatomy-stewart.html', ['Stewart platform', 'Plateforme de Stewart'], ['6 legs', '6 vérins']]
 ];
 const t = (x) => (Array.isArray(x) ? tx(x[0], x[1]) : tx(x));
 const html = `<!-- anatomy-home -->
         <div class="anat-home">
           <h3>${tx('Look inside the robots', 'Regarder à l\'intérieur des robots')}</h3>
-          <p>${tx('Eight 3D views you can turn with the mouse, with an X-ray mode that shows the motors, gearboxes, controller and cables.', 'Huit vues 3D que l\'on tourne à la souris, avec un mode rayons X qui montre les moteurs, réducteurs, contrôleur et câbles.')}</p>
+          <p>${tx('Nine 3D views you can turn with the mouse, with an X-ray mode that shows the motors, gearboxes, controller and cables.', 'Neuf vues 3D que l\'on tourne à la souris, avec un mode rayons X qui montre les moteurs, réducteurs, contrôleur et câbles.')}</p>
           <div class="anat-grid">${TILES.map(([h, n, k]) => `<a href="${h}"><b>${t(n)}</b><span>${t(k)}</span></a>`).join('')}</div>
         </div>
         <!-- /anatomy-home -->
 `;
 const file = path.join(root, 'index.html'); let h = fs.readFileSync(file, 'utf8');
-if (/<!-- anatomy-home -->[\s\S]*?<!-- \/anatomy-home -->\n/.test(h)) h = h.replace(/        <!-- anatomy-home -->[\s\S]*?<!-- \/anatomy-home -->\n/, html);
-else h = h.replace('        <details class="cmp">', html + '        <details class="cmp">');
+if (/<!-- anatomy-home -->[\s\S]*?<!-- \/anatomy-home -->\n/.test(h)) h = h.replace(/ *<!-- anatomy-home -->[\s\S]*?<!-- \/anatomy-home -->\n/, '        ' + html);
+else h = h.replace('        <details class="cmp">', '        ' + html + '        <details class="cmp">');
 fs.writeFileSync(file, h);
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });
 const page = await (await browser.newContext()).newPage();

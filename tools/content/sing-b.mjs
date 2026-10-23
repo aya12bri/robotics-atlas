@@ -200,6 +200,7 @@ lesson(PRE, 8, {
     ]),
     P('This is a mirror of the serial case: for a serial robot the singular pose loses a tool direction (type 1); a parallel robot has this problem <em>and</em> the opposite one. That is why a parallel robot is always designed together with a map of its singularity-free workspace, and why the useful volume of a Delta robot is a small dome compared with the size of its frame.',
       'C\'est un miroir du cas série : pour un robot série, la pose singulière perd une direction d\'outil (type 1) ; un robot parallèle a ce problème <em>et</em> le problème inverse. C\'est pourquoi un robot parallèle est toujours conçu avec une carte de son espace de travail sans singularités, et pourquoi le volume utile d\'un robot Delta est un petit dôme par rapport à la taille de son bâti.'),
+    TRY('anatomy-stewart.html', 'See a Stewart platform in 3D: change its pose and watch the six leg lengths →', 'Voir une plateforme de Stewart en 3D : changez sa pose et regardez les six longueurs de vérins →'),
     H4('8.5 The cheat sheet', '8.5 L\'aide-mémoire'),
     TABLE([['Symptom', 'Symptôme'], ['Probable cause', 'Cause probable'], ['First fix', 'Premier remède']], [
       [['Joint speed alarm in a straight line', 'Alarme de vitesse articulaire sur une ligne droite'], ['Arm almost stretched or tool over the base', 'Bras presque tendu ou outil au-dessus de la base'], ['Move the work zone closer; add a via point', 'Rapprocher la zone de travail ; ajouter un point de passage']],

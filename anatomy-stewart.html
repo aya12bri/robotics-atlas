@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a Stewart platform (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="stewart">
+    <h1>Anatomy of a Stewart platform (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-singularities.html" style="color:#ff9f43">Singularities course</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Tilt the platform (roll 15°, pitch 10°)</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">Pose of the platform</b><p>Six numbers place the platform in space; the six legs follow.</p><label class="ansl ansl3"><span>x (right)</span><input type="range" aria-label="q0"><output></output></label><label class="ansl ansl3"><span>y (forward)</span><input type="range" aria-label="q1"><output></output></label><label class="ansl ansl3"><span>z (up)</span><input type="range" aria-label="q2"><output></output></label><label class="ansl ansl3"><span>roll</span><input type="range" aria-label="q3"><output></output></label><label class="ansl ansl3"><span>pitch</span><input type="range" aria-label="q4"><output></output></label><label class="ansl ansl3"><span>yaw</span><input type="range" aria-label="q5"><output></output></label></div>
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Base</b></button><p>The fixed frame, bolted to the floor. It carries the six actuators.</p></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Six linear actuators</b></button><p>Six legs whose length changes, each driven by a motor and a ball screw (electric) or by oil (hydraulic). Changing the six lengths moves the platform in all 6 degrees of freedom.</p></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Base joints (universal)</b></button><p>Each leg is held at the base by a universal joint (2 rotations), so that it can tilt in any direction.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Platform joints (spherical)</b></button><p>At the top each leg ends in a spherical joint (3 rotations). The legs come in pairs that share neighbouring points.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Moving platform</b></button><p>It carries the load. Its pose has 6 numbers: x, y, z, roll, pitch, yaw. It is very rigid because the six legs share the load.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Payload</b></button><p>A flight-simulator cabin, a telescope mirror, a machine tool or a surgical tool: the Stewart platform moves heavy loads with high precision.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Six electric actuators</strong>: each has a motor and a ball screw inside a sleeve (seen in X-ray); hydraulic versions use oil cylinders for very heavy loads such as flight simulators.</li><li><strong>Universal and spherical joints</strong>: low-friction joints without play, because any play shows directly in the platform pose.</li><li><strong>Encoders or linear sensors</strong> measure each leg length; the controller converts the wanted pose into six lengths (inverse kinematics) and runs six position loops.</li><li><strong>Forward kinematics is the hard direction</strong>: from six lengths to a pose needs an iterative solution, the opposite of a serial robot.</li></ul>
+    <p>The six leg lengths are computed live from the pose of the platform (inverse kinematics: one simple formula per leg, the distance between the base joint and the platform joint). A leg turns red when it leaves its stroke (550 to 950 mm here) and the pose is then not reachable. Angles are roll (about the forward axis), pitch and yaw. The model is simplified: the real inside depends on the make. Stewart platforms also have singular poses (see lesson 8 of the course on singularities).</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>
