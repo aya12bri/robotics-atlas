@@ -775,7 +775,7 @@ $('wristBtn').addEventListener('click', () => { if (pose.special) { pose.special
 const leaders = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 leaders.setAttribute('style', 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none');
 box.insertBefore(leaders, box.firstChild);
-const TAG_GAP = 44;
+const TAG_GAP = 30, TAG_R = 11;
 function layoutTags(w, h) {
   const at = [], pos = [];
   anchors.forEach((a, i) => {
@@ -784,26 +784,38 @@ function layoutTags(w, h) {
     const hidden = v.z > 1 || (rings[i] && rings[i].userData.xray && !xray && sel !== i);
     tags[i].style.display = hidden ? 'none' : '';
     if (hidden) return;
-    at[i] = { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h }; pos[i] = { x: at[i].x, y: at[i].y };
+    at[i] = { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h };
   });
-  const ids = pos.map((p, i) => (p ? i : -1)).filter((i) => i >= 0);
-  for (let it = 0; it < 24; it++) {
+  const ids = at.map((p, i) => (p ? i : -1)).filter((i) => i >= 0);
+  if (!ids.length) { leaders.innerHTML = ''; return; }
+  // each small tag is moved out of the model, away from the middle of the tags, and an arrow points back at its part
+  const cx = ids.reduce((t, i) => t + at[i].x, 0) / ids.length, cy = ids.reduce((t, i) => t + at[i].y, 0) / ids.length;
+  const reach = Math.max(38, Math.min(64, w * 0.11));
+  ids.forEach((i, k) => {
+    let dx = at[i].x - cx, dy = at[i].y - cy, d = Math.hypot(dx, dy);
+    if (d < 4) { const ang = -Math.PI / 2 + k * 2.4; dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
+    pos[i] = { x: at[i].x + dx / d * reach, y: at[i].y + dy / d * reach };
+  });
+  for (let it = 0; it < 30; it++) {
     ids.forEach((i) => ids.forEach((j) => {
       if (j <= i) return;
       let dx = pos[j].x - pos[i].x, dy = pos[j].y - pos[i].y, d = Math.hypot(dx, dy);
       if (d >= TAG_GAP) return;
-      if (d < 0.01) { const ang = (i * 2.4 + j) ; dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
+      if (d < 0.01) { const ang = i * 2.4 + j; dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
       const push = (TAG_GAP - d) / 2 / d;
       pos[i].x -= dx * push; pos[i].y -= dy * push; pos[j].x += dx * push; pos[j].y += dy * push;
     }));
-    ids.forEach((i) => { pos[i].x = Math.min(w - 18, Math.max(18, pos[i].x)); pos[i].y = Math.min(h - 18, Math.max(18, pos[i].y)); });
+    ids.forEach((i) => { pos[i].x = Math.min(w - 16, Math.max(16, pos[i].x)); pos[i].y = Math.min(h - 16, Math.max(16, pos[i].y)); });
   }
-  let lines = '';
+  let svg = '';
   ids.forEach((i) => {
     tags[i].style.left = pos[i].x + 'px'; tags[i].style.top = pos[i].y + 'px';
-    if (Math.hypot(pos[i].x - at[i].x, pos[i].y - at[i].y) > 3) lines += '<line x1="' + at[i].x + '" y1="' + at[i].y + '" x2="' + pos[i].x + '" y2="' + pos[i].y + '" stroke="' + COL[i] + '" stroke-width="2"/><circle cx="' + at[i].x + '" cy="' + at[i].y + '" r="3" fill="' + COL[i] + '"/>';
+    const dx = at[i].x - pos[i].x, dy = at[i].y - pos[i].y, d = Math.hypot(dx, dy);
+    if (d < TAG_R + 6) return;
+    const ux = dx / d, uy = dy / d, x1 = pos[i].x + ux * TAG_R, y1 = pos[i].y + uy * TAG_R, x2 = at[i].x, y2 = at[i].y, hx = x2 - ux * 9, hy = y2 - uy * 9, c = COL[i], sw = sel === i ? 2.6 : 1.6;
+    svg += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + hx + '" y2="' + hy + '" stroke="' + c + '" stroke-width="' + sw + '"/><polygon points="' + x2 + ',' + y2 + ' ' + (hx - uy * 4.5) + ',' + (hy + ux * 4.5) + ' ' + (hx + uy * 4.5) + ',' + (hy - ux * 4.5) + '" fill="' + c + '" stroke="#fff" stroke-width="0.8"/>';
   });
-  leaders.innerHTML = lines;
+  leaders.innerHTML = svg;
 }
 
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
