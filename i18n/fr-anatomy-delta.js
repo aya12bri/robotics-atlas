@@ -12,7 +12,7 @@ RA.add({
  "17dvgrayzex": "La petite plateforme mobile avec l'outil (ici une ventouse). Elle a 3 degrés de liberté : x, y et z. Un quatrième moteur facultatif au centre peut faire tourner l'outil.",
  "1ykvwzzkh7a": "Anatomie d'un robot Delta (3D)",
  "murrp4rwtk": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"delta.html\" style=\"color:#ff9f43\">Page du robot Delta</a>",
- "h1csbxpftu": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

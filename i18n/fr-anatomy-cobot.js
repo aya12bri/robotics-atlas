@@ -14,7 +14,7 @@ RA.add({
  "1tg48thy98p": "Fait tourner la bride de l'outil. Quand J5 = 0, les poignets 1 et 3 s'alignent : une singularité de poignet.",
  "1sv3dq0fnhb": "Anatomie d'un cobot (3D)",
  "gbi435qfcz": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"cobot.html\" style=\"color:#ff9f43\">Page du cobot</a>",
- "h1csbxpftu": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",
