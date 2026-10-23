@@ -565,7 +565,7 @@ details.quiz .q { margin: 0.7rem 0 0.3rem; font-weight: 600; } details.quiz .a {
 
 /* ---- learn: course cards, boxes, equations, figures, widgets ---- */
 .anat-home { margin: 0 0 3.4rem; } .anat-home h3 { margin: 0 0 0.3rem; font-size: 1.25rem; } .anat-home p { margin: 0 0 0.9rem; color: var(--muted); max-width: 46rem; }
-.anat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.9rem; }
+.anat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.9rem; }
 .anat-grid a { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.8rem 1rem; border-radius: 14px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--text); text-decoration: none; transition: border-color 0.2s, transform 0.2s; }
 .anat-grid a:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
 .anat-grid b { font-family: var(--display); font-stretch: 85%; font-size: 1rem; } .anat-grid span { color: var(--accent); font-family: var(--mono); font-size: 0.75rem; }
@@ -690,3 +690,4 @@ html, body { overflow-x: clip; }
 
 .anat-grid a { padding: 0 0 0.8rem; overflow: hidden; } .anat-grid a > b, .anat-grid a > span { padding: 0 1rem; } .anat-grid img { display: block; width: 100%; height: auto; aspect-ratio: 670 / 580; object-fit: cover; margin-bottom: 0.55rem; background: #222; }
 @media (max-width: 600px) { .anat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; } .anat-grid a > b { font-size: 0.9rem; } }
+.anat-grid img { transform: scale(1.02); }
