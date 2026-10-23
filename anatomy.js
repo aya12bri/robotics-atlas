@@ -21,6 +21,8 @@ const CFG = {
     playBase: [50, 40, 22], playAmp: [45, 35, 20], cam: [2.3, 1.5, 1.7], target: [0.5, 0.5, -0.4], special: [[0, 100], [1, 80], [2, 45]] },
   wheels: { n: 7, nq: 3, col: [...ALLCOL, '#f1c40f'], lim: [[-12, 12], [-90, 90], [-90, 90]], home: [4, 0, 0], unit: [' rad/s', '°', '°'], dec: 0, grid: 10,
     playBase: [4, 0, 0], playAmp: [8, 70, 70], cam: [0.5, 1.8, 3.9], target: [0, 0.3, 0], special: [[1, 90], [2, 90]] },
+  drives: { n: 8, nq: 3, col: ALLCOL.concat(['#f1c40f', '#e67e22']), lim: [[-1, 1], [-1, 1], [-2, 2]], home: [0.4, 0, 0], unit: [' m/s', ' m/s', ' rad/s'], dec: 2, step: 0.05, grid: 30, panel: true,
+    playFn: (now) => [0.45, 0.4 * Math.sin(now / 1100), 0.9 * Math.cos(now / 1700)], cam: [1.25, 0.95, 1.4], target: [0, 0.15, 0], special: [[0, 0], [1, 0.5], [2, 0]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -407,14 +409,107 @@ function buildWheels() {
   return pose;
 }
 
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels }[KIND]();
+
+// ------------------------------------------------------------------ model 8: eight drive configurations (one robot shown at a time)
+function buildDrives() {
+  const R = 0.07, W = 0.04, D = D2R;
+  const root = group(scene), cfgs = [], st = { x: 0, z: 0, th: 0 }, info = { text: '' };
+  const wheelObjs = [];
+  function mkWheel(parent, x, y, head, kind, o) {
+    o = o || {};
+    const pivot = group(parent, [x, 0, -y]), steer = group(pivot), hd = group(steer); hd.rotation.y = head * D;
+    const spin = group(hd, [0, R, 0]);
+    if (kind === 'fixed') { cyl(R, W, BLACK, spin, [0, 0, 0], 'z'); cyl(R * 0.68, W * 1.05, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.28, W * 1.2, ORANGE, spin, [0, 0, 0], 'z');
+      for (let i = 0; i < 5; i++) { const sp = boxm(R * 1.2, R * 0.12, W * 0.9, DARK, spin, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; } }
+    else {
+      cyl(R * 0.72, W * 1.1, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.25, W * 1.3, ORANGE, spin, [0, 0, 0], 'z');
+      const Y = new THREE.Vector3(0, 1, 0);
+      for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2, tg = new THREE.Vector3(-Math.sin(a), Math.cos(a), 0), ax = kind === 'mecanum' ? tg.clone().multiplyScalar(Math.SQRT1_2).add(new THREE.Vector3(0, 0, Math.SQRT1_2 * (o.tilt || 1))).normalize() : tg;
+        const r = mesh(new THREE.CapsuleGeometry(0.02, kind === 'mecanum' ? 0.035 : 0.025, 6, 12), BLACK, spin, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0]); r.quaternion.setFromUnitVectors(Y, ax); }
+    }
+    for (const sd of [-1, 1]) boxm(0.01, 0.12, 0.05, DARK, hd, [0, R + 0.06, sd * (W / 2 + 0.012)]);
+    const m = group(spin); m.rotation.x = Math.PI / 2; xr(cyl(R * 0.22, W * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(R * 0.12, W * 1.9, COPPER, m, [0, 0, 0]));
+    if (o.steered) { cyl(0.035, 0.05, BLUE, hd, [0, 0.2, 0]); xr(cyl(0.025, 0.07, MOTOR, hd, [0, 0.2, 0])); xr(cyl(0.04, 0.012, SILVER, hd, [0, 0.16, 0])); }
+    const w = { pivot, steer, spin, a: 0, speed: 0, delta: 0, target: 0, x, y, head, kind, steered: !!o.steered };
+    wheelObjs.push(w); return w;
+  }
+  const deco = (g, size, pos) => { boxm(size[0], 0.05, size[1], ORANGE, g, [pos[0], 0.17, pos[1]]); boxm(size[0] * 0.8, 0.015, size[1] * 0.8, DARK, g, [pos[0], 0.2, pos[1]]); cone(g, pos[0] + size[0] / 2 + 0.01); xr(boxm(0.2, 0.045, 0.14, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), g, [pos[0] - 0.04, 0.14, pos[1]])); };
+  const cone = (g, x) => { const c = mesh(new THREE.ConeGeometry(0.04, 0.09, 16), BLUE, g, [x, 0.17, 0], [0, 0, -Math.PI / 2]); return c; };
+  const vel = (w, vx, vy, om) => [vx - om * w.y, vy + om * w.x];
+  const along = (w, vw) => { const h = w.head * D; return vw[0] * Math.cos(h) + vw[1] * Math.sin(h); };
+  const steerCmd = (w, vw) => { let sp = Math.hypot(vw[0], vw[1]); if (sp < 1e-3) return [w.delta, 0]; let dl = Math.atan2(vw[1], vw[0]) / D; if (Math.abs(dl) > 90) { dl -= Math.sign(dl) * 180; sp = -sp; } return [dl, sp]; };
+  const msg = (en, fr) => L(en, fr);
+  const defs = [
+    // 0 differential
+    () => { const g = group(root); deco(g, [0.5, 0.32], [-0.02, 0]); mesh(new THREE.SphereGeometry(0.03, 16, 12), SILVER, g, [-0.25, 0.03, 0]);
+      const wl = mkWheel(g, 0, 0.2, 0, 'fixed'), wr = mkWheel(g, 0, -0.2, 0, 'fixed');
+      return { g, wheels: [wl, wr], run: (vx, vy, om) => { const n = []; if (Math.abs(vy) > 1e-3) n.push(msg('vy ignored: it cannot slide sideways.', 'vy ignoré : il ne peut pas glisser de côté.')); wl.speed = along(wl, vel(wl, vx, 0, om)) / R; wr.speed = along(wr, vel(wr, vx, 0, om)) / R; return { tw: [vx, 0, om], notes: n }; } }; },
+    // 1 tricycle
+    () => { const g = group(root); deco(g, [0.62, 0.32], [0.12, 0]); const rl = mkWheel(g, 0, 0.2, 0, 'fixed'), rr = mkWheel(g, 0, -0.2, 0, 'fixed'), f = mkWheel(g, 0.45, 0, 0, 'fixed', { steered: true });
+      return { g, wheels: [rl, rr, f], run: (vx, vy, om) => { const n = []; if (Math.abs(vy) > 1e-3) n.push(msg('vy ignored: no sideways motion.', 'vy ignoré : pas de mouvement latéral.')); [rl, rr].forEach((w) => { w.speed = along(w, vel(w, vx, 0, om)) / R; }); const c = steerCmd(f, vel(f, vx, 0, om)); f.target = c[0]; f.speed = c[1] / R; return { tw: [vx, 0, om], notes: n }; } }; },
+    // 2 Ackermann car
+    () => { const g = group(root); deco(g, [0.74, 0.34], [0.2, 0]); const rl = mkWheel(g, 0, 0.2, 0, 'fixed'), rr = mkWheel(g, 0, -0.2, 0, 'fixed'), fl = mkWheel(g, 0.5, 0.2, 0, 'fixed', { steered: true }), fr = mkWheel(g, 0.5, -0.2, 0, 'fixed', { steered: true });
+      return { g, wheels: [rl, rr, fl, fr], run: (vx, vy, om) => { const n = []; if (Math.abs(vy) > 1e-3) n.push(msg('vy ignored: no sideways motion.', 'vy ignoré : pas de mouvement latéral.'));
+        if (Math.abs(vx) < 0.02) { if (Math.abs(om) > 1e-3) n.push(msg('A car cannot turn on the spot: it needs to move forward.', 'Une voiture ne peut pas tourner sur place : il faut avancer.')); om = 0; }
+        else { let k = 0; while (k++ < 40 && [fl, fr].some((w) => Math.abs(steerCmd(w, vel(w, vx, 0, om))[0]) > 35)) { om *= 0.9; n[0] = msg('Steering limited to ±35°: the turn is reduced.', 'Braquage limité à ±35° : le virage est réduit.'); } }
+        [rl, rr].forEach((w) => { w.speed = along(w, vel(w, vx, 0, om)) / R; }); [fl, fr].forEach((w) => { const c = steerCmd(w, vel(w, vx, 0, om)); w.target = c[0]; w.speed = c[1] / R; }); return { tw: [vx, 0, om], notes: n }; } }; },
+    // 3 synchro drive
+    () => { const g = group(root); cyl(0.3, 0.05, ORANGE, g, [0, 0.17, 0]); cyl(0.26, 0.015, DARK, g, [0, 0.2, 0]); cone(g, 0.3); xr(boxm(0.2, 0.045, 0.14, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), g, [0, 0.14, 0]));
+      const ws = [90, 210, 330].map((a) => mkWheel(g, 0.2 * Math.cos(a * D), 0.2 * Math.sin(a * D), 0, 'fixed', { steered: true }));
+      return { g, wheels: ws, run: (vx, vy, om) => { const n = []; if (Math.abs(om) > 1e-3) n.push(msg('ω ignored here: the body keeps its heading (a turret turns it separately).', 'ω ignoré ici : le corps garde son cap (une tourelle le fait tourner séparément).')); const c = steerCmd(ws[0], [vx, vy]); ws.forEach((w) => { w.target = c[0]; w.speed = c[1] / R; }); return { tw: [vx, vy, 0], notes: n }; } }; },
+    // 4 kiwi, 3 omni wheels
+    () => { const g = group(root); cyl(0.29, 0.05, ORANGE, g, [0, 0.17, 0]); cyl(0.25, 0.015, DARK, g, [0, 0.2, 0]); cone(g, 0.29); xr(boxm(0.2, 0.045, 0.14, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), g, [0, 0.14, 0]));
+      const ws = [90, 210, 330].map((a) => mkWheel(g, 0.25 * Math.cos(a * D), 0.25 * Math.sin(a * D), a + 90, 'omni'));
+      return { g, wheels: ws, run: (vx, vy, om) => { ws.forEach((w) => { w.speed = along(w, vel(w, vx, vy, om)) / R; }); return { tw: [vx, vy, om], notes: [] }; } }; },
+    // 5 mecanum
+    () => { const g = group(root); deco(g, [0.5, 0.32], [0, 0]); const k = 0.22 + 0.2;
+      const fl = mkWheel(g, 0.22, 0.2, 0, 'mecanum', { tilt: 1 }), fr = mkWheel(g, 0.22, -0.2, 0, 'mecanum', { tilt: -1 }), rl = mkWheel(g, -0.22, 0.2, 0, 'mecanum', { tilt: -1 }), rr = mkWheel(g, -0.22, -0.2, 0, 'mecanum', { tilt: 1 });
+      return { g, wheels: [fl, fr, rl, rr], run: (vx, vy, om) => { fl.speed = (vx - vy - k * om) / R; fr.speed = (vx + vy + k * om) / R; rl.speed = (vx + vy - k * om) / R; rr.speed = (vx - vy + k * om) / R; return { tw: [vx, vy, om], notes: [] }; } }; },
+    // 6 swerve
+    () => { const g = group(root); deco(g, [0.5, 0.32], [0, 0]); const ws = [[0.22, 0.2], [0.22, -0.2], [-0.22, 0.2], [-0.22, -0.2]].map((p) => mkWheel(g, p[0], p[1], 0, 'fixed', { steered: true }));
+      return { g, wheels: ws, run: (vx, vy, om) => { ws.forEach((w) => { const c = steerCmd(w, vel(w, vx, vy, om)); w.target = c[0]; w.speed = c[1] / R; }); return { tw: [vx, vy, om], notes: [] }; } }; },
+    // 7 skid-steer with tracks
+    () => { const g = group(root); deco(g, [0.62, 0.34], [0, 0]); const tracks = [];
+      for (const side of [1, -1]) { const t = group(g, [0, 0, -side * 0.2]), TL = 0.34, TR = 0.09, Pn = 2 * TL + 2 * Math.PI * TR, belt = [], cy = TR + 0.01;
+        for (const sx of [-1, 1]) { cyl(TR * 0.82, 0.1, SILVER, t, [sx * TL / 2, cy, 0], 'z'); cyl(TR * 0.4, 0.12, ORANGE, t, [sx * TL / 2, cy, 0], 'z'); }
+        for (let i = 0; i < 30; i++) belt.push(boxm(0.045, 0.014, 0.12, i % 2 ? BLACK : DARK, t, [0, 0, 0]));
+        xr(cyl(TR * 0.3, 0.1, MOTOR, t, [TL / 2, cy, 0.0], 'z'));
+        const tr = { off: 0, speed: 0, side, place: () => belt.forEach((b, i) => { let u = ((i * Pn / 30) + tr.off) % Pn; if (u < 0) u += Pn; let x, y, a;
+          if (u < TL) { x = TL / 2 - u; y = cy - TR; a = 0; } else if (u < TL + Math.PI * TR) { const q2 = (u - TL) / TR; x = -TL / 2 - Math.sin(q2) * TR; y = cy - Math.cos(q2) * TR; a = q2; } else if (u < 2 * TL + Math.PI * TR) { x = -TL / 2 + (u - TL - Math.PI * TR); y = cy + TR; a = Math.PI; } else { const q2 = (u - 2 * TL - Math.PI * TR) / TR; x = TL / 2 + Math.sin(q2) * TR; y = cy + Math.cos(q2) * TR; a = Math.PI + q2; }
+          b.position.set(x, y, 0); b.rotation.z = a; }) }; tr.place(); tracks.push(tr); }
+      return { g, wheels: [], tracks, run: (vx, vy, om) => { const n = []; if (Math.abs(vy) > 1e-3) n.push(msg('vy ignored: it can only slip, not slide freely.', 'vy ignoré : il ne peut que déraper, pas glisser librement.')); tracks.forEach((t) => { t.speed = vx - om * 0.2 * t.side; }); return { tw: [vx, 0, om], notes: n }; } }; }
+  ];
+  defs.forEach((d, i) => { const c = d(); c.g.visible = false; cfgs.push(c); });
+  const trail = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: '#ff9f43' })); scene.add(trail);
+  const pts = []; let acc = 0, cur = 0; const prev = new THREE.Vector3();
+  function pose() { root.position.set(st.x, 0, st.z); root.rotation.y = st.th; }
+  pose.onSelect = (i) => { if (i < 0) return; cur = i; cfgs.forEach((c, k) => { c.g.visible = k === i; }); };
+  pose.tick = (dt) => {
+    const c = cfgs[cur], r = c.run(q[0], q[1], q[2]), tw = r.tw;
+    c.wheels.forEach((w) => { w.delta += (w.target - w.delta) * Math.min(1, dt * 10); w.steer.rotation.y = w.delta * D; w.a += w.speed * dt; w.spin.rotation.z = -w.a; });
+    (c.tracks || []).forEach((t) => { t.off += t.speed * dt; t.place(); });
+    prev.copy(root.position); st.th += tw[2] * dt; st.x += (tw[0] * Math.cos(st.th) - tw[1] * Math.sin(st.th)) * dt; st.z -= (tw[0] * Math.sin(st.th) + tw[1] * Math.cos(st.th)) * dt; pose();
+    const dp = root.position.clone().sub(prev); camera.position.add(dp); orbit.target.add(dp);
+    acc += dt; if (acc > 0.05 && (Math.hypot(tw[0], tw[1]) > 1e-3 || Math.abs(tw[2]) > 1e-3)) { acc = 0; pts.push(st.x, 0.004, st.z); if (pts.length > 4500) pts.splice(0, 3); trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); trail.geometry.computeBoundingSphere(); }
+    const lines = c.wheels.map((w, i) => L('wheel ', 'roue ') + (i + 1) + ': ' + w.speed.toFixed(1) + ' rad/s' + (w.steered ? ', ' + L('steering ', 'orientation ') + w.delta.toFixed(0) + '°' : ''));
+    (c.tracks || []).forEach((t, i) => lines.push(L(i ? 'right track: ' : 'left track: ', i ? 'chenille droite : ' : 'chenille gauche : ') + t.speed.toFixed(2) + ' m/s'));
+    info.text = lines.concat(r.notes).join('\n');
+  };
+  pose.reset = () => { st.x = st.z = st.th = 0; pts.length = 0; trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3)); cfgs.forEach((c) => c.wheels.forEach((w) => { w.a = 0; w.delta = 0; w.target = 0; })); pose(); };
+  pose.readout = () => info.text;
+  cfgs[0].g.visible = true;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives }[KIND]();
 
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
-const cards = [].slice.call(document.querySelectorAll('.ancard'));
-const tags = cards.map((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'antag'; const lab = c.querySelector('.ann').textContent; b.textContent = lab; b.style.background = COL[i]; b.setAttribute('aria-label', lab); b.addEventListener('click', () => select(i === sel ? -1 : i)); box.appendChild(b); return b; });
-const sliders = cards.map((c, i) => { const s = c.querySelector('input[type=range]'); if (!s) { c.classList.add('info'); return null; } s.min = LIM[i][0]; s.max = LIM[i][1]; s.step = CFG.step || 1; s.value = q[i]; const o = c.querySelector('output'); const show = () => { o.textContent = q[i].toFixed(DEC) + CFG.unit[i]; }; show(); s.addEventListener('input', () => { q[i] = +s.value; show(); pose(); select(i); play = false; syncBtn(); }); c._show = show; return s; });
-cards.forEach((c, i) => c.querySelector('.anhead').addEventListener('click', () => select(i === sel ? -1 : i)));
+const cards = [].slice.call(document.querySelectorAll(CFG.panel ? '.ancfg' : '.ancard'));
+const tags = CFG.panel ? [] : cards.map((c, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'antag'; const lab = c.querySelector('.ann').textContent; b.textContent = lab; b.style.background = COL[i]; b.setAttribute('aria-label', lab); b.addEventListener('click', () => select(i === sel ? -1 : i)); box.appendChild(b); return b; });
+const mkSlider = (s, i, host) => { s.min = LIM[i][0]; s.max = LIM[i][1]; s.step = CFG.step || 1; s.value = q[i]; const o = host.querySelector('output'); const show = () => { o.textContent = q[i].toFixed(DEC) + CFG.unit[i]; }; show(); s.addEventListener('input', () => { q[i] = +s.value; show(); pose(); if (!CFG.panel) select(i); play = false; syncBtn(); }); s._show = show; return s; };
+const sliders = CFG.panel ? [].slice.call(document.querySelectorAll('#anCmd input[type=range]')).map((s, i) => mkSlider(s, i, s.parentNode)) : cards.map((c, i) => { const s = c.querySelector('input[type=range]'); if (!s) { c.classList.add('info'); return null; } return mkSlider(s, i, c); });
+cards.forEach((c, i) => c.querySelector('.anhead').addEventListener('click', () => select(CFG.panel ? i : (i === sel ? -1 : i))));
 const readout = document.createElement('div'); readout.className = 'anout'; box.appendChild(readout);
 function select(i) {
   sel = i;
@@ -422,6 +517,7 @@ function select(i) {
   rings.forEach((r, k) => { r.material.emissiveIntensity = k === i ? 1.4 : 0.35; r.scale.setScalar(k === i ? 1.12 : 1); });
   axes.forEach((a, k) => { a.visible = k === i && !a.userData.none; });
   if (i >= 0 && rings[i] && rings[i].userData.xray && !xray) setXray(true);
+  if (pose.onSelect) pose.onSelect(i);
 }
 const $ = (id) => document.getElementById(id);
 function setXray(on) {
@@ -430,12 +526,12 @@ function setXray(on) {
   $('xrayBtn').classList.toggle('on', on); $('xrayBtn').setAttribute('aria-pressed', on);
 }
 function syncBtn() { $('playBtn').classList.toggle('on', play); $('playBtn').setAttribute('aria-pressed', play); $('spinBtn').classList.toggle('on', spin); $('spinBtn').setAttribute('aria-pressed', spin); }
-function setQ(i, v) { q[i] = v; if (sliders[i]) { sliders[i].value = v; cards[i]._show(); } }
+function setQ(i, v) { q[i] = v; if (sliders[i]) { sliders[i].value = v; sliders[i]._show(); } }
 $('xrayBtn').addEventListener('click', () => setXray(!xray));
 $('spinBtn').addEventListener('click', () => { spin = !spin; syncBtn(); });
-$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn) select(0); syncBtn(); });
+$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn && !CFG.panel) select(0); syncBtn(); });
 $('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
-$('wristBtn').addEventListener('click', () => { const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); select(sp[0][0]); play = false; syncBtn(); });
+$('wristBtn').addEventListener('click', () => { const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel) select(sp[0][0]); play = false; syncBtn(); });
 
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);
@@ -454,5 +550,5 @@ function loop(now) {
   const w = box.clientWidth, h = box.clientHeight;
   anchors.forEach((a, i) => { a.getWorldPosition(v); v.project(camera); tags[i].style.display = v.z > 1 ? 'none' : ''; tags[i].style.left = ((v.x * 0.5 + 0.5) * w) + 'px'; tags[i].style.top = ((-v.y * 0.5 + 0.5) * h) + 'px'; });
 }
-pose(); select(-1); requestAnimationFrame(loop);
+pose(); select(CFG.panel ? 0 : -1); requestAnimationFrame(loop);
 window.RA_ANATOMY = { q, select, setXray, pose };
