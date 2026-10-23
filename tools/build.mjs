@@ -38,7 +38,7 @@ ${c.gloss}
         <section class="finish">
           <h2>${c.finish.h}</h2>
           <p>${c.finish.p}</p>
-          <p class="cta"><a class="btn" href="${c.finish.next[0]}">${c.finish.next[1]}</a> <a class="btn ghost" href="index.html#start">${c.finish.back}</a></p>
+          <p class="cta"><a class="btn" href="${c.finish.next[0]}">${c.finish.next[1]}</a> <a class="btn ghost" href="index.html#road">${c.finish.back}</a></p>
         </section>
       </div>
     </div>

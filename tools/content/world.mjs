@@ -21,7 +21,7 @@ export function build() {
     finish: {
       h: tx('You have the whole map of robotics!', 'Vous avez toute la carte de la robotique !'),
       p: tx('Go back to the roadmap, pick the pages you skipped, and start your own robot. The best way to know a robot is to build one.', 'Retournez au parcours, choisissez les pages que vous avez sautées, et lancez votre propre robot. La meilleure façon de connaître un robot est d\'en construire un.'),
-      next: ['index.html#start', tx('Back to the roadmap →', 'Retour au parcours →')],
+      next: ['index.html#road', tx('Back to the roadmap →', 'Retour au parcours →')],
       back: tx('Home page', 'Page d\'accueil')
     }
   };
