@@ -26,7 +26,7 @@ const CFG = {
   stewart: { n: 6, nq: 6, cmd: true, col: ALLCOL, lim: [[-25, 25], [-25, 25], [-20, 20], [-20, 20], [-20, 20], [-25, 25]], home: [0, 0, 0, 0, 0, 0], unit: [' cm', ' cm', ' cm', '°', '°', '°'], dec: 0, grid: 4,
     playFn: (now) => [10 * Math.sin(now / 1300), 10 * Math.sin(now / 1700 + 1), 8 * Math.sin(now / 1100), 12 * Math.sin(now / 900), 12 * Math.sin(now / 1500 + 2), 15 * Math.sin(now / 2100)], cam: [2.0, 1.4, 2.3], target: [0, 0.55, 0], special: [[0, 0], [1, 0], [2, 0], [3, 15], [4, 10], [5, 0]] },
   quadrotor: { n: 6, nq: 4, cmd: true, col: ALLCOL, lim: [[-100, 100], [-25, 25], [-25, 25], [-120, 120]], home: [0, 0, 0, 0], unit: [' %', '°', '°', '°/s'], dec: 0, grid: 40,
-    playFn: (now) => [25 * Math.sin(now / 2600), 14 * Math.sin(now / 1500), 14 * Math.cos(now / 1500), 25 * Math.sin(now / 3000)], cam: [0.9, 0.7, 1.05], target: [0, 0.6, 0], special: [[0, 0]] },
+    playFn: (now) => [25 * Math.sin(now / 2600), 14 * Math.sin(now / 1500), 14 * Math.cos(now / 1500), 25 * Math.sin(now / 3000)], cam: [0.65, 0.5, 0.75], target: [0, 0.6, 0], special: [[0, 0]] },
   humanoid: { n: 6, nq: 5, cmd: true, col: ALLCOL, lim: [[0, 100], [-60, 60], [-30, 170], [-80, 80], [0, 100]], home: [0, 0, 0, 0, 50], unit: [' %', '°', '°', '°', ' %'], dec: 0, grid: 40,
     playFn: (now) => [35 + 35 * Math.sin(now / 1500), 40 * Math.sin(now / 1900), 75 + 75 * Math.sin(now / 1300), 55 * Math.sin(now / 1700), q[4]], cam: [2.9, 1.3, 2.3], target: [0, 0.85, 0], special: [[0, 0]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
@@ -771,6 +771,41 @@ $('playBtn').addEventListener('click', () => { play = !play; t0 = performance.no
 $('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
 $('wristBtn').addEventListener('click', () => { if (pose.special) { pose.special(); return; } const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel && !CFG.cmd) select(sp[0][0]); play = false; syncBtn(); });
 
+// numbered tags sit on their part; when several land close together on screen they are pushed apart and joined to their part by a thin line
+const leaders = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+leaders.setAttribute('style', 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none');
+box.insertBefore(leaders, box.firstChild);
+const TAG_GAP = 44;
+function layoutTags(w, h) {
+  const at = [], pos = [];
+  anchors.forEach((a, i) => {
+    if (!tags[i]) return;
+    a.getWorldPosition(v); v.project(camera);
+    const hidden = v.z > 1 || (rings[i] && rings[i].userData.xray && !xray && sel !== i);
+    tags[i].style.display = hidden ? 'none' : '';
+    if (hidden) return;
+    at[i] = { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h }; pos[i] = { x: at[i].x, y: at[i].y };
+  });
+  const ids = pos.map((p, i) => (p ? i : -1)).filter((i) => i >= 0);
+  for (let it = 0; it < 24; it++) {
+    ids.forEach((i) => ids.forEach((j) => {
+      if (j <= i) return;
+      let dx = pos[j].x - pos[i].x, dy = pos[j].y - pos[i].y, d = Math.hypot(dx, dy);
+      if (d >= TAG_GAP) return;
+      if (d < 0.01) { const ang = (i * 2.4 + j) ; dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
+      const push = (TAG_GAP - d) / 2 / d;
+      pos[i].x -= dx * push; pos[i].y -= dy * push; pos[j].x += dx * push; pos[j].y += dy * push;
+    }));
+    ids.forEach((i) => { pos[i].x = Math.min(w - 18, Math.max(18, pos[i].x)); pos[i].y = Math.min(h - 18, Math.max(18, pos[i].y)); });
+  }
+  let lines = '';
+  ids.forEach((i) => {
+    tags[i].style.left = pos[i].x + 'px'; tags[i].style.top = pos[i].y + 'px';
+    if (Math.hypot(pos[i].x - at[i].x, pos[i].y - at[i].y) > 3) lines += '<line x1="' + at[i].x + '" y1="' + at[i].y + '" x2="' + pos[i].x + '" y2="' + pos[i].y + '" stroke="' + COL[i] + '" stroke-width="2"/><circle cx="' + at[i].x + '" cy="' + at[i].y + '" r="3" fill="' + COL[i] + '"/>';
+  });
+  leaders.innerHTML = lines;
+}
+
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);
 const v = new THREE.Vector3();
@@ -786,7 +821,7 @@ function loop(now) {
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
   renderer.render(scene, camera);
   const w = box.clientWidth, h = box.clientHeight;
-  anchors.forEach((a, i) => { a.getWorldPosition(v); v.project(camera); tags[i].style.display = v.z > 1 ? 'none' : ''; tags[i].style.left = ((v.x * 0.5 + 0.5) * w) + 'px'; tags[i].style.top = ((-v.y * 0.5 + 0.5) * h) + 'px'; });
+  layoutTags(w, h);
 }
 pose(); select(CFG.panel ? 0 : -1); requestAnimationFrame(loop);
 window.RA_ANATOMY = { q, select, setXray, pose };
