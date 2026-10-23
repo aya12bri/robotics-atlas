@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a humanoid robot (3D)</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 580px; border-radius: 12px; overflow: hidden; touch-action: none; }
+      #anatView canvas { display: block; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: grid; gap: 0.6rem; }
+      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
+      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
+      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
+      .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
+      .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
+      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
+      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { height: 400px; } }
+    </style>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body data-robot="humanoid">
+    <h1>Anatomy of a humanoid robot (3D)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="toolbar">
+      <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="spinBtn" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="wristBtn" type="button">Walk on / off</button>
+      <button id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView"></div>
+      <div class="ancards">
+        <div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">Pose and walking</b><p>Move the sliders to crouch, twist the waist, raise the arms or turn the head. Press Walk to make it walk; the pace slider sets the step length and the rhythm.</p><label class="ansl ansl3"><span>crouch</span><input type="range" aria-label="q0"><output></output></label><label class="ansl ansl3"><span>waist twist</span><input type="range" aria-label="q1"><output></output></label><label class="ansl ansl3"><span>arms raise</span><input type="range" aria-label="q2"><output></output></label><label class="ansl ansl3"><span>head turn</span><input type="range" aria-label="q3"><output></output></label><label class="ansl ansl3"><span>walking pace</span><input type="range" aria-label="q4"><output></output></label></div>
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Legs: hip, knee, ankle</b></button><p>Each leg has about 6 joints: 3 at the hip, 1 at the knee and 2 at the ankle. The strongest motors are here, because the legs carry the whole weight and absorb the impact of the steps. Seen in X-ray: motors, ball screws and linear actuators.</p></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Waist and torso</b></button><p>A joint that twists and leans the upper body. Twisting the waist against the legs cancels the spin that each step gives to the body, like a person swinging their arms.</p></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Arms: shoulder and elbow</b></button><p>Three joints at the shoulder, one at the elbow (and often two at the wrist). The arms balance the walk and do the work: carrying, pushing, opening doors.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Hands</b></button><p>Five fingers (a thumb and four fingers) moved by small motors placed in the forearm and pulled by tendons (seen in X-ray). Dexterous hands have 12 to more than 20 degrees of freedom and tactile sensors.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Head and sensors</b></button><p>Stereo cameras (depth), microphones and often a lidar. The neck turns the head so that the sensors can look around while the body walks.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Battery and computer</b></button><p>The battery sits in the torso, in the middle of the body, and gives 1 to 2 hours of autonomy. The computer runs the balance loop (1 kHz) and, on a second board, vision and planning. Seen in X-ray.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>About 30 actuators</strong>: a brushless motor with a harmonic or planetary gearbox at each joint, or an electric linear actuator (motor and ball screw) for the knee and the ankle. Hydraulic humanoids use oil instead.</li><li><strong>Sensors for balance</strong>: an IMU in the pelvis (attitude and acceleration), an encoder on every joint, and force and torque sensors in the feet that tell where the load is.</li><li><strong>Walking control</strong>: a footstep planner, a model of the body as an inverted pendulum (the centre of mass and the zero-moment point), then whole-body inverse kinematics and joint torque control at 1 kHz.</li><li><strong>Energy and heat</strong>: walking uses a lot of power even when standing still, because the leg motors have to hold the weight; the battery and the motors need cooling.</li></ul>
+    <p>The humanoid really walks: a gait generator moves each foot (backwards under the body while it is on the ground, forwards in the air) and the two-link inverse kinematics of the leg finds the hip and knee angles that put the ankle there; the ankle then keeps the foot flat. When it stands, the hips move so that the centre of mass (computed from the mass of every part) stays over the feet: crouch and raise an arm to see it. When it walks, the centre of mass leaves the support area at each step, so the balance is dynamic, a controlled fall; real humanoids add feedback from the IMU and the force sensors (ZMP or model predictive control). The model is simplified: the real inside depends on the make.</p>
+    <script type="module" src="anatomy.js"></script>
+  </body>
+</html>

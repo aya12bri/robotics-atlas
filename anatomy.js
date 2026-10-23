@@ -27,6 +27,8 @@ const CFG = {
     playFn: (now) => [10 * Math.sin(now / 1300), 10 * Math.sin(now / 1700 + 1), 8 * Math.sin(now / 1100), 12 * Math.sin(now / 900), 12 * Math.sin(now / 1500 + 2), 15 * Math.sin(now / 2100)], cam: [2.0, 1.4, 2.3], target: [0, 0.55, 0], special: [[0, 0], [1, 0], [2, 0], [3, 15], [4, 10], [5, 0]] },
   quadrotor: { n: 6, nq: 4, cmd: true, col: ALLCOL, lim: [[-100, 100], [-25, 25], [-25, 25], [-120, 120]], home: [0, 0, 0, 0], unit: [' %', '°', '°', '°/s'], dec: 0, grid: 40,
     playFn: (now) => [25 * Math.sin(now / 2600), 14 * Math.sin(now / 1500), 14 * Math.cos(now / 1500), 25 * Math.sin(now / 3000)], cam: [0.9, 0.7, 1.05], target: [0, 0.6, 0], special: [[0, 0]] },
+  humanoid: { n: 6, nq: 5, cmd: true, col: ALLCOL, lim: [[0, 100], [-60, 60], [-30, 170], [-80, 80], [0, 100]], home: [0, 0, 0, 0, 50], unit: [' %', '°', '°', '°', ' %'], dec: 0, grid: 40,
+    playFn: (now) => [35 + 35 * Math.sin(now / 1500), 40 * Math.sin(now / 1900), 75 + 75 * Math.sin(now / 1300), 55 * Math.sin(now / 1700), q[4]], cam: [2.9, 1.3, 2.3], target: [0, 0.85, 0], special: [[0, 0]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -614,7 +616,130 @@ function buildQuadrotor() {
   return pose;
 }
 
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor }[KIND]();
+// ------------------------------------------------------------------ model 11: humanoid (walks: gait generator + 2-link leg inverse kinematics + balance)
+function buildHumanoid() {
+  const L1 = 0.43, L2 = 0.43, AH = 0.09, HIPZ = 0.1, FX = 0.05, UA = 0.28, FA = 0.26;
+  const root = group(scene);
+  const mat = new THREE.MeshStandardMaterial({ color: '#1f8f4a' });
+  const pelvis = group(root, [0, 0.9, 0]);
+  boxm(0.16, 0.13, 0.3, LIGHT, pelvis, [0, 0, 0]); boxm(0.1, 0.06, 0.2, DARK, pelvis, [-0.03, -0.04, 0]);
+  xr(boxm(0.05, 0.015, 0.05, mat, pelvis, [0, 0.02, 0])); xr(boxm(0.014, 0.01, 0.014, BLACK, pelvis, [0, 0.032, 0]));   // IMU board
+  const waist = group(pelvis, [0, 0.07, 0]);                               // waist: twist (yaw) and lean (pitch)
+  cyl(0.09, 0.07, DARK, waist, [0, 0.01, 0]);
+  const torso = group(waist, [0, 0.0, 0]);
+  const chest = boxm(0.21, 0.4, 0.34, LIGHT, torso, [0, 0.25, 0]); boxm(0.215, 0.1, 0.345, BLUE, torso, [0.0, 0.36, 0]);
+  boxm(0.02, 0.12, 0.2, DARK, torso, [0.11, 0.28, 0]);                                                     // chest plate
+  xr(boxm(0.1, 0.22, 0.24, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), torso, [-0.02, 0.2, 0]));   // battery
+  const brd = group(torso, [0.07, 0.28, 0]); brd.rotation.y = Math.PI / 2;
+  xr(boxm(0.22, 0.2, 0.012, mat, brd, [0, 0, 0])); for (let i = 0; i < 6; i++) xr(boxm(0.035, 0.03, 0.018, i % 2 ? BLACK : SILVER, brd, [-0.07 + (i % 3) * 0.07, -0.05 + Math.floor(i / 3) * 0.08, 0.012]));   // computer
+  drive(waist, [0, -0.03, 0], 'y', 0.05, 0.8);
+  cable(torso, [[-0.02, 0.1, 0.05], [-0.03, 0.2, 0.0], [-0.02, 0.35, -0.04], [0, 0.48, 0]]);
+  // ---- head
+  const head = group(torso, [0, 0.52, 0]); cyl(0.04, 0.06, DARK, torso, [0, 0.48, 0]);
+  boxm(0.17, 0.2, 0.17, LIGHT, head, [0, 0.1, 0]); boxm(0.04, 0.09, 0.15, BLACK, head, [0.08, 0.11, 0]);       // visor
+  for (const s of [-1, 1]) { cyl(0.018, 0.02, SILVER, head, [0.095, 0.12, s * 0.04], 'x'); cyl(0.008, 0.02, BLUE, head, [0.105, 0.12, s * 0.04], 'x'); }   // stereo cameras
+  boxm(0.02, 0.012, 0.08, DARK, head, [0.09, 0.05, 0]); cyl(0.012, 0.03, DARK, head, [0, 0.22, 0]);              // microphones and lidar puck
+  drive(head, [0, -0.03, 0], 'y', 0.03, 0.7);
+  // ---- arms
+  const arms = [1, -1].map((s) => {
+    const sh = group(torso, [0, 0.4, s * 0.22]); cyl(0.065, 0.1, DARK, sh, [0, 0, 0], 'z');
+    mesh(new THREE.CapsuleGeometry(0.045, UA - 0.05, 8, 16), LIGHT, sh, [0, -UA / 2, 0]);
+    drive(sh, [0, 0, s * 0.02], 'z', 0.04, 0.75);
+    const el = group(sh, [0, -UA, 0]); cyl(0.05, 0.09, DARK, el, [0, 0, 0], 'z');
+    mesh(new THREE.CapsuleGeometry(0.04, FA - 0.05, 8, 16), LIGHT, el, [0, -FA / 2, 0]);
+    drive(el, [0, 0, s * 0.01], 'z', 0.035, 0.7);
+    for (let k = 0; k < 3; k++) xr(cyl(0.012, 0.1, MOTOR, el, [0.012, -0.1 - k * 0.04, (k - 1) * 0.018]));        // finger motors in the forearm
+    const hand = group(el, [0, -FA, 0]); boxm(0.035, 0.09, 0.08, DARK, hand, [0, -0.045, 0]);
+    for (let k = 0; k < 4; k++) boxm(0.018, 0.07, 0.014, SILVER, hand, [0, -0.125, (k - 1.5) * 0.02]);
+    const th = boxm(0.016, 0.055, 0.014, SILVER, hand, [0.03, -0.06, s * 0.0]); th.rotation.z = -0.5;
+    cable(el, [[0, -0.01, 0.0], [0.01, -0.1, 0.01], [0.01, -0.18, 0.0], [0.0, -FA, 0.0]], 0.006);
+    return { sh, el, hand, s };
+  });
+  // ---- legs
+  const legs = [1, -1].map((s) => {
+    const hip = group(pelvis, [0, -0.04, s * HIPZ]); cyl(0.06, 0.1, DARK, hip, [0, 0, 0], 'z'); mesh(new THREE.SphereGeometry(0.055, 16, 12), DARK, hip, [0, 0, 0]);
+    mesh(new THREE.CapsuleGeometry(0.06, L1 - 0.1, 8, 16), LIGHT, hip, [0, -L1 / 2, 0]);
+    drive(hip, [0, 0.02, 0], 'z', 0.05, 0.8); drive(hip, [0, 0.02, 0], 'x', 0.05, 0.7); drive(hip, [0, 0.0, 0], 'y', 0.05, 0.7);
+    const kn = group(hip, [0, -L1, 0]); cyl(0.065, 0.11, DARK, kn, [0, 0, 0], 'z');
+    mesh(new THREE.CapsuleGeometry(0.052, L2 - 0.1, 8, 16), LIGHT, kn, [0, -L2 / 2, 0]);
+    drive(kn, [0, 0, s * 0.01], 'z', 0.05, 0.8); xr(cyl(0.01, 0.3, SILVER, hip, [-0.05, -L1 / 2, 0])); xr(cyl(0.016, 0.16, MOTOR, hip, [-0.05, -0.1, 0]));
+    const an = group(kn, [0, -L2, 0]); cyl(0.045, 0.1, DARK, an, [0, 0, 0], 'z');
+    for (const dz of [-1, 1]) { xr(cyl(0.008, 0.2, SILVER, kn, [-0.03, -L2 + 0.12, dz * 0.03])); xr(cyl(0.014, 0.1, MOTOR, kn, [-0.03, -L2 + 0.26, dz * 0.03])); }   // ankle actuators
+    boxm(0.26, 0.05, 0.11, BLUE, an, [FX, -0.065, 0]); boxm(0.1, 0.03, 0.1, DARK, an, [0.12, -0.085, 0]);
+    return { hip, kn, an, s };
+  });
+  // joint rings for the six cards
+  ring(0, legs[0].kn, [0, 0, 0], 'z', 0.1, { len: 0.5 });
+  ring(1, waist, [0, 0.0, 0], 'y', 0.2, { len: 0.5 });
+  ring(2, arms[0].sh, [0, 0, 0], 'z', 0.09, { len: 0.5 });
+  ring(3, arms[0].hand, [0, -0.05, 0], 'z', 0.07, { len: 0.3 });
+  ring(4, head, [0, 0.1, 0], 'y', 0.13, { len: 0.5 });
+  ring(5, torso, [0, 0.22, 0], 'y', 0.26, { noAxis: true, xray: true });
+  // ---- centre of mass: weighted points on the model
+  const pts = [[pelvis, 10], [chest, 22], [head, 5], [arms[0].sh, 4], [arms[1].sh, 4], [arms[0].el, 2.5], [arms[1].el, 2.5], [arms[0].hand, 1], [arms[1].hand, 1], [legs[0].hip, 7], [legs[1].hip, 7], [legs[0].kn, 4], [legs[1].kn, 4], [legs[0].an, 1.5], [legs[1].an, 1.5]];
+  const wp = new THREE.Vector3(), com = new THREE.Vector3(), TM = pts.reduce((a, p) => a + p[1], 0);
+  function centreOfMass() { root.updateMatrixWorld(true); com.set(0, 0, 0); pts.forEach(([o, m]) => { o.getWorldPosition(wp); com.addScaledVector(wp, m); }); return com.divideScalar(TM); }
+  // ---- state
+  const st = { phase: 0, wk: 0, walk: false, px: 0, speed: 0, foot: [0, 0], knee: [0, 0], hipA: [0, 0], onGround: [true, true] };
+  const info = { text: '' };
+  function leg2(lg, ax, ay) {                                                  // ankle target (ax, ay) relative to the hip, in the sagittal plane
+    const d = Math.min(Math.hypot(ax, ay), L1 + L2 - 1e-4);
+    const k = Math.PI - Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2))));
+    const a1 = Math.atan2(ax, -ay) + Math.atan2(L2 * Math.sin(k), L1 + L2 * Math.cos(k));
+    lg.hip.rotation.z = a1; lg.kn.rotation.z = -k; lg.an.rotation.z = k - a1;
+    return [a1, k];
+  }
+  function place() {
+    const c = q[0] / 100, w = st.wk, S = (0.12 + 0.12 * q[4] / 100) * w;
+    const Hh = 0.93 - 0.4 * c - 0.012 * w * Math.cos(4 * Math.PI * st.phase);        // hip height, a little lower when crouching, a small bob when walking
+    pelvis.position.y = Hh + 0.04;
+    const swing = Math.sin(2 * Math.PI * st.phase) * w;
+    waist.rotation.set(0, -(q[1] * D2R) - 0.12 * swing, -(0.5 * c + 0.06 * w));          // twist (right = positive) and forward lean
+    head.rotation.y = -(q[3] * D2R) + (q[1] * D2R) + 0.12 * swing;                       // the head turns relative to the room, not to the chest
+    arms.forEach((a, i) => {
+      const sw = (i === 0 ? -1 : 1) * 0.55 * swing;                                     // arms swing against the legs
+      a.sh.rotation.z = q[2] * D2R + sw; a.el.rotation.z = 0.2 + 0.3 * w + Math.max(0, sw) * 0.6;
+    });
+    const solve = (px) => {
+      pelvis.position.x = px;
+      legs.forEach((lg, i) => {
+        const ph = (st.phase + (i === 0 ? 0 : 0.5)) % 1; let ax, lift = 0;
+        if (ph < 0.5) ax = S - 2 * S * (ph / 0.5);                                       // stance: the foot goes backwards under the body
+        else { const u = (ph - 0.5) / 0.5; ax = -S + 2 * S * (u - Math.sin(2 * Math.PI * u) / (2 * Math.PI)); lift = 0.07 * w * Math.sin(Math.PI * u); }   // swing: the foot goes forwards in the air
+        const r = leg2(lg, ax - px, -(Hh - AH - lift)); st.hipA[i] = r[0]; st.knee[i] = r[1]; st.foot[i] = ax; st.onGround[i] = lift < 0.005;
+      });
+    };
+    solve(0);
+    for (let it = 0; it < 3 && w < 0.999; it++) {                                        // standing: move the hips so that the centre of mass is over the feet
+      const cx = centreOfMass().x - root.position.x;
+      st.px += ((FX - cx) * (1 - w)) * 0.9; st.px = Math.max(-0.4, Math.min(0.4, st.px)); solve(st.px * (1 - w));
+    }
+    if (w >= 0.999) solve(0);
+  }
+  let prevx = 0;
+  function pose() { place(); }
+  pose.tick = (dt) => {
+    const target = st.walk ? 1 : 0; st.wk += Math.sign(target - st.wk) * Math.min(Math.abs(target - st.wk), dt * 1.5);
+    const T = 1.5 - 0.8 * q[4] / 100, S = (0.12 + 0.12 * q[4] / 100) * st.wk;
+    if (st.wk > 0.001) st.phase = (st.phase + dt / T) % 1;
+    st.speed = 4 * S / T; root.position.x += st.speed * dt;
+    place();
+    const dx = root.position.x - prevx; prevx = root.position.x; camera.position.x += dx; orbit.target.x += dx;
+    const c = centreOfMass(), cx = c.x - root.position.x;
+    const grounded = st.onGround.map((g, i) => g ? st.foot[i] : null).filter((v) => v !== null);
+    const lo = Math.min(...grounded) - 0.08, hi = Math.max(...grounded) + 0.18;
+    const inside = grounded.length && cx >= lo && cx <= hi;
+    info.text = L('speed ', 'vitesse ') + st.speed.toFixed(2) + ' m/s, ' + L('hip height ', 'hauteur des hanches ') + (pelvis.position.y - 0.04).toFixed(2) + ' m, ' + L('knee ', 'genou ') + Math.round(Math.max(...st.knee) / D2R) + '°\n' +
+      (st.wk > 0.5 ? L('walking: the centre of mass leaves the feet, balance is a controlled fall', 'marche : le centre de masse sort des pieds, l\'équilibre est une chute contrôlée') :
+        L('standing: centre of mass ', 'debout : centre de masse ') + (inside ? L('inside the feet ✓', 'dans la surface des pieds ✓') : L('outside the feet ✗: the robot would fall', 'hors des pieds ✗ : le robot tomberait')));
+  };
+  pose.special = () => { st.walk = !st.walk; };
+  pose.reset = () => { st.walk = false; st.wk = 0; st.phase = 0; st.px = 0; root.position.x = 0; prevx = 0; place(); };
+  pose.readout = () => info.text;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid }[KIND]();
 
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
