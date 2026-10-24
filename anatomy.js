@@ -351,7 +351,7 @@ function buildWheels() {
   const tire = (parent, pos, r, w) => {
     const g = group(parent, pos);
     cyl(r, w, BLACK, g, [0, 0, 0], 'z'); cyl(r * 0.68, w * 1.05, SILVER, g, [0, 0, 0], 'z'); cyl(r * 0.28, w * 1.2, ORANGE, g, [0, 0, 0], 'z');
-    for (let i = 0; i < 5; i++) { const sp = boxm(r * 1.2, r * 0.12, w * 0.9, DARK, g, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; }
+    for (let i = 0; i < 5; i++) { const sp = boxm(r * 1.3, r * 0.13, w * 1.14, ORANGE, g, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; }
     xr(mesh(new THREE.TorusGeometry(r * 0.3, 0.008, 8, 24), SILVER, g, [0, 0, w * 0.58]));          // bearing
     const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(r * 0.22, w * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(r * 0.12, w * 1.9, COPPER, m, [0, 0, 0]));   // hub motor
     return g;
@@ -426,7 +426,7 @@ function buildDrives() {
     const pivot = group(parent, [x, 0, -y]), steer = group(pivot), hd = group(steer); hd.rotation.y = head * D;
     const spin = group(hd, [0, R, 0]);
     if (kind === 'fixed') { cyl(R, W, BLACK, spin, [0, 0, 0], 'z'); cyl(R * 0.68, W * 1.05, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.28, W * 1.2, ORANGE, spin, [0, 0, 0], 'z');
-      for (let i = 0; i < 5; i++) { const sp = boxm(R * 1.2, R * 0.12, W * 0.9, DARK, spin, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; } }
+      for (let i = 0; i < 5; i++) { const sp = boxm(R * 1.3, R * 0.13, W * 1.14, ORANGE, spin, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; } }
     else {
       cyl(R * 0.72, W * 1.1, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.25, W * 1.3, ORANGE, spin, [0, 0, 0], 'z');
       const Y = new THREE.Vector3(0, 1, 0);
