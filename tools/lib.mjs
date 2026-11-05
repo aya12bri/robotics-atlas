@@ -28,7 +28,8 @@ export const TRY = (href, en, fr) => `<p class="try"><a href="${href}">${tx(en, 
 // matrix helper: MX(2, ['a','b','c','d'])
 export const MX = (cols, cells) => `<span class="mx c${cols}">${cells.map((c) => `<span>${c}</span>`).join('')}</span>`;
 
-export function lesson(prefix, n, { title, time, goal, body, terms, quiz, link }) {
+export const EXREG = {};                                     // exercises of each lesson, filled by the content files: EXREG['wmr-4'] = [...]
+export function lesson(prefix, n, { title, time, goal, body, terms, quiz, link, ex }) {
   const q = quiz.map(([qe, qf, ae, af]) => `<li><p class="q">${tx(qe, qf)}</p><p class="a">${tx(ae, af)}</p></li>`).join('');
   return `
         <article class="lesson" id="l${n}" data-id="${prefix}${n}">
@@ -37,8 +38,41 @@ export function lesson(prefix, n, { title, time, goal, body, terms, quiz, link }
 ${body.join('\n')}
           <h3>${tx('Key terms', 'Mots clés')}</h3>
           <ul class="terms">${terms.map((t) => `<li>${cell(t)}</li>`).join('')}</ul>
-<details class="quiz"><summary>${tx('Check yourself', 'Vérifiez-vous')}</summary><ol class="qa">${q}</ol></details>${link ? '\n          ' + TRY(...link) : ''}
+${(ex || EXREG[prefix + n]) ? EXS(prefix, n, ex || EXREG[prefix + n]) : ''}<details class="quiz"><summary>${tx('Check yourself', 'Vérifiez-vous')}</summary><ol class="qa">${q}</ol></details>${link ? '\n          ' + TRY(...link) : ''}
           <label class="lesson-done"><input type="checkbox" data-lesson="${n}"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 `;
 }
+
+// ---------------------------------------------------------------- exercises (graded, hint + solution, optional auto-check)
+// item = { lv: 1|2|3, q: [en, fr], num?: { ans, tol, unit }, mcq?: [[en, fr, isCorrect], ...], hint?: [en, fr], sol: [en, fr], exam?: true }
+// The checking is done in the browser by learn-mobile-widgets.js (numeric answers and multiple choice).
+export const LV = [['Level 1 · Beginner', 'Niveau 1 · Débutant'], ['Level 2 · Intermediate', 'Niveau 2 · Intermédiaire'], ['Level 3 · Professional', 'Niveau 3 · Professionnel']];
+export const num = (x, d = 2) => [String(+x.toFixed(d)), String(+x.toFixed(d)).replace('.', ',')];   // [en, fr] decimal formatting of a computed value
+export function EXS(prefix, n, items, opts = {}) {
+  const rows = items.map((it, i) => {
+    const id = `${prefix}${n}-${i + 1}`;
+    const input = it.num ? `<div class="numin" data-ans="${it.num.ans}" data-tol="${it.num.tol}" data-unit="${it.num.unit || ''}"></div>` : '';
+    const optsHtml = it.mcq ? `<ol class="opts" type="A">${it.mcq.map((o) => `<li${o[2] ? ' data-ok="1"' : ''}>${tx(o[0], o[1])}</li>`).join('')}</ol>` : '';
+    return `<div class="ex" data-id="${id}" data-lv="${it.lv}"${it.exam ? ' data-exam="1"' : ''}>
+<div class="qh"><span class="lv l${it.lv}">${tx(...LV[it.lv - 1])}</span><span class="qn">${i + 1}</span></div>
+<p class="q">${tx(it.q[0], it.q[1])}</p>${input}${optsHtml}<p class="fb" aria-live="polite"></p>
+${it.hint ? `<details class="hint"><summary>${tx('Hint', 'Indice')}</summary><p>${tx(it.hint[0], it.hint[1])}</p></details>` : ''}<details class="sol"><summary>${tx('Solution', 'Solution')}</summary><p>${tx(it.sol[0], it.sol[1])}</p></details>
+</div>`;
+  }).join('\n');
+  const note = opts.note || [`Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.`, `Essayez d'abord chaque exercice vous-même. Tapez votre réponse dans la case (le vérificateur accepte une petite tolérance) ou choisissez une option ; n'utilisez l'indice que si vous êtes bloqué, et lisez la solution pour comparer votre méthode.`];
+  return `<section class="exs${opts.exam ? ' exam' : ''}" data-for="${prefix}${n}"><h3>${tx(opts.title ? opts.title[0] : 'Exercises', opts.title ? opts.title[1] : 'Exercices')}</h3><p class="exnote">${tx(note[0], note[1])}</p><p class="exscore" aria-live="polite"></p>
+${rows}
+</section>`;
+}
+// a "I did this lab" tick, remembered in the browser
+export const LABCHK = (id) => `<label class="labchk"><input type="checkbox" data-lab="${id}"><span>${tx('I did this lab and met the pass criteria', 'J\'ai fait ce TP et atteint les critères de réussite')}</span></label>`;
+
+// ---------------------------------------------------------------- verified code listings (tools/content/code/*.py and the output of their last run)
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const CODE_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), 'content', 'code');
+const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+export const CODE = (file) => `<pre class="code"><code>${esc(fs.readFileSync(path.join(CODE_DIR, file), 'utf8').trimEnd())}</code></pre>`;
+export const OUT = (file) => `<pre class="out"><code>${esc(fs.readFileSync(path.join(CODE_DIR, file), 'utf8').trimEnd())}</code></pre>`;

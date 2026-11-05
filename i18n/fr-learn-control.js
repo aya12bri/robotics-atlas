@@ -561,7 +561,7 @@ RA.add({
  "qffl9baw5e": "Les robots dans le monde réel",
  "mymr6s864y": "Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers",
  "ngcr2dzsin": "Robots mobiles à roues",
- "acs5pj1cj0": "Contraintes des roues, robot différentiel, voiture et omni, CIR, manœuvrabilité, commande du mouvement",
+ "3p25qdc1d5": "De zéro au niveau professionnel : toutes les motorisations, commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
  "1r61y40sjry": "Régulateur",
  "1dh0k24rj2f": "Moteur + bras",
  "21nke2aekm8": "angle",

@@ -1,0 +1,4 @@
+unit tests passed
+wheel speeds for v=0.45, w=0.33 : (9.99, 8.01)
+saturation: v=1.2, w=2.0 -> (20.0, 12.0) (limit 20 rad/s, ratio kept)
+go to goal       : arrived after 4.0 s at (-0.010, -0.000), heading 3.7 deg

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el, i) { return '<li><a href="#l' + (i + 1) + '" data-i="' + (i + 1) + '"><span class="n">' + (i + 1) + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
   function paint() {
     var done = 0;
-    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
+    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
     document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
     document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
     var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
@@ -91,7 +91,7 @@ for (const c of COURSES) {
   const miss = await page.evaluate((have) => {
     const INLINE = /^(STRONG|EM|B|I|CODE|SUB|SUP|BR|SMALL|SPAN|A|KBD|MARK|ABBR|U)$/, out = [];
     const canReplace = (el) => !el.querySelector('input,select,button,textarea,canvas,svg,[id]') && Array.prototype.every.call(el.children, (c) => INLINE.test(c.tagName) && (!c.children.length || canReplace(c)));
-    const skipEl = (el) => el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.id === 'lessonNav' || el.classList.contains('lbl') || el.classList.contains('widget') || el.classList.contains('time') || el.classList.contains('cnt');
+    const skipEl = (el) => el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.id === 'lessonNav' || el.classList.contains('lbl') || el.classList.contains('widget') || el.classList.contains('time') || el.classList.contains('cnt') || el.classList.contains('numin') || el.classList.contains('exscore') || el.classList.contains('fb') || el.id === 'examSum';
     (function walk(el) {
       if (el.namespaceURI && el.namespaceURI.indexOf('svg') >= 0) return;
       if (/^(SCRIPT|STYLE|CANVAS|TEXTAREA|NOSCRIPT)$/i.test(el.tagName) || skipEl(el) || !el.textContent.trim()) return;

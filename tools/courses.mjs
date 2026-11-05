@@ -9,14 +9,14 @@ export const CARDS = [
   { page: 'learn-control.html', key: 'ctrl', prefix: 'ctrl-', total: 9, t: ['Dynamics, actuators and control', 'Dynamique, actionneurs et commande'], d: ['Motors, sensors, PID, computed torque, force control, trajectories', 'Moteurs, capteurs, PID, couple calculé, commande en effort, trajectoires'] },
   { page: 'learn-intelligence.html', key: 'ai', prefix: 'ai-', total: 9, t: ['Perception, planning and AI', 'Perception, planification et IA'], d: ['Vision, Kalman, SLAM, A*, RRT, learning, multi-robot', 'Vision, Kalman, SLAM, A*, RRT, apprentissage, multi-robots'] },
   { page: 'learn-world.html', key: 'world', prefix: 'world-', total: 9, t: ['Robots in the real world', 'Les robots dans le monde réel'], d: ['Every robot family, grippers, electronics, ROS, safety, careers', 'Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers'] },
-  { page: 'learn-mobile.html', key: 'wmr', prefix: 'wmr-', total: 9, t: ['Wheeled mobile robots', 'Robots mobiles à roues'], d: ['Wheel constraints, differential, car and omni drives, ICR, maneuverability, motion control', 'Contraintes des roues, robot différentiel, voiture et omni, CIR, manœuvrabilité, commande du mouvement'] }
+  { page: 'learn-mobile.html', key: 'wmr', prefix: 'wmr-', total: 20, t: ['Wheeled mobile robots', 'Robots mobiles à roues'], d: ['From zero to professional: every drive, control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs', 'De zéro au niveau professionnel : toutes les motorisations, commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP'] }
 ];
 
 export const courseCards = (current) =>
   `<nav class="courses" aria-label="Courses">${CARDS.map((c) => `<a class="course${c.page === current ? ' current' : ''}" href="${c.page}" data-prefix="${c.prefix}" data-total="${c.total}" data-key="${c.key}"><b>${tx(...c.t)}</b><span>${tx(...c.d)}</span><em class="cnt"></em></a>`).join('')}</nav>`;
 
 export const COURSES = [];
-for (const [file, page, key, prefix, total] of [['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 9], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 9]]) {
+for (const [file, page, key, prefix, total] of [['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 9], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 20]]) {
   let mod; try { mod = await import(`./content/${file}.mjs`); } catch (e) { if (e.code === 'ERR_MODULE_NOT_FOUND') continue; throw e; }
   COURSES.push({ page, key, prefix, total, ...mod.meta, build: mod.build });
 }

@@ -14,7 +14,7 @@ const DESC = {
   'learn-control.html': 'Dynamics, actuators and control of robot arms: torque, motors, PID loops and trajectories, with interactive examples.',
   'learn-intelligence.html': 'How robots perceive, plan and decide: sensors, vision, path planning and AI, explained step by step.',
   'learn-world.html': 'Robots in the real world: where industrial, collaborative, mobile and humanoid robots are used, and how to choose one.',
-  'learn-mobile.html': 'Wheeled mobile robots: wheel constraints, differential drive, bicycle and car, omnidirectional robots, ICR, maneuverability and motion control.',
+  'learn-mobile.html': 'A complete course on wheeled mobile robots, from zero to professional: kinematics of every drive, control, path tracking, odometry calibration, Kalman filter, motor sizing, ROS 2, safety, exercises, exam and labs.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',
   'gantry.html': 'Interactive 3D Cartesian gantry robot with three sliding axes: kinematics, workspace and pick and place.',
   'scara.html': 'Interactive 3D SCARA robot: closed-form inverse kinematics, DH table and a pick-and-place demo.',

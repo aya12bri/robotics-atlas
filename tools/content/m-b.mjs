@@ -4,7 +4,7 @@ const PRE = 'wmr-';
 export function partB() {
   return [
 // ------------------------------------------------------------------------------------------------ 4
-lesson(PRE, 4, {
+lesson(PRE, 5, {
   title: [`Differential drive: the simplest mobile robot`, `Le robot différentiel : le robot mobile le plus simple`],
   time: 16,
   goal: [`to compute how a two-wheel differential robot moves from its wheel speeds, and the opposite: which wheel speeds give the motion you want.`, `calculer comment un robot différentiel à deux roues se déplace à partir des vitesses de ses roues, et l'inverse : quelles vitesses de roues donnent le mouvement voulu.`],
@@ -35,11 +35,11 @@ lesson(PRE, 4, {
     P(`In the robot frame, directly from the wheel angular speeds, the model is (with <i>V</i><sub>x</sub> along the robot and <i>V</i><sub>y</sub> across it):`,
       `Dans le repère robot, directement à partir des vitesses angulaires des roues, le modèle est (avec <i>V</i><sub>x</sub> le long du robot et <i>V</i><sub>y</sub> en travers) :`),
     EQ(`${MX(1, ['V<sub>x</sub>', 'V<sub>y</sub>', 'θ̇'])} = ${MX(2, ['r/2', 'r/2', '0', '0', '−r/L', 'r/L'])} ${MX(1, ['φ̇<sub>L</sub>', 'φ̇<sub>R</sub>'])}`),
-    P(`The middle row is zero: <strong>the robot cannot move sideways</strong>. This is the sliding constraint of lesson 3, and it is also the origin of its difficulty: with 2 inputs <i>v</i> and <i>ω</i> the robot must reach 3 pose numbers.`,
-      `La ligne du milieu est nulle : <strong>le robot ne peut pas se déplacer latéralement</strong>. C'est la contrainte de glissement de la leçon 3, et c'est aussi l'origine de la difficulté : avec 2 entrées <i>v</i> et <i>ω</i> le robot doit atteindre 3 nombres de pose.`),
+    P(`The middle row is zero: <strong>the robot cannot move sideways</strong>. This is the sliding constraint of lesson 4, and it is also the origin of its difficulty: with 2 inputs <i>v</i> and <i>ω</i> the robot must reach 3 pose numbers.`,
+      `La ligne du milieu est nulle : <strong>le robot ne peut pas se déplacer latéralement</strong>. C'est la contrainte de glissement de la leçon 4, et c'est aussi l'origine de la difficulté : avec 2 entrées <i>v</i> et <i>ω</i> le robot doit atteindre 3 nombres de pose.`),
     H4(`4.5 The same result from the wheel constraints`, `4.5 Le même résultat à partir des contraintes de roues`),
-    P(`Put the two wheels in the equations of lesson 3 (right wheel at <i>α</i> = −90°, <i>β</i> = 180°; left wheel at <i>α</i> = +90°, <i>β</i> = 0; <i>l</i> = <i>L</i>/2). The two rolling constraints and the (identical) sliding constraint stack into:`,
-      `Placez les deux roues dans les équations de la leçon 3 (roue droite en <i>α</i> = −90°, <i>β</i> = 180° ; roue gauche en <i>α</i> = +90°, <i>β</i> = 0 ; <i>l</i> = <i>L</i>/2). Les deux contraintes de roulement et la contrainte de glissement (identique) s'empilent en :`),
+    P(`Put the two wheels in the equations of lesson 4 (right wheel at <i>α</i> = −90°, <i>β</i> = 180°; left wheel at <i>α</i> = +90°, <i>β</i> = 0; <i>l</i> = <i>L</i>/2). The two rolling constraints and the (identical) sliding constraint stack into:`,
+      `Placez les deux roues dans les équations de la leçon 4 (roue droite en <i>α</i> = −90°, <i>β</i> = 180° ; roue gauche en <i>α</i> = +90°, <i>β</i> = 0 ; <i>l</i> = <i>L</i>/2). Les deux contraintes de roulement et la contrainte de glissement (identique) s'empilent en :`),
     EQ(`${MX(3, ['1', '0', 'L/2', '1', '0', '−L/2', '0', '1', '0'])} <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> = ${MX(1, ['r φ̇<sub>R</sub>', 'r φ̇<sub>L</sub>', '0'])}`),
     P(`Inverting this 3×3 matrix gives exactly the model above. Nothing was guessed: the kinematics of the robot comes from the constraints of its wheels. We will use this method again for the omnidirectional robot.`,
       `Inverser cette matrice 3×3 donne exactement le modèle ci-dessus. Rien n'a été deviné : la cinématique du robot vient des contraintes de ses roues. Nous réutiliserons cette méthode pour le robot omnidirectionnel.`),
@@ -64,7 +64,7 @@ lesson(PRE, 4, {
   link: [`mobile.html`, `Drive a differential robot in 3D and watch its ICC →`, `Piloter un robot différentiel en 3D et voir son CIR →`]
 }),
 // ------------------------------------------------------------------------------------------------ 5
-lesson(PRE, 5, {
+lesson(PRE, 6, {
   title: [`Tricycle, bicycle and car: steering and the Ackermann rule`, `Tricycle, vélo et voiture : braquage et règle d'Ackermann`],
   time: 18,
   goal: [`to compute the wheel speeds and steering angles of a bicycle and of a car from the speed and the steering angle, and to explain why the two front wheels of a car do not turn by the same angle.`, `calculer les vitesses des roues et les angles de braquage d'un vélo et d'une voiture à partir de la vitesse et de l'angle de direction, et expliquer pourquoi les deux roues avant d'une voiture ne tournent pas du même angle.`],
@@ -104,7 +104,7 @@ lesson(PRE, 5, {
       `Vérification avec l'exemple : cot 14,0° − cot 16,2° = 4,01 − 3,44 = 0,56 = 1,4 / 2,5. ✓ La cotangente moyenne est celle de la roue centrale « virtuelle » <i>δ</i> = 15°. La direction d'Ackermann donne une estimation à l'estime assez précise et permet traction et garde au sol, c'est pourquoi c'est le choix habituel pour les <strong>véhicules autonomes d'extérieur</strong>.`),
     BOX(`idea`, [`What a car cannot do`, `Ce qu'une voiture ne peut pas faire`],
       P(`A car has only 2 control inputs (speed and steering) for 3 pose numbers, and its steering angle is limited, so it needs a series of manoeuvres to park sideways. Lesson 7 will count exactly how much freedom it has.`,
-        `Une voiture n'a que 2 entrées de commande (vitesse et braquage) pour 3 nombres de pose, et son angle de braquage est limité, donc il lui faut une série de manœuvres pour se garer en créneau. La leçon 7 comptera exactement sa liberté.`))
+        `Une voiture n'a que 2 entrées de commande (vitesse et braquage) pour 3 nombres de pose, et son angle de braquage est limité, donc il lui faut une série de manœuvres pour se garer en créneau. La leçon 9 comptera exactement sa liberté.`))
   ],
   terms: [[`tricycle`, `tricycle`], [`bicycle model`, `modèle bicyclette`], [`steering angle δ`, `angle de braquage δ`], [`wheelbase / track`, `empattement / voie`], [`Ackermann steering`, `Direction d'Ackermann`], [`ICC on the rear axle`, `CIR sur l'essieu arrière`]],
   quiz: [
@@ -115,7 +115,7 @@ lesson(PRE, 5, {
   link: [`anatomy-drives.html`, `Look inside eight drive layouts, including the car, in 3D →`, `Regarder à l'intérieur de huit motorisations, dont la voiture, en 3D →`]
 }),
 // ------------------------------------------------------------------------------------------------ 6
-lesson(PRE, 6, {
+lesson(PRE, 7, {
   title: [`Omnidirectional robots and synchro drive`, `Robots omnidirectionnels et entraînement synchrone`],
   time: 15,
   goal: [`to compute the motion of a three-wheel omnidirectional robot from its wheel speeds (and the reverse), and to explain how a synchro drive works.`, `calculer le mouvement d'un robot omnidirectionnel à trois roues à partir des vitesses de ses roues (et l'inverse), et expliquer le fonctionnement d'un entraînement synchrone.`],
@@ -124,8 +124,8 @@ lesson(PRE, 6, {
     P(`A robot with fixed standard wheels cannot move sideways. A robot with <strong>Swedish (omni) wheels</strong> can: each wheel drives along its own plane <em>and</em> rolls freely across it on the small rollers. With three such wheels, any combination of forward speed, sideways speed and rotation can be commanded at once: the robot is <strong>holonomic</strong> with 3 independent velocities. Soccer robots, warehouse platforms and stage robots use this. The price is a complex structure, weak frames (small rollers), slipping on dust, and bumpy motion on rough floors.`,
       `Un robot avec des roues standard fixes ne peut pas aller de côté. Un robot avec des <strong>roues suédoises (omnidirectionnelles)</strong> le peut : chaque roue entraîne dans son plan <em>et</em> roule librement en travers sur les petits rouleaux. Avec trois roues de ce type, toute combinaison de vitesse avant, vitesse latérale et rotation peut être commandée en même temps : le robot est <strong>holonome</strong> avec 3 vitesses indépendantes. Les robots de football, plateformes d'entrepôt et robots de scène les utilisent. Le prix : une structure complexe, des châssis fragiles (petits rouleaux), du patinage sur la poussière et des à-coups sur sol rugueux.`),
     H4(`6.2 Three Swedish 90° wheels`, `6.2 Trois roues suédoises à 90°`),
-    P(`Place three identical Swedish 90° wheels at the distance <i>l</i> from the centre <i>P</i>, at the angles <i>α</i><sub>1</sub> = 60°, <i>α</i><sub>2</sub> = 180°, <i>α</i><sub>3</sub> = −60°, with <i>β</i> = 0 (wheels tangent to the body) and <i>γ</i> = 0. There is no sliding constraint, so only the three rolling constraints remain. Each row of the matrix <i>J</i><sub>1</sub> is the rolling row of lesson 3:`,
-      `Placez trois roues suédoises à 90° identiques à la distance <i>l</i> du centre <i>P</i>, aux angles <i>α</i><sub>1</sub> = 60°, <i>α</i><sub>2</sub> = 180°, <i>α</i><sub>3</sub> = −60°, avec <i>β</i> = 0 (roues tangentes au corps) et <i>γ</i> = 0. Il n'y a aucune contrainte de glissement, il ne reste donc que les trois contraintes de roulement. Chaque ligne de la matrice <i>J</i><sub>1</sub> est la ligne de roulement de la leçon 3 :`),
+    P(`Place three identical Swedish 90° wheels at the distance <i>l</i> from the centre <i>P</i>, at the angles <i>α</i><sub>1</sub> = 60°, <i>α</i><sub>2</sub> = 180°, <i>α</i><sub>3</sub> = −60°, with <i>β</i> = 0 (wheels tangent to the body) and <i>γ</i> = 0. There is no sliding constraint, so only the three rolling constraints remain. Each row of the matrix <i>J</i><sub>1</sub> is the rolling row of lesson 4:`,
+      `Placez trois roues suédoises à 90° identiques à la distance <i>l</i> du centre <i>P</i>, aux angles <i>α</i><sub>1</sub> = 60°, <i>α</i><sub>2</sub> = 180°, <i>α</i><sub>3</sub> = −60°, avec <i>β</i> = 0 (roues tangentes au corps) et <i>γ</i> = 0. Il n'y a aucune contrainte de glissement, il ne reste donc que les trois contraintes de roulement. Chaque ligne de la matrice <i>J</i><sub>1</sub> est la ligne de roulement de la leçon 4 :`),
     EQ(`<i>J</i><sub>1</sub> = ${MX(3, ['√3 / 2', '−1/2', '−l', '0', '1', '−l', '−√3 / 2', '−1/2', '−l'])} &nbsp;&nbsp;&nbsp; <i>J</i><sub>1</sub> <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> = <i>r</i> ( <i>φ̇</i><sub>1</sub> , <i>φ̇</i><sub>2</sub> , <i>φ̇</i><sub>3</sub> )<sup>T</sup>`),
     P(`This is the <strong>inverse kinematics</strong> directly: the wheel speeds come from the velocity wanted. For the forward kinematics, invert the 3×3 matrix (it is always invertible):`,
       `C'est directement la <strong>cinématique inverse</strong> : les vitesses des roues viennent de la vitesse voulue. Pour la cinématique directe, on inverse la matrice 3×3 (elle est toujours inversible) :`),
@@ -144,8 +144,8 @@ lesson(PRE, 6, {
       [`<i>v</i> = 0 with the wheels turning: the wheels rotate in place. <i>ω</i> = 0 with <i>v</i> ≠ 0: the robot goes straight in the direction its wheels point.`, `<i>v</i> = 0 avec orientation des roues : les roues tournent sur place. <i>ω</i> = 0 avec <i>v</i> ≠ 0 : le robot va droit dans la direction de ses roues.`],
       [`The body of the robot does not turn when the wheels are steered. To keep sensors facing the travel direction, a third motor and a turret are needed. This is a classic design for research robots with a cylindrical body.`, `Le corps du robot ne tourne pas quand on oriente les roues. Pour garder les capteurs face au sens de déplacement, il faut un troisième moteur et une tourelle. C'est un montage classique pour les robots de recherche à corps cylindrique.`]
     ]),
-    P(`Compared with a differential robot, a synchro drive can change its direction of travel without turning its body, and the belts keep all the wheels locked together. But it is mechanically complex, and lesson 7 will show that it has only 2 degrees of maneuverability: it cannot rotate its body without the turret.`,
-      `Par rapport à un robot différentiel, un entraînement synchrone peut changer sa direction de déplacement sans tourner son corps, et les courroies gardent toutes les roues solidaires. Mais il est mécaniquement complexe, et la leçon 7 montrera qu'il n'a que 2 degrés de manœuvrabilité : il ne peut pas tourner son corps sans la tourelle.`)
+    P(`Compared with a differential robot, a synchro drive can change its direction of travel without turning its body, and the belts keep all the wheels locked together. But it is mechanically complex, and lesson 9 will show that it has only 2 degrees of maneuverability: it cannot rotate its body without the turret.`,
+      `Par rapport à un robot différentiel, un entraînement synchrone peut changer sa direction de déplacement sans tourner son corps, et les courroies gardent toutes les roues solidaires. Mais il est mécaniquement complexe, et la leçon 9 montrera qu'il n'a que 2 degrés de manœuvrabilité : il ne peut pas tourner son corps sans la tourelle.`)
   ],
   terms: [[`omnidirectional robot`, `robot omnidirectionnel`], [`Swedish 90° wheel`, `roue suédoise à 90°`], [`Mecanum wheel`, `roue Mecanum`], [`holonomic`, `holonome`], [`synchro drive`, `entraînement synchrone`], [`turret`, `tourelle`]],
   quiz: [
