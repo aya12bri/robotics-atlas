@@ -4,7 +4,7 @@ const PRE = 'wmr-';
 export function partA() {
   return [
 // ------------------------------------------------------------------------------------------------ 1
-lesson(PRE, 1, {
+lesson(PRE, 2, {
   title: [`What is a wheeled mobile robot? Locomotion, kinematics and dynamics`, `Qu'est-ce qu'un robot mobile à roues ? Locomotion, cinématique et dynamique`],
   time: 10,
   goal: [`to say what makes a machine a robot, to name the five subsystems of a wheeled mobile robot, and to know what “kinematics” means for a robot that moves around.`, `dire ce qui fait d'une machine un robot, nommer les cinq sous-systèmes d'un robot mobile à roues, et savoir ce que la « cinématique » veut dire pour un robot qui se déplace.`],
@@ -59,7 +59,7 @@ lesson(PRE, 1, {
   link: [`mobile.html`, `Try the 3D mobile robot →`, `Essayer le robot mobile en 3D →`]
 }),
 // ------------------------------------------------------------------------------------------------ 2
-lesson(PRE, 2, {
+lesson(PRE, 3, {
   title: [`Where is the robot? Pose, frames and the rotation matrix`, `Où est le robot ? Pose, repères et matrice de rotation`],
   time: 11,
   goal: [`to describe the position and orientation of a robot on the floor with three numbers, and to convert a velocity between the global frame and the frame attached to the robot.`, `décrire la position et l'orientation d'un robot sur le sol avec trois nombres, et convertir une vitesse entre le repère global et le repère lié au robot.`],
@@ -103,8 +103,8 @@ lesson(PRE, 2, {
       [`<strong>forward kinematics</strong>: wheel speeds and steering → robot velocity <i>ξ̇</i>;`, `<strong>cinématique directe</strong> : vitesses des roues et braquage → vitesse du robot <i>ξ̇</i> ;`],
       [`<strong>inverse kinematics</strong>: wanted velocity <i>ξ̇</i> → wheel speeds and steering angles.`, `<strong>cinématique inverse</strong> : vitesse voulue <i>ξ̇</i> → vitesses des roues et angles de braquage.`]
     ]),
-    P(`Be careful: we can write <i>ξ̇</i> = <i>f</i>(wheel speeds), but not simply <i>ξ</i> = <i>f</i>(wheel angles). The pose depends on <em>how</em> the wheels were turned over time, not only on how far. We will see the exact reason in lesson 8 (nonholonomic systems).`,
-      `Attention : on peut écrire <i>ξ̇</i> = <i>f</i>(vitesses des roues), mais pas simplement <i>ξ</i> = <i>f</i>(angles des roues). La pose dépend de <em>la manière</em> dont les roues ont tourné au cours du temps, pas seulement de combien. Nous verrons la raison exacte à la leçon 8 (systèmes non holonomes).`)
+    P(`Be careful: we can write <i>ξ̇</i> = <i>f</i>(wheel speeds), but not simply <i>ξ</i> = <i>f</i>(wheel angles). The pose depends on <em>how</em> the wheels were turned over time, not only on how far. We will see the exact reason in lesson 10 (nonholonomic systems).`,
+      `Attention : on peut écrire <i>ξ̇</i> = <i>f</i>(vitesses des roues), mais pas simplement <i>ξ</i> = <i>f</i>(angles des roues). La pose dépend de <em>la manière</em> dont les roues ont tourné au cours du temps, pas seulement de combien. Nous verrons la raison exacte à la leçon 10 (systèmes non holonomes).`)
   ],
   terms: [[`pose / posture`, `pose / posture`], [`global (inertial) frame`, `repère global (inertiel)`], [`robot frame`, `repère robot`], [`rotation matrix`, `matrice de rotation`], [`forward / inverse kinematics`, `cinématique directe / inverse`]],
   quiz: [
@@ -114,7 +114,7 @@ lesson(PRE, 2, {
   ]
 }),
 // ------------------------------------------------------------------------------------------------ 3
-lesson(PRE, 3, {
+lesson(PRE, 4, {
   title: [`Wheels and their constraints: rolling and sliding`, `Les roues et leurs contraintes : roulement et glissement`],
   time: 15,
   goal: [`to know the five wheel types, and to write the two constraints (rolling and no sliding) that each standard wheel imposes on the robot.`, `connaître les cinq types de roues et écrire les deux contraintes (roulement et non-glissement) que chaque roue standard impose au robot.`],
@@ -157,8 +157,8 @@ lesson(PRE, 3, {
       [`<strong>Spherical wheel.</strong> Its equations are those of the fixed standard wheel, but the angle <i>β</i> is a free variable instead of a constant: no constraint remains.`, `<strong>Roue sphérique.</strong> Ses équations sont celles de la roue standard fixe, mais l'angle <i>β</i> est une variable libre au lieu d'une constante : plus aucune contrainte ne subsiste.`]
     ]),
     BOX(`idea`, [`The key result`, `Le résultat clé`],
-      P(`Castor, Swedish and spherical wheels put <strong>no</strong> kinematic constraint on the chassis: the robot velocity can take any value because of the internal degrees of freedom of these wheels. <strong>Only fixed and steered standard wheels constrain the chassis</strong>, so only they matter when we compute how a robot can move (lessons 7 and 8).`,
-        `Les roues folles, suédoises et sphériques n'imposent <strong>aucune</strong> contrainte cinématique au châssis : la vitesse du robot peut prendre n'importe quelle valeur grâce aux degrés de liberté internes de ces roues. <strong>Seules les roues standard fixes et orientables contraignent le châssis</strong>, donc seules elles comptent quand on calcule comment un robot peut se déplacer (leçons 7 et 8).`))
+      P(`Castor, Swedish and spherical wheels put <strong>no</strong> kinematic constraint on the chassis: the robot velocity can take any value because of the internal degrees of freedom of these wheels. <strong>Only fixed and steered standard wheels constrain the chassis</strong>, so only they matter when we compute how a robot can move (lessons 9 and 10).`,
+        `Les roues folles, suédoises et sphériques n'imposent <strong>aucune</strong> contrainte cinématique au châssis : la vitesse du robot peut prendre n'importe quelle valeur grâce aux degrés de liberté internes de ces roues. <strong>Seules les roues standard fixes et orientables contraignent le châssis</strong>, donc seules elles comptent quand on calcule comment un robot peut se déplacer (leçons 9 et 10).`))
   ],
   terms: [[`rolling constraint`, `contrainte de roulement`], [`sliding constraint`, `contrainte de glissement`], [`fixed / steered standard wheel`, `roue standard fixe / orientable`], [`castor wheel`, `roue folle`], [`Swedish (Mecanum) wheel`, `roue suédoise (Mecanum)`], [`spherical wheel`, `roue sphérique`]],
   quiz: [

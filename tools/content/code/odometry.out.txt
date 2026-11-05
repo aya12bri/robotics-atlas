@@ -1,0 +1,5 @@
+perfect robot     : end (-0.003, 0.003) m, heading 359.82 deg
+left wheel +1 %    : end (-0.214, 0.275) m -> error 0.348 m
+track +3 % CCW: end (-0.177, 0.203) m -> error 0.269 m
+track +3 % CW : end (-0.177, -0.203) m -> error 0.269 m
+random slip 1 %    : mean error 0.015 m, std 0.012 m (20 runs)

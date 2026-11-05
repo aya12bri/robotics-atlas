@@ -4,14 +4,14 @@ const PRE = 'wmr-';
 export function partC() {
   return [
 // ------------------------------------------------------------------------------------------------ 7
-lesson(PRE, 7, {
+lesson(PRE, 9, {
   title: [`Maneuverability: how freely can a robot move?`, `Manœuvrabilité : quelle liberté de mouvement a un robot ?`],
   time: 17,
   goal: [`to stack the constraints of all the wheels, to find the instantaneous centre of rotation (ICR) from them, and to compute the degrees of mobility, steerability and maneuverability of any wheel layout.`, `empiler les contraintes de toutes les roues, en déduire le centre instantané de rotation (CIR), et calculer les degrés de mobilité, de braquage et de manœuvrabilité de n'importe quelle disposition de roues.`],
   body: [
     H4(`7.1 Stacking the constraints`, `7.1 Empiler les contraintes`),
-    P(`Take a robot with <i>N</i><sub>f</sub> fixed and <i>N</i><sub>s</sub> steered standard wheels (the only ones that constrain the chassis, lesson 3). Put their rolling and sliding rows one under the other:`,
-      `Prenons un robot avec <i>N</i><sub>f</sub> roues standard fixes et <i>N</i><sub>s</sub> roues standard orientables (les seules qui contraignent le châssis, leçon 3). Mettons leurs lignes de roulement et de glissement les unes sous les autres :`),
+    P(`Take a robot with <i>N</i><sub>f</sub> fixed and <i>N</i><sub>s</sub> steered standard wheels (the only ones that constrain the chassis, lesson 4). Put their rolling and sliding rows one under the other:`,
+      `Prenons un robot avec <i>N</i><sub>f</sub> roues standard fixes et <i>N</i><sub>s</sub> roues standard orientables (les seules qui contraignent le châssis, leçon 4). Mettons leurs lignes de roulement et de glissement les unes sous les autres :`),
     EQ(`<strong>Rolling:</strong> &nbsp; <i>J</i><sub>1</sub>(<i>β</i><sub>s</sub>) <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> − <i>J</i><sub>2</sub> <i>φ̇</i> = 0 &nbsp;&nbsp;&nbsp; <strong>Sliding:</strong> &nbsp; <i>C</i><sub>1</sub>(<i>β</i><sub>s</sub>) <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> = 0`, `<strong>Roulement :</strong> &nbsp; <i>J</i><sub>1</sub>(<i>β</i><sub>s</sub>) <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> − <i>J</i><sub>2</sub> <i>φ̇</i> = 0 &nbsp;&nbsp;&nbsp; <strong>Glissement :</strong> &nbsp; <i>C</i><sub>1</sub>(<i>β</i><sub>s</sub>) <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> = 0`),
     P(`<i>J</i><sub>1</sub> and <i>C</i><sub>1</sub> have one row per standard wheel (<i>N</i><sub>f</sub> + <i>N</i><sub>s</sub> rows) and 3 columns; <i>J</i><sub>2</sub> = diag(<i>r</i><sub>1</sub> … <i>r</i><sub>N</sub>) holds the wheel radii; <i>φ̇</i> is the vector of the wheel speeds. The <strong>sliding equation</strong> is the important one for what the robot <em>can</em> do: the velocity <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> must lie in the <strong>null space</strong> of <i>C</i><sub>1</sub>, the set of the vectors <i>n</i> such that <i>C</i><sub>1</sub> <i>n</i> = 0.`,
       `<i>J</i><sub>1</sub> et <i>C</i><sub>1</sub> ont une ligne par roue standard (<i>N</i><sub>f</sub> + <i>N</i><sub>s</sub> lignes) et 3 colonnes ; <i>J</i><sub>2</sub> = diag(<i>r</i><sub>1</sub> … <i>r</i><sub>N</sub>) contient les rayons des roues ; <i>φ̇</i> est le vecteur des vitesses des roues. L'<strong>équation de glissement</strong> est la plus importante pour ce que le robot <em>peut</em> faire : la vitesse <i>R</i>(<i>θ</i>) <i>ξ̇</i><sub>I</sub> doit appartenir à l'<strong>espace nul</strong> de <i>C</i><sub>1</sub>, l'ensemble des vecteurs <i>n</i> tels que <i>C</i><sub>1</sub> <i>n</i> = 0.`),
@@ -59,7 +59,7 @@ lesson(PRE, 7, {
   ]
 }),
 // ------------------------------------------------------------------------------------------------ 8
-lesson(PRE, 8, {
+lesson(PRE, 10, {
   title: [`Holonomic or not? Degrees of freedom, paths and trajectories`, `Holonome ou non ? Degrés de liberté, chemins et trajectoires`],
   time: 14,
   goal: [`to explain what “nonholonomic” means, why a car cannot go sideways but can still park, and what the difference is between a path and a trajectory.`, `expliquer ce que « non holonome » veut dire, pourquoi une voiture ne peut pas aller de côté mais peut quand même se garer, et quelle est la différence entre un chemin et une trajectoire.`],
@@ -112,14 +112,14 @@ lesson(PRE, 8, {
   ]
 }),
 // ------------------------------------------------------------------------------------------------ 9
-lesson(PRE, 9, {
+lesson(PRE, 11, {
   title: [`Motion control: driving a robot to a goal pose`, `Commande du mouvement : conduire un robot vers une pose but`],
   time: 18,
   goal: [`to compare open-loop and feedback control for a mobile robot, to write the polar-coordinate control law of a differential robot, and to choose gains that make it converge.`, `comparer la commande en boucle ouverte et en boucle fermée pour un robot mobile, écrire la loi de commande en coordonnées polaires d'un robot différentiel, et choisir des gains qui le font converger.`],
   body: [
     H4(`9.1 The goal of kinematic control`, `9.1 Le but de la commande cinématique`),
-    P(`A <strong>kinematic controller</strong> makes the robot follow a trajectory described by position and/or velocity profiles as functions of time. It is <strong>not straightforward</strong>, because mobile robots are nonholonomic: you cannot just move to the right. Still, several good solutions exist. Most of them ignore the dynamics of the system and give the speeds that the wheels must have (lesson 4).`,
-      `Un <strong>contrôleur cinématique</strong> fait suivre au robot une trajectoire décrite par des profils de position et/ou de vitesse en fonction du temps. Ce n'est <strong>pas direct</strong>, car les robots mobiles sont non holonomes : on ne peut pas simplement se déplacer vers la droite. Pourtant, plusieurs bonnes solutions existent. La plupart ignorent la dynamique du système et donnent les vitesses que les roues doivent avoir (leçon 4).`),
+    P(`A <strong>kinematic controller</strong> makes the robot follow a trajectory described by position and/or velocity profiles as functions of time. It is <strong>not straightforward</strong>, because mobile robots are nonholonomic: you cannot just move to the right. Still, several good solutions exist. Most of them ignore the dynamics of the system and give the speeds that the wheels must have (lesson 5).`,
+      `Un <strong>contrôleur cinématique</strong> fait suivre au robot une trajectoire décrite par des profils de position et/ou de vitesse en fonction du temps. Ce n'est <strong>pas direct</strong>, car les robots mobiles sont non holonomes : on ne peut pas simplement se déplacer vers la droite. Pourtant, plusieurs bonnes solutions existent. La plupart ignorent la dynamique du système et donnent les vitesses que les roues doivent avoir (leçon 5).`),
     H4(`9.2 Open-loop control`, `9.2 Commande en boucle ouverte`),
     P(`Divide the path into segments of clearly defined shapes, <strong>straight lines and circle arcs</strong>, and pre-compute the speeds of each. The disadvantages:`,
       `Divisez le chemin en segments de formes bien définies, <strong>lignes droites et arcs de cercle</strong>, et précalculez les vitesses de chacun. Les inconvénients :`),
@@ -161,8 +161,8 @@ lesson(PRE, 9, {
       P(`A textbook choice is <i>k</i><sub>ρ</sub> = 3, <i>k</i><sub>α</sub> = 8, <i>k</i><sub>β</sub> = −1.5. Note that <i>ρ</i> then shrinks faster than the angles converge, so the final heading is a little off when you stop at a distance tolerance: a smaller <i>k</i><sub>ρ</sub> (about 1 to 1.5) and a larger |<i>k</i><sub>β</sub>| give a more precise heading, but a slower approach. Another nice property: the speed <i>v</i> keeps a <strong>constant sign</strong>, so the robot never reverses during its approach: it parks in the most natural way.`,
         `Un choix classique est <i>k</i><sub>ρ</sub> = 3, <i>k</i><sub>α</sub> = 8, <i>k</i><sub>β</sub> = −1,5. Notez que <i>ρ</i> diminue alors plus vite que les angles ne convergent, donc le cap final est un peu décalé quand on s'arrête à une tolérance de distance : un <i>k</i><sub>ρ</sub> plus petit (environ 1 à 1,5) et un |<i>k</i><sub>β</sub>| plus grand donnent un cap plus précis, mais une approche plus lente. Autre bonne propriété : la vitesse <i>v</i> garde un <strong>signe constant</strong>, donc le robot ne fait jamais marche arrière pendant son approche : il se gare de la façon la plus naturelle.`)),
     WIDGET(`wmr-goto`),
-    P(`Finally the commands <i>v</i> and <i>ω</i> are converted into wheel speeds with <i>V</i><sub>R</sub> = <i>v</i> + <i>ω</i> <i>L</i>/2 and <i>V</i><sub>L</sub> = <i>v</i> − <i>ω</i> <i>L</i>/2 (lesson 4), and the motors' own speed loops (lesson “Dynamics and control”) follow them. In practice, add saturations on <i>v</i> and on the wheel speeds, and stop when <i>ρ</i> is below a tolerance, since the law has no meaning at the goal itself.`,
-      `Enfin les commandes <i>v</i> et <i>ω</i> sont converties en vitesses de roues par <i>V</i><sub>R</sub> = <i>v</i> + <i>ω</i> <i>L</i>/2 et <i>V</i><sub>L</sub> = <i>v</i> − <i>ω</i> <i>L</i>/2 (leçon 4), et les boucles de vitesse propres des moteurs (cours « Dynamique et commande ») les suivent. En pratique, ajoutez des saturations sur <i>v</i> et sur les vitesses des roues, et arrêtez-vous quand <i>ρ</i> est sous une tolérance, puisque la loi n'a pas de sens au but lui-même.`)
+    P(`Finally the commands <i>v</i> and <i>ω</i> are converted into wheel speeds with <i>V</i><sub>R</sub> = <i>v</i> + <i>ω</i> <i>L</i>/2 and <i>V</i><sub>L</sub> = <i>v</i> − <i>ω</i> <i>L</i>/2 (lesson 5), and the motors' own speed loops (lesson “Dynamics and control”) follow them. In practice, add saturations on <i>v</i> and on the wheel speeds, and stop when <i>ρ</i> is below a tolerance, since the law has no meaning at the goal itself.`,
+      `Enfin les commandes <i>v</i> et <i>ω</i> sont converties en vitesses de roues par <i>V</i><sub>R</sub> = <i>v</i> + <i>ω</i> <i>L</i>/2 et <i>V</i><sub>L</sub> = <i>v</i> − <i>ω</i> <i>L</i>/2 (leçon 5), et les boucles de vitesse propres des moteurs (cours « Dynamique et commande ») les suivent. En pratique, ajoutez des saturations sur <i>v</i> et sur les vitesses des roues, et arrêtez-vous quand <i>ρ</i> est sous une tolérance, puisque la loi n'a pas de sens au but lui-même.`)
   ],
   terms: [[`open-loop / feedback control`, `commande en boucle ouverte / fermée`], [`polar coordinates ρ, α, β`, `coordonnées polaires ρ, α, β`], [`control gain`, `gain de commande`], [`stability`, `stabilité`], [`singularity at ρ = 0`, `singularité en ρ = 0`], [`saturation`, `saturation`]],
   quiz: [

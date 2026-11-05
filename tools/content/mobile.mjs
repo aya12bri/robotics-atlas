@@ -2,37 +2,48 @@
 // Sources: four lecture sets (mobile-robot locomotion and kinematics, wheel constraints and maneuverability,
 // omnidirectional robots, and a bicycle / car exercise), rewritten and explained for this site.
 import { tx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import './m-ex1.mjs';
+import './m-ex2.mjs';
+import './m-ex3.mjs';
+import './m-ex4.mjs';
+import { partZero } from './m-0.mjs';
 import { partA } from './m-a.mjs';
+import { partDrives } from './m-8.mjs';
 import { partB } from './m-b.mjs';
 import { partC } from './m-c.mjs';
+import { partD } from './m-d.mjs';
+import { partE } from './m-e.mjs';
+import { partF } from './m-f.mjs';
+import { partG } from './m-g.mjs';
 
 export const meta = { script: 'learn-mobile-widgets.js' };
 export function build() {
   const head = {
     title: tx(`Wheeled mobile robots: kinematics and motion control`, `Robots mobiles à roues : cinématique et commande du mouvement`),
-    lead: tx(`How a robot on wheels moves, and how to make it move where you want: the pose and the rotation matrix, the constraints of every wheel type, differential drive, tricycle, bicycle and car (Ackermann), omnidirectional and synchro drive, the ICR, mobility, steerability and maneuverability, holonomic and nonholonomic robots, and a controller that drives a robot to a goal pose. Each lesson has worked examples, a check-yourself quiz and (in five of them) a widget to try.`,
-      `Comment un robot sur roues se déplace, et comment le faire aller où l'on veut : la pose et la matrice de rotation, les contraintes de chaque type de roue, le robot différentiel, le tricycle, le vélo et la voiture (Ackermann), l'omnidirectionnel et l'entraînement synchrone, le CIR, la mobilité, l'orientabilité et la manœuvrabilité, les robots holonomes et non holonomes, et un contrôleur qui conduit un robot vers une pose but. Chaque leçon a des exemples résolus, un quiz d'auto-évaluation et (dans cinq d'entre elles) un widget à essayer.`),
-    intro: BOX(`idea`, [`The logic of the course`, `La logique du cours`],
-      P(`Everything in this course comes from <strong>one idea</strong>: a standard wheel rolls forward and refuses to slide sideways. Write that as two equations for each wheel (lesson 3), stack the equations of all the wheels (lesson 7), and you get the answer to every question: <em>how do the wheel speeds make the robot move</em> (lessons 4 to 6), <em>how freely can it move</em> (lessons 7 and 8) and <em>how do I steer it to a goal</em> (lesson 9).`,
-        `Tout ce cours vient d'<strong>une seule idée</strong> : une roue standard roule vers l'avant et refuse de glisser de côté. Écrivez cela en deux équations par roue (leçon 3), empilez les équations de toutes les roues (leçon 7), et vous obtenez la réponse à toutes les questions : <em>comment les vitesses des roues font-elles avancer le robot</em> (leçons 4 à 6), <em>quelle est sa liberté de mouvement</em> (leçons 7 et 8) et <em>comment le conduire vers un but</em> (leçon 9).`),
-      TABLE([[`Lessons`, `Leçons`], [`Question`, `Question`], [`Robots`, `Robots`]], [
-        [`1 – 2`, [`What is a wheeled robot and where is it?`, `Qu'est-ce qu'un robot à roues et où est-il ?`], [`all`, `tous`]],
-        [`3`, [`What does one wheel allow?`, `Qu'autorise une roue ?`], [`wheels`, `roues`]],
-        [`4 – 6`, [`How do wheel speeds make the robot move?`, `Comment les vitesses des roues font-elles avancer le robot ?`], [`differential, bicycle / car, omni, synchro`, `différentiel, vélo / voiture, omni, synchrone`]],
-        [`7 – 8`, [`How freely can it move?`, `Quelle liberté de mouvement a-t-il ?`], [`any layout`, `toute disposition`]],
-        [`9`, [`How do I drive it to a goal?`, `Comment le conduire vers un but ?`], [`differential`, `différentiel`]]
-      ])),
+    lead: tx(`A complete course, from zero to professional level, in 20 lessons: the maths you need (from scratch), how every wheel and drive works (differential, tricycle, car, omni, Mecanum, swerve, tracked), the constraints, the ICR, mobility and maneuverability, holonomy, motion control, path tracking and planning, then the professional part: odometry and calibration, Kalman filtering, dynamics and motor/battery sizing, software and ROS 2, safety and testing, a capstone project, and a final certification. Every lesson has worked examples, graded exercises with hints and solutions (many are checked automatically), and the course ends with a written exam, practical challenges and labs.`,
+      `Un cours complet, de zéro au niveau professionnel, en 20 leçons : les maths nécessaires (depuis le début), le fonctionnement de chaque roue et motorisation (différentiel, tricycle, voiture, omni, Mecanum, swerve, chenilles), les contraintes, le CIR, la mobilité et la manœuvrabilité, l'holonomie, la commande du mouvement, le suivi et la planification de chemins, puis la partie professionnelle : odométrie et étalonnage, filtre de Kalman, dynamique et dimensionnement des moteurs et de la batterie, logiciel et ROS 2, sécurité et essais, un projet de synthèse et une certification finale. Chaque leçon a des exemples résolus, des exercices gradués avec indices et solutions (beaucoup sont corrigés automatiquement), et le cours se termine par un examen écrit, des défis pratiques et des travaux pratiques.`),
+    intro: BOX(`idea`, [`How to follow this course`, `Comment suivre ce cours`],
+      P(`The course has four parts. You can start at any part if you already know the earlier ones, but take the exercises of the lesson first: if you solve them, move on.`,
+        `Le cours a quatre parties. Vous pouvez commencer à n'importe quelle partie si vous connaissez déjà les précédentes, mais faites d'abord les exercices de la leçon : si vous les résolvez, passez à la suite.`),
+      TABLE([[`Part`, `Partie`], [`Lessons`, `Leçons`], [`You will be able to…`, `Vous saurez…`]], [
+        [[`<strong>A. Foundations</strong> (beginner)`, `<strong>A. Fondations</strong> (débutant)`], `1 – 4`, [`do the maths of the course, describe the pose of a robot, and write the constraints of any wheel`, `faire les maths du cours, décrire la pose d'un robot, et écrire les contraintes de n'importe quelle roue`]],
+        [[`<strong>B. Kinematics of every drive</strong> (intermediate)`, `<strong>B. Cinématique de chaque motorisation</strong> (intermédiaire)`], `5 – 10`, [`compute the wheel speeds and the motion of differential, car, omni, Mecanum and swerve robots, and count their degrees of freedom`, `calculer les vitesses de roues et le mouvement des robots différentiels, voiture, omni, Mecanum et swerve, et compter leurs degrés de liberté`]],
+        [[`<strong>C. Control and planning</strong> (advanced)`, `<strong>C. Commande et planification</strong> (avancé)`], `11 – 13`, [`drive a robot to a pose, make it follow a path, and plan feasible paths and speed profiles`, `conduire un robot vers une pose, lui faire suivre un chemin, et planifier des chemins réalisables et des profils de vitesse`]],
+        [[`<strong>D. Professional engineering</strong>`, `<strong>D. Ingénierie professionnelle</strong>`], `14 – 20`, [`calibrate, filter, size, program, secure and test a real robot, design one from a specification, and pass the final certification`, `étalonner, filtrer, dimensionner, programmer, sécuriser et tester un vrai robot, en concevoir un à partir d'un cahier des charges, et réussir la certification finale`]]
+      ]),
+      P(`<strong>How the exercises work.</strong> Each lesson ends with exercises of three levels (beginner, intermediate, professional). For most of them you type a number and the page checks it (with a small tolerance); the others are multiple choice. The hint and the solution are hidden until you open them: always try first. Your progress is saved in this browser. <strong>Be honest with yourself:</strong> reading is not enough, you become a professional by solving, building and measuring, so do the labs of lesson 20.`,
+        `<strong>Comment marchent les exercices.</strong> Chaque leçon se termine par des exercices de trois niveaux (débutant, intermédiaire, professionnel). Pour la plupart, vous tapez un nombre et la page le vérifie (avec une petite tolérance) ; les autres sont des QCM. L'indice et la solution sont cachés tant que vous ne les ouvrez pas : essayez toujours d'abord. Votre progression est enregistrée dans ce navigateur. <strong>Soyez honnête avec vous-même :</strong> lire ne suffit pas, on devient professionnel en résolvant, en construisant et en mesurant, donc faites les TP de la leçon 20.`)),
     glossTitle: tx(`Glossary`, `Glossaire`),
     glossIntro: tx(`All the words of the course in one place.`, `Tous les mots du cours au même endroit.`),
     gloss: glossary(),
     finish: {
-      h: tx(`You can now model and drive any wheeled robot!`, `Vous savez maintenant modéliser et conduire n'importe quel robot à roues !`),
-      p: tx(`Go and test it: drive the 3D robots, and try the drives in the wheels lab. Then continue with the dynamics and control of the motors that turn those wheels.`, `Allez le tester : pilotez les robots en 3D et essayez les motorisations dans le laboratoire des roues. Puis continuez avec la dynamique et la commande des moteurs qui font tourner ces roues.`),
-      next: [`wheels.html`, tx(`Go to the wheels lab →`, `Aller au laboratoire des roues →`)],
+      h: tx(`From zero to professional: you can model, size, control and test a wheeled robot!`, `De zéro au niveau professionnel : vous savez modéliser, dimensionner, commander et tester un robot à roues !`),
+      p: tx(`Pass the final exam, the challenges and the labs of lesson 20 to complete the course. Then go further with the dynamics and control of arms, perception and AI, and the real world.`, `Réussissez l'examen final, les défis et les TP de la leçon 20 pour terminer le cours. Puis allez plus loin avec la dynamique et la commande des bras, la perception et l'IA, et le monde réel.`),
+      next: [`learn-control.html`, tx(`Go to dynamics and control →`, `Aller à la dynamique et la commande →`)],
       back: tx(`Back to the roadmap`, `Retour au parcours`)
     }
   };
-  return { head, lessons: [...partA(), ...partB(), ...partC()] };
+  return { head, lessons: [...partZero(), ...partA(), ...partB(), ...partDrives(), ...partC(), ...partD(), ...partE(), ...partF(), ...partG()] };
 }
 
 function glossary() {
@@ -55,6 +66,17 @@ function glossary() {
     [[`Holonomic / nonholonomic`, `Holonome / non holonome`], [`A holonomic robot has DDOF = DOF; a nonholonomic one has velocity constraints that cannot be integrated.`, `Un robot holonome a DDDL = DDL ; un robot non holonome a des contraintes de vitesse non intégrables.`]],
     [[`Path / trajectory`, `Chemin / trajectoire`], [`A curve in (x, y, θ) / the same curve with time.`, `Une courbe dans (x, y, θ) / la même courbe avec le temps.`]],
     [[`Odometry`, `Odométrie`], [`Computing the pose by integrating the wheel motions; it drifts.`, `Calculer la pose en intégrant les mouvements des roues ; elle dérive.`]],
+    [[`Mecanum drive`, `Motorisation Mecanum`], [`Four Mecanum wheels in an X layout: holonomic; the wheel speeds satisfy FL + FR = RL + RR.`, `Quatre roues Mecanum en X : holonome ; les vitesses des roues vérifient AVG + AVD = ARG + ARD.`]],
+    [[`Swerve drive`, `Swerve`], [`Independently steered and driven modules; each module speed and angle come from u = (v_x − ω y, v_y + ω x).`, `Modules orientés et entraînés indépendamment ; vitesse et angle de chaque module viennent de u = (v_x − ω y, v_y + ω x).`]],
+    [[`Pure pursuit`, `Poursuite pure`], [`Path following by steering along the circle to a look-ahead point: κ = 2 y_g / L_d².`, `Suivi de chemin en braquant selon le cercle vers un point d'anticipation : κ = 2 y_g / L_d².`]],
+    [[`Dubins / Reeds–Shepp path`, `Chemin de Dubins / Reeds–Shepp`], [`Shortest path with a minimum turning radius, forward only / with reversing.`, `Plus court chemin avec un rayon de virage minimal, en avant seulement / avec marche arrière.`]],
+    [[`Calibration`, `Étalonnage`], [`Measuring and correcting the systematic parameters (wheel radii, track) of the odometry.`, `Mesurer et corriger les paramètres systématiques (rayons de roues, voie) de l'odométrie.`]],
+    [[`Kalman filter / EKF`, `Filtre de Kalman / EKF`], [`Combines a prediction and a measurement according to their uncertainties; the EKF linearises a nonlinear motion model.`, `Combine une prédiction et une mesure selon leurs incertitudes ; l'EKF linéarise un modèle de mouvement non linéaire.`]],
+    [[`Rolling resistance c_rr`, `Résistance au roulement c_rr`], [`Ratio of the rolling force to the weight.`, `Rapport de la force de roulement au poids.`]],
+    [[`RMS torque`, `Couple RMS`], [`Root-mean-square torque over the work cycle: it must stay below the continuous torque of the motor.`, `Couple efficace sur le cycle de travail : il doit rester sous le couple continu du moteur.`]],
+    [[`Stopping distance`, `Distance d'arrêt`], [`v·t_r + v² / (2a): reaction travel plus braking.`, `v·t_r + v² / (2a) : course de réaction plus freinage.`]],
+    [[`STO (Safe Torque Off)`, `STO (suppression sûre du couple)`], [`A certified function of the motor drive that removes the torque safely.`, `Une fonction certifiée du variateur qui supprime le couple de façon sûre.`]],
+    [[`cmd_vel / Twist`, `cmd_vel / Twist`], [`The ROS velocity command: linear.x = v (m/s), angular.z = ω (rad/s).`, `La commande de vitesse ROS : linear.x = v (m/s), angular.z = ω (rad/s).`]],
     [[`Polar control law`, `Loi de commande polaire`], [`v = kρ·ρ, ω = kα·α + kβ·β, stable if kρ > 0, kβ < 0, kα − kρ > 0.`, `v = kρ·ρ, ω = kα·α + kβ·β, stable si kρ > 0, kβ < 0, kα − kρ > 0.`]]
   ]);
 }

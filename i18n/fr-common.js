@@ -110,7 +110,7 @@ RA.add({
  "qffl9baw5e": "Les robots dans le monde réel",
  "mymr6s864y": "Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers",
  "ngcr2dzsin": "Robots mobiles à roues",
- "acs5pj1cj0": "Contraintes des roues, robot différentiel, voiture et omni, CIR, manœuvrabilité, commande du mouvement",
+ "3p25qdc1d5": "De zéro au niveau professionnel : toutes les motorisations, commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
  "19vx26vb6n7": "12 leçons courtes, environ 50 minutes au total. Lisez-les dans l'ordre, répondez à la question de fin de chaque leçon, puis cochez-la. Votre progression est enregistrée dans ce navigateur et apparaît dans le parcours de la page d'accueil. Quand vous avez fini, des cours plus longs vont plus loin (voir les cartes ci-dessus) : maths, modélisation complète, singularités, commande, perception et IA, et le monde réel.",
  "2bkljlnfmeh": "Aller au cours sur les singularités →"
 });

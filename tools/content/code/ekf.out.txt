@@ -1,0 +1,5 @@
+after prediction : mu = [0.5 0.  0.1]  sigma_x = 0.1095  sigma_y = 0.1151  sigma_th = 0.0775
+innovation       : [0.02 0.03]
+after update     : mu = [0.517 0.025 0.105]  sigma_x = 0.0455  sigma_th = 0.0749
+Mahalanobis d^2   : 0.08 (gate 9.21 for 99 %, 2 dof)
+after 60 s      : odometry-only error 2.26 m, EKF error 0.083 m (RMS over the run: 1.33 m vs 0.117 m)

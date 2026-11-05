@@ -705,3 +705,25 @@ html, body { overflow-x: clip; }
   .scene-sec.tour .stepper { order: -1; margin: 0 0 1rem; align-self: center; justify-content: center; }   /* the step buttons sit in the middle of the page, above the card and the robot */
   .fader > .panel { align-self: center; }
 }
+
+/* ---- exercises, multiple choice, labs and the final exam (course "Wheeled mobile robots") ---- */
+.exs { margin: 1.4rem 0; padding: 1rem 1.1rem; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; background: color-mix(in srgb, var(--accent) 4%, var(--surface, transparent)); }
+.exs h3 { margin: 0 0 0.3rem; } .exnote { margin: 0 0 0.4rem; color: var(--muted); font-size: 0.9rem; } .exscore { margin: 0 0 0.6rem; font-family: var(--mono); font-size: 0.85rem; }
+.ex { margin: 0.9rem 0 0; padding: 0.8rem 0 0; border-top: 1px dashed var(--border); } .ex .q { margin: 0.3rem 0 0.5rem; }
+.qh { display: flex; align-items: center; gap: 0.5rem; } .qn { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.lv { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.04em; padding: 0.12rem 0.55rem; border-radius: 99px; border: 1px solid currentColor; }
+.lv.l1 { color: #2e9e5b; } .lv.l2 { color: #d98a2b; } .lv.l3 { color: #c0392b; }
+.numin { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
+.numin input { width: 9rem; padding: 0.35rem 0.6rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface, transparent); color: var(--text); font-family: var(--mono); font-size: 1rem; }
+.numin .unit { font-family: var(--mono); color: var(--muted); } .numin button, .exreset { padding: 0.35rem 0.9rem; border-radius: 99px; border: 1px solid var(--accent); background: transparent; color: var(--text); cursor: pointer; }
+.numin button:disabled, .numin input:disabled { opacity: 0.6; cursor: default; }
+.opts { margin: 0.3rem 0 0.2rem; padding-left: 1.6rem; } .opts li { margin: 0.25rem 0; padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; list-style-position: outside; }
+.opts li:hover, .opts li:focus-visible { border-color: var(--accent); outline: none; } .opts.locked li { cursor: default; }
+.opts li.right { border-color: #2e9e5b; background: color-mix(in srgb, #2e9e5b 14%, transparent); } .opts li.wrong { border-color: #c0392b; background: color-mix(in srgb, #c0392b 12%, transparent); }
+.fb { min-height: 1.2rem; margin: 0.2rem 0; font-size: 0.92rem; } .fb.ok { color: #2e9e5b; } .fb.bad { color: #c0392b; }
+details.hint, details.sol { margin: 0.35rem 0; border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.8rem; } details.hint summary, details.sol summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); } details.sol[open] summary, details.hint[open] summary { color: var(--accent); }
+.box.lab { border-color: #2e9e5b; } .box.lab .bt { background: #2e9e5b; } .labchk { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0; font-size: 0.92rem; cursor: pointer; } .labchk input { width: 1.1rem; height: 1.1rem; }
+pre.code { margin: 0.6rem 0; padding: 0.8rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: #1c2128; color: #d6deeb; font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; } pre.code code { font-family: inherit; }
+pre.out { margin: 0.4rem 0 0.8rem; padding: 0.6rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px dashed var(--border); font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
+#examSum { margin: 1rem 0; padding: 0.8rem 1.1rem; border: 2px solid var(--accent); border-radius: 12px; } #examSum ul { list-style: none; padding: 0; margin: 0 0 0.5rem; } #examSum li { margin: 0.3rem 0; } #examSum li.good { color: #2e9e5b; } #examSum .verdict { font-weight: 600; }
+.chalist { list-style: none; padding: 0; } .chalist li { margin: 0.4rem 0; padding: 0.4rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; } .chalist li::before { content: '○ '; color: var(--muted); } .chalist li.good { border-color: #2e9e5b; } .chalist li.good::before { content: '✓ '; color: #2e9e5b; font-weight: 700; }
