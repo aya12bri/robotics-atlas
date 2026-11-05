@@ -727,3 +727,8 @@ pre.code { margin: 0.6rem 0; padding: 0.8rem 1rem; overflow-x: auto; border-radi
 pre.out { margin: 0.4rem 0 0.8rem; padding: 0.6rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px dashed var(--border); font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
 #examSum { margin: 1rem 0; padding: 0.8rem 1.1rem; border: 2px solid var(--accent); border-radius: 12px; } #examSum ul { list-style: none; padding: 0; margin: 0 0 0.5rem; } #examSum li { margin: 0.3rem 0; } #examSum li.good { color: #2e9e5b; } #examSum .verdict { font-weight: 600; }
 .chalist { list-style: none; padding: 0; } .chalist li { margin: 0.4rem 0; padding: 0.4rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; } .chalist li::before { content: '○ '; color: var(--muted); } .chalist li.good { border-color: #2e9e5b; } .chalist li.good::before { content: '✓ '; color: #2e9e5b; font-weight: 700; }
+/* the home comparison table: keep readable columns and scroll sideways on small screens (no one-letter-per-line text) */
+details.cmp .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+details.cmp table.dh { min-width: 640px; }
+details.cmp .cmp-wrap td, details.cmp .cmp-wrap th { overflow-wrap: normal; word-break: normal; min-width: 5.5rem; }
+details.cmp .cmp-wrap td:first-child, details.cmp .cmp-wrap th:first-child { min-width: 7.5rem; }
