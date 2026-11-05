@@ -619,7 +619,8 @@ table.dh.center td, table.dh.center th { text-align: center; }
 .wrow { display: grid; grid-template-columns: 3.2rem 1fr 5rem; gap: 0.6rem; align-items: center; margin: 0.3rem 0; } .wrow label { font-family: var(--mono); font-size: 0.85rem; } .wrow output { font-family: var(--mono); font-size: 0.82rem; text-align: right; color: var(--muted); } .wrow input { width: 100%; accent-color: var(--btn); }
 .wseg { display: flex; gap: 0.4rem; margin: 0.6rem 0; } .wseg button { flex: 1; font-size: 0.85rem; padding: 0.4rem 0.6rem; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 99px; } .wseg button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
 .wout { font-family: var(--mono); font-size: 0.82rem; line-height: 1.6; margin-top: 0.6rem; } .wout ul { margin: 0.2rem 0 0.5rem; padding-left: 1.1rem; }
-@media (max-width: 900px) { .courses { grid-template-columns: 1fr; } .wbox { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .courses { grid-template-columns: 1fr; } .wbox { grid-template-columns: minmax(0, 1fr); } }
+.wctl, .wout { min-width: 0; } .wctl select { max-width: 100%; } .wout { overflow-wrap: anywhere; }
 .box p, .box li { max-width: none; }
 table.dh.center { width: auto; min-width: min(100%, 26rem); margin: 0.8rem auto; } .cmp-wrap:has(table.center) { overflow-x: auto; }
 

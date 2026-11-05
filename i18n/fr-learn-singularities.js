@@ -476,6 +476,8 @@ RA.add({
  "idmkxxiv1x": "Vision, Kalman, SLAM, A*, RRT, apprentissage, multi-robots",
  "qffl9baw5e": "Les robots dans le monde réel",
  "mymr6s864y": "Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers",
+ "ngcr2dzsin": "Robots mobiles à roues",
+ "acs5pj1cj0": "Contraintes des roues, robot différentiel, voiture et omni, CIR, manœuvrabilité, commande du mouvement",
  "1vonoeeoyd1": "impossible",
  "1m44ky2iiy": "possible",
  "1n3cppjczmp": "θ₂ = 0 : le bras est tendu",

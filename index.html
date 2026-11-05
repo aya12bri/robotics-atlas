@@ -281,15 +281,16 @@ const RM = {
   ctrl: { href: 'learn-control.html', tag: ['Course', 'Cours'], min: 110, lv: 3, t: ['Dynamics and control', 'Dynamique et commande'], d: ['Torques, motors, sensors, PID, computed torque, force control.', 'Couples, moteurs, capteurs, PID, couple calculé, commande en effort.'] },
   ai: { href: 'learn-intelligence.html', tag: ['Course', 'Cours'], min: 115, lv: 3, t: ['Perception, planning and AI', 'Perception, planification et IA'], d: ['Vision, Kalman, SLAM, A*, RRT, behaviours, learning.', 'Vision, Kalman, SLAM, A*, RRT, comportements, apprentissage.'] },
   world: { href: 'learn-world.html', tag: ['Course', 'Cours'], min: 115, lv: 2, t: ['Robots in the real world', 'Les robots dans le monde réel'], d: ['Every robot family, grippers, electronics, ROS, safety, careers.', 'Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers.'] },
+  wmr: { href: 'learn-mobile.html', tag: ['Course', 'Cours'], min: 135, lv: 2, t: ['Wheeled mobile robots', 'Robots mobiles à roues'], d: ['Wheel constraints, differential, car and omni drives, ICR, maneuverability, motion control.', 'Contraintes des roues, robot différentiel, voiture et omni, CIR, manœuvrabilité, commande du mouvement.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'mobile', 'wheels', 'model', 'sing', 'ctrl', 'ai', 'world'];
+const RM_ORDER = ['learn', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'mobile', 'wheels', 'wmr', 'model', 'sing', 'ctrl', 'ai', 'world'];
 const RM_ROWS = [
   { phase: ['1 · Start here', '1 · Pour commencer'], c: 'learn', r: 'maths' },
   { phase: ['2 · Serial robots', '2 · Robots série'], c: 'arm', l: 'gantry', r: 'scara' },
   { c: 'articulated', l: 'cobot' },
   { phase: ['3 · Parallel robots', '3 · Robots parallèles'], c: 'delta' },
-  { phase: ['4 · Mobile robots', '4 · Robots mobiles'], c: 'mobile', r: 'wheels' },
+  { phase: ['4 · Mobile robots', '4 · Robots mobiles'], c: 'mobile', l: 'wmr', r: 'wheels' },
   { phase: ['5 · Go further', '5 · Aller plus loin'], c: 'model', l: 'sing', r: 'ctrl' },
   { phase: ['6 · The whole field', '6 · Tout le domaine'], c: 'ai', r: 'world' }
 ];

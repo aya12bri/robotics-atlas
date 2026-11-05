@@ -711,6 +711,8 @@ RA.add({
  "16kbfhezdgv": "Moteurs, capteurs, PID, couple calculé, commande en effort, trajectoires",
  "idmkxxiv1x": "Vision, Kalman, SLAM, A*, RRT, apprentissage, multi-robots",
  "mymr6s864y": "Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers",
+ "ngcr2dzsin": "Robots mobiles à roues",
+ "acs5pj1cj0": "Contraintes des roues, robot différentiel, voiture et omni, CIR, manœuvrabilité, commande du mouvement",
  "25ocakmghjn": "Batterie / secteur",
  "2zs9qmxi96": "Distribution d'énergie",
  "1i6gjo63f6k": "Variateurs moteurs",
