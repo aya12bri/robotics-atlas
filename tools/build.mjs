@@ -43,7 +43,7 @@ ${c.gloss}
       </div>
     </div>
     <script src="learn-more-widgets.js" defer></script>
-    <script>
+${c.script ? `    <script src="${c.script}" defer></script>\n` : ''}    <script>
 document.addEventListener('DOMContentLoaded', function () {
   var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
   var PREFIX = '${c.prefix}', KEY = '${c.key}';
