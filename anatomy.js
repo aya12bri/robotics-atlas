@@ -749,11 +749,30 @@ const mkSlider = (s, i, host) => { s.min = LIM[i][0]; s.max = LIM[i][1]; s.step 
 const sliders = (CFG.panel || CFG.cmd) ? [].slice.call(document.querySelectorAll('#anCmd input[type=range]')).map((s, i) => mkSlider(s, i, s.parentNode)) : cards.map((c, i) => { const s = c.querySelector('input[type=range]'); if (!s) { c.classList.add('info'); return null; } return mkSlider(s, i, c); });
 cards.forEach((c, i) => c.querySelector('.anhead').addEventListener('click', () => select(CFG.panel ? i : (i === sel ? -1 : i))));
 const readout = document.createElement('div'); readout.className = 'anout'; box.appendChild(readout);
+// The callouts: half of the cards on each side of the model (wide screens), each tied to its part by a leader line.
+const anat = box.parentNode, HALF = Math.ceil(cards.length / 2), WIDE = matchMedia('(min-width: 1000px)');
+anat.style.setProperty('--rows', HALF);
+let hover = -1;
+cards.forEach((c, i) => {
+  const left = i < HALF; c.dataset.side = left ? 'left' : 'right'; c.style.gridRow = (left ? i : i - HALF) + 1;
+  if (CFG.panel) return;
+  const on = () => { hover = i; light(); }, off = () => { if (hover === i) { hover = -1; light(); } };
+  c.addEventListener('pointerenter', on); c.addEventListener('pointerleave', off);
+  c.querySelector('.anhead').addEventListener('focus', on); c.querySelector('.anhead').addEventListener('blur', off);
+});
+tags.forEach((t, i) => { t.style.setProperty('--c', COL[i]); t.addEventListener('pointerenter', () => { hover = i; light(); }); t.addEventListener('pointerleave', () => { if (hover === i) { hover = -1; light(); } }); });
+// Hovering previews a part (its card, its tag and its ring glow); a click holds it (touch screens have no hover).
+function light() {
+  const lit = hover >= 0 ? hover : sel;
+  cards.forEach((c, k) => c.classList.toggle('lit', !CFG.panel && k === hover)); tags.forEach((t, k) => t.classList.toggle('lit', k === hover));
+  rings.forEach((r, k) => { r.material.emissiveIntensity = k === lit ? 1.4 : 0.35; r.scale.setScalar(k === lit ? 1.12 : 1); });
+}
 function select(i) {
   sel = i;
   cards.forEach((c, k) => c.classList.toggle('on', k === i)); tags.forEach((t, k) => t.classList.toggle('on', k === i));
-  rings.forEach((r, k) => { r.material.emissiveIntensity = k === i ? 1.4 : 0.35; r.scale.setScalar(k === i ? 1.12 : 1); });
+  light();
   axes.forEach((a, k) => { a.visible = k === i && !a.userData.none; });
+  if (!WIDE.matches && i >= 0 && cards[i]) { const row = cards[i].parentNode; row.scrollTo({ left: cards[i].offsetLeft - row.offsetLeft - 12, behavior: 'smooth' }); }
   if (i >= 0 && rings[i] && rings[i].userData.xray && !xray) setXray(true);
   if (pose.onSelect) pose.onSelect(i);
 }
@@ -787,10 +806,10 @@ function layoutTags(w, h) {
     at[i] = { x: (v.x * 0.5 + 0.5) * w, y: (-v.y * 0.5 + 0.5) * h };
   });
   const ids = at.map((p, i) => (p ? i : -1)).filter((i) => i >= 0);
-  if (!ids.length) { leaders.innerHTML = ''; return; }
+  if (!ids.length) { leaders.innerHTML = ''; drawCallouts(ids, pos); return; }
   // each small tag is moved out of the model, away from the middle of the tags, and an arrow points back at its part
   const cx = ids.reduce((t, i) => t + at[i].x, 0) / ids.length, cy = ids.reduce((t, i) => t + at[i].y, 0) / ids.length;
-  const reach = Math.max(38, Math.min(64, w * 0.11));
+  const reach = WIDE.matches ? 0 : Math.max(38, Math.min(64, w * 0.11));   // wide: the tag sits on its part and the card's leader points at it
   ids.forEach((i, k) => {
     let dx = at[i].x - cx, dy = at[i].y - cy, d = Math.hypot(dx, dy);
     if (d < 4) { const ang = -Math.PI / 2 + k * 2.4; dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
@@ -816,10 +835,25 @@ function layoutTags(w, h) {
     svg += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + hx + '" y2="' + hy + '" stroke="' + c + '" stroke-width="' + sw + '"/><polygon points="' + x2 + ',' + y2 + ' ' + (hx - uy * 4.5) + ',' + (hy + ux * 4.5) + ' ' + (hx + uy * 4.5) + ',' + (hy - ux * 4.5) + '" fill="' + c + '" stroke="#fff" stroke-width="0.8"/>';
   });
   leaders.innerHTML = svg;
+  drawCallouts(ids, pos);
+}
+// Dashed leaders from each card to its tag: leave the card from the side that faces the model, step out, then run straight to the tag.
+const callouts = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); callouts.setAttribute('class', 'ancall'); callouts.setAttribute('aria-hidden', 'true'); anat.appendChild(callouts);
+function drawCallouts(ids, pos) {
+  if (!WIDE.matches || !ids.length) { if (callouts.firstChild) callouts.innerHTML = ''; return; }
+  const A = anat.getBoundingClientRect(), V = box.getBoundingClientRect(), ox = V.left - A.left, oy = V.top - A.top, lit = hover >= 0 ? hover : sel;
+  let d = '';
+  ids.forEach((i) => {
+    const r = cards[i].getBoundingClientRect(), left = cards[i].dataset.side === 'left';
+    const ax = (left ? r.right : r.left) - A.left, ay = r.top - A.top + Math.min(r.height / 2, 24), ex = ax + (left ? 18 : -18);
+    d += '<path d="M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + 'L' + ex.toFixed(1) + ' ' + ay.toFixed(1) + 'L' + (ox + pos[i].x).toFixed(1) + ' ' + (oy + pos[i].y).toFixed(1) + '" stroke="' + COL[i] + '"' + (i === lit ? ' class="lit"' : '') + '/>';
+  });
+  callouts.innerHTML = d;
 }
 
 function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize);
+if (window.ResizeObserver) new ResizeObserver(resize).observe(box);
 const v = new THREE.Vector3();
 function loop(now) {
   requestAnimationFrame(loop);
@@ -833,7 +867,18 @@ function loop(now) {
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
   renderer.render(scene, camera);
   const w = box.clientWidth, h = box.clientHeight;
+  if (!arranged) arrange();
   layoutTags(w, h);
+}
+// Once, from the starting view: each card goes to the side its part is on, and the cards of a side are stacked in the
+// order of their parts from top to bottom, so that the leaders do not cross.
+let arranged = false;
+function arrange() {
+  arranged = true;
+  if (CFG.panel || anchors.length < cards.length) return;
+  const pt = cards.map((c, i) => { anchors[i].getWorldPosition(v); v.project(camera); return { i, x: v.x, y: -v.y }; });
+  const byX = pt.slice().sort((a, b) => a.x - b.x), sides = [byX.slice(0, HALF), byX.slice(HALF)];
+  sides.forEach((side, k) => side.sort((a, b) => a.y - b.y).forEach((o, row) => { cards[o.i].dataset.side = k ? 'right' : 'left'; cards[o.i].style.gridRow = row + 1; }));
 }
 pose(); select(CFG.panel ? 0 : -1); requestAnimationFrame(loop);
 window.RA_ANATOMY = { q, select, setXray, pose };
