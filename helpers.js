@@ -203,4 +203,11 @@ const RB = (function () {
   return { identity, mul, stdA, modA, stdChain, modChain, fmt,
            renderTable, renderMatrix, controls, shape, label, arrow, drawFrames };
 })();
+// theme helpers for the 3D views: RB.isLight() and RB.onTheme(fn) (fn(isLight) now and on every theme change)
+RB.isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
+RB.onTheme = (fn) => {
+  const run = () => fn(RB.isLight()); run();
+  new MutationObserver(run).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  matchMedia('(prefers-color-scheme: light)').addEventListener('change', run);
+};
 window.RB = RB;

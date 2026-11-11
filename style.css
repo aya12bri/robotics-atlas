@@ -732,3 +732,22 @@ details.cmp .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 details.cmp table.dh { min-width: 640px; }
 details.cmp .cmp-wrap td, details.cmp .cmp-wrap th { overflow-wrap: normal; word-break: normal; min-width: 5.5rem; }
 details.cmp .cmp-wrap td:first-child, details.cmp .cmp-wrap th:first-child { min-width: 7.5rem; }
+
+/* industrial operations table on the robot pages */
+.cmp-wrap table.dh.ops, table.dh.ops { width: 100%; min-width: 0; }
+table.dh.ops td.left { vertical-align: top; }
+table.dh.ops td:first-child { white-space: nowrap; }
+.opfit { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+.opfit.f3 { background: color-mix(in srgb, #22c55e 22%, transparent); color: #16a34a; border: 1px solid color-mix(in srgb, #22c55e 45%, transparent); }
+.opfit.f2 { background: color-mix(in srgb, #f59e0b 20%, transparent); color: #d97706; border: 1px solid color-mix(in srgb, #f59e0b 45%, transparent); }
+.opfit.f1 { background: color-mix(in srgb, #94a3b8 18%, transparent); color: var(--muted, #8a94a3); border: 1px solid color-mix(in srgb, #94a3b8 40%, transparent); }
+@media (max-width: 640px) { table.dh.ops td:first-child { white-space: normal; } table.dh.ops th, table.dh.ops td { padding: 0.45rem 0.55rem; font-size: 0.85rem; } }
+@media (max-width: 640px) {
+  .cmp-wrap table.dh.ops, table.dh.ops tbody { display: block; width: 100%; }
+  table.dh.ops thead { display: none; }
+  table.dh.ops tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.25rem 0.6rem; align-items: center; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  table.dh.ops tr:last-child { border-bottom: 0; }
+  table.dh.ops td { border: 0 !important; padding: 0 !important; text-align: left; }
+  table.dh.ops td:nth-child(2) { grid-column: 1 / -1; grid-row: 2; color: var(--muted, inherit); }
+  table.dh.ops td:nth-child(3) { grid-column: 2; grid-row: 1; text-align: right; }
+}
