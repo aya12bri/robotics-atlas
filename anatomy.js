@@ -812,6 +812,7 @@ const FRAME = [['X', '#ff4d4d', new THREE.Vector3(1, 0, 0)], ['Y', '#3ddc84', ne
 const modelBox = new THREE.Box3(); scene.traverse((o) => { if (o.isMesh && o.castShadow && o.visible) modelBox.expandByObject(o); });
 const modelSize = modelBox.isEmpty() ? VIEW_R * 0.5 : Math.max(modelBox.max.x - modelBox.min.x, modelBox.max.y - modelBox.min.y, modelBox.max.z - modelBox.min.z);
 const frameLen = Math.min(VIEW_R * 0.3, Math.max(0.1, modelSize * 0.38)), frame = new THREE.Group(); frame.renderOrder = 10; scene.add(frame);
+const THUMB = /[?&]thumb\b/.test(location.search); let thumbFit = THUMB; if (THUMB) frame.visible = false;   // ?thumb: a clean, well-framed picture of the robot for the home page tiles (tools/thumbs-anatomy.mjs)   // ?thumb: a clean picture of the robot, for the home page tiles (tools/thumbs-anatomy.mjs)
 // drawn on top of the model, so the frame stays visible even where it starts inside the base
 const frameMat = (col) => new THREE.MeshBasicMaterial({ color: col, depthTest: false, depthWrite: false, transparent: true, opacity: 0.95 });
 const frameTags = FRAME.map(([name, col, dir]) => {
@@ -1004,6 +1005,9 @@ function loop(now) {
   if (MOVING) {                                                  // robots that drive or walk: the floor follows them in 1 m steps, so they never leave the grid
     const gx = Math.round(orbit.target.x), gz = Math.round(orbit.target.z);
     [floor, pad, grid].forEach((o) => { o.position.x = gx; o.position.z = gz; });
+  }
+  if (thumbFit) {                                               // a closer view for the small robots
+    thumbFit = false; const z = { mobile: 0.5, drives: 0.5, wheels: 0.8, quadrotor: 0.8 }[KIND] || 1; camera.position.sub(orbit.target).multiplyScalar(z).add(orbit.target);
   }
   flyStep(now);
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
