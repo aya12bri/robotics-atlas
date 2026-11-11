@@ -279,6 +279,38 @@ const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dan
   shoulder: L('in the shoulders and arms', 'dans les épaules et les bras'), hand: L('in the hands', 'dans les mains'), hip: L('in the hips and legs', 'dans les hanches et les jambes'), knee: L('in the knees', 'dans les genoux'), foot: L('under the feet', 'sous les pieds'),
   center: L('in the centre body', 'dans le corps central'), mast: L('on the GPS mast', 'sur le mât GPS'), bottom: L('underneath', 'en dessous'), arm: L('in the arms', 'dans les bras'), motor: L('at the end of each arm', 'au bout de chaque bras'), prop: L('on top of each motor', 'sur chaque moteur') };
 
+// ---------------------------------------------------------------- "how it works": a few key components, laid out clearly, with big callout cards
+// [candidate ids (first one present is used), x, z on the bench, step of the loop it belongs to (0 = safety)]
+const HOWSET = {
+  arm: [[['estop'], -1.8, 1.45, 0], [['photo', 'prox'], -1.8, 0.25, 1], [['cam'], -0.6, -0.95, 1], [['plc', 'cabinet'], -0.45, 1.35, 2], [['drive'], 0.55, 0.3, 3], [['servo'], 1.55, -0.6, 4], [['enc'], 1.75, 1.05, 5]],
+  mobile: [[['estop', 'bumper'], -1.8, 1.45, 0], [['lidar'], -1.8, -0.55, 1], [['us', 'imu'], -1.8, 0.5, 1], [['sbc', 'ai'], -0.55, -0.95, 2], [['mcu'], -0.45, 1.0, 2], [['battery'], 0.55, 1.55, 3], [['driver', 'esc'], 0.6, 0.15, 3], [['mot3', 'prop', 'dc'], 1.55, -0.6, 4], [['enc'], 1.75, 1.05, 5]]
+};
+const HOWTXT = {
+  estop: [L('Emergency stop', 'Bouton d\'arrêt d\'urgence'), L('Stops the whole system in case of danger', 'Arrête le système en cas de danger')],
+  bumper: [L('Safety bumper', 'Pare-chocs de sécurité'), L('A touch stops the robot at once', 'Un contact arrête le robot aussitôt')],
+  photo: [L('Presence sensor', 'Capteur de présence'), L('Detects the part on the conveyor', 'Détecte la pièce sur le convoyeur')],
+  prox: [L('Presence sensor', 'Capteur de présence'), L('Detects the part on the conveyor', 'Détecte la pièce sur le convoyeur')],
+  cam: [L('Inspection camera', 'Caméra de contrôle'), L('Finds the part and checks its quality', 'Repère la pièce et vérifie sa qualité')],
+  plc: [L('PLC (automate)', 'Automate (PLC)'), L('Processes the information and drives the cell', 'Traite les informations et pilote le système')],
+  cabinet: [L('Robot controller', 'Contrôleur robot'), L('Processes the information and plans the motion', 'Traite les informations et planifie le mouvement')],
+  drive: [L('Servo drive', 'Variateur'), L('Gives the motor exactly the right current', 'Donne au moteur exactement le bon courant')],
+  servo: [L('Actuation motor', 'Moteur d\'actionnement'), L('Turns the joint of the robot', 'Fait tourner l\'articulation du robot')],
+  enc: [L('Encoder', 'Codeur'), L('Measures the real position and sends it back', 'Mesure la position réelle et la renvoie')],
+  lidar: [L('LiDAR', 'LiDAR'), L('Sees the obstacles all around', 'Voit les obstacles tout autour')],
+  us: [L('Distance sensor', 'Capteur de distance'), L('Measures the distance in front', 'Mesure la distance devant')],
+  imu: [L('IMU', 'Centrale inertielle'), L('Measures tilt and rotation', 'Mesure l\'inclinaison et la rotation')],
+  sbc: [L('Main computer', 'Ordinateur principal'), L('Builds the map and chooses the path', 'Construit la carte et choisit le chemin')],
+  ai: [L('AI computer', 'Ordinateur IA'), L('Recognises objects and plans', 'Reconnaît les objets et planifie')],
+  mcu: [L('Microcontroller', 'Microcontrôleur'), L('Turns the plan into motor orders', 'Transforme le plan en consignes moteur')],
+  battery: [L('Battery', 'Batterie'), L('Gives the energy', 'Fournit l\'énergie')],
+  driver: [L('Motor driver', 'Driver moteur'), L('Sends the current to the motors', 'Envoie le courant aux moteurs')],
+  esc: [L('ESC', 'ESC (contrôleur de vitesse)'), L('Sends the current to the motors', 'Envoie le courant aux moteurs')],
+  mot3: [L('Joint motor', 'Moteur d\'articulation'), L('Moves the legs and the arms', 'Fait bouger les jambes et les bras')],
+  prop: [L('Motor + propeller', 'Moteur + hélice'), L('Lifts and steers the drone', 'Soulève et dirige le drone')],
+  dc: [L('Gear motor', 'Motoréducteur'), L('Turns the wheels', 'Fait tourner les roues')],
+  robot: [L('The robot moves', 'Le robot bouge'), L('The result: a precise motion', 'Le résultat : un mouvement précis')]
+};
+
 // ---------------------------------------------------------------- the layers: the robot is taken apart one layer at a time
 const LAYERS = [
   [L('The robot', 'Le robot'), [], L('A robot is a stack of layers, like a body: a skeleton, muscles, senses, a brain, energy, nerves and a guardian. Use the arrows to take it apart one layer at a time: each layer comes out of the robot with its names, and a dotted line shows where each part sits.', 'Un robot est un empilement de couches, comme un corps : un squelette, des muscles, des sens, un cerveau, de l\'énergie, des nerfs et un gardien. Utilisez les flèches pour le démonter couche par couche : chaque couche sort du robot avec ses noms, et un pointillé montre où se trouve chaque pièce.')],
@@ -289,7 +321,7 @@ const LAYERS = [
   [L('Energy', 'Énergie'), ['pow', 'drv'], L('The energy: the power supply or the battery, and the drives that give each motor exactly the current it needs.', 'L\'énergie : l\'alimentation ou la batterie, et les variateurs qui donnent à chaque moteur exactement le courant nécessaire.')],
   [L('Network and software', 'Réseau et logiciels'), ['com', 'sw'], L('The nerves and the programs: cables, networks and radio links carry the information; the software and the control loops tell everything what to do.', 'Les nerfs et les programmes : câbles, réseaux et liaisons radio transportent l\'information ; les logiciels et les boucles de régulation disent à tout ce qu\'il faut faire.')],
   [L('Safety', 'Sécurité'), ['saf'], L('The guardian: emergency stop, light curtains, scanners and bumpers can stop everything at any moment to protect people.', 'Le gardien : arrêt d\'urgence, barrières immatérielles, scanners et pare-chocs peuvent tout arrêter à tout moment pour protéger les personnes.')],
-  [L('The whole system', 'Tout le système'), 'all', L('All the layers together, wired up on the bench. Press "How it works" to follow the loop: sensors → brain → drives → motors → movement → encoders back to the brain.', 'Toutes les couches ensemble, câblées sur l\'établi. Appuyez sur « Comment ça marche » pour suivre la boucle : capteurs → cerveau → variateurs → moteurs → mouvement → codeurs vers le cerveau.')]
+  [L('How it works', 'Comment ça marche'), 'all', L('The key components only, wired together like in a real cell. Press "▶ How it works" to follow the signals step by step: sensors → brain → drive → motor → the robot moves → the encoder sends the position back.', 'Seulement les composants clés, câblés comme dans une vraie cellule. Appuyez sur « ▶ Comment ça marche » pour suivre les signaux étape par étape : capteurs → cerveau → variateur → moteur → le robot bouge → le codeur renvoie la position.')]
 ];
 
 // ---------------------------------------------------------------- the widget
@@ -297,7 +329,7 @@ function mount(host) {
   const setName = host.dataset.set || 'arm', SET = SETS[setName]; if (!SET) return;
   const list = SET.parts.map(([id, x, z], i) => ({ id, x, z, n: i + 1, def: PARTS[id] }));
   host.innerHTML = `<div class="sys-stage"><div class="sys-pins"></div><div class="sys-flow" hidden></div>
-      <div class="sys-labs"><svg class="sys-lines"></svg></div><div class="sys-cell"></div>
+      <div class="sys-labs"><svg class="sys-lines"></svg></div><div class="sys-cell"></div><div class="sys-how"><svg class="sys-harrows"><defs><marker id="sysarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs><g></g></svg></div>
       <div class="sys-ctl"><button type="button" class="sys-play">${L('▶ How it works', '▶ Comment ça marche')}</button><button type="button" class="sys-stop">${L('Emergency stop', 'Arrêt d\'urgence')}</button><button type="button" class="sys-all">${L('Overview', 'Vue d\'ensemble')}</button></div>
       <div class="sys-pop" hidden><button type="button" class="sys-x" aria-label="${L('Close', 'Fermer')}">×</button><div class="sys-pop-in"></div></div><p class="sys-hint">${L('Click a name or a part', 'Cliquez sur un nom ou une pièce')}</p></div>
     <nav class="sys-layers" aria-label="${L('Layers', 'Couches')}"><button type="button" class="sys-prev" aria-label="${L('Previous layer', 'Couche précédente')}">‹</button><div class="sys-lchips">${LAYERS.map((l, i) => `<button type="button" data-l="${i}">${i && i < LAYERS.length - 1 ? `<b>${i}</b>` : ''}${l[0]}</button>`).join('')}</div><button type="button" class="sys-next" aria-label="${L('Next layer', 'Couche suivante')}">›</button></nav>
@@ -395,11 +427,41 @@ function mount(host) {
     const dot = new THREE.Mesh(new THREE.SphereGeometry(0.035, 14, 10), new THREE.MeshBasicMaterial({ color: col, depthTest: false })); dot.renderOrder = 6; dot.visible = false; scene.add(dot);
     leaders[p.id] = { ln, dot };
   }
+  // ---- the clean "how it works" layout: key components, dashed cables on the floor, callout cards
+  const setKey = setName === 'arm' || setName === 'cobot' ? 'arm' : 'mobile';
+  const HOW = HOWSET[setKey].map(([cands, x, z, step]) => { const id = cands.find((c) => objs[c]); return id ? { id, x, z, step } : null; }).filter(Boolean);
+  const robotAnchor = () => rcen.clone().add(V(0, rmax * 0.15, 0));
+  HOW.push({ id: 'robot', step: 4, robot: true });
+  const howG = new THREE.Group(); scene.add(howG); howG.visible = false;
+  const hp = (id) => { const h = HOW.find((q) => q.id === id); return h.robot ? V(RC.x, 0.012, -1.42) : V(h.x, 0.012, h.z); };
+  const has = (id) => HOW.some((q) => q.id === id);
+  const W2 = (a, b, type) => (has(a) && has(b) ? [a, b, type] : null);
+  const ids = HOW.map((h) => h.id), first = (...c) => c.find((x) => ids.includes(x));
+  const sensors = HOW.filter((h) => h.step === 1).map((h) => h.id), brains = HOW.filter((h) => h.step === 2).map((h) => h.id), drv = first('drive', 'driver', 'esc'), mot = first('servo', 'mot3', 'prop', 'dc');
+  const hw = [];
+  if (setKey === 'arm') { sensors.forEach((sn) => hw.push(W2(sn, brains[0], 'sig'))); hw.push(W2(brains[0], drv, 'bus')); }
+  else { hw.push(W2('lidar', first('sbc', 'ai'), 'sig')); hw.push(W2(first('us', 'imu'), 'mcu', 'sig')); hw.push(W2(first('sbc', 'ai'), 'mcu', 'bus')); hw.push(W2('mcu', drv, 'bus')); hw.push(W2('battery', drv, 'pow')); }
+  hw.push(W2(drv, mot, 'mot')); hw.push(W2(mot, 'robot', 'mech')); hw.push(W2('enc', setKey === 'arm' ? drv : 'mcu', 'fb')); hw.push(W2(first('estop', 'bumper'), drv, 'safe'));
+  const howWires = hw.filter(Boolean).map(([a, b, type], k) => {
+    const A = hp(a), B2 = hp(b), zm = (A.z + B2.z) / 2 + (k % 3 - 1) * 0.06;            // right-angled route on the floor, like real cable trays
+    const pts = [A, V(A.x, 0.012, zm), V(B2.x, 0.012, zm), B2], col = WIRE[type][0];
+    const segs = []; let tot = 0; for (let i = 0; i < 3; i++) { const l = pts[i].distanceTo(pts[i + 1]); segs.push(l); tot += l; }
+    const at = (u) => { let d = u * tot; for (let i = 0; i < 3; i++) { if (d <= segs[i] || i === 2) return pts[i].clone().lerp(pts[i + 1], segs[i] ? Math.min(1, d / segs[i]) : 0); d -= segs[i]; } };
+    const mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.85 }), dashes = [];
+    for (let d = 0.04; d < tot - 0.04; d += 0.1) { const a2 = at(d / tot), b3 = at(Math.min(1, (d + 0.06) / tot)), m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.008, 1), mat); m.position.copy(a2).lerp(b3, 0.5); m.scale.z = Math.max(0.01, a2.distanceTo(b3)); m.lookAt(b3.x, m.position.y, b3.z); howG.add(m); dashes.push(m); }
+    const pulses = [0, 1].map(() => { const sp2 = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 10), new THREE.MeshBasicMaterial({ color: type === 'safe' ? '#ffd400' : col })); sp2.visible = false; howG.add(sp2); return sp2; });
+    return { a, b, type, at, pulses, mat };
+  });
+  const howEl = host.querySelector('.sys-how');
+  howEl.insertAdjacentHTML('beforeend', HOW.map((h, i) => `<div class="sys-hcard" data-h="${h.id}" style="--c:${h.robot ? '#6d5dfc' : CATS[PARTS[h.id][0]][1]}"><b>${i + 1}</b><div><strong>${HOWTXT[h.id][0]}</strong><span>${HOWTXT[h.id][1]}</span></div></div>`).join(''));
+  howEl.querySelectorAll('.sys-hcard').forEach((c) => c.addEventListener('click', () => { if (c.dataset.h !== 'robot') select(c.dataset.h, false); }));
+
   let layer = 0;
   // where each part goes for the current layer: a neat row in front of the robot (or its place on the bench for the whole system)
   function targets() {
     const out = {}, last = layer === LAYERS.length - 1, act = last ? list : list.filter((p) => layerOf(p) === layer), n = act.length, sp = Math.min(0.62, 4.3 / Math.max(1, n));
-    act.forEach((p, i) => { out[p.id] = last ? objs[p.id].userData.home.clone() : V((i - (n - 1) / 2) * sp, 0, -1.0); });
+    if (last) { for (const h of HOW) out[h.id] = V(h.x, 0, h.z); return out; }
+    act.forEach((p, i) => { out[p.id] = V((i - (n - 1) / 2) * sp, 0, -1.0); });
     return out;
   }
   let goals = {};
@@ -468,7 +530,7 @@ function mount(host) {
     const act = active();
     for (const w of wires) {
       const on = act.includes(w.type) || (playing && !stopped && w.type === 'pow' && fStep >= 2);
-      w.pulses.forEach((s, i) => { s.visible = on && w.type !== 'mech'; if (s.visible) { let u = ((t * 0.45 + i / 3) % 1); if (w.back || (w.type === 'safe' && false)) u = 1 - u; s.position.copy(w.curve.getPointAt(u)); } });
+      w.pulses.forEach((s, i) => { s.visible = false; if (s.visible) { let u = ((t * 0.45 + i / 3) % 1); if (w.back || (w.type === 'safe' && false)) u = 1 - u; s.position.copy(w.curve.getPointAt(u)); } });
       if (w.type === 'mech') w.tube.material.color.set(on ? '#ffffff' : WIRE.mech[0]);
     }
     // moving parts
@@ -480,17 +542,26 @@ function mount(host) {
     for (const p of list) {
       const o = objs[p.id], u = o.userData, g = goals[p.id];
       if (!u.cur) { u.cur = u.slot.clone(); u.sc = 0.3; }
-      const to = g || u.slot; u.cur.lerp(to, kk); u.sc += ((g ? (all ? 1 : u.rowS) : 0.3) - u.sc) * kk;
+      const to = g || u.slot; u.cur.lerp(to, kk); u.sc += ((g ? (all ? u.rowS * 1.45 : u.rowS) : 0.3) - u.sc) * kk;
       const left = u.cur.distanceTo(to), lift = g && left > 0.05 ? Math.min(0.5, left * 0.4) : 0;
       o.position.copy(u.cur); o.position.y += lift; o.scale.setScalar(u.hs * u.sc); o.visible = !!g || u.cur.distanceTo(u.slot) > 0.08;
-      u.ring.visible = all && left < 0.02;
+      u.ring.visible = false;
       const L2 = leaders[p.id]; L2.ln.visible = L2.dot.visible = !!g && !all && left < 0.3;
       if (L2.ln.visible) { const b0 = new THREE.Box3().setFromObject(o), top = V(o.position.x, b0.max.y + 0.02, o.position.z); L2.ln.geometry.setFromPoints([top, u.slot]); L2.ln.computeLineDistances(); L2.dot.position.copy(u.slot); L2.dot.scale.setScalar(sel === p.id ? 1.4 + 0.3 * Math.sin(t * 6) : 1); L2.ln.material.opacity = !sel || sel === p.id ? 1 : 0.25; }
     }
-    const wv = all && Object.values(objs).every((o) => o.userData.cur && o.userData.cur.distanceTo(o.userData.home) < 0.03); wires.forEach((w) => { w.tube.visible = wv; if (!wv) w.pulses.forEach((s2) => { s2.visible = false; }); });
+    wires.forEach((w) => { w.tube.visible = false; });
+    // the clean "how it works" view: dashed cables, moving pulses on the active step, callout cards with arrows
+    const settled = all && HOW.every((h) => h.robot || objs[h.id].userData.cur.distanceTo(V(h.x, 0, h.z)) < 0.05);
+    howG.visible = settled; howEl.hidden = !settled;
+    const act2 = active();
+    for (const w of howWires) {
+      const on = act2.includes(w.type) || (playing && !stopped && w.type === 'pow' && fStep >= 2);
+      w.mat.opacity = !playing && !stopped ? 0.85 : on ? 1 : 0.25;
+      w.pulses.forEach((sp2, i) => { sp2.visible = settled && on; if (sp2.visible) { let u2 = (t * 0.5 + i / 2) % 1; if (w.type === 'fb') u2 = 1 - u2; sp2.position.copy(w.at(u2)).add(V(0, 0.03, 0)); } });
+    }
     // numbers on the parts (whole system) and names under the row (layers)
     const r = stage.getBoundingClientRect(), v = V(0, 0, 0);
-    pinsEl.hidden = !all;
+    pinsEl.hidden = true;
     if (all) pinsEl.querySelectorAll('button').forEach((b) => { v.copy(anchors[b.dataset.p].top).add(V(0, 0.06, 0)).project(camera); b.style.display = v.z > 1 ? 'none' : ''; b.style.left = ((v.x + 1) / 2 * r.width) + 'px'; b.style.top = ((1 - v.y) / 2 * r.height) + 'px'; });
     const labs = [...labsEl.querySelectorAll('button')].filter((b) => !b.hidden), svgL = labsEl.querySelector('svg'); svgL.setAttribute('viewBox', `0 0 ${r.width} ${r.height}`);
     let d = '';
@@ -505,6 +576,19 @@ function mount(host) {
       });
     }
     svgL.innerHTML = d;
+    if (settled) {                                             // cards in a left and a right column, in the same top-to-bottom order as their parts: arrows never cross
+      const curStep = stopped ? 0 : playing ? fStep + 1 : -1, items = [];
+      howEl.querySelectorAll('.sys-hcard').forEach((c) => { const h = HOW.find((q) => q.id === c.dataset.h), w3 = h.robot ? robotAnchor() : (() => { const b0 = new THREE.Box3().setFromObject(objs[h.id]); return V(objs[h.id].position.x, b0.max.y, objs[h.id].position.z); })();
+        v.copy(w3).project(camera); items.push({ el: c, x: (v.x + 1) / 2 * r.width, y: (1 - v.y) / 2 * r.height });
+        c.classList.toggle('on', curStep >= 0 && (h.step === curStep || (curStep === 3 && h.id === 'battery'))); c.classList.toggle('dim', curStep >= 0 && !c.classList.contains('on')); c.classList.toggle('sel', h.id === sel); });
+      const cols = [items.filter((it) => it.x < r.width / 2), items.filter((it) => it.x >= r.width / 2)]; let ad = '';
+      cols.forEach((col, k) => { col.sort((a, b) => a.y - b.y); let prev = (k ? 54 : 8) - 6;
+        for (const it of col) { const hh = it.el.offsetHeight || 54; it.top = Math.max(prev + 6, it.y - hh / 2); prev = it.top + hh; }
+        let next = r.height - 8; for (const it of col.slice().reverse()) { const hh = it.el.offsetHeight || 54; it.top = Math.min(it.top, next - hh); next = it.top - 6; }
+        for (const it of col) { const ww = it.el.offsetWidth || 200, hh = it.el.offsetHeight || 54, x0 = k ? r.width - 8 - ww : 8; it.el.style.left = x0 + 'px'; it.el.style.top = it.top + 'px';
+          const sx = k ? x0 : x0 + ww, sy = it.top + hh / 2; ad += `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} Q${((sx + it.x) / 2).toFixed(1)},${sy.toFixed(1)} ${it.x.toFixed(1)},${(it.y - 6).toFixed(1)}" style="stroke:${it.el.style.getPropertyValue('--c')}" class="${it.el.classList.contains('dim') ? 'dim' : ''}" marker-end="url(#sysarr)"/>`; } });
+      howEl.querySelector('svg').setAttribute('viewBox', `0 0 ${r.width} ${r.height}`); howEl.querySelector('svg g').innerHTML = ad;
+    }
     // names of the objects around the robot (cabinet, desk, conveyor, light curtain…), on the robot and layer views
     cellEl.hidden = all;
     if (!all) [...cellEl.children].forEach((el, i) => { const w3 = i < cellLabels.length ? (cellLabels[i][2] ? cellLabels[i][2].clone() : RC.clone().add(cellLabels[i][1])) : oper.localToWorld(V(0, 1.95, 0)); v.copy(w3).project(camera); el.style.display = v.z > 1 ? 'none' : ''; el.style.left = ((v.x + 1) / 2 * r.width) + 'px'; el.style.top = ((1 - v.y) / 2 * r.height) + 'px'; });
@@ -517,7 +601,7 @@ function mount(host) {
   let visible = true, last = performance.now();
   new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(stage);
   renderer.setAnimationLoop((now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!visible) return; frame(dt); orbit.update(); renderer.render(scene, camera); });
-  host.__layer = (i) => { setLayer(i); camK = 1; const H = layer === 0 ? ROBOTCAM : layer === LAYERS.length - 1 ? HOME : LAYERCAM; camera.position.copy(H.p); orbit.target.copy(H.t); for (const p of list) { const g = goals[p.id], u = objs[p.id].userData; u.cur = (g || u.slot).clone(); u.sc = g ? (layer === LAYERS.length - 1 ? 1 : u.rowS) : 0.3; } };
+  host.__layer = (i) => { setLayer(i); camK = 1; const H = layer === 0 ? ROBOTCAM : layer === LAYERS.length - 1 ? HOME : LAYERCAM; camera.position.copy(H.p); orbit.target.copy(H.t); for (const p of list) { const g = goals[p.id], u = objs[p.id].userData; u.cur = (g || u.slot).clone(); u.sc = g ? (layer === LAYERS.length - 1 ? u.rowS * 1.45 : u.rowS) : 0.3; } };
   host.__test = () => ({ parts: list.length, wires: wires.length, missing: SET.parts.filter(([id]) => !PARTS[id] || !B[PARTS[id][1]]).map((p) => p[0]) });
 }
 document.querySelectorAll('.sysdemo').forEach(mount);
