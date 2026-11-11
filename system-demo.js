@@ -639,7 +639,7 @@ function mount(host) {
     wires.forEach((w) => { w.tube.visible = false; });
     // the clean "how it works" view: dashed cables, moving pulses on the active step, callout cards with arrows
     const settled = all && HOW.every((h) => h.robot || objs[h.id].userData.cur.distanceTo(V(h.x, 0, h.z)) < 0.05);
-    howG.visible = settled; howEl.hidden = !settled; host.classList.toggle('sys-how-on', settled);
+    const narrow = stage.clientWidth < 700; howG.visible = settled; howEl.hidden = !settled; host.classList.toggle('sys-how-on', settled); host.classList.toggle('sys-narrow', narrow);   // phones: numbers on the parts only, the cards are the list under the view
     const act2 = active();
     for (const w of howWires) {
       const on = act2.includes(w.type) || (playing && !stopped && w.type === 'pow' && fStep >= 2);
@@ -663,7 +663,8 @@ function mount(host) {
       });
     }
     svgL.innerHTML = d;
-    if (settled) {                                             // cards in a left and a right column, in the same top-to-bottom order as their parts: arrows never cross
+    if (settled && narrow) { howEl.querySelectorAll('.sys-hcard').forEach((c) => { const h = HOW.find((q) => q.id === c.dataset.h), w3 = h.robot ? robotAnchor() : (() => { const b0 = new THREE.Box3().setFromObject(objs[h.id]); return V(objs[h.id].position.x, b0.max.y, objs[h.id].position.z); })(); v.copy(w3).project(camera); const pin = howEl.querySelector(`.sys-hpin[data-h="${h.id}"]`); pin.style.left = ((v.x + 1) / 2 * r.width) + 'px'; pin.style.top = ((1 - v.y) / 2 * r.height - 14) + 'px'; }); howEl.querySelector('svg g').innerHTML = ''; }
+    if (settled && !narrow) {                                             // cards in a left and a right column, in the same top-to-bottom order as their parts: arrows never cross
       const curStep = stopped ? 0 : playing ? fStep + 1 : -1, items = [];
       explainEl.querySelectorAll('li').forEach((li) => li.classList.toggle('on', +li.dataset.s === curStep));
       howEl.querySelectorAll('.sys-hcard').forEach((c) => { const h = HOW.find((q) => q.id === c.dataset.h), w3 = h.robot ? robotAnchor() : (() => { const b0 = new THREE.Box3().setFromObject(objs[h.id]); return V(objs[h.id].position.x, b0.max.y, objs[h.id].position.z); })();
@@ -671,11 +672,26 @@ function mount(host) {
         const pin = howEl.querySelector(`.sys-hpin[data-h="${h.id}"]`); pin.style.left = it2.x + 'px'; pin.style.top = it2.y + 'px'; pin.classList.toggle('dim', curStep >= 0 && !(h.step === curStep || (curStep === 3 && h.id === 'battery')));
         c.classList.toggle('on', curStep >= 0 && (h.step === curStep || (curStep === 3 && h.id === 'battery'))); c.classList.toggle('dim', curStep >= 0 && !c.classList.contains('on')); c.classList.toggle('sel', h.id === sel); });
       const cols = [items.filter((it) => it.x < r.width / 2), items.filter((it) => it.x >= r.width / 2)]; let ad = '';
-      cols.forEach((col, k) => { col.sort((a, b) => a.y - b.y); let prev = (k ? 54 : 8) - 6;
-        for (const it of col) { const hh = it.el.offsetHeight || 54; it.top = Math.max(prev + 6, it.y - hh / 2); prev = it.top + hh; }
-        let next = r.height - 8; for (const it of col.slice().reverse()) { const hh = it.el.offsetHeight || 54; it.top = Math.min(it.top, next - hh); next = it.top - 6; }
-        for (const it of col) { const ww = it.el.offsetWidth || 200, hh = it.el.offsetHeight || 54, x0 = k ? r.width - 8 - ww : 8; it.el.style.left = x0 + 'px'; it.el.style.top = it.top + 'px';
-          const sx = k ? x0 : x0 + ww, sy = it.top + hh / 2, ex = it.x + (k ? 11 : -11); ad += `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${it.y.toFixed(1)}" style="stroke:${it.el.style.getPropertyValue('--c')}" class="${it.el.classList.contains('dim') ? 'dim' : ''}" marker-end="url(#sysarr)"/>`; } });
+      // segments a-b and c-d cross?
+      const cross = (a, b, c, d) => { const o = (p, q, r2) => Math.sign((q[0] - p[0]) * (r2[1] - p[1]) - (q[1] - p[1]) * (r2[0] - p[0])); return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
+      cols.forEach((col, k) => {
+        col.sort((a, b) => a.y - b.y);
+        const ww = (it) => it.el.offsetWidth || 200, hh = (it) => it.el.offsetHeight || 54;
+        const place = () => {                                  // stack the cards in the current order, as close as possible to their parts
+          let prev = (k ? 54 : 8) - 6; for (const it of col) { it.top = Math.max(prev + 6, it.y - hh(it) / 2); prev = it.top + hh(it); }
+          let next = r.height - 8; for (const it of col.slice().reverse()) { it.top = Math.min(it.top, next - hh(it)); next = it.top - 6; }
+          for (const it of col) { const x0 = k ? r.width - 8 - ww(it) : 8; it.a = [k ? x0 : x0 + ww(it), it.top + hh(it) / 2]; it.b = [it.x + (k ? 11 : -11), it.y]; it.x0 = x0; }
+        };
+        place();
+        // untangle: while two arrows cross, swap the places of their cards (each swap makes the arrows shorter, so it ends)
+        for (let pass = 0; pass < 300; pass++) {
+          let found = false;
+          for (let i = 0; i < col.length && !found; i++) for (let j = i + 1; j < col.length && !found; j++) if (cross(col[i].a, col[i].b, col[j].a, col[j].b)) { [col[i], col[j]] = [col[j], col[i]]; place(); found = true; }
+          if (!found) break;
+        }
+        for (const it of col) { it.el.style.left = it.x0 + 'px'; it.el.style.top = it.top + 'px';
+          ad += `<path d="M${it.a[0].toFixed(1)},${it.a[1].toFixed(1)} L${it.b[0].toFixed(1)},${it.b[1].toFixed(1)}" style="stroke:${it.el.style.getPropertyValue('--c')}" class="${it.el.classList.contains('dim') ? 'dim' : ''}" marker-end="url(#sysarr)"/>`; }
+      });
       howEl.querySelector('svg').setAttribute('viewBox', `0 0 ${r.width} ${r.height}`); howEl.querySelector('svg g').innerHTML = ad;
     }
     // names of the objects around the robot (cabinet, desk, conveyor, light curtain…), on the robot and layer views
@@ -684,7 +700,7 @@ function mount(host) {
     if (camK < 1 && camGoal) { camK = Math.min(1, camK + dt / 1.1); const e = camK * camK * (3 - 2 * camK); camera.position.copy(camFrom.p.clone().lerp(camGoal.p, e)); orbit.target.copy(camFrom.t.clone().lerp(camGoal.t, e)); }
   }
   function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = camera.aspect < 0.9 ? 50 : 36; camera.updateProjectionMatrix();
-    if (camera.aspect < 0.9) { HOME.p.set(4.2, 4.3, -0.6); LAYERCAM.p.set(0.1, 3.6, 3.2); } else { HOME.p.set(0.1, 5.6, 5.4); LAYERCAM.p.set(0.15, 2.35, 2.45); } }   // portrait screens look along the bench
+    if (camera.aspect < 0.9) { HOME.p.set(3.6, 7.6, -0.45); LAYERCAM.p.set(0.1, 3.6, 3.2); } else { HOME.p.set(0.1, 5.6, 5.4); LAYERCAM.p.set(0.15, 2.35, 2.45); } }   // portrait screens look along the bench
   new ResizeObserver(resize).observe(stage); resize();
   camera.position.copy(ROBOTCAM.p); orbit.target.copy(ROBOTCAM.t); setLayer(0); camK = 1;
   let visible = true, last = performance.now();
