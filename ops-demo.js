@@ -24,7 +24,10 @@ const OPS = {
   bin: [L('Bin picking', 'Dévracage (bin picking)'), L('A camera above the bin finds a part lying loose; the robot picks it and lines it up on a tray.', 'Une caméra au-dessus du bac repère une pièce en vrac ; le robot la prend et l\'aligne sur un plateau.')],
   deg: [L('Separating joined products', 'Dégrappage'), L('Four pots joined together are separated: the robot breaks each link and sets the pots apart.', 'Quatre pots liés entre eux sont séparés : le robot casse chaque lien et pose les pots à part.')],
   con: [L('Conveying', 'Convoyage'), L('Products travel on belts; the robot transfers each one from the infeed belt to the outfeed belt.', 'Les produits circulent sur des tapis ; le robot transfère chacun du tapis d\'entrée au tapis de sortie.')],
-  amr: [L('Mobility with an AMR', 'Mobilité via AMR'), L('An autonomous mobile robot brings a tote of parts; the robot unloads it, then the AMR leaves.', 'Un robot mobile autonome apporte un bac de pièces ; le robot le décharge, puis l\'AMR repart.')],
+  amr: [L('Mobility with an AMR', 'Mobilité via AMR'), L('This robot is too big (or hung from a frame) to ride on an AMR, so the AMR comes to it: it brings a tote of parts, the robot unloads it, the AMR leaves.', 'Ce robot est trop grand (ou suspendu à un bâti) pour monter sur un AMR, donc c\'est l\'AMR qui vient à lui : il apporte un bac de pièces, le robot le décharge, l\'AMR repart.')],
+  mm: [L('Mobility with an AMR', 'Mobilité via AMR'), L('The robot itself rides on an autonomous mobile robot (a "mobile manipulator"): it loads parts at station 1, travels, and unloads them at station 2.', 'Le robot lui-même est monté sur un robot mobile autonome (un « manipulateur mobile ») : il charge des pièces au poste 1, se déplace et les décharge au poste 2.')],
+  ser: [L('Serialisation', 'Sérialisation'), L('Each box gets its own DataMatrix code and serial number: printed under the inkjet head, then read back by a camera, for traceability.', 'Chaque boîte reçoit son propre code DataMatrix et son numéro de série : imprimés sous la tête jet d\'encre, puis relus par une caméra, pour la traçabilité.')],
+  fil: [L('Filling', 'Remplissage'), L('Each empty bottle is held under the filling nozzle until it is full, capped, then set down.', 'Chaque bouteille vide est tenue sous la buse de remplissage jusqu\'à ce qu\'elle soit pleine, bouchée, puis posée.')],
   ass: [L('Screwing / assembly', 'Vissage / assemblage'), L('The robot puts the cover on the housing, then drives the four screws.', 'Le robot pose le couvercle sur le boîtier, puis visse les quatre vis.')],
   shu: [L('Conveying with an AMR', 'Convoyage par AMR'), L('The AMR takes a tote from station A and delivers it to station B, with no rail or conveyor between them.', 'L\'AMR prend un bac au poste A et le livre au poste B, sans rail ni convoyeur entre les deux.')],
   rou: [L('AMR delivery route', 'Tournée d\'un AMR'), L('The AMR visits three stations, finds its way around the shelves and stops for a person crossing.', 'L\'AMR passe par trois postes, contourne les étagères et s\'arrête pour une personne qui traverse.')]
@@ -285,23 +288,85 @@ function tray(u, w, d) { const g = box(w, 0.06 * u, d, MAT.tray); g.userData = {
 function marker(u, ok) { const m = new THREE.Mesh(new THREE.RingGeometry(0.42 * u, 0.52 * u, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: ok ? '#30a46c' : '#e5484d' })); m.position.y = 0.006; return m; }
 function flashCone(u, h) { const m = new THREE.Mesh(new THREE.ConeGeometry(0.75 * u, h, 32, 1, true).translate(0, -h / 2, 0), new THREE.MeshBasicMaterial({ color: '#7fd1ff', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false })); return m; }
 
+// ---------------------------------------------------------------- people, safety fence, DataMatrix
+function makePerson() {                                     // an operator, 1.75 m, facing +z; userData.arms = [left, right] (rotate x < 0 to reach forward)
+  const g = new THREE.Group(), suit = M('#2f4f7a'), skin = M('#e8b98f'), vest = M('#f5c518', { emissive: '#3a2f00', emissiveIntensity: 0.25 });
+  for (const sx of [-1, 1]) { const leg = cyl(0.065, 0.84, suit, 14); leg.position.x = sx * 0.1; g.add(leg); const shoe = box(0.11, 0.06, 0.2, MAT.black); shoe.position.set(sx * 0.1, 0, 0.03); g.add(shoe); }
+  const torso = box(0.38, 0.58, 0.22, suit); torso.position.y = 0.82; g.add(torso);
+  const v = box(0.4, 0.36, 0.24, vest); v.position.y = 0.98; g.add(v);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.105, 18, 14), skin); head.position.y = 1.55; g.add(head);
+  const hat = new THREE.Mesh(new THREE.SphereGeometry(0.118, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), M('#f4f6f8')); hat.position.y = 1.58; g.add(hat);
+  const arms = [-1, 1].map((sx) => { const piv = new THREE.Group(); piv.position.set(sx * 0.24, 1.36, 0); const a = cyl(0.05, 0.6, suit, 12, false); a.position.y = -0.3; piv.add(a); const hd = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), skin); hd.position.y = -0.62; piv.add(hd); g.add(piv); return piv; });
+  g.userData.arms = arms; g.traverse((m) => { if (m.isMesh) m.castShadow = true; }); return g;
+}
+function meshTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d');
+  g.strokeStyle = 'rgba(60, 68, 80, 0.55)'; g.lineWidth = 1.5; g.strokeRect(0, 0, 32, 32);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function buildCage([x0, x1, z0, z1, h]) {                    // safety fence: yellow posts, wire-mesh panels, a hinged door on the z1 side
+  const g = new THREE.Group(), base = meshTexture(), post = M('#f5c518', { roughness: 0.5 }), rail = M('#2a313b');
+  const panel = (len) => { const t = base.clone(); t.needsUpdate = true; t.repeat.set(len / 0.08, (h - 0.1) / 0.08);
+    return new THREE.Mesh(new THREE.PlaneGeometry(len, h - 0.1), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide, depthWrite: false })); };
+  const corners = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
+  let door = null;
+  for (let s = 0; s < 4; s++) {
+    const [ax, az] = corners[s], [bx, bz] = corners[(s + 1) % 4], len = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(len / 0.8)), ang = Math.atan2(-(bz - az), bx - ax);
+    for (let i = 0; i < n; i++) {
+      const t0 = i / n, t1 = (i + 1) / n, px = ax + (bx - ax) * t0, pz = az + (bz - az) * t0, seg = len / n;
+      const p = box(0.03, h + 0.04, 0.03, post); p.position.set(px, 0, pz); g.add(p);
+      const isDoor = s === 0 && i === 0;                   // first panel of the z0 side (the back, away from the camera)
+      const holder = new THREE.Group(); holder.position.set(px, 0, pz); holder.rotation.y = ang; g.add(holder);
+      const piv = new THREE.Group(); holder.add(piv);
+      const m = panel(seg - 0.02); m.position.set(seg / 2, 0.05 + (h - 0.1) / 2, 0); piv.add(m);
+      for (const y of [0.05, h - 0.05]) { const r = box(seg - 0.02, 0.025, 0.025, isDoor ? post : rail, false); r.position.set(seg / 2, y, 0); piv.add(r); }
+      if (isDoor) { const side = box(0.025, h - 0.1, 0.025, post); side.position.set(seg - 0.02, 0.05, 0); piv.add(side); door = piv; door.userData.seg = seg; door.userData.at = V(px + (bx - ax) * (0.5 / n), 0, pz + (bz - az) * (0.5 / n)); }   // the door opens outwards (towards -z)
+    }
+  }
+  g.traverse((m) => { if (m.isMesh && !m.material.transparent) m.castShadow = true; });
+  return { group: g, door, ang: 0 };
+}
+function dataMatrix(seed, n = 16) {                          // a DataMatrix-looking code: solid L finder on the left and bottom, dotted top and right, data inside
+  const c = document.createElement('canvas'); c.width = c.height = n * 8 + 16; const g = c.getContext('2d');
+  let x = seed * 9301 + 49297; const rnd = () => { x = (x * 9301 + 49297) % 233280; return x / 233280; };
+  const cells = []; for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) cells.push(i === 0 || j === n - 1 ? 1 : j === 0 ? (i + 1) % 2 : i === n - 1 ? (j + 1) % 2 : rnd() > 0.5 ? 1 : 0);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  t.draw = (k = 1) => { g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.fillStyle = '#111'; const rows = Math.floor(n * k); cells.forEach((v, idx) => { const i = idx % n, j = Math.floor(idx / n); if (v && j < rows) g.fillRect(8 + i * 8, 8 + j * 8, 8, 8); }); t.needsUpdate = true; };
+  t.draw(0); return t;
+}
+
 // ---------------------------------------------------------------- per-robot settings
 // A, B: centres of the two work zones (x, z) on the floor. u: size of a box. cam / target: initial camera.
 const ROBOTS = {
-  articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), u: 0.11, A: [0.25, 0.62], B: [0.66, -0.3], cam: [1.6, 1.22, 1.62], target: [0.38, 0.34, 0.12], v: 0.85, arc: true,
-    ops: ['pal', 'enc', 'bin', 'ass', 'far', 'eti', 'vis', 'deg', 'amr'] },
-  cobot: { build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, A: [0.2, 0.5], B: [0.52, -0.26], cam: [1.2, 0.9, 1.22], target: [0.3, 0.24, 0.1], v: 0.55, arc: true,
-    ops: ['pal', 'ass', 'enc', 'eti', 'vis', 'bin', 'deg', 'amr'] },
-  arm: { build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.42, 1.1, 1.45], target: [0.36, 0.3, 0.12], v: 0.7, arc: true,
-    ops: ['pal', 'enc', 'vis'] },
-  scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), u: 0.06, A: [0.2, 0.4], B: [0.45, -0.14], cam: [0.88, 0.7, 0.92], target: [0.28, 0.14, 0.1], v: 0.55, arc: true,
-    ops: ['ass', 'enc', 'eti', 'vis', 'bin', 'deg'] },
-  delta: { build: () => delta({ Ht: 0.72, Rb: 0.12, rf: 0.22, re: 0.58, Re: 0.045, r: 0.03 }), u: 0.055, A: [0.0, 0.15], B: [0.0, -0.15], cam: [0.95, 0.72, 0.85], target: [0, 0.26, 0], v: 1.0,
-    ops: ['enc', 'vis', 'deg', 'far', 'con', 'ass'] },
-  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), u: 0.13, A: [-0.42, 0.18], B: [0.38, -0.12], cam: [0.35, 1.2, 1.95], target: [0, 0.24, 0], v: 0.8,
-    ops: ['pal', 'enc', 'ass', 'eti', 'vis', 'bin', 'con'] },
-  mobile: { mobile: true, u: 0.45, cam: [3.2, 2.6, 3.6], target: [0, 0.1, 0], ops: ['shu', 'rou'] }
+  articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), u: 0.11, A: [0.25, 0.62], B: [0.66, -0.3], cam: [2.0, 2.0, 2.2], target: [0.32, 0.3, 0.12], v: 0.85, arc: true,
+    safety: 'cage', cage: [-0.55, 1.15, -0.85, 1.12, 1.35], mm: { L: 1.0, X2: 1.9, zS: 0.6, cam: [1.2, 1.55, 2.5] } },
+  cobot: { build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, A: [0.2, 0.5], B: [0.52, -0.26], cam: [2.0, 1.65, 2.1], target: [0.3, 0.5, -0.2], v: 0.55, arc: true,
+    safety: 'collab', opFar: [-0.05, 0, -1.08], opClose: [0.28, 0, -0.66], mm: { L: 0.8, X2: 1.5, zS: 0.48, cam: [1.0, 1.3, 2.1] } },
+  arm: { build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.85, 1.85, 2.0], target: [0.3, 0.28, 0.12], v: 0.7, arc: true,
+    safety: 'cage', cage: [-0.5, 1.05, -0.8, 1.0, 1.25], mm: { L: 0.9, X2: 1.7, zS: 0.55, cam: [1.1, 1.45, 2.3] } },
+  scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), u: 0.075, A: [0.2, 0.4], B: [0.45, -0.14], cam: [1.25, 1.3, 1.4], target: [0.22, 0.18, 0.1], v: 0.55, arc: true,
+    stationK: 1.5, safety: 'cage', cage: [-0.38, 0.82, -0.55, 0.75, 0.95], mm: { L: 0.75, X2: 1.25, zS: 0.42, cam: [0.8, 1.05, 1.7] } },
+  delta: { palLayers: 1, build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), u: 0.064, A: [0.0, 0.15], B: [0.0, -0.15], cam: [1.35, 1.3, 1.3], target: [0, 0.3, 0], v: 1.0,
+    safety: 'cage', cage: [-0.85, 0.85, -0.8, 0.8, 1.0] },
+  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), u: 0.13, A: [-0.42, 0.18], B: [0.38, -0.12], cam: [0.55, 2.0, 2.65], target: [0, 0.32, 0], v: 0.8,
+    safety: 'cage', cage: [-1.05, 1.05, -0.85, 0.85, 1.4] },
+  mobile: { mobile: true, build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, v: 0.55, arc: true,
+    cam: [3.2, 2.6, 3.6], target: [0, 0.1, 0], ops: ['shu', 'rou', 'mm'], fit: { shu: 3, rou: 3, mm: 2 }, mm: { L: 0.8, X2: 1.5, zS: 0.48, cam: [1.0, 1.3, 2.1] } }
 };
+// how well each robot suits each operation (same as the table on the page): 3 main use, 2 possible, 1 rarely
+const FIT = {
+  articulated: { pal: 3, enc: 3, far: 2, eti: 2, ser: 1, vis: 2, bin: 3, deg: 2, con: 1, amr: 2, ass: 3 },
+  cobot:       { pal: 3, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 2, con: 1, amr: 2, ass: 3 },
+  arm:         { pal: 2, enc: 2, far: 1, eti: 1, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 1 },
+  scara:       { pal: 1, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 2, con: 1, amr: 1, ass: 3 },
+  delta:       { pal: 1, enc: 3, far: 2, eti: 1, ser: 1, vis: 3, bin: 1, deg: 3, con: 2, amr: 1, ass: 2 },
+  gantry:      { pal: 3, enc: 3, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 1, con: 2, amr: 1, ass: 3 }
+};
+const ALL = ['pal', 'enc', 'far', 'eti', 'ser', 'vis', 'bin', 'deg', 'con', 'amr', 'ass', 'fil'];
+for (const [k, f] of Object.entries(FIT)) {
+  const Rb = ROBOTS[k]; f.fil = f.ass; if (Rb.mm) f.mm = f.amr;            // robots that can ride on an AMR show "mm" instead of "amr"
+  Rb.fit = f; Rb.ops = ALL.map((o) => (o === 'amr' && Rb.mm ? 'mm' : o)).sort((a, b) => f[b] - f[a]);
+}
 
 // ---------------------------------------------------------------- the widget
 function mount(host) {
@@ -309,9 +374,13 @@ function mount(host) {
   host.innerHTML = `<div class="opsd-bar" role="group" aria-label="${L('Operations', 'Opérations')}"></div>
     <p class="opsd-what"></p>
     <div class="opsd-view"><div class="opsd-step"><span class="opsd-dot"></span><span class="opsd-txt"></span></div>
-      <div class="opsd-ctl"><button type="button" class="opsd-pause">${L('Pause', 'Pause')}</button><button type="button" class="opsd-restart">${L('Restart', 'Recommencer')}</button></div></div>`;
+      <div class="opsd-ctl"><span class="opsd-speed" role="group" aria-label="${L('Speed', 'Vitesse')}"><button type="button" data-s="0.5" aria-pressed="false">0.5×</button><button type="button" data-s="1" aria-pressed="true">1×</button><button type="button" data-s="2" aria-pressed="false">2×</button></span><button type="button" class="opsd-pause">${L('Pause', 'Pause')}</button><button type="button" class="opsd-restart">${L('Restart', 'Recommencer')}</button></div>
+      <div class="opsd-safe" hidden><span class="opsd-tag"></span><button type="button" class="opsd-safebtn"></button></div>
+      <div class="opsd-alert" hidden></div></div>
+    <p class="opsd-legend"><span><i class="opsd-fit f3"></i>${L('main use', 'usage principal')}</span><span><i class="opsd-fit f2"></i>${L('possible', 'possible')}</span><span><i class="opsd-fit f1"></i>${L('rarely', 'rarement')}</span></p>`;
   const bar = host.querySelector('.opsd-bar'), what = host.querySelector('.opsd-what'), view = host.querySelector('.opsd-view'), txt = host.querySelector('.opsd-txt');
   const pauseBtn = host.querySelector('.opsd-pause'), restartBtn = host.querySelector('.opsd-restart');
+  const safeBox = host.querySelector('.opsd-safe'), safeTag = host.querySelector('.opsd-tag'), safeBtn = host.querySelector('.opsd-safebtn'), alertEl = host.querySelector('.opsd-alert');
 
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(42, 1, 0.02, 60);
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
@@ -320,10 +389,10 @@ function mount(host) {
   const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.maxPolarAngle = Math.PI * 0.49;
   camera.position.set(...R.cam); orbit.target.set(...R.target);
   const hemi = new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.1); scene.add(hemi);
-  const sun = new THREE.DirectionalLight('#ffffff', 1.9), span = R.mobile ? 4 : 1.6; sun.position.set(span * 0.9, span * 2, span * 0.6); sun.castShadow = true;
+  const sun = new THREE.DirectionalLight('#ffffff', 1.9), span = R.mobile ? 4 : R.mm ? 2.6 : 1.6; sun.position.set(span * 0.9, span * 2, span * 0.6); sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 0.1, far: span * 6 }); sun.shadow.bias = -0.0005; scene.add(sun);
   // ground: light grey around, dark grey under the grid (light mode); dark workshop (dark mode)
-  const gsize = R.mobile ? 8 : 2.4, grid = new THREE.GridHelper(gsize, R.mobile ? 16 : 12, '#7a7a7a', '#3a3a3a'); grid.position.y = 0.001; scene.add(grid);
+  const gsize = R.mobile ? 8 : R.mm ? 4.8 : 2.4, grid = new THREE.GridHelper(gsize, R.mobile ? 16 : Math.round(gsize / 0.2), '#7a7a7a', '#3a3a3a'); grid.position.y = 0.001; scene.add(grid);
   const pad = new THREE.Mesh(new THREE.PlaneGeometry(gsize, gsize).rotateX(-Math.PI / 2), M('#7d8691', { roughness: 1 })); pad.receiveShadow = true; scene.add(pad);
   const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
   const gc = grid.geometry.attributes.color, g0 = gc.array.slice();
@@ -338,12 +407,13 @@ function mount(host) {
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', paint);
 
   // robot + tool
-  const u = R.u, robot = R.mobile ? null : R.build(), tool = R.mobile ? null : makeGripper(u);
+  const u = R.u, robot = R.build ? R.build() : null, tool = robot ? makeGripper(u) : null;
   if (robot) { scene.add(robot.root); robot.root.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); scene.add(tool); tool.traverse((o) => { if (o.isMesh) o.castShadow = true; }); tool.userData.nBase = tool.children.length; }
   const toolLen = tool ? tool.userData.len : 0;
-  const tip = V(0, 0, 0); let yaw = 0, ikFails = 0;
+  const tip = V(0, 0, 0), YAX = V(0, 1, 0), base = { p: V(0, 0, 0), yaw: 0 }; let yaw = 0, ikFails = 0;
   function setTip(p, y = yaw) {
-    const f = p.clone(); f.y += toolLen;
+    const f = p.clone(); f.y += toolLen; f.sub(base.p).applyAxisAngle(YAX, -base.yaw);   // into the frame of the robot base
+    robot.root.position.copy(base.p); robot.root.rotation.y = base.yaw;
     if (!robot.reach(f)) { ikFails++; return false; }
     tip.copy(p); yaw = y; tool.position.copy(p); tool.rotation.y = y; return true;
   }
@@ -362,11 +432,11 @@ function mount(host) {
       wait: (s) => tw(s, () => {}),
       async move(p, dur, y = yaw) {                           // straight line of the tool tip (an arc around the base for robots that turn on a base)
         const from = tip.clone(), y0 = yaw, d = from.distanceTo(p);
-        const r0 = Math.hypot(from.x, from.z), r1 = Math.hypot(p.x, p.z), a0 = Math.atan2(from.z, from.x), a1 = Math.atan2(p.z, p.x);
+        const bp = base.p, r0 = Math.hypot(from.x - bp.x, from.z - bp.z), r1 = Math.hypot(p.x - bp.x, p.z - bp.z), a0 = Math.atan2(from.z - bp.z, from.x - bp.x), a1 = Math.atan2(p.z - bp.z, p.x - bp.x);
         const arc = R.arc && r0 > 1e-3 && r1 > 1e-3 && Math.abs(lerpAng(0, a1 - a0, 1)) > 0.05;
         await tw(dur || Math.max(0.35, d / R.v + 0.15), (k) => {
           const e = ease(k);
-          if (arc) { const r = r0 + (r1 - r0) * e, a = lerpAng(a0, a1, e); setTip(V(r * Math.cos(a), from.y + (p.y - from.y) * e, r * Math.sin(a)), lerpAng(y0, y, e)); }
+          if (arc) { const r = r0 + (r1 - r0) * e, a = lerpAng(a0, a1, e); setTip(V(bp.x + r * Math.cos(a), from.y + (p.y - from.y) * e, bp.z + r * Math.sin(a)), lerpAng(y0, y, e)); }
           else setTip(from.clone().lerp(p, e), lerpAng(y0, y, e));
         });
       },
@@ -399,11 +469,11 @@ function mount(host) {
   // ------------------------------------------------ the operation scripts (manipulators)
   const S = {
     async pal(c) {
-      c.travel = 4.4 * u;
+      const layers = R.palLayers ?? 2; c.travel = (layers === 2 ? 4.4 : 3.3) * u;
       const pl = add(pallet(u), B.x, 0, B.z, Math.atan2(-B.z, B.x)), ph = pl.userData.h;
       const d = dirOut(A), cv = add(conveyor(4 * u, 1.3 * u, 0.9 * u, V(-d.x, 0, -d.z), u), A.x + d.x * 3.4 * u, 0, A.z + d.z * 3.4 * u);
       const ax = dirOut(B), ac = side(B), slots = [];
-      for (let layer = 0; layer < 2; layer++) for (const [i, j] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) slots.push(B.clone().addScaledVector(ax, i * 0.6 * u).addScaledVector(ac, j * 0.6 * u).setY(ph + layer * 0.9 * u));
+      for (let layer = 0; layer < layers; layer++) for (const [i, j] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) slots.push(B.clone().addScaledVector(ax, i * 0.6 * u).addScaledVector(ac, j * 0.6 * u).setY(ph + layer * 0.9 * u));
       for (let n = 0; n < slots.length; n++) {
         c.say(`Box ${n + 1} of ${slots.length} arrives on the conveyor`, `Le colis ${n + 1} sur ${slots.length} arrive sur le convoyeur`);
         const p = add(parcel(u), A.x + d.x * 3.2 * u, 0.9 * u, A.z + d.z * 3.2 * u, Math.atan2(-d.z, d.x));
@@ -413,7 +483,7 @@ function mount(host) {
         c.say(`Pick box ${n + 1} and place it on layer ${n < 4 ? 1 : 2} of the pallet`, `Prendre le colis ${n + 1} et le poser sur la couche ${n < 4 ? 1 : 2} de la palette`);
         await c.transfer(p, slots[n], { rotY: pl.rotation.y });
       }
-      c.say('Pallet complete: 2 layers of 4 boxes', 'Palette terminée : 2 couches de 4 colis'); await c.wait(1.5);
+      c.say(layers === 2 ? 'Pallet complete: 2 layers of 4 boxes' : 'Layer complete (a Delta is too light and too short for tall pallets)', layers === 2 ? 'Palette terminée : 2 couches de 4 colis' : 'Couche terminée (un Delta est trop léger et trop court pour les grandes palettes)'); await c.wait(1.5);
     },
     async enc(c) {
       c.travel = 3.0 * u;
@@ -592,8 +662,108 @@ function mount(host) {
       }
       tool.setOpen(0.55 * u);
       c.say('Assembly done: cover screwed on', 'Assemblage terminé : couvercle vissé'); await c.wait(1.4);
+    },
+    async ser(c) {
+      c.travel = 2.9 * u;
+      const { g, out } = workStation(2.4), sd = side(A), ac = side(B);
+      const head = box(0.55 * u, 0.3 * u, 0.45 * u, MAT.blue, false); head.position.set(0, 2.2 * u, -0.45 * u); g.add(head);
+      const nz = box(0.3 * u, 0.06 * u, 0.2 * u, MAT.black, false); nz.position.set(0, 2.03 * u, -0.45 * u); g.add(nz);
+      const cb = box(0.45 * u, 0.3 * u, 0.4 * u, MAT.black, false); cb.position.set(0, 2.2 * u, 0.45 * u); g.add(cb);
+      const lens = cyl(0.1 * u, 0.08 * u, MAT.steel, 16, false); lens.position.set(0, 2.02 * u, 0.45 * u); g.add(lens);
+      g.updateMatrixWorld(true);
+      const PH = g.localToWorld(V(0, 0, -0.45 * u)), PC = g.localToWorld(V(0, 0, 0.45 * u)), cone = flashCone(u * 0.5, 0.55 * u); props.add(cone);
+      const boxes = [0, 1, 2].map((i) => { const b = add(box(0.8 * u, 0.45 * u, 0.55 * u, MAT.white), A.x + sd.x * (i - 1) * 1.1 * u, 0, A.z + sd.z * (i - 1) * 1.1 * u, Math.atan2(-sd.z, sd.x));
+        const band = box(0.81 * u, 0.12 * u, 0.56 * u, MAT.blue); band.position.y = 0.08 * u; b.add(band); b.userData = { h: 0.45 * u, w: 0.4 * u }; return b; });
+      const tipY = 1.95 * u - Math.min(0.225 * u, 0.45 * u);
+      for (let n = 0; n < 3; n++) {
+        const bx = boxes[n], serial = 'SN 2411-' + String(n + 1).padStart(4, '0');
+        const code = dataMatrix(n + 7), cp = new THREE.Mesh(new THREE.PlaneGeometry(0.34 * u, 0.34 * u).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: code })); cp.position.set(-0.19 * u, 0.452 * u, 0); bx.add(cp);
+        const tt = textTexture([serial], 256, 96), tp = new THREE.Mesh(new THREE.PlaneGeometry(0.36 * u, 0.135 * u).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: tt })); tp.position.set(0.2 * u, 0.452 * u, 0); tt.draw(0); bx.add(tp);
+        c.say(`Box ${n + 1} of 3: take it to the printer`, `Boîte ${n + 1} sur 3 : l'amener sous l'imprimante`);
+        await c.transfer(bx, B.clone().addScaledVector(ac, (n - 1) * 1.05 * u), { rotY: bx.rotation.y, via: async () => {
+          await c.move(V(PH.x, tipY, PH.z));
+          c.say(`Print its unique DataMatrix code and serial number ${serial}`, `Imprimer son code DataMatrix unique et son numéro de série ${serial}`);
+          await c.tw(1.3, (k) => { code.draw(k); tt.draw(Math.floor(k * serial.length + 0.5)); });
+          await c.move(V(PC.x, tipY, PC.z), 0.6);
+          c.say(`The camera reads the code back: ${serial}, OK`, `La caméra relit le code : ${serial}, conforme`);
+          cone.position.set(PC.x, 1.98 * u, PC.z); await c.tw(0.6, (k) => { cone.material.opacity = Math.sin(k * Math.PI) * 0.45; });
+          await c.move(V(PC.x - out.x * 1.4 * u, tipY, PC.z - out.z * 1.4 * u), 0.5);
+        } });
+      }
+      c.say('3 boxes serialised: each one can now be traced', '3 boîtes sérialisées : chacune peut maintenant être tracée'); await c.wait(1.4);
+    },
+    async fil(c) {
+      c.travel = 2.8 * u;
+      const { g, out } = workStation(2.4), sd = side(A), ac = side(B);
+      const tank = cyl(0.42 * u, 0.6 * u, MAT.steel, 24, false); tank.position.set(0, 2.95 * u, 0); g.add(tank);
+      const pipe = cyl(0.06 * u, 0.5 * u, MAT.steel, 12, false); pipe.position.set(0, 2.45 * u, 0); g.add(pipe);
+      const nzz = cyl(0.1 * u, 0.12 * u, MAT.dark, 14, false); nzz.position.set(0, 2.25 * u, 0); g.add(nzz);
+      g.updateMatrixWorld(true);
+      const N = g.localToWorld(V(0, 0, 0)), clear = new THREE.MeshStandardMaterial({ color: '#e6f2ff', roughness: 0.08, transparent: true, opacity: 0.32, depthWrite: false });
+      const juice = new THREE.MeshStandardMaterial({ color: '#f29d38', roughness: 0.3, transparent: true, opacity: 0.9 });
+      const stream = cyl(0.035 * u, 1, juice, 10, false); stream.visible = false; props.add(stream);
+      const bottles = [0, 1, 2].map((i) => { const b = add(bottle(u, clear), A.x + sd.x * (i - 1) * 0.8 * u, 0, A.z + sd.z * (i - 1) * 0.8 * u); b.children[3].visible = false;
+        const liq = cyl(0.17 * u, 0.66 * u, juice, 20); liq.position.y = 0.02 * u; liq.scale.y = 0.001; b.add(liq); b.userData.liq = liq; return b; });
+      const tipY = 2.2 * u - 1.0 * u + (0.95 * u - 0.45 * u);
+      for (let n = 0; n < 3; n++) {
+        const bt = bottles[n];
+        c.say(`Bottle ${n + 1} of 3: bring it under the filling nozzle`, `Bouteille ${n + 1} sur 3 : l'amener sous la buse de remplissage`);
+        await c.transfer(bt, B.clone().addScaledVector(ac, (n - 1) * 0.8 * u), { via: async () => {
+          await c.move(V(N.x, tipY, N.z));
+          c.say('Fill it up', 'La remplir');
+          const bottom = tipY - (0.95 * u - 0.45 * u) + 0.02 * u; stream.visible = true;
+          await c.tw(1.8, (k) => { bt.userData.liq.scale.y = Math.max(0.001, k); rodBetween(stream, V(N.x, 2.25 * u, N.z), V(N.x, bottom + 0.66 * u * k, N.z)); });
+          stream.visible = false; bt.children[3].visible = true;
+          c.say('Full: the cap is put on', 'Pleine : le bouchon est posé'); await c.wait(0.4);
+          await c.move(V(N.x - out.x * 1.4 * u, tipY, N.z - out.z * 1.4 * u), 0.5);
+        } });
+      }
+      c.say('3 bottles filled and capped', '3 bouteilles remplies et bouchées'); await c.wait(1.4);
+    },
+    async mm(c) {                                            // the robot rides on an AMR from station 1 to station 2
+      const P = R.mm, Lm = P.L, cart = add(makeAMR(Lm), 0, 0, 0, 0), deck = cart.userData.deck, mount = V(0.12 * Lm, deck, 0), x1 = 0.12 * Lm;
+      const follow = () => { base.yaw = cart.rotation.y; base.p.copy(mount).applyAxisAngle(YAX, base.yaw).add(cart.position); cart.updateMatrixWorld(true); };
+      follow();
+      const tote = binBox(u, 2.4 * u, 1.9 * u, 0.5 * u, MAT.bin); tote.position.set(-0.3 * Lm, deck, 0); cart.add(tote);
+      const table = (x, z) => { const t = add(new THREE.Group(), x, 0, z); const top = box(3.2 * u, 0.06 * u, 2.0 * u, MAT.frame); top.position.y = deck - 0.06 * u; t.add(top);
+        for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const leg = box(0.1 * u, deck - 0.06 * u, 0.1 * u, MAT.frame); leg.position.set(sx * 1.45 * u, 0, sz * 0.85 * u); t.add(leg); } return t; };
+      table(x1, P.zS); table(P.X2 + x1, -P.zS);
+      const parts = [-1, 1].map((i) => add(partL(u), x1 + i * 0.75 * u, deck, P.zS, Math.PI / 2));
+      c.travel = deck + 3.2 * u;
+      const stow = () => cart.localToWorld(V(-0.3 * Lm, deck + 3.4 * u, 0));
+      const tgt = V(0.25 * Lm, deck * 0.8, 0); setCam(tgt.clone().add(V(...P.cam)).toArray(), tgt.toArray());
+      setTip(stow(), 0);
+      const drive = (xTo, en, fr) => { c.say(en, fr); const x0 = cart.position.x; let last = x0;
+        return c.tw(Math.abs(xTo - x0) / 0.45 + 0.6, (k) => { const x = x0 + (xTo - x0) * ease(k), dx = x - last; last = x; cart.position.x = x; camera.position.x += dx; orbit.target.x += dx;
+          follow(); setTip(stow(), yaw); cart.userData.wheels.forEach((w) => { w.rotation.z -= 0.18 * Math.sign(xTo - x0); }); cart.userData.ring.material.opacity = k < 1 ? 0.35 : 0; }); };
+      for (let n = 0; n < 2; n++) {
+        c.say(`Station 1: load part ${n + 1} of 2 into the tote on the AMR`, `Poste 1 : charger la pièce ${n + 1} sur 2 dans le bac de l'AMR`);
+        await c.transfer(parts[n], cart.localToWorld(V(-0.3 * Lm + (n - 0.5) * 0.9 * u, deck + 0.05 * u, 0)), { rotY: 0 });
+        cart.attach(parts[n]);
+      }
+      await c.move(stow());
+      await drive(P.X2, 'The AMR carries the robot to station 2: no rail, and safety scanners watch around it', 'L\'AMR emmène le robot au poste 2 : pas de rail, et des scanners de sécurité surveillent autour');
+      for (let n = 0; n < 2; n++) {
+        c.say(`Station 2: unload part ${n + 1} of 2`, `Poste 2 : décharger la pièce ${n + 1} sur 2`);
+        props.attach(parts[n]);
+        await c.transfer(parts[n], V(P.X2 + x1 + (n - 0.5) * 1.5 * u, deck, -P.zS), { rotY: Math.PI / 2 });
+      }
+      await c.move(stow());
+      await drive(0, 'Back to station 1 for the next load', 'Retour au poste 1 pour le chargement suivant');
+      await c.wait(0.6);
     }
   };
+  // a work station placed just outside the robot's travel path; local +x points away from the robot
+  function workStation(k) {
+    k = R.stationK ?? k; let at, out;
+    if (R.arc) { const a = lerpAng(Math.atan2(A.z, A.x), Math.atan2(B.z, B.x), 0.5), r = (Math.hypot(A.x, A.z) + Math.hypot(B.x, B.z)) / 2 + k * u; at = V(r * Math.cos(a), 0, r * Math.sin(a)); out = dirOut(at); }
+    else { const d = B.clone().sub(A); out = V(-d.z, 0, d.x).normalize(); at = A.clone().lerp(B, 0.5).addScaledVector(out, k * u); }
+    const g = add(new THREE.Group(), at.x, 0, at.z, Math.atan2(-out.z, out.x));
+    const post = box(0.14 * u, 2.6 * u, 0.14 * u, MAT.frame); post.position.set(1.1 * u, 0, 0); g.add(post);
+    const beam = box(1.35 * u, 0.12 * u, 0.3 * u, MAT.frame, false); beam.position.set(0.45 * u, 2.55 * u, 0); g.add(beam);
+    const beam2 = box(0.3 * u, 0.12 * u, 1.5 * u, MAT.frame, false); beam2.position.set(0, 2.55 * u, 0); g.add(beam2);
+    return { g, out };
+  }
 
   // ------------------------------------------------ mobile robot (AMR) scripts
   let amr = null;
@@ -671,6 +841,47 @@ function mount(host) {
   };
   if (R.mobile) { amr = makeAMR(0.9); scene.add(amr); amr.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); amr.userData.nBase = amr.children.length; }
 
+  // ------------------------------------------------ safety: industrial robots in a cage, the cobot next to an operator
+  let halted = false, slow = 1, slowT = 1, cage = null, person = null, doorOpen = false, near = false, halo = null;
+  const showAlert = (html, kind) => { alertEl.hidden = !html; if (html) { alertEl.innerHTML = html; alertEl.dataset.kind = kind; } };
+  if (R.safety === 'cage') {
+    cage = buildCage(R.cage); scene.add(cage.group);
+    person = makePerson(); scene.add(person);
+    safeTag.textContent = L('Industrial robot: works inside a cage', 'Robot industriel : travaille dans une cage');
+    safeBtn.textContent = L('Open the cage door', 'Ouvrir la porte de la cage');
+    safeBtn.addEventListener('click', () => { doorOpen = !doorOpen; safeBtn.textContent = doorOpen ? L('Close the door', 'Fermer la porte') : L('Open the cage door', 'Ouvrir la porte de la cage'); });
+  } else if (R.safety === 'collab') {
+    person = makePerson(); scene.add(person);
+    halo = new THREE.Mesh(new THREE.RingGeometry(0.86, 0.9, 64).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#30a46c', transparent: true, opacity: 0.55, depthWrite: false })); halo.position.y = 0.004; scene.add(halo);
+    safeTag.textContent = L('Cobot: no cage, it shares the space with people', 'Cobot : sans cage, il partage l\'espace avec les personnes');
+    safeBtn.textContent = L('The operator comes close', 'L\'opérateur s\'approche');
+    safeBtn.addEventListener('click', () => { near = !near; safeBtn.textContent = near ? L('The operator steps back', 'L\'opérateur s\'éloigne') : L('The operator comes close', 'L\'opérateur s\'approche'); });
+  }
+  safeBox.hidden = !R.safety;
+  let inCell = true, pT = 0;
+  function safetyTick(dt) {
+    pT += dt;
+    if (cage) {
+      const on = doorOpen && inCell; cage.ang += (((on ? 1 : 0) - cage.ang) * Math.min(1, dt * 4)); cage.door.rotation.y = 1.45 * cage.ang;
+      const d = cage.door.userData.at, outside = V(d.x, 0, d.z - 0.8), inDoor = V(d.x, 0, d.z - 0.12);
+      person.position.copy(outside.clone().lerp(inDoor, cage.ang)); person.rotation.y = 0;
+      person.userData.arms[1].rotation.x = -1.2 * Math.min(1, cage.ang * 1.5);
+      halted = on || cage.ang > 0.03;
+      showAlert(halted ? L('<b>Door open: the robot stops at once</b> (safety stop). An industrial robot is fast and strong and does not feel a person, so a fence keeps everyone out while it works.', '<b>Porte ouverte : le robot s\'arrête aussitôt</b> (arrêt de sécurité). Un robot industriel est rapide et puissant et ne sent pas une personne : une cage tient tout le monde à l\'écart pendant qu\'il travaille.') : '', 'stop');
+    }
+    if (halo) {
+      const on = near && inCell, far = V(...(R.opFar || [0, 0, -1.1])), close = V(...(R.opClose || [0, 0, -0.7]));
+      person.userData.k = (person.userData.k || 0) + ((on ? 1 : 0) - (person.userData.k || 0)) * Math.min(1, dt * 2.5);
+      const k = person.userData.k; person.position.copy(far.clone().lerp(close, k)); person.rotation.y = Math.atan2(-person.position.x, -person.position.z);
+      person.userData.arms[0].rotation.x = -0.25 - 0.9 * k + Math.sin(pT * 2.2) * 0.12 * (1 - k); person.userData.arms[1].rotation.x = -0.25 - 1.15 * k;
+      slowT = on ? 0.25 : 1; slow += (slowT - slow) * Math.min(1, dt * 3);
+      halo.material.color.set(on ? '#f5c518' : '#30a46c'); halo.material.opacity = on ? 0.75 + 0.2 * Math.sin(pT * 8) : 0.45;
+      showAlert(on ? L('<b>Operator close: the cobot slows down</b> to a safe speed and keeps working. No cage is needed: it limits its speed and force, and stops if it touches someone.', '<b>Opérateur proche : le cobot ralentit</b> à une vitesse sûre et continue à travailler. Pas besoin de cage : il limite sa vitesse et sa force, et s\'arrête s\'il touche quelqu\'un.') : '', 'slow');
+    }
+  }
+  function setInCell(v) { inCell = v; if (cage) cage.group.visible = v; if (person) person.visible = v; if (halo) halo.visible = v; safeBox.hidden = !R.safety || !v; if (!v) { halted = false; slow = 1; showAlert('', ''); } }
+  function setCam(pos, tgt) { camera.position.set(...pos); orbit.target.set(...tgt); orbit.update(); }
+
   // ------------------------------------------------ run / switch operations
   let current = null;
   function clearProps() {
@@ -679,28 +890,34 @@ function mount(host) {
   }
   async function run(op) {
     const tok = ++token; tweens.length = 0; tickers.clear();
-    current = op; clearProps(); paused = false; pauseBtn.textContent = L('Pause', 'Pause');
+    current = op; clearProps(); paused = false; pauseBtn.textContent = L('Pause', 'Pause'); host.classList.remove('paused');
     bar.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.op === op)));
     what.textContent = OPS[op][1];
-    if (robot) { tool.setOpen(0.55 * u); tool.userData.cam.visible = false; setTip(HOME.clone(), 0); }
-    const script = (R.mobile ? SM : S)[op];
+    const mmOp = op === 'mm';
+    base.p.set(0, 0, 0); base.yaw = 0; setInCell(!(mmOp || op === 'amr'));
+    if (robot) { robot.root.visible = tool.visible = !R.mobile || mmOp; tool.setOpen(0.55 * u); tool.userData.cam.visible = false; if (HOME && !mmOp) setTip(HOME.clone(), 0); }
+    if (amr) amr.visible = !mmOp;
+    if (!mmOp) setCam(R.cam, R.target);
+    const script = (R.mobile && !mmOp ? SM : S)[op];
     while (tok === token) {
       const c = ctxFor(tok);
       await script(c);
       if (tok !== token) return;
-      if (robot) await c.move(HOME.clone(), null, 0);
+      if (robot && HOME && !mmOp) await c.move(HOME.clone(), null, 0);
       clearProps(); if (robot) { tool.userData.cam.visible = false; tool.setOpen(0.55 * u); }
       if (amr) { amr.position.set(0, 0, 0); }
       await c.wait(0.3);
     }
   }
-  bar.innerHTML = R.ops.map((k) => `<button type="button" data-op="${k}" aria-pressed="false">${OPS[k][0]}</button>`).join('');
+  const FITN = { 3: L('main use', 'usage principal'), 2: L('possible', 'possible'), 1: L('rarely', 'rarement') };
+  bar.innerHTML = R.ops.map((k) => `<button type="button" data-op="${k}" aria-pressed="false" title="${FITN[R.fit[k]]}"><i class="opsd-fit f${R.fit[k]}"></i>${OPS[k][0]}</button>`).join('');
+  host.querySelectorAll('.opsd-speed button').forEach((b) => b.addEventListener('click', () => { speed = +b.dataset.s; host.querySelectorAll('.opsd-speed button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
   bar.addEventListener('click', (e) => { const b = e.target.closest('button[data-op]'); if (b) run(b.dataset.op); });
   pauseBtn.addEventListener('click', () => { paused = !paused; pauseBtn.textContent = paused ? L('Resume', 'Reprendre') : L('Pause', 'Pause'); host.classList.toggle('paused', paused); });
   restartBtn.addEventListener('click', () => run(current));
 
   // ------------------------------------------------ render loop (only while visible)
-  function resize() { const w = view.clientWidth, h = view.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  function resize() { const w = view.clientWidth, h = view.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = camera.aspect < 0.8 ? 62 : camera.aspect < 1.2 ? 50 : 42; camera.updateProjectionMatrix(); }
   new ResizeObserver(resize).observe(view); resize();
   let visible = true, last = performance.now();
   new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(view);
@@ -714,7 +931,8 @@ function mount(host) {
   renderer.setAnimationLoop((now) => {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (!visible) return;
-    if (!paused) step(dt * speed);
+    safetyTick(dt);
+    if (!paused && !halted) step(dt * speed * slow);
     orbit.update(); renderer.render(scene, camera);
   });
   // test hook: runs the simulation fast, without rendering (used by the automated checks)
