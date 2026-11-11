@@ -238,12 +238,12 @@
       scene.add(sun);
       const grid = new THREE.GridHelper(4, 16, '#7a7a7a', '#3a3a3a'); scene.add(grid);
       // light / dark ground: background, hemisphere ground colour and grid lines follow the site theme
-      const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#a3acb7', roughness: 1 }));
-      floor.position.y = -0.003; scene.add(floor);                      // a real floor, so it does not blend into the background (the "wall")
+      const floor = new THREE.Mesh((grid.geometry.computeBoundingBox(), new THREE.PlaneGeometry(grid.geometry.boundingBox.max.x * 2, grid.geometry.boundingBox.max.z * 2)).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#7d8691', roughness: 1 }));
+      floor.position.y = -0.003; scene.add(floor);                      // dark grey pad exactly under the grid; everything else stays light grey
       { const gc = grid.geometry.attributes.color, g0 = gc.array.slice(), mid = (new THREE.Color('#7a7a7a').r + new THREE.Color('#3a3a3a').r) / 2;
         RB.onTheme((L) => {
-          scene.background.set(L ? '#e3e7ec' : '#262626'); floor.visible = L; hemi.groundColor.set(L ? '#c9d0d8' : '#3a3a3a');
-          const a = new THREE.Color(L ? '#555f6c' : '#7a7a7a'), b = new THREE.Color(L ? '#7d8794' : '#3a3a3a');
+          scene.background.set(L ? '#d9dde3' : '#262626'); floor.visible = L; hemi.groundColor.set(L ? '#c9d0d8' : '#3a3a3a');
+          const a = new THREE.Color(L ? '#c3cad3' : '#7a7a7a'), b = new THREE.Color(L ? '#a3acb7' : '#3a3a3a');
           for (let i = 0; i < g0.length; i += 3) { const c = g0[i] > mid ? a : b; gc.array[i] = c.r; gc.array[i + 1] = c.g; gc.array[i + 2] = c.b; }
           gc.needsUpdate = true;
           box.classList.toggle('light3d', L);
