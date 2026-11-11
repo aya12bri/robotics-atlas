@@ -227,20 +227,34 @@ function planetary(o) {
 
 // ---------------------------------------------------------------- callouts: each name sits in a row above or below the picture, with a leader line to its part
 export function callouts(box, items, w, h) {
+  // Lay the names out so that no two leader lines cross:
+  //  - parts spread out up and down  -> names in a left and a right column, in the same top-to-bottom order as the parts
+  //  - parts spread out left to right -> names in a top and a bottom row, in the same left-to-right order as the parts
   const svg = box.querySelector('svg'); svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('width', w); svg.setAttribute('height', h);
-  const sorted = items.slice().sort((a, b) => a.x - b.x), rows = [[], [], [], []];
-  sorted.forEach((it, i) => { rows[(i % 2 ? 2 : 0) + (Math.floor(i / 2) % 2)].push(it); });       // top-near, top-far, bottom-near, bottom-far
-  const Y = [22, 56, h - 52, h - 86], pad = 8; let d = '';
-  rows.forEach((row, k) => {
-    let right = -Infinity;
-    for (const it of row) {
-      const bw = it.el.offsetWidth || 90, bh = it.el.offsetHeight || 24;
-      let x = Math.max(pad + bw / 2, Math.min(w - pad - bw / 2, it.x)); if (x - bw / 2 < right + 6) x = right + 6 + bw / 2; right = x + bw / 2;
-      it.el.style.left = x + 'px'; it.el.style.top = Y[k] + 'px';
-      const ly = k < 2 ? Y[k] + bh / 2 : Y[k] - bh / 2;
-      d += `<line x1="${it.x.toFixed(1)}" y1="${it.y.toFixed(1)}" x2="${x.toFixed(1)}" y2="${ly.toFixed(1)}" class="${it.el.classList.contains('on') ? 'on' : ''}"/><circle cx="${it.x.toFixed(1)}" cy="${it.y.toFixed(1)}" r="3.5"/>`;
-    }
-  });
+  if (!items.length) { svg.innerHTML = ''; return; }
+  const xs = items.map((i) => i.x), ys = items.map((i) => i.y), pad = 8, gap = 6, size = (it) => [it.el.offsetWidth || 110, it.el.offsetHeight || 26];
+  const rowsFit = items.reduce((a, it) => a + size(it)[0] + gap, 0) / 2 < w * 0.9 && Math.max(...xs) - Math.min(...xs) > w * 0.45;   // names fit in two rows and the parts really spread left to right
+  const vertical = !rowsFit, tall = Math.max(...ys) - Math.min(...ys) > Math.max(...xs) - Math.min(...xs);
+  const place = (list, along, lo, hi) => {                    // spread labels along one line without overlap, keeping their order
+    let prev = -Infinity;
+    for (const it of list) { const half = (along === 'x' ? size(it)[0] : size(it)[1]) / 2; it.p = Math.max(lo + half, it[along], prev + gap + half); prev = it.p + half; }
+    let next = Infinity;
+    for (const it of list.slice().reverse()) { const half = (along === 'x' ? size(it)[0] : size(it)[1]) / 2; it.p = Math.min(it.p, hi - half, next - gap - half); next = it.p - half; }
+  };
+  let d = '';
+  if (vertical) {
+    const sorted = items.slice().sort((a, b) => a.y - b.y), cols = [[], []];
+    if (tall) sorted.forEach((it, i) => cols[i % 2].push(it));           // a vertical stack: alternate sides
+    else { const mid = (Math.min(...xs) + Math.max(...xs)) / 2; sorted.forEach((it) => cols[it.x < mid ? 0 : 1].push(it)); }   // parts spread around: each name on its own side
+    cols.forEach((col, k) => { place(col, 'y', 54, h - 10); for (const it of col) { const [bw] = size(it), x = k ? w - pad - bw / 2 : pad + bw / 2; it.el.style.left = x + 'px'; it.el.style.top = it.p + 'px';
+      d += `<line x1="${it.x.toFixed(1)}" y1="${it.y.toFixed(1)}" x2="${(k ? x - bw / 2 : x + bw / 2).toFixed(1)}" y2="${it.p.toFixed(1)}" class="${it.el.classList.contains('on') ? 'on' : ''}"/><circle cx="${it.x.toFixed(1)}" cy="${it.y.toFixed(1)}" r="3.5"/>`; } });
+  } else {
+    const sorted = items.slice().sort((a, b) => a.x - b.x), rows = [[], []];
+    sorted.forEach((it, i) => rows[i % 2].push(it));
+    const Y = [24, h - 30];
+    rows.forEach((row, k) => { place(row, 'x', pad, w - pad); for (const it of row) { const [, bh] = size(it); it.el.style.left = it.p + 'px'; it.el.style.top = Y[k] + 'px';
+      d += `<line x1="${it.x.toFixed(1)}" y1="${it.y.toFixed(1)}" x2="${it.p.toFixed(1)}" y2="${(k ? Y[k] - bh / 2 : Y[k] + bh / 2).toFixed(1)}" class="${it.el.classList.contains('on') ? 'on' : ''}"/><circle cx="${it.x.toFixed(1)}" cy="${it.y.toFixed(1)}" r="3.5"/>`; } });
+  }
   svg.innerHTML = d;
 }
 

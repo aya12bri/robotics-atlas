@@ -883,3 +883,22 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .insdemo.light .insd-x, .sysdemo.light .sys-x { background: rgba(20, 30, 50, 0.08); color: #1d2633; }
 .sys-pop ~ .sys-flow { z-index: 3; }
 @media (max-width: 600px) { .insd-pop, .sys-pop { font-size: 0.78rem; max-height: 55%; } }
+/* layers of the A-to-Z view */
+.sys-labs { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.sys-labs button { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; display: inline-flex; align-items: center; gap: 0.35rem; min-height: 0; padding: 0.22rem 0.6rem 0.22rem 0.25rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; color: #1d2633; background: rgba(255, 255, 255, 0.95); border: 2px solid var(--c); box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.4); }
+.sys-labs button[hidden] { display: none; }
+.sys-labs button b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-size: 0.68rem; color: #fff; background: var(--c); }
+.sys-labs button.on, .sys-labs button:hover { background: var(--c); color: #fff; } .sys-labs button.on b, .sys-labs button:hover b { background: #fff; color: #1d2633; }
+.sys-labs .sys-lines line { stroke-width: 2; } .sys-labs .sys-lines line.on { stroke-width: 3.2; }
+.sys-pins[hidden] { display: none; }
+.sysdemo:not(.sys-all-on) .sys-stop { display: none; }
+.sys-layers { display: flex; align-items: center; gap: 0.5rem; margin: 0.7rem 0 0.5rem; }
+.sys-layers > button { flex: none; min-height: 0; width: 38px; height: 38px; padding: 0; border-radius: 50%; font-size: 1.3rem; line-height: 1; }
+.sys-layers > button:disabled { opacity: 0.35; }
+.sys-lchips { display: flex; flex-wrap: wrap; gap: 0.35rem; flex: 1; justify-content: center; }
+.sys-lchips button { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 0; padding: 0.38rem 0.75rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600; background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.sys-lchips button b { display: inline-grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; font-size: 0.68rem; color: #fff; background: #6d5dfc; }
+.sys-lchips button[aria-pressed="true"] { color: #fff; border-color: #6d5dfc; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); } .sys-lchips button[aria-pressed="true"] b { background: #fff; color: #3b4fd8; }
+.sys-lcard { padding: 0.75rem 1rem; border: 1px solid var(--border); border-left: 5px solid #6d5dfc; border-radius: 12px; background: var(--surface); }
+.sys-lcard h3 { margin: 0 0 0.25rem; font-size: 1.02rem; } .sys-lcard p { margin: 0; }
+@media (max-width: 600px) { .sys-labs button { font-size: 0.68rem; padding: 0.15rem 0.45rem 0.15rem 0.2rem; } .sys-lchips button { font-size: 0.74rem; padding: 0.3rem 0.55rem; } }
