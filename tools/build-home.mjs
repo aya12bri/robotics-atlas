@@ -7,25 +7,32 @@ import { REG, reset, tx } from './lib.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 reset();
-const TILES = [
-  ['anatomy.html', ['6-axis industrial robot', 'Robot industriel 6 axes'], '6 × R'],
-  ['anatomy-scara.html', ['SCARA', 'SCARA'], 'R-R-P-R'],
-  ['anatomy-cobot.html', ['Collaborative robot', 'Robot collaboratif'], '6 × R'],
-  ['anatomy-delta.html', ['Delta robot', 'Robot Delta'], ['Parallel', 'Parallèle']],
-  ['anatomy-gantry.html', ['Cartesian gantry', 'Robot cartésien'], 'P-P-P'],
-  ['anatomy-mobile.html', ['Mobile robot', 'Robot mobile'], ['2 wheels', '2 roues']],
-  ['anatomy-wheels.html', ['Wheels', 'Roues'], ['7 types', '7 types']],
-  ['anatomy-drives.html', ['Drive configurations', 'Configurations de motorisation'], ['8 layouts', '8 configurations']],
-  ['anatomy-stewart.html', ['Stewart platform', 'Plateforme de Stewart'], ['6 legs', '6 vérins']],
-  ['anatomy-quadrotor.html', ['Quadrotor', 'Quadrirotor'], ['it flies', 'il vole']],
-  ['anatomy-humanoid.html', ['Humanoid', 'Humanoïde'], ['it walks', 'il marche']]
+// [page, name, kinematics tag, one simple sentence for a beginner]
+const GROUPS = [
+  [['Robot arms', 'Bras robotisés'], ['Arms that pick, place, weld and assemble in factories.', 'Des bras qui prennent, posent, soudent et assemblent dans les usines.'], [
+    ['anatomy.html', ['6-axis industrial robot', 'Robot industriel 6 axes'], '6 × R', ['The arm of car factories: strong, fast, inside a cage.', 'Le bras des usines automobiles : fort, rapide, dans une cage.']],
+    ['anatomy-cobot.html', ['Collaborative robot', 'Robot collaboratif'], '6 × R', ['A gentle arm that works next to people, without a cage.', 'Un bras doux qui travaille à côté des personnes, sans cage.']],
+    ['anatomy-scara.html', ['SCARA', 'SCARA'], 'R-R-P-R', ['Very fast for assembling small parts on a table.', 'Très rapide pour assembler de petites pièces sur une table.']],
+    ['anatomy-gantry.html', ['Cartesian gantry', 'Robot cartésien'], 'P-P-P', ['Three straight axes X, Y, Z: simple, precise, can be huge.', 'Trois axes droits X, Y, Z : simple, précis, peut être immense.']]]],
+  [['Parallel robots', 'Robots parallèles'], ['Several arms hold the same platform: light and very fast.', 'Plusieurs bras tiennent la même plateforme : léger et très rapide.'], [
+    ['anatomy-delta.html', ['Delta robot', 'Robot Delta'], ['Parallel', 'Parallèle'], ['Picks hundreds of chocolates per minute.', 'Prend des centaines de chocolats par minute.']],
+    ['anatomy-stewart.html', ['Stewart platform', 'Plateforme de Stewart'], ['6 legs', '6 vérins'], ['Six legs tilt a platform: flight simulators.', 'Six vérins inclinent une plateforme : simulateurs de vol.']]]],
+  [['Mobile robots', 'Robots mobiles'], ['Robots that move around on wheels.', 'Des robots qui se déplacent sur des roues.'], []],
+  [['Robots that walk and fly', 'Robots qui marchent et qui volent'], ['Legs and propellers: the most demanding balance.', 'Des jambes et des hélices : l\'équilibre le plus difficile.'], [
+    ['anatomy-humanoid.html', ['Humanoid', 'Humanoïde'], ['it walks', 'il marche'], ['Walks on two legs and keeps its balance.', 'Marche sur deux jambes et garde son équilibre.']],
+    ['anatomy-quadrotor.html', ['Quadrotor', 'Quadrirotor'], ['it flies', 'il vole'], ['Four propellers: it flies, tilts and turns.', 'Quatre hélices : il vole, s\'incline et tourne.']]]]
 ];
+GROUPS[2] = [GROUPS[2][0], GROUPS[2][1], [
+  ['anatomy-mobile.html', ['Mobile robot', 'Robot mobile'], ['2 wheels', '2 roues'], ['Two motor wheels: it goes forward and turns.', 'Deux roues motrices : il avance et tourne.']],
+  ['anatomy-drives.html', ['Drive configurations', 'Configurations de motorisation'], ['8 layouts', '8 configurations'], ['Drive 8 different robots yourself.', 'Conduisez vous-même 8 robots différents.']],
+  ['anatomy-wheels.html', ['Wheels', 'Roues'], ['7 types', '7 types'], ['From the simple wheel to the omni and Mecanum wheel.', 'De la roue simple à la roue omni et Mecanum.']]]];
 const t = (x) => (Array.isArray(x) ? tx(x[0], x[1]) : tx(x));
+const card = ([h, n, k, d]) => { const img = h.replace('.html', ''); return `<a href="${h}" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/${img}.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/${img}-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>${t(k)}</i></span><b>${t(n)}</b><em>${t(d)}</em><span class="anat-go">${tx('Explore in 3D →', 'Explorer en 3D →')}</span></a>`; };
 const html = `<!-- anatomy-home -->
         <div class="anat-home" id="inside">
           <h3>${tx('Look inside the robots', 'Regarder à l\'intérieur des robots')}</h3>
-          <p>${tx('Eleven 3D views you can turn with the mouse, with an X-ray mode that shows the motors, gearboxes, controller and cables.', 'Onze vues 3D que l\'on tourne à la souris, avec un mode rayons X qui montre les moteurs, réducteurs, contrôleur et câbles.')}</p>
-          <div class="anat-grid">${TILES.map(([h, n, k]) => `<a href="${h}"><img src="thumbs/${h.replace('.html', '.jpg')}" alt="" width="670" height="580" loading="lazy" decoding="async"><b>${t(n)}</b><span>${t(k)}</span></a>`).join('')}</div>
+          <p>${tx('Eleven robots in 3D. Turn them with the mouse, open them in X-ray to see the motors, gearboxes and cables, and take them apart component by component.', 'Onze robots en 3D. Tournez-les à la souris, ouvrez-les en rayons X pour voir les moteurs, réducteurs et câbles, et démontez-les composant par composant.')}</p>
+          <div class="anat-groups">${[GROUPS[0], GROUPS[1], GROUPS[3], GROUPS[2]].map(([g, gd, cards]) => `<section class="anat-group" style="--n:${cards.length}"><div class="anat-gh"><h4>${t(g)}</h4><span>${t(gd)}</span></div><div class="anat-grid">${cards.map(card).join('')}</div></section>`).join('')}</div>
         </div>
         <!-- /anatomy-home -->
 `;
