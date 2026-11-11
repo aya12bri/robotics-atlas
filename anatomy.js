@@ -68,22 +68,24 @@ sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.
 { const c = sun.shadow.camera, r = VIEW_R * 0.95; c.left = -r; c.right = r; c.top = r; c.bottom = -r; c.near = 0.01; c.far = VIEW_R * 8; c.updateProjectionMatrix(); }
 const fill = new THREE.DirectionalLight('#8fb4ff', 0.35); fill.position.set(-3, 2, -3); scene.add(fill);
 // the floor: a dark workshop floor that takes the shadows, with a faint grid for the scale
-let floor, grid;
+let floor, grid, pad;
 {
   const size = CFG.grid || 4;
   floor = new THREE.Mesh(new THREE.PlaneGeometry(size * 3, size * 3), new THREE.MeshStandardMaterial({ color: '#25282d', roughness: 0.85, metalness: 0, envMapIntensity: 0.35 }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -0.002; floor.receiveShadow = true; floor.userData.floor = true; scene.add(floor);
+  pad = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshStandardMaterial({ color: '#5b636d', roughness: 0.9, metalness: 0, envMapIntensity: 0.3 }));   // dark grey under the grid (light mode)
+  pad.rotation.x = -Math.PI / 2; pad.position.y = -0.001; pad.receiveShadow = true; pad.userData.floor = true; scene.add(pad);
   grid = new THREE.GridHelper(size, size * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
 }
 // The ground follows the site theme: a dark workshop in dark mode, a light studio floor in light mode (same rule as nav.js).
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
 function paintGround() {
   const light = isLight(), g = grid.geometry.attributes.color;
-  scene.background.set(light ? '#d4d9df' : '#23262b');
-  floor.material.color.set(light ? '#9aa3ae' : '#25282d'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
-  const c1 = new THREE.Color(light ? '#6f7a88' : '#5a5f68'), c2 = new THREE.Color(light ? '#8a94a0' : '#383c43'), n = g.count;
+  scene.background.set(light ? '#dfe3e8' : '#23262b'); pad.visible = light;
+  floor.material.color.set(light ? '#cfd4db' : '#25282d'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
+  const c1 = new THREE.Color(light ? '#c3cad3' : '#5a5f68'), c2 = new THREE.Color(light ? '#a3acb7' : '#383c43'), n = g.count;
   for (let i = 0; i < n; i += 4) { const c = (i / 4) === Math.floor(n / 8) ? c1 : c2; for (let k = 0; k < 4 && i + k < n; k++) g.setXYZ(i + k, c.r, c.g, c.b); }   // GridHelper: 4 vertices per line, the centre lines get colour 1
-  g.needsUpdate = true; grid.material.opacity = light ? 0.75 : 0.5;
+  g.needsUpdate = true; grid.material.opacity = light ? 0.9 : 0.5;
   hemi.groundColor.set(light ? '#b9c0ca' : '#3a3d44'); hemi.intensity = light ? 0.45 : 0.25;
   box.classList.toggle('light', light);
 }
