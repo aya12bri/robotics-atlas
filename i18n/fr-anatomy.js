@@ -30,5 +30,5 @@ RA.add({
  "wl32w0big5": "<strong>Contrôleur</strong> : l'ordinateur et les variateurs qui exécutent les boucles d'asservissement (dans la base ou dans une armoire à côté du robot).",
  "u5fnq201gh": "Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.",
  "zq3mfy19s5": "Tous les composants, de A à Z",
- "we78wp8z9p": "Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
+ "4xif653etr": "D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });
