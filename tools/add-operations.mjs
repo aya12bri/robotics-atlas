@@ -35,6 +35,8 @@ const PAGES = {
 const H2 = ['Industrial operations', 'Opérations industrielles'];
 const INTRO = ['The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.',
   'Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.'];
+const DEMO_H2 = ['Operations demo', 'Démo des opérations'];
+const DEMO_P = ['Choose an operation: the robot performs it in a small 3D cell, step by step. Turn the view with the mouse or a finger, and use Pause to look closely.', 'Choisissez une opération : le robot la réalise dans une petite cellule 3D, étape par étape. Tournez la vue à la souris ou au doigt, et utilisez Pause pour regarder de près.'];
 const TH = [['Operation', 'Opération'], ['Simple explanation', 'Explication simple'], ['For this robot', 'Pour ce robot']];
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });
@@ -43,7 +45,7 @@ for (const [file, fit] of Object.entries(PAGES)) {
   const f = path.join(root, file + '.html'); let h = fs.readFileSync(f, 'utf8');
   h = h.replace(/\n    <!-- BEGIN operations -->[\s\S]*?<!-- END operations -->\n/, '\n');
   const keys = Object.keys(OPS).sort((a, b) => fit[b] - fit[a]);              // main uses first, keeps the list order otherwise
-  const pairs = [H2, INTRO, ...TH];
+  const pairs = [H2, INTRO, DEMO_H2, DEMO_P, ...TH];
   const rows = keys.map((k) => {
     const [n, nf, e, ef] = OPS[k], v = fit[k], badge = `<span class="opfit f${v}">${FIT[v][0]}</span>`;
     pairs.push([n, nf], [e, ef], [badge, `<span class="opfit f${v}">${FIT[v][1]}</span>`], [FIT[v][0], FIT[v][1]]);
@@ -61,6 +63,10 @@ ${rows.join('\n')}
         </tbody>
       </table>
     </div>
+    <h2>${DEMO_H2[0]}</h2>
+    <p>${DEMO_P[0]}</p>
+    <div class="opsdemo" data-robot="${file}"></div>
+    <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
 `;
   // after the last "robot" box of the page
