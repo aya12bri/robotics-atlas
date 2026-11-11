@@ -102,6 +102,10 @@
     <h2>What is inside each joint?</h2>
     <ul><li><strong>Servo motors</strong> at the base and at the elbow, with <strong>harmonic gearboxes</strong>: stiff in the plane, which is why a SCARA is so precise.</li><li><strong>Ball screw and spline shaft</strong>: the end of link 2 holds two motors, one for the up-and-down motion (J3) and one for the rotation of the tool (J4), both acting on the same hollow rod.</li><li><strong>Brake on J3</strong>: gravity pulls the rod down, so the brake holds it when the power is off.</li><li><strong>Cables and air</strong> pass through the hollow rod to the gripper (vacuum or compressed air).</li><li><strong>Controller</strong>: in the column or in a separate box.</li></ul>
     <p>The angles of this 3D model are those of the drawing, with a zero chosen for display: they differ by a constant from the DH angles of the robot page. The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-set="arm"></div>
     <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>

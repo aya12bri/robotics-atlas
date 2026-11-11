@@ -28,5 +28,7 @@ RA.add({
  "tjp7mnmsol": "<strong>Frein</strong> dans chaque articulation, et un circuit d'arrêt de sécurité certifié.",
  "25f52qk0eo0": "Les <strong>câbles</strong> passent dans les tubes, avec le contrôleur dans un boîtier séparé relié par un seul câble.",
  "1ywc6wqot8p": "<strong>Formes arrondies, poids faible, force limitée</strong> : fait pour travailler à côté des personnes (voir « Comment un cobot reste sûr »).",
- "u5fnq201gh": "Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque."
+ "u5fnq201gh": "Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.",
+ "zq3mfy19s5": "Tous les composants, de A à Z",
+ "we78wp8z9p": "Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });

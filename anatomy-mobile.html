@@ -104,6 +104,10 @@
     <h2>What is inside each joint?</h2>
     <ul><li><strong>Two gear motors with encoders</strong>: the encoders measure each wheel speed for the PID loops and for the odometry (which drifts, see the course on perception).</li><li><strong>Caster</strong>: a free wheel, the third point of support.</li><li><strong>Battery</strong> placed low, and <strong>motor drivers</strong> (H-bridges) that turn the controller commands into motor current.</li><li><strong>Small computer</strong> (single-board) for navigation, mapping and communication, for example with ROS 2.</li><li><strong>Sensors</strong>: lidar for obstacles and maps, bumpers and cliff sensors for safety, IMU for the heading.</li></ul>
     <p>The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-set="mobile"></div>
     <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>

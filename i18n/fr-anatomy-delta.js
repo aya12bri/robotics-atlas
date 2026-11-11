@@ -26,5 +26,7 @@ RA.add({
  "kn2nijwjhh": "<strong>Rotules</strong> aux extrémités des tiges, maintenues par des ressorts : pas de jeu, donc l'effecteur reste rigide.",
  "1rbqk57plyo": "<strong>Arbre télescopique central</strong> (facultatif, vu aux rayons X) : un quatrième axe qui fait tourner l'outil, entraîné par un moteur sur la plaque supérieure.",
  "237fp3e4qar": "<strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.",
- "2b353wowzel": "Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l'intérieur réel dépend de la marque."
+ "2b353wowzel": "Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l'intérieur réel dépend de la marque.",
+ "zq3mfy19s5": "Tous les composants, de A à Z",
+ "we78wp8z9p": "Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });

@@ -30,5 +30,7 @@ RA.add({
  "1b5rja4w0gs": "<strong>Codeur</strong> sur le moteur ou l'axe : il mesure la rotation de la roue pour l'odométrie.",
  "1nre2tp0c0d": "<strong>Roulement d'orientation</strong> : les roues folles et orientables tournent sur un roulement ; un moteur d'orientation avec une bague collectrice fait passer les fils dans la liaison tournante.",
  "ouu13wqynu": "<strong>Galets</strong> : les roues omni et Mecanum portent 8 à 16 galets libres sur de petits axes ; les espaces entre galets provoquent des vibrations à vitesse élevée.",
- "yasxn4bsy8": "Les sept types de roues sont alignés à la même échelle. Le premier curseur règle la vitesse de rotation de toutes les roues (et de la chenille), le deuxième fait pivoter la roue folle, le troisième oriente la roue motrice. Le modèle est simplifié : voir le laboratoire plus haut sur la page des roues pour observer le comportement de chaque roue quand on la pousse."
+ "yasxn4bsy8": "Les sept types de roues sont alignés à la même échelle. Le premier curseur règle la vitesse de rotation de toutes les roues (et de la chenille), le deuxième fait pivoter la roue folle, le troisième oriente la roue motrice. Le modèle est simplifié : voir le laboratoire plus haut sur la page des roues pour observer le comportement de chaque roue quand on la pousse.",
+ "zq3mfy19s5": "Tous les composants, de A à Z",
+ "we78wp8z9p": "Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });

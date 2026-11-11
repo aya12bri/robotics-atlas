@@ -105,6 +105,10 @@
     <h2>What is inside each joint?</h2>
     <ul><li><strong>About 30 actuators</strong>: a brushless motor with a harmonic or planetary gearbox at each joint, or an electric linear actuator (motor and ball screw) for the knee and the ankle. Hydraulic humanoids use oil instead.</li><li><strong>Sensors for balance</strong>: an IMU in the pelvis (attitude and acceleration), an encoder on every joint, and force and torque sensors in the feet that tell where the load is.</li><li><strong>Walking control</strong>: a footstep planner, a model of the body as an inverted pendulum (the centre of mass and the zero-moment point), then whole-body inverse kinematics and joint torque control at 1 kHz.</li><li><strong>Energy and heat</strong>: walking uses a lot of power even when standing still, because the leg motors have to hold the weight; the battery and the motors need cooling.</li></ul>
     <p>The humanoid really walks: a gait generator moves each foot (backwards under the body while it is on the ground, forwards in the air) and the two-link inverse kinematics of the leg finds the hip and knee angles that put the ankle there; the ankle then keeps the foot flat. When it stands, the hips move so that the centre of mass (computed from the mass of every part) stays over the feet: crouch and raise an arm to see it. When it walks, the centre of mass leaves the support area at each step, so the balance is dynamic, a controlled fall; real humanoids add feedback from the IMU and the force sensors (ZMP or model predictive control). The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-set="humanoid"></div>
     <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>
