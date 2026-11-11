@@ -990,3 +990,5 @@ function mount(host) {
   run(R.ops[0]);
 }
 document.querySelectorAll('.opsdemo').forEach(mount);
+
+export { articulated, arm3, scara, gantry, delta, makeAMR, MAT, M, box, cyl, cylZ, cylX, V, ease, textTexture };

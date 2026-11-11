@@ -1,0 +1,377 @@
+// inside-demo.js — "Inside the robot" on the robot pages: the camera dives from the whole robot into one joint,
+// the cover comes off, the parts fly apart (each one clickable, with its real name and role), then the joint is put
+// back together and runs, so you can see how it works. Same idea as a board explorer that dives from the board to
+// the chip: one step at a time, with a caption for each step.
+//
+// Usage:  <div class="insdemo" data-robot="articulated"></div>  +  <script type="module" src="inside-demo.js"></script>
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { articulated, arm3, scara, gantry, delta, makeAMR, M, box, cyl, V, ease } from './ops-demo.js';
+
+const FR = (window.RA && RA.lang) === 'fr';
+const L = (en, fr) => (FR ? fr : en);
+
+// ---------------------------------------------------------------- materials for the parts
+const P = {
+  steel: M('#b8c2cc', { roughness: 0.25, metalness: 0.85 }), dark: M('#3a424c', { roughness: 0.45, metalness: 0.6 }), black: M('#1a1d22', { roughness: 0.6 }),
+  copper: M('#c8742e', { roughness: 0.35, metalness: 0.8 }), lam: M('#6f7883', { roughness: 0.4, metalness: 0.7 }), magN: M('#d6453d', { roughness: 0.4 }), magS: M('#3d6fd6', { roughness: 0.4 }),
+  orange: M('#ff9f43', { roughness: 0.4 }), brass: M('#c9a227', { roughness: 0.3, metalness: 0.8 }), pcb: M('#1f6f43', { roughness: 0.55 }), gold: M('#e2b33c', { roughness: 0.3, metalness: 0.9 }),
+  white: M('#eef1f4', { roughness: 0.5 }), friction: M('#7a4a2a', { roughness: 0.9 }), glass: new THREE.MeshStandardMaterial({ color: '#9fd3ff', roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.55 }),
+  rubber: M('#202326', { roughness: 0.9 }), alu: M('#d5dbe1', { roughness: 0.35, metalness: 0.6 }), red: M('#e5484d', { emissive: '#600', emissiveIntensity: 0.6 })
+};
+const cylA = (r, h, mat, seg = 40, open = false) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg, 1, open).rotateX(Math.PI / 2), mat); m.castShadow = m.receiveShadow = true; return m; };   // axis along z, centred
+const boxC = (w, h, d, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.castShadow = m.receiveShadow = true; return m; };
+function gear(r, teeth, depth, mat, internal = false) {      // a spur gear (or an internal ring gear) in the xy plane, axis z
+  const g = new THREE.Group(), tw = (2 * Math.PI * r) / teeth * 0.5, th = r * 0.16;
+  if (internal) { const ring = cylA(r + th * 2.2, depth, mat, 64, true); ring.material = mat.clone(); ring.material.side = THREE.DoubleSide; g.add(ring); }
+  else g.add(cylA(r - th * 0.4, depth, mat, 48));
+  for (let i = 0; i < teeth; i++) {
+    const a = (i / teeth) * Math.PI * 2, t = boxC(th * 1.6, tw, depth, mat);
+    const rr = internal ? r + th * 0.6 : r + th * 0.2; t.position.set(Math.cos(a) * rr, Math.sin(a) * rr, 0); t.rotation.z = a; g.add(t);
+  }
+  return g;
+}
+function stripes(n = 24, a = '#9aa4ae', b = '#5f6873', vertical = false) {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? a : b; if (vertical) g.fillRect(i * 8, 0, 8, 64); else g.fillRect(0, i * 8, 64, 8); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, n / 8); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function discTexture() {                                    // encoder disc: fine radial tracks
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  g.fillStyle = 'rgba(160,210,255,0.35)'; g.fillRect(0, 0, 256, 256); g.translate(128, 128);
+  for (const [r0, r1, n] of [[70, 88, 64], [92, 108, 128], [112, 124, 256]]) for (let i = 0; i < n; i++) { if (i % 2) continue; const a0 = (i / n) * Math.PI * 2, a1 = ((i + 1) / n) * Math.PI * 2; g.beginPath(); g.arc(0, 0, r1, a0, a1); g.arc(0, 0, r0, a1, a0, true); g.fillStyle = '#1b2430'; g.fill(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+// ---------------------------------------------------------------- the part list (names and roles)
+const PART = {
+  drv: [L('Servo drive board', 'Carte variateur'), L('The electronics inside the joint. A microcontroller runs the current loop about 20 000 times a second and six power transistors (MOSFETs) switch the three motor phases; the capacitors smooth the supply.', 'L\'électronique dans l\'articulation. Un microcontrôleur calcule la boucle de courant environ 20 000 fois par seconde et six transistors de puissance (MOSFET) commutent les trois phases du moteur ; les condensateurs lissent l\'alimentation.')],
+  enc: [L('Absolute encoder', 'Codeur absolu'), L('A disc with fine tracks read by an optical head: it gives the motor angle to 1/131 072 of a turn (17 bits) and still knows it after a power cut.', 'Un disque à pistes fines lu par une tête optique : il donne l\'angle du moteur au 1/131 072 de tour (17 bits) et le connaît encore après une coupure de courant.')],
+  brk: [L('Holding brake', 'Frein de maintien'), L('Springs press the friction disc when the power is off, so the arm cannot fall. Current in the coil pulls the plate back: the brake is released while the robot moves.', 'Des ressorts serrent le disque de friction quand le courant est coupé : le bras ne peut pas tomber. Le courant dans la bobine tire la plaque : le frein est relâché pendant que le robot bouge.')],
+  sta: [L('Motor stator (windings)', 'Stator du moteur (bobinages)'), L('Copper coils wound on stacked steel sheets. The drive feeds them in turn, which makes a magnetic field that turns around the axis.', 'Des bobines de cuivre enroulées sur des tôles d\'acier empilées. Le variateur les alimente tour à tour, ce qui crée un champ magnétique qui tourne autour de l\'axe.')],
+  rot: [L('Motor rotor (magnets)', 'Rotor du moteur (aimants)'), L('Permanent magnets (red N, blue S) on the shaft follow the turning field. Brushless: nothing rubs, so it lasts for years. Fast (about 3 000 rpm) but weak.', 'Des aimants permanents (rouge N, bleu S) sur l\'arbre suivent le champ tournant. Sans balais : rien ne frotte, il dure des années. Rapide (environ 3 000 tr/min) mais peu puissant.')],
+  wg: [L('Wave generator', 'Générateur d\'onde'), L('An elliptical cam with a thin ball bearing, turned by the motor shaft. It bends the flexspline into an ellipse.', 'Une came elliptique avec un roulement à billes fin, entraînée par l\'arbre moteur. Elle déforme la flexspline en ellipse.')],
+  fs: [L('Flexspline', 'Flexspline (cloche flexible)'), L('A thin steel cup with 200 outer teeth. Bent by the ellipse, it meshes with the ring at two places only, and these places travel round with the cam.', 'Une cloche en acier mince avec 200 dents extérieures. Déformée par l\'ellipse, elle n\'engrène avec la couronne qu\'en deux endroits, qui tournent avec la came.')],
+  cs: [L('Circular spline', 'Couronne rigide'), L('A rigid ring with 202 inner teeth, fixed to the housing. Two teeth more than the flexspline: each motor turn moves the flexspline back by 2 teeth, so the ratio is 200 / 2 = 100 : 1.', 'Une couronne rigide à 202 dents intérieures, fixée au carter. Deux dents de plus que la flexspline : chaque tour moteur la décale de 2 dents, d\'où le rapport 200 / 2 = 100 : 1.')],
+  brg: [L('Cross-roller bearing', 'Roulement à rouleaux croisés'), L('Rollers set crosswise carry the weight and the bending of the next link while the joint turns smoothly, without play.', 'Des rouleaux croisés portent le poids et la flexion du segment suivant tout en laissant l\'articulation tourner en douceur, sans jeu.')],
+  out: [L('Output flange', 'Bride de sortie'), L('Bolted to the next link. It turns 100 times slower than the motor and about 100 times stronger.', 'Vissée sur le segment suivant. Elle tourne 100 fois moins vite que le moteur et environ 100 fois plus fort.')],
+  trq: [L('Joint torque sensor', 'Capteur de couple'), L('Spokes with strain gauges measure the torque in the joint. If it suddenly differs from what the model expects, the cobot has touched something and stops: this is why it needs no cage.', 'Des rayons équipés de jauges de contrainte mesurent le couple dans l\'articulation. S\'il s\'écarte soudain de ce que prévoit le modèle, le cobot a touché quelque chose et s\'arrête : c\'est pour cela qu\'il n\'a pas besoin de cage.')],
+  cov: [L('Housing (cover)', 'Carter (capot)'), L('Cast aluminium shell: it holds the parts in line, keeps dust and oil out and carries the cables.', 'Coque en aluminium moulé : elle aligne les pièces, protège de la poussière et de l\'huile et guide les câbles.')],
+  // linear axis
+  lmot: [L('Servo motor with encoder', 'Servomoteur avec codeur'), L('A brushless motor with its encoder at the back: it turns the screw and tells the controller exactly how far it has turned.', 'Un moteur sans balais avec son codeur à l\'arrière : il fait tourner la vis et dit au contrôleur exactement de combien il a tourné.')],
+  cpl: [L('Flexible coupling', 'Accouplement flexible'), L('Joins the motor shaft to the screw and absorbs a tiny misalignment, without any play.', 'Relie l\'arbre moteur à la vis et absorbe un petit désalignement, sans jeu.')],
+  scr: [L('Ball screw', 'Vis à billes'), L('A ground steel screw. With a 20 mm lead, one turn moves the nut by 20 mm: precise to a few hundredths of a millimetre.', 'Une vis en acier rectifiée. Avec un pas de 20 mm, un tour déplace l\'écrou de 20 mm : précis à quelques centièmes de millimètre.')],
+  nut: [L('Ball nut', 'Écrou à billes'), L('Steel balls roll between the screw and the nut and come back through a return tube: almost no friction and no play.', 'Des billes d\'acier roulent entre la vis et l\'écrou et reviennent par un tube de retour : presque pas de frottement et pas de jeu.')],
+  rail: [L('Linear guide rails', 'Rails de guidage linéaire'), L('Hardened steel rails: they carry the load and keep the carriage perfectly straight.', 'Des rails en acier trempé : ils portent la charge et gardent le chariot parfaitement droit.')],
+  blk: [L('Guide blocks', 'Patins de guidage'), L('Each block runs on the rail on rows of recirculating balls, like a tiny ball nut.', 'Chaque patin roule sur le rail grâce à des rangées de billes qui recirculent, comme un petit écrou à billes.')],
+  car: [L('Carriage', 'Chariot'), L('The plate that carries the next axis (or the tool). Bolted to the nut and the blocks.', 'La plaque qui porte l\'axe suivant (ou l\'outil). Vissée sur l\'écrou et les patins.')],
+  sup: [L('Support bearings', 'Paliers de vis'), L('Angular-contact bearings hold the screw at both ends: it can turn but not move along its axis.', 'Des roulements à contact oblique tiennent la vis aux deux bouts : elle peut tourner mais pas glisser le long de son axe.')],
+  lim: [L('Limit switches', 'Fins de course'), L('Sensors at both ends: one gives the home position at start-up, both stop the axis before it hits the end.', 'Des capteurs aux deux bouts : l\'un donne la position d\'origine au démarrage, les deux arrêtent l\'axe avant la butée.')],
+  // planetary
+  pmot: [L('Servo motor', 'Servomoteur'), L('A brushless motor: copper windings in the stator, magnets on the rotor. Fast but weak on its own.', 'Un moteur sans balais : bobinages de cuivre dans le stator, aimants sur le rotor. Rapide mais peu puissant seul.')],
+  sun: [L('Sun gear', 'Pignon solaire'), L('The small gear on the motor shaft (12 teeth). It drives the three planets.', 'Le petit pignon sur l\'arbre moteur (12 dents). Il entraîne les trois satellites.')],
+  pla: [L('Planet gears', 'Satellites'), L('Three gears (18 teeth) that roll between the sun and the ring. Sharing the load between three gears makes the gearbox small and strong.', 'Trois pignons (18 dents) qui roulent entre le soleil et la couronne. Partager l\'effort entre trois pignons rend le réducteur petit et robuste.')],
+  ring: [L('Ring gear', 'Couronne'), L('Inner teeth (48), fixed to the housing. The planets roll inside it, which makes the carrier turn: ratio 1 + 48/12 = 5 : 1.', 'Des dents intérieures (48), fixées au carter. Les satellites roulent dedans, ce qui fait tourner le porte-satellites : rapport 1 + 48/12 = 5 : 1.')],
+  carr: [L('Planet carrier (output)', 'Porte-satellites (sortie)'), L('Holds the three planet axles. It is the output: 5 times slower and 5 times stronger than the motor.', 'Tient les axes des trois satellites. C\'est la sortie : 5 fois plus lente et 5 fois plus forte que le moteur.')],
+  uarm: [L('Upper arm', 'Bras supérieur'), L('A light carbon-fibre arm bolted to the gearbox output. With the two others, it moves the platform through the parallel rods.', 'Un bras léger en fibre de carbone vissé sur la sortie du réducteur. Avec les deux autres, il déplace la plateforme par les bielles parallèles.')],
+  balls: [L('Ball joints', 'Rotules'), L('Small ball joints at the ends of the rods let them swing in every direction, so the platform always stays flat.', 'De petites rotules aux bouts des bielles les laissent pivoter dans tous les sens : la plateforme reste toujours horizontale.')],
+  whl: [L('Wheel and tyre', 'Roue et bandage'), L('A polyurethane tyre on an aluminium hub, bolted to the gearbox output. The encoder counts its turns: that is the odometry.', 'Un bandage en polyuréthane sur un moyeu en aluminium, vissé sur la sortie du réducteur. Le codeur compte ses tours : c\'est l\'odométrie.')]
+};
+
+// ---------------------------------------------------------------- mechanisms, built along +z (unit radius about 1)
+// each part: { id, obj, z (resting offset along the axis), ex (exploded offset vector) }
+function rotaryJoint(o) {
+  const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
+  const turning = {};
+  if (o.drv) {                                               // servo drive board (round PCB with real components)
+    const b = new THREE.Group(); b.position.z = -2.55;
+    b.add(cylA(0.95, 0.07, P.pcb, 48));
+    const mcu = boxC(0.42, 0.42, 0.07, P.black); mcu.position.set(0, 0.05, -0.07); b.add(mcu);
+    for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2, q = boxC(0.17, 0.22, 0.06, P.black); q.position.set(Math.cos(a) * 0.62, Math.sin(a) * 0.62, -0.065); q.rotation.z = a; b.add(q); const tab = boxC(0.17, 0.06, 0.02, P.steel); tab.position.set(Math.cos(a) * 0.73, Math.sin(a) * 0.73, -0.05); tab.rotation.z = a + Math.PI / 2; b.add(tab); }
+    for (const [x, y] of [[-0.36, -0.42], [0.36, -0.42], [0, -0.55]]) { const cp = cylA(0.09, 0.32, P.alu, 20); cp.position.set(x, y, -0.2); b.add(cp); }
+    const con = boxC(0.38, 0.14, 0.12, P.white); con.position.set(0, 0.62, -0.09); b.add(con);
+    for (let i = 0; i < 8; i++) { const tr = boxC(0.02, 0.38, 0.005, P.gold); tr.position.set(-0.14 + i * 0.04, 0.32, -0.04); b.add(tr); }
+    add('drv', b, V(0, 0, -2.4));
+  }
+  { const e = new THREE.Group(); e.position.z = -2.05;            // encoder: disc + read head
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(0.72, 64), new THREE.MeshStandardMaterial({ map: discTexture(), transparent: true, side: THREE.DoubleSide, roughness: 0.2 })); e.add(disc); turning.disc = disc;
+    const head = boxC(0.32, 0.22, 0.24, P.black); head.position.set(0, 0.68, 0); e.add(head); const led = boxC(0.06, 0.06, 0.02, P.red); led.position.set(0, 0.6, 0.13); e.add(led);
+    add('enc', e, V(0, 0, -1.9)); }
+  { const b = new THREE.Group(); b.position.z = -1.5;             // brake: coil housing, armature, friction disc
+    b.add(cylA(0.95, 0.32, P.dark, 48)); const coil = cylA(0.7, 0.2, P.copper, 40); coil.position.z = -0.02; b.add(coil); turning.coil = coil;
+    const arm = cylA(0.9, 0.06, P.steel, 48); arm.position.z = 0.22; b.add(arm); turning.armature = arm;
+    const fd = cylA(0.82, 0.06, P.friction, 48); fd.position.z = 0.32; b.add(fd); turning.fdisc = fd;
+    add('brk', b, V(0, 0, -1.25)); }
+  { const s = new THREE.Group(); s.position.z = -0.55;            // stator: laminated shell + copper windings
+    const lamM = P.lam.clone(); lamM.map = stripes(30, '#8e98a3', '#5a636d'); lamM.side = THREE.DoubleSide;
+    s.add(cylA(1.0, 1.25, lamM, 48, true));
+    for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2, w = boxC(0.2, 0.26, 1.3, P.copper); w.position.set(Math.cos(a) * 0.74, Math.sin(a) * 0.74, 0); w.rotation.z = a; s.add(w); }
+    add('sta', s, V(0, 1.9, -0.5)); }
+  { const r = new THREE.Group(); r.position.z = -0.55;            // rotor: shaft + magnets
+    const shaft = cylA(0.13, 3.6, P.steel, 20); shaft.position.z = -0.2; r.add(shaft);
+    r.add(cylA(0.45, 1.1, P.dark, 32));
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, mg = boxC(0.16, 0.3, 1.1, i % 2 ? P.magS : P.magN); mg.position.set(Math.cos(a) * 0.5, Math.sin(a) * 0.5, 0); mg.rotation.z = a; r.add(mg); }
+    add('rot', r, V(0, 0, -0.35)); turning.rotor = r; }
+  { const w = new THREE.Group(); w.position.z = 0.35;             // wave generator: elliptical cam
+    const cam = cylA(0.6, 0.24, P.steel, 48); cam.scale.set(1.13, 0.87, 1); w.add(cam);
+    const brg = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.05, 10, 48), P.dark); brg.scale.set(1.13, 0.87, 1); w.add(brg);
+    add('wg', w, V(0, 0, 0.55)); turning.wg = w; }
+  { const f = new THREE.Group(); f.position.z = 0.55;             // flexspline: thin cup with outer teeth; parent = ellipse that turns with the cam
+    const ell = new THREE.Group(); f.add(ell); const cup = new THREE.Group(); ell.add(cup);
+    const shell = cylA(0.7, 0.62, P.steel.clone(), 48, true); shell.material.side = THREE.DoubleSide; shell.position.z = 0.15; cup.add(shell);
+    const bottom = cylA(0.7, 0.04, P.steel, 48); bottom.position.z = 0.46; cup.add(bottom);
+    const tg = gear(0.7, 60, 0.18, P.steel); tg.position.z = -0.05; cup.add(tg);
+    const mark = boxC(0.08, 0.08, 0.2, P.orange); mark.position.set(0, 0.8, -0.05); cup.add(mark);
+    add('fs', f, V(0, 0, 1.6)); turning.fsEll = ell; turning.fsCup = cup; }
+  { const c = gear(0.86, 62, 0.22, P.dark, true); c.position.z = 0.5; add('cs', c, V(0, -1.8, 1.0)); }
+  { const b = new THREE.Group(); b.position.z = 1.05; b.add(new THREE.Mesh(new THREE.TorusGeometry(0.92, 0.1, 12, 56), P.steel));
+    for (let i = 0; i < 24; i++) { const a = (i / 24) * Math.PI * 2, rl = cylA(0.04, 0.12, P.dark, 8); rl.position.set(Math.cos(a) * 0.92, Math.sin(a) * 0.92, 0); rl.rotation.x = i % 2 ? 0.8 : -0.8; b.add(rl); }
+    add('brg', b, V(0, 0, 2.5)); }
+  { const fl = new THREE.Group(); fl.position.z = 1.3; fl.add(cylA(0.86, 0.14, P.alu, 48));
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, h = cylA(0.06, 0.16, P.black, 12); h.position.set(Math.cos(a) * 0.62, Math.sin(a) * 0.62, 0); fl.add(h); }
+    const mk = boxC(0.12, 0.3, 0.16, P.orange); mk.position.set(0, 0.62, 0.05); fl.add(mk);
+    add('out', fl, V(0, 0, 3.3)); turning.out = fl; }
+  if (o.trq) {
+    const t = new THREE.Group(); t.position.z = 1.55;
+    t.add(new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.07, 10, 48), P.alu)); t.add(cylA(0.25, 0.12, P.alu, 24));
+    const gauges = [];
+    for (let i = 0; i < 4; i++) { const a = (i / 4) * Math.PI * 2 + Math.PI / 4, sp = boxC(0.55, 0.12, 0.1, P.alu); sp.position.set(Math.cos(a) * 0.52, Math.sin(a) * 0.52, 0); sp.rotation.z = a; t.add(sp);
+      const gg = boxC(0.16, 0.1, 0.02, P.gold.clone()); gg.position.set(Math.cos(a) * 0.52, Math.sin(a) * 0.52, 0.06); gg.rotation.z = a; t.add(gg); gauges.push(gg); }
+    add('trq', t, V(0, 0, 4.2)); turning.gauges = gauges;
+  }
+  // the cover (housing)
+  const covM = P.orange.clone(); covM.transparent = true; covM.side = THREE.DoubleSide;
+  const cover = cylA(1.14, o.drv ? 4.3 : 3.7, covM, 56, true); cover.position.z = o.drv ? -0.55 : -0.3; g.add(cover); cover.userData.part = 'cov';
+  const lids = [-1, 1].map((s) => { const l = new THREE.Mesh(new THREE.RingGeometry(0.2, 1.14, 56), covM); l.position.z = cover.position.z + s * (o.drv ? 2.15 : 1.85); l.userData.part = 'cov'; g.add(l); return l; });
+  const ids = parts.map((p) => p.id); ids.push('cov');
+  // runs the joint: motor angle th (rad)
+  const run = (th, t, on) => {
+    turning.rotor.rotation.z = th; turning.disc.rotation.z = th; turning.wg.rotation.z = th; turning.fdisc.rotation.z = th;
+    turning.fsEll.rotation.z = th; turning.fsCup.rotation.z = -th - th / 100; turning.out.rotation.z = -th / 100;
+    turning.coil.material.emissive = new THREE.Color(on ? '#ff7a1a' : '#000'); turning.coil.material.emissiveIntensity = on ? 0.5 : 0;
+    turning.armature.position.z = on ? 0.16 : 0.22;
+    if (turning.gauges) turning.gauges.forEach((gg) => { gg.material.emissive = new THREE.Color('#ffd23a'); gg.material.emissiveIntensity = 0.3 + 0.3 * Math.sin(t * 3); });
+  };
+  const read = (th, t) => { const turns = th / (2 * Math.PI), counts = Math.floor(((turns % 1) + 1) % 1 * 131072);
+    return [[L('Motor', 'Moteur'), '3 000 ' + L('rpm', 'tr/min')], [L('Gear ratio', 'Rapport'), '100 : 1'], [L('Output', 'Sortie'), '30 ' + L('rpm', 'tr/min') + ' · ' + ((-turns / 100 * 360) % 360).toFixed(1) + '°'],
+      [L('Encoder', 'Codeur'), counts.toLocaleString() + ' / 131 072'], [L('Brake', 'Frein'), L('released', 'relâché')]].concat(o.trq ? [[L('Torque', 'Couple'), (12 + 3 * Math.sin(t * 3)).toFixed(1) + ' N·m']] : []); };
+  return { g, parts, cover, lids, ids, run, read, len: o.drv ? 4.6 : 4.0 };
+}
+
+function linearAxis() {
+  const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
+  const along = (r, h, mat, seg = 32) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg).rotateZ(Math.PI / 2), mat); m.castShadow = m.receiveShadow = true; return m; };   // along x
+  { const m = new THREE.Group(); m.position.x = -9.6; m.add(along(1.0, 2.4, P.black)); const cap = along(0.9, 0.5, P.dark); cap.position.x = -1.45; m.add(cap); const fl = boxC(0.25, 2.1, 2.1, P.alu); fl.position.x = 1.25; m.add(fl); add('lmot', m, V(-3, 0, 0)); }
+  { const c = new THREE.Group(); c.position.x = -7.95; const cc = along(0.55, 0.9, P.alu); c.add(cc); for (let i = 0; i < 3; i++) { const sl = along(0.57, 0.05, P.dark); sl.position.x = -0.3 + i * 0.3; c.add(sl); } add('cpl', c, V(-1.6, 0, 0)); }
+  const scrM = P.steel.clone(); scrM.map = stripes(120, '#c9d2db', '#6b7682'); const screw = along(0.38, 15, scrM, 24); screw.position.x = 0.05;
+  { const sg = new THREE.Group(); sg.add(screw); add('scr', sg, V(0, 2.6, 0)); }
+  for (const x of [-7.3, 7.5]) { const s = boxC(0.7, 1.6, 1.4, P.dark); s.position.set(x, -0.35, 0); add('sup', s, V(x < 0 ? -0.8 : 0.8, -1.2, 0)); }
+  const carGroup = new THREE.Group(); g.add(carGroup);
+  const nut = new THREE.Group(); nut.add(along(0.75, 1.3, P.brass)); const flange = along(1.05, 0.22, P.brass); flange.position.x = 0.55; nut.add(flange); const ret = boxC(1.1, 0.25, 0.25, P.steel); ret.position.set(0, 0.8, 0); nut.add(ret);
+  add('nut', nut, V(0, 4.6, 0));
+  const rails = new THREE.Group(); for (const z of [-1.9, 1.9]) { const r = boxC(16, 0.45, 0.55, P.steel); r.position.set(0, -1.05, z); rails.add(r); } add('rail', rails, V(0, -2.4, 0));
+  const blocks = new THREE.Group(); for (const x of [-1.1, 1.1]) for (const z of [-1.9, 1.9]) { const b = boxC(1.2, 0.55, 0.95, P.dark); b.position.set(x, -0.55, z); blocks.add(b); } add('blk', blocks, V(0, 1.4, 0));
+  const car = boxC(3.6, 0.3, 4.8, P.orange); car.position.set(0, 0.0 + 0.95, 0); add('car', car, V(0, 6.6, 0));
+  const lims = new THREE.Group(); for (const x of [-6.6, 6.8]) { const s = boxC(0.4, 0.5, 0.35, P.black); s.position.set(x, -0.55, 2.55); lims.add(s); const led = boxC(0.12, 0.12, 0.05, P.red); led.position.set(x, -0.4, 2.75); lims.add(led); } add('lim', lims, V(0, 0, 2.2));
+  const moving = ['nut', 'blk', 'car'].map((id) => parts.find((p) => p.id === id));
+  const ids = parts.map((p) => p.id);
+  const run = (th) => { screw.rotation.x = th; const x = 5.2 * Math.sin(th / 9); moving.forEach((p) => { p.obj.userData.dx = x; }); g.userData.x = x; };
+  const read = (th) => { const x = 5.2 * Math.sin(th / 9); return [[L('Screw lead', 'Pas de la vis'), '20 mm / ' + L('turn', 'tour')], [L('Motor', 'Moteur'), '1 500 ' + L('rpm', 'tr/min')], [L('Carriage speed', 'Vitesse du chariot'), '0.5 m/s'], [L('Position', 'Position'), (x * 40).toFixed(0) + ' mm']]; };
+  return { g, parts, cover: null, lids: [], ids, run, read, moving, len: 20, linear: true };
+}
+
+function planetary(o) {
+  const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
+  const T = {};
+  { const e = new THREE.Group(); e.position.z = -2.4; const disc = new THREE.Mesh(new THREE.CircleGeometry(0.62, 64), new THREE.MeshStandardMaterial({ map: discTexture(), transparent: true, side: THREE.DoubleSide })); e.add(disc); T.disc = disc;
+    const head = boxC(0.3, 0.2, 0.22, P.black); head.position.set(0, 0.6, 0); e.add(head); add('enc', e, V(0, 0, -1.8)); }
+  { const m = new THREE.Group(); m.position.z = -1.1; const can = cylA(1.0, 1.9, P.black.clone(), 48, true); can.material.side = THREE.DoubleSide; m.add(can);
+    for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, w = boxC(0.2, 0.24, 1.6, P.copper); w.position.set(Math.cos(a) * 0.75, Math.sin(a) * 0.75, 0); w.rotation.z = a; m.add(w); }
+    const rot = new THREE.Group(); rot.add(cylA(0.42, 1.5, P.dark, 28)); for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2, mg = boxC(0.15, 0.28, 1.5, i % 2 ? P.magS : P.magN); mg.position.set(Math.cos(a) * 0.47, Math.sin(a) * 0.47, 0); mg.rotation.z = a; rot.add(mg); }
+    const sh = cylA(0.1, 3.4, P.steel, 16); sh.position.z = 0.5; rot.add(sh); m.add(rot); T.rot = rot;
+    add('pmot', m, V(0, 0, -0.6)); }
+  const sun = gear(0.32, 12, 0.4, P.steel); sun.position.z = 0.4; add('sun', sun, V(0, 0, 1.2)); T.sun = sun;
+  const carrierG = new THREE.Group(); carrierG.position.z = 0.4; g.add(carrierG);
+  const planetsG = new THREE.Group(); const planets = [];
+  for (let i = 0; i < 3; i++) { const p = gear(0.45, 18, 0.4, P.alu); planetsG.add(p); planets.push(p); }
+  planetsG.position.z = 0.4; add('pla', planetsG, V(0, 0, 2.3));
+  const ring = gear(1.22, 48, 0.42, P.dark, true); ring.position.z = 0.4; add('ring', ring, V(0, 0, 3.4));
+  const carr = new THREE.Group(); carr.position.z = 0.85; carr.add(cylA(1.0, 0.16, P.alu, 48)); for (let i = 0; i < 3; i++) { const a = (i / 3) * Math.PI * 2, pin = cylA(0.09, 0.5, P.steel, 12); pin.position.set(Math.cos(a) * 0.77, Math.sin(a) * 0.77, -0.28); carr.add(pin); }
+  const mk = boxC(0.14, 0.3, 0.2, P.orange); mk.position.set(0, 0.7, 0.12); carr.add(mk);
+  add('carr', carr, V(0, 0, 4.5)); T.carr = carr;
+  if (o.arm) {                                               // Delta: carbon upper arm + ball joints on the carrier
+    const a = new THREE.Group(); a.position.z = 1.25; const beam = boxC(0.5, 6.0, 0.45, P.black); beam.position.y = -3.0; a.add(beam); a.add(cylA(0.5, 0.5, P.orange, 32));
+    add('uarm', a, V(0, 0, 5.6)); T.arm = a;
+    const b = new THREE.Group(); b.position.set(0, -6.0, 1.25); for (const s of [-1, 1]) { const ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 14), P.steel); ball.position.z = s * 0.7; b.add(ball); const rod = cylA(0.09, 1.2, P.alu, 10); rod.position.z = s * 0.7; rod.rotation.x = 0; b.add(rod); }
+    add('balls', b, V(0, -1.4, 6.4)); T.balls = b;
+  }
+  if (o.wheel) {                                             // mobile: wheel bolted on the carrier
+    const w = new THREE.Group(); w.position.z = 1.5; const tyre = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.42, 16, 64), P.rubber); w.add(tyre); w.add(cylA(1.45, 0.7, P.alu, 48));
+    for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2, b = cylA(0.1, 0.75, P.dark, 10); b.position.set(Math.cos(a) * 0.7, Math.sin(a) * 0.7, 0); w.add(b); }
+    add('whl', w, V(0, 0, 5.4)); T.wheel = w;
+  }
+  const covM = P.orange.clone(); covM.transparent = true; covM.side = THREE.DoubleSide;
+  const cover = cylA(1.42, 3.9, covM, 56, true); cover.position.z = -0.75; g.add(cover); cover.userData.part = 'cov';
+  const lids = [-1, 1].map((s) => { const l = new THREE.Mesh(new THREE.RingGeometry(0.2, 1.42, 56), covM); l.position.z = -0.75 + s * 1.95; l.userData.part = 'cov'; g.add(l); return l; });
+  const ids = parts.map((p) => p.id); ids.push('cov');
+  const run = (th) => {
+    const c = th / 5; T.rot.rotation.z = th; T.disc.rotation.z = th; T.sun.rotation.z = th; T.carr.rotation.z = c;
+    planets.forEach((p, i) => { const a = c + (i / 3) * Math.PI * 2; p.position.set(Math.cos(a) * 0.77, Math.sin(a) * 0.77, 0); p.rotation.z = c - (12 / 18) * (th - c); });
+    if (T.arm) { const sw = 0.35 * Math.sin(c * 0.5); T.arm.rotation.z = sw; T.balls.position.set(Math.sin(sw) * 6.0, -Math.cos(sw) * 6.0, T.balls.position.z); }
+    if (T.wheel) T.wheel.rotation.z = c;
+  };
+  const read = (th) => [[L('Motor', 'Moteur'), (o.wheel ? '3 000 ' : '3 000 ') + L('rpm', 'tr/min')], [L('Gear ratio', 'Rapport'), '1 + 48/12 = 5 : 1'], [L('Output', 'Sortie'), '600 ' + L('rpm', 'tr/min')],
+    o.wheel ? [L('Wheel speed', 'Vitesse de la roue'), '600 tr/min × π × 0.15 m ≈ 4.7 m/s max'] : [L('Arm angle', 'Angle du bras'), (0.35 * Math.sin(th / 10) * 57.3).toFixed(1) + '°']];
+  return { g, parts, cover, lids, ids, run, read, len: o.arm ? 8 : 6 };
+}
+
+// ---------------------------------------------------------------- per robot: which joint, where, how big
+const ROB = {
+  articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), pose: V(0.62, 0.62, 0), at: V(0, 0.45, 0), axis: 'z', k: 0.082, mech: () => rotaryJoint({}),
+    joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: L('On an industrial robot the drive electronics sit in the controller cabinet; a thick cable brings the motor power and the encoder signals.', 'Sur un robot industriel, l\'électronique de commande est dans l\'armoire ; un gros câble apporte la puissance du moteur et les signaux du codeur.') },
+  cobot: { build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), pose: V(0.5, 0.42, 0), at: V(0, 0.3, 0), axis: 'z', k: 0.052, mech: () => rotaryJoint({ drv: true, trq: true }),
+    joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: L('In a cobot each joint is a complete module: its own drive board and a torque sensor, so it feels contact.', 'Dans un cobot, chaque articulation est un module complet : sa propre carte variateur et un capteur de couple, pour sentir les contacts.') },
+  arm: { build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), pose: V(0.55, 0.55, 0), at: V(0, 0.42, 0), axis: 'z', k: 0.064, mech: () => rotaryJoint({}),
+    joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: '' },
+  scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), pose: V(0.45, 0.2, -0.25), at: V(0, 0.42 + 0.03, 0), axis: 'y', k: 0.05, mech: () => rotaryJoint({}),
+    joint: L('joint 1 (the base)', 'l\'articulation 1 (la base)'), note: L('A SCARA joint turns about a vertical axis: the arm stays rigid up and down, which makes it fast and precise for assembly.', 'Une articulation de SCARA tourne autour d\'un axe vertical : le bras reste rigide en hauteur, d\'où sa vitesse et sa précision en assemblage.') },
+  delta: { build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), pose: V(0, 0.25, 0), at: V(0, 0.8, -0.13), axis: 'x', k: 0.04, mech: () => planetary({ arm: true }),
+    joint: L('one of the three motors', 'l\'un des trois moteurs'), note: L('The three motors stay fixed on the frame: only light arms and rods move, which is why a Delta is so fast.', 'Les trois moteurs restent fixes sur le bâti : seuls des bras et des bielles légers bougent, d\'où la rapidité d\'un Delta.') },
+  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), pose: V(0.1, 0.3, 0), at: V(0, 1.05 + 0.03, 0.65), axis: 'x', k: 0.085, mech: () => linearAxis(),
+    joint: L('the X axis', 'l\'axe X'), note: L('Each axis of a gantry is a straight line: the same set of parts, only the length changes.', 'Chaque axe d\'un portique est une ligne droite : les mêmes pièces, seule la longueur change.') },
+  mobile: { amr: true, at: V(0, 0.9 * 0.075, 0.9 * 0.35 - 0.02), axis: 'z', k: 0.026, mech: () => planetary({ wheel: true }),
+    joint: L('a drive wheel', 'une roue motrice'), note: L('Each drive wheel is a motor, a gearbox and an encoder in one block; two of them, driven at different speeds, steer the robot.', 'Chaque roue motrice réunit moteur, réducteur et codeur en un bloc ; deux roues entraînées à des vitesses différentes font tourner le robot.') }
+};
+
+// ---------------------------------------------------------------- the widget
+function mount(host) {
+  const R = ROB[host.dataset.robot]; if (!R) return;
+  const LAYERS = [
+    [L('The whole robot', 'Le robot entier'), L(`We are going inside ${R.joint}. Use the arrows (or the dots) to dive in, one step at a time.`, `Nous allons entrer dans ${R.joint}. Utilisez les flèches (ou les points) pour plonger, une étape à la fois.`)],
+    [L('The joint', 'L\'articulation'), R.mech === undefined ? '' : L('It has three jobs: move the next part with force and precision, hold it still when stopped, and always know where it is. The orange housing hides a stack of parts lined up on one axis.', 'Elle a trois missions : déplacer la pièce suivante avec force et précision, la tenir immobile à l\'arrêt, et toujours savoir où elle est. Le carter orange cache un empilement de pièces alignées sur un axe.')],
+    [L('The cover comes off', 'Le capot s\'ouvre'), L('Without the housing you see the real parts in place. Click any part to read its name and role.', 'Sans le carter, on voit les vraies pièces en place. Cliquez sur une pièce pour lire son nom et son rôle.')],
+    [L('Exploded view: every part', 'Vue éclatée : toutes les pièces'), L('The parts move apart along the axis, in the order they are assembled. Click a label or a part.', 'Les pièces s\'écartent le long de l\'axe, dans l\'ordre du montage. Cliquez sur une étiquette ou une pièce.')],
+    [L('How it works', 'Comment ça marche'), '']
+  ];
+  const HOW = {
+    rot: L('The motor turns fast but with little force. The wave generator bends the flexspline, which has 2 teeth fewer than the rigid ring: each motor turn shifts it back by 2 teeth, so the output turns 100 times slower and about 100 times stronger (watch the two orange marks). The encoder counts 131 072 steps per motor turn, and the brake coil stays powered so the brake is released.', 'Le moteur tourne vite mais avec peu de force. Le générateur d\'onde déforme la flexspline, qui a 2 dents de moins que la couronne : chaque tour moteur la décale de 2 dents, donc la sortie tourne 100 fois moins vite et environ 100 fois plus fort (regardez les deux repères orange). Le codeur compte 131 072 pas par tour moteur, et la bobine du frein reste alimentée pour le relâcher.'),
+    lin: L('The motor turns the ball screw; the balls rolling in the nut turn this rotation into a straight motion: one turn = 20 mm. The carriage glides on the two rails, and the limit switches mark both ends.', 'Le moteur fait tourner la vis à billes ; les billes qui roulent dans l\'écrou transforment cette rotation en mouvement droit : un tour = 20 mm. Le chariot glisse sur les deux rails, et les fins de course marquent les deux bouts.'),
+    pla: L('The motor turns the small sun gear; the three planets roll inside the fixed ring and carry the planet carrier round: it turns 5 times slower and 5 times stronger. The encoder at the back counts the motor turns.', 'Le moteur fait tourner le petit pignon solaire ; les trois satellites roulent dans la couronne fixe et entraînent le porte-satellites : il tourne 5 fois moins vite et 5 fois plus fort. Le codeur à l\'arrière compte les tours du moteur.')
+  };
+  host.innerHTML = `<div class="insd-stage"><div class="insd-tags"></div><div class="insd-read" hidden></div><p class="insd-hint">${L('Drag to turn · scroll to zoom', 'Glisser pour tourner · molette pour zoomer')}</p></div>
+    <nav class="insd-step" aria-label="${L('Steps', 'Étapes')}"><button type="button" class="insd-prev" aria-label="${L('Previous step', 'Étape précédente')}">‹</button><ol class="insd-dots">${LAYERS.map((l, i) => `<li><button type="button" aria-label="${i + 1}. ${l[0]}"></button></li>`).join('')}</ol><button type="button" class="insd-next" aria-label="${L('Next step', 'Étape suivante')}">›</button></nav>
+    <div class="insd-card"><span class="insd-n"></span><h3></h3><p></p></div>
+    <div class="insd-parts"></div><div class="insd-detail" hidden></div>`;
+  const stage = host.querySelector('.insd-stage'), tagsEl = host.querySelector('.insd-tags'), readEl = host.querySelector('.insd-read');
+  const card = host.querySelector('.insd-card'), partsEl = host.querySelector('.insd-parts'), detail = host.querySelector('.insd-detail');
+
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 0.005, 40);
+  const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
+  stage.prepend(renderer.domElement);
+  const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.enablePan = false;
+  scene.add(new THREE.HemisphereLight('#ffffff', '#555a60', 1.15));
+  const sun = new THREE.DirectionalLight('#ffffff', 2.0); sun.position.set(2, 4, 3); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.6, near: 0.1, far: 12 }); scene.add(sun);
+  const fill = new THREE.DirectionalLight('#cfe0ff', 0.7); fill.position.set(-3, 1.5, -2); scene.add(fill);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6).rotateX(-Math.PI / 2), M('#7d8691', { roughness: 1 })); floor.receiveShadow = true; scene.add(floor);
+  const grid = new THREE.GridHelper(2.6, 13, '#c3cad3', '#a3acb7'); grid.position.y = 0.001; scene.add(grid);
+  const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
+  const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#262626'); floor.material.color.set(Lt ? '#7d8691' : '#2b2e33'); grid.material.opacity = Lt ? 1 : 0.35; grid.material.transparent = true; host.classList.toggle('light', Lt); };
+  paint(); new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // robot (own materials so they can fade without touching the other demos)
+  let robot;
+  if (R.amr) { robot = { root: makeAMR(0.9) }; } else { robot = R.build(); robot.reach(R.pose); }
+  scene.add(robot.root);
+  const robotMats = [];
+  robot.root.traverse((m) => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; robotMats.push(m.material); m.castShadow = m.receiveShadow = true; } });
+  const setRobotFade = (o) => robotMats.forEach((m) => { m.opacity = o; m.depthWrite = o > 0.9; });
+
+  // the mechanism, placed in the joint
+  const mech = R.mech(), holder = new THREE.Group(); holder.add(mech.g); holder.position.copy(R.at); holder.scale.setScalar(R.k);
+  if (R.axis === 'y') holder.rotation.x = -Math.PI / 2; else if (R.axis === 'x') holder.rotation.y = Math.PI / 2;
+  if (mech.linear) { holder.rotation.set(0, 0, 0); }
+  scene.add(holder);
+  mech.g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  const axisW = R.axis === 'y' ? V(0, 1, 0) : R.axis === 'x' ? V(1, 0, 0) : V(0, 0, 1);
+
+  // camera shots, one per layer
+  const box3 = new THREE.Box3().setFromObject(robot.root), rc = box3.getCenter(V(0, 0, 0)), rs = box3.getSize(V(0, 0, 0)).length();
+  const side = axisW.y > 0.5 ? V(1, 0.35, 0.75) : axisW.x > 0.5 ? V(0.45, 0.5, 1) : V(1, 0.45, 0.42);
+  side.normalize(); const S = R.k * mech.len;
+  const SHOTS = [
+    { at: rc, d: rs * 1.75, dir: V(1, 0.6, 1.1).normalize() },
+    { at: R.at, d: S * 2.4, dir: side },
+    { at: R.at.clone().add(V(0, S * 0.15, 0)), d: S * 2.5, dir: side },
+    { at: mech.linear ? R.at : R.at.clone().addScaledVector(axisW, S * (axisW.y > 0.5 ? 0.3 : 0.12)), d: S * (mech.linear ? 2.6 : axisW.y > 0.5 ? 4.0 : 3.0), dir: mech.linear ? V(0.2, 0.75, 1).normalize() : (axisW.y > 0.5 ? V(1, 0.15, 0.2) : axisW.x > 0.5 ? V(0.15, 0.35, 1) : V(1, 0.35, 0.15)).normalize() },
+    { at: R.at, d: S * 2.2, dir: V(side.x, side.y + 0.15, side.z).normalize() }
+  ];
+
+  let layer = 0, target = 0, pos = 0, sel = null, th = 0, t = 0;
+  let camFrom = null, camK = 1;
+  function shotCam(i) { const s = SHOTS[i], narrow = Math.max(1, (i === 3 ? 1.5 : 1.15) / camera.aspect); return { p: s.at.clone().addScaledVector(s.dir, s.d * narrow), t: s.at.clone() }; }   // narrow screens: step back
+  function go(i) {
+    layer = Math.max(0, Math.min(LAYERS.length - 1, i));
+    camFrom = { p: camera.position.clone(), t: orbit.target.clone() }; camK = 0;
+    host.querySelectorAll('.insd-dots button').forEach((b, k) => { if (k === layer) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    host.querySelector('.insd-prev').disabled = layer === 0; host.querySelector('.insd-next').disabled = layer === LAYERS.length - 1;
+    card.querySelector('.insd-n').textContent = `${layer + 1} / ${LAYERS.length}`;
+    card.querySelector('h3').textContent = LAYERS[layer][0];
+    card.querySelector('p').textContent = layer === 4 ? HOW[mech.linear ? 'lin' : mech.parts.some((p) => p.id === 'sun') ? 'pla' : 'rot'] : layer === 1 && R.note ? LAYERS[1][1] + ' ' + R.note : LAYERS[layer][1];
+    readEl.hidden = layer !== 4; partsEl.hidden = layer < 2;
+  }
+  // part chips + detail
+  partsEl.innerHTML = mech.ids.map((id) => `<button type="button" data-p="${id}">${PART[id][0]}</button>`).join('');
+  const pick = (id) => {
+    sel = sel === id ? null : id;
+    partsEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.p === sel)));
+    tagsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.p === sel));
+    mech.g.traverse((m) => { if (m.isMesh && m.userData.part && m.material.emissive) { if (!m.userData.baseMat) m.userData.baseMat = m.material; m.material = m.userData.part === sel ? hl(m.userData.baseMat) : m.userData.baseMat; } });
+    detail.hidden = !sel; if (sel) detail.innerHTML = `<b>${PART[sel][0]}</b><p>${PART[sel][1]}</p>`;
+  };
+  const hlCache = new Map(); const hl = (m) => { if (!hlCache.has(m)) { const c = m.clone(); c.emissive = new THREE.Color('#6d5dfc'); c.emissiveIntensity = 0.55; hlCache.set(m, c); } return hlCache.get(m); };
+  partsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
+  tagsEl.innerHTML = mech.parts.map((p) => `<button type="button" data-p="${p.id}">${PART[p.id][0]}</button>`).join('');
+  tagsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
+  // click on a part in 3D
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
+  renderer.domElement.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('pointerup', (e) => {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5 || layer < 2) return;
+    const r = renderer.domElement.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera); const hit = ray.intersectObject(mech.g, true).find((h) => h.object.visible && h.object.userData.part && h.object.userData.part !== 'cov'); if (hit) pick(hit.object.userData.part);
+  });
+  host.querySelector('.insd-prev').addEventListener('click', () => go(layer - 1));
+  host.querySelector('.insd-next').addEventListener('click', () => go(layer + 1));
+  host.querySelectorAll('.insd-dots button').forEach((b, k) => b.addEventListener('click', () => go(k)));
+
+  // ------------------------------------------------ per-frame: ease the scene towards the current layer
+  const st = { fade: 1, cover: 1, lift: 0, explode: 0, mech: 0 };
+  const goal = () => ({ fade: layer === 0 ? 1 : layer === 3 ? 0.05 : 0.12, cover: layer <= 1 ? 1 : 0, lift: layer === 2 ? 1 : layer > 2 ? 1.6 : 0, explode: layer === 3 ? 1 : 0, mech: layer === 0 ? 0 : 1 });
+  const tmp = V(0, 0, 0), proj = V(0, 0, 0);
+  function frame(dt) {
+    const gl = goal(), k = Math.min(1, dt * 3.2);
+    for (const key in st) st[key] += (gl[key] - st[key]) * k;
+    setRobotFade(st.fade);
+    holder.visible = st.mech > 0.02;
+    if (mech.cover) {                                           // the housing: closed at step 2, lifts off and fades at step 3
+      const up = st.lift * 2.6, op = 0.88 * (1 - Math.min(1, st.lift / 1.2));
+      mech.cover.material.opacity = op; mech.cover.visible = mech.lids[0].visible = mech.lids[1].visible = op > 0.02 && layer > 0;
+      mech.cover.position.y = up; mech.lids.forEach((l) => { l.position.y = up; }); }
+    for (const p of mech.parts) { p.obj.position.copy(p.home).addScaledVector(p.ex, st.explode); if (p.obj.userData.dx !== undefined) p.obj.position.x += p.obj.userData.dx * (1 - st.explode); }
+    if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
+    // labels in the exploded view
+    tagsEl.hidden = !(layer === 3 && st.explode > 0.8);
+    if (!tagsEl.hidden) { const r = stage.getBoundingClientRect(); tagsEl.querySelectorAll('button').forEach((b, i) => { const p = mech.parts.find((q) => q.id === b.dataset.p); b.style.transform = i % 2 ? 'translate(-50%, 70%)' : 'translate(-50%, -150%)'; new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); b.style.left = ((proj.x + 1) / 2 * r.width) + 'px'; b.style.top = ((1 - proj.y) / 2 * r.height) + 'px'; }); }
+    // camera
+    if (camK < 1 && camFrom) { camK = Math.min(1, camK + dt / 1.3); const e = ease(camK), s = shotCam(layer); camera.position.copy(camFrom.p.clone().lerp(s.p, e)); orbit.target.copy(camFrom.t.clone().lerp(s.t, e)); }
+  }
+  function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = camera.aspect < 0.9 ? 52 : 35; camera.updateProjectionMatrix(); }
+  new ResizeObserver(resize).observe(stage); resize();
+  let visible = true, last = performance.now();
+  new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(stage);
+  const s0 = shotCam(0); camera.position.copy(s0.p); orbit.target.copy(s0.t);
+  mech.run(0, 0, false); go(0);
+  renderer.setAnimationLoop((now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!visible) return; frame(dt); orbit.update(); renderer.render(scene, camera); });
+  host.__go = (i) => { go(i); camK = 1; const s = shotCam(i); camera.position.copy(s.p); orbit.target.copy(s.t); for (let n = 0; n < 90; n++) frame(1 / 30); };
+}
+document.querySelectorAll('.insdemo').forEach(mount);
