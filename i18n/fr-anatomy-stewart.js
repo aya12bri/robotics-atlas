@@ -23,6 +23,8 @@ RA.add({
  "221p7fo6cio": "Anatomie d'une plateforme de Stewart (3D)",
  "6hxt7hwzjv": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"learn-singularities.html\" style=\"color:#ff9f43\">Cours sur les singularités</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "z9z6a2v1zy": "Une <strong>plateforme de Stewart</strong> (hexapode) est un robot parallèle à six vérins de longueur variable entre une base fixe et une plateforme mobile. En changeant les six longueurs, la plateforme se déplace avec 6 degrés de liberté : trois translations et trois rotations. Elle est très rigide et porte de lourdes charges dans un petit espace de travail : simulateurs de vol, télescopes, positionnement de précision.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

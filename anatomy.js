@@ -38,34 +38,73 @@ const q = CFG.home.slice();
 
 const box = document.getElementById('anatView');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#262626');
+scene.background = new THREE.Color('#23262b');
 const camera = new THREE.PerspectiveCamera(42, box.clientWidth / box.clientHeight, 0.1, 50);
 camera.position.set(...CFG.cam);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(box.clientWidth, box.clientHeight);
 box.appendChild(renderer.domElement);
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.target.set(...CFG.target);
 orbit.enableDamping = true;
-scene.add(new THREE.HemisphereLight('#ffffff', '#4a4a4a', 1.5));
-const sun = new THREE.DirectionalLight('#ffffff', 1.7); sun.position.set(3, 5, 2); scene.add(sun);
-const fill = new THREE.DirectionalLight('#8fb4ff', 0.5); fill.position.set(-3, 2, -3); scene.add(fill);
-scene.add(new THREE.GridHelper(CFG.grid || 4, (CFG.grid || 4) * 4, '#6a6a6a', '#383838'));
+// A photo studio made of a few light panels: the metal and the paint of the robots reflect it (no image file needed).
+{
+  const studio = new THREE.Scene();
+  const wall = new THREE.Mesh(new THREE.BoxGeometry(12, 8, 12), new THREE.MeshStandardMaterial({ color: '#3d4148', side: THREE.BackSide, roughness: 1 })); wall.position.y = 3; studio.add(wall);
+  const panel = (w, h, pos, rot, power) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(power, power, power * 1.02), side: THREE.DoubleSide })); m.position.set(...pos); m.rotation.set(...rot); studio.add(m); };
+  panel(6, 4, [0, 6.8, 0], [Math.PI / 2, 0, 0], 3.2); panel(4, 3, [5.8, 3.5, 1], [0, -Math.PI / 2, 0], 2.2); panel(3, 3, [-5.8, 3, -2], [0, Math.PI / 2, 0], 1.2); panel(5, 1.5, [0, 3, 5.8], [0, Math.PI, 0], 1);
+  studio.add(new THREE.PointLight('#ffffff', 12, 0, 2));
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(studio, 0.03).texture; pm.dispose();
+}
+const VIEW_R = Math.hypot(CFG.cam[0] - CFG.target[0], CFG.cam[1] - CFG.target[1], CFG.cam[2] - CFG.target[2]);   // size of what the camera looks at
+scene.add(new THREE.HemisphereLight('#ffffff', '#3a3d44', 0.25));
+const sun = new THREE.DirectionalLight('#fff4e6', 2.6); scene.add(sun, sun.target);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; sun.shadow.radius = 5;
+{ const c = sun.shadow.camera, r = VIEW_R * 0.95; c.left = -r; c.right = r; c.top = r; c.bottom = -r; c.near = 0.01; c.far = VIEW_R * 8; c.updateProjectionMatrix(); }
+const fill = new THREE.DirectionalLight('#8fb4ff', 0.35); fill.position.set(-3, 2, -3); scene.add(fill);
+// the floor: a dark workshop floor that takes the shadows, with a faint grid for the scale
+{
+  const size = CFG.grid || 4;
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(size * 3, size * 3), new THREE.MeshStandardMaterial({ color: '#25282d', roughness: 0.85, metalness: 0, envMapIntensity: 0.35 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -0.002; floor.receiveShadow = true; floor.userData.floor = true; scene.add(floor);
+  const grid = new THREE.GridHelper(size, size * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
+}
 
 // ------------------------------------------------------------------ materials and helpers
 const shells = [];                                           // materials that become transparent in X-ray mode
-const shell = (color, extra) => { const m = new THREE.MeshStandardMaterial(Object.assign({ color, metalness: 0.25, roughness: 0.45 }, extra)); shells.push(m); return m; };
+const shell = (color, extra) => { const m = new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.25, roughness: 0.42, clearcoat: 0.55, clearcoatRoughness: 0.22, envMapIntensity: 0.9 }, extra)); shells.push(m); return m; };   // painted or anodised covers
 const ORANGE = shell('#ff9a1f', { metalness: 0.05, roughness: 0.55 }), DARK = shell('#2b2f36'), BASE = shell('#3a3f48');
 const LIGHT = shell('#d3d9e1', { metalness: 0.15, roughness: 0.4 }), BLUE = shell('#2f6bff', { metalness: 0.2, roughness: 0.4 });
-const SILVER = new THREE.MeshStandardMaterial({ color: '#aeb6c1', metalness: 0.7, roughness: 0.3 });
-const MOTOR = new THREE.MeshStandardMaterial({ color: '#3a4250', metalness: 0.5, roughness: 0.4 });
-const COPPER = new THREE.MeshStandardMaterial({ color: '#c5772b', metalness: 0.8, roughness: 0.35 });
-const BLACK = new THREE.MeshStandardMaterial({ color: '#101114', roughness: 0.8 });
+const SILVER = new THREE.MeshStandardMaterial({ color: '#c3c9d1', metalness: 0.95, roughness: 0.24 });     // machined steel / aluminium
+const MOTOR = new THREE.MeshStandardMaterial({ color: '#3a4250', metalness: 0.75, roughness: 0.38 });
+const COPPER = new THREE.MeshStandardMaterial({ color: '#c5772b', metalness: 1, roughness: 0.3 });
+const BLACK = new THREE.MeshStandardMaterial({ color: '#131417', roughness: 0.72, metalness: 0.05 });              // rubber and plastic
 
 const mesh = (geo, mat, parent, pos, rot) => { const m = new THREE.Mesh(geo, mat); if (pos) m.position.set(...pos); if (rot) m.rotation.set(...rot); parent.add(m); return m; };
-const cyl = (r, h, mat, parent, pos, axis) => mesh(new THREE.CylinderGeometry(r, r, h, 40), mat, parent, pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
-const boxm = (w, h, d, mat, parent, pos) => mesh(new THREE.BoxGeometry(w, h, d), mat, parent, pos);
+// Real parts have no razor-sharp edges: boxes get rounded edges and cylinders a small chamfer, which catch the light.
+function roundedBox(w, h, d) {
+  const r = Math.min(0.022, 0.22 * Math.min(w, h, d)), g = new THREE.BoxGeometry(w, h, d, 4, 4, 4), P = g.attributes.position, Nn = g.attributes.normal;
+  const hx = w / 2 - r, hy = h / 2 - r, hz = d / 2 - r, c = new THREE.Vector3(), n = new THREE.Vector3();
+  for (let i = 0; i < P.count; i++) {
+    n.fromBufferAttribute(P, i); c.set(Math.max(-hx, Math.min(hx, n.x)), Math.max(-hy, Math.min(hy, n.y)), Math.max(-hz, Math.min(hz, n.z)));
+    n.sub(c); if (n.lengthSq() < 1e-12) n.fromBufferAttribute(Nn, i); n.normalize();
+    P.setXYZ(i, c.x + n.x * r, c.y + n.y * r, c.z + n.z * r); Nn.setXYZ(i, n.x, n.y, n.z);
+  }
+  return g;
+}
+function chamferCyl(r, h) {
+  const c = Math.min(0.012, 0.18 * Math.min(r, h)), pts = [new THREE.Vector2(0, -h / 2), new THREE.Vector2(r - c, -h / 2)];
+  for (let k = 1; k <= 3; k++) { const a = k / 4 * Math.PI / 2; pts.push(new THREE.Vector2(r - c + c * Math.sin(a), -h / 2 + c - c * Math.cos(a))); }
+  pts.push(new THREE.Vector2(r, -h / 2 + c), new THREE.Vector2(r, h / 2 - c));
+  for (let k = 1; k <= 3; k++) { const a = k / 4 * Math.PI / 2; pts.push(new THREE.Vector2(r - c + c * Math.cos(a), h / 2 - c + c * Math.sin(a))); }
+  pts.push(new THREE.Vector2(r - c, h / 2), new THREE.Vector2(0, h / 2));
+  return new THREE.LatheGeometry(pts, 48);
+}
+const cyl = (r, h, mat, parent, pos, axis) => mesh(chamferCyl(r, h), mat, parent, pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
+const boxm = (w, h, d, mat, parent, pos) => mesh(roundedBox(w, h, d), mat, parent, pos);
 const group = (parent, pos) => { const g = new THREE.Group(); if (pos) g.position.set(...pos); parent.add(g); return g; };
 const inner = [];                                            // parts only visible in X-ray mode
 const xr = (m) => { m.visible = false; inner.push(m); return m; };
@@ -741,6 +780,7 @@ function buildHumanoid() {
 
 const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid }[KIND]();
 
+scene.traverse((o) => { if (o.isMesh && !o.userData.floor && !o.material.isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } });
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
 const cards = [].slice.call(document.querySelectorAll(CFG.panel ? '.ancfg' : (CFG.cmd ? '.ancard:not(#anCmd)' : '.ancard')));
@@ -779,6 +819,7 @@ function select(i) {
 const $ = (id) => document.getElementById(id);
 function setXray(on) {
   xray = on; shells.forEach((m) => { m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; });
+  scene.traverse((o) => { if (o.isMesh && shells.indexOf(o.material) >= 0) o.castShadow = !on; });
   inner.forEach((m) => { m.visible = on; }); rings.forEach((r) => { if (r.userData.xray) r.visible = on; });
   $('xrayBtn').classList.toggle('on', on); $('xrayBtn').setAttribute('aria-pressed', on);
 }
@@ -865,6 +906,7 @@ function loop(now) {
   if (pose.tick) pose.tick(dt); else if (play) pose();
   if (pose.readout) readout.textContent = pose.readout();
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
+  sun.target.position.copy(orbit.target); sun.position.set(orbit.target.x + VIEW_R * 1.2, orbit.target.y + VIEW_R * 2.4, orbit.target.z + VIEW_R * 0.9);
   renderer.render(scene, camera);
   const w = box.clientWidth, h = box.clientHeight;
   if (!arranged) arrange();

@@ -17,6 +17,8 @@ RA.add({
  "1xqsuddxfa2": "Anatomie des roues (3D)",
  "1nlxaje10cm": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"wheels.html\" style=\"color:#ff9f43\">Page des roues</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "1itjhv29vae": "Une <strong>roue</strong> est ce qui relie un robot mobile au sol. Une roue standard roule vers l'avant et refuse de glisser de côté ; d'autres roues (folle, omnidirectionnelle, Mecanum, bille) ajoutent des mouvements libres. Le type de roues décide dans quelles directions le robot peut se déplacer, ce qu'il peut porter et la qualité de sa localisation.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

@@ -36,6 +36,8 @@
       .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
       .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
       #anCmd { flex: none; }
+      .andef { margin: 0.6rem 0 1rem; padding: 0.7rem 1rem 0.75rem; border: 1px solid var(--border); border-left: 5px solid var(--accent); border-radius: 12px; background: color-mix(in srgb, var(--accent) 6%, var(--surface)); max-width: 62rem; }
+      .andef b { display: block; font: 600 0.72rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; } .andef p { margin: 0; max-width: none; }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
       .ancall { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; display: none; }
       .ancall path { fill: none; stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0.75; transition: opacity 0.2s ease, stroke-width 0.2s ease; } .ancall path.lit { stroke-width: 2.6; stroke-dasharray: none; opacity: 1; }
@@ -62,6 +64,7 @@
     <h1>Anatomy of a cobot (3D)</h1>
     <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="cobot.html" style="color:#ff9f43">Cobot page</a></p>
     <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>collaborative robot</strong> (cobot) is a robot arm designed to work next to people without a safety fence. It is light, has rounded shapes, and measures the forces at its joints so that it stops when it touches something. It is slower and carries less than an industrial robot, but it is easy to install and to program by hand guiding.</p></div>
     <div class="toolbar">
       <button id="xrayBtn" type="button" aria-pressed="false">X-ray (inside)</button>
       <button id="playBtn" type="button" aria-pressed="false">Animate the selected axis</button>

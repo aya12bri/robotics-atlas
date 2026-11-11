@@ -21,6 +21,8 @@ RA.add({
  "1xuopk1n8qz": "Anatomie d'un quadrirotor (3D)",
  "10ojbam8vqx": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"learn-world.html\" style=\"color:#ff9f43\">Cours Les robots dans le monde réel</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "2c33nay7s7f": "Un <strong>quadrirotor</strong> est un robot volant porté par quatre hélices. Deux tournent dans le sens horaire et deux dans le sens antihoraire pour que leurs couples de réaction s'annulent. Il n'a que quatre moteurs pour six degrés de liberté (il est sous-actionné) : pour se déplacer de côté il doit d'abord s'incliner. Un contrôleur de vol avec une centrale inertielle le stabilise des centaines de fois par seconde.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

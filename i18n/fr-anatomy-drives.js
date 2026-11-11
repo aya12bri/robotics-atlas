@@ -24,6 +24,8 @@ RA.add({
  "11xpsmchng9": "Anatomie des configurations de motorisation (3D)",
  "1nlxaje10cm": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"wheels.html\" style=\"color:#ff9f43\">Page des roues</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "1vrmxjd1bl6": "Une <strong>configuration de motorisation</strong> est la façon dont les roues d'un robot mobile sont disposées, entraînées et orientées. Elle fixe la manière dont le robot peut se déplacer : un robot différentiel tourne en entraînant ses deux roues à des vitesses différentes, une voiture braque ses roues avant, et les motorisations omnidirectionnelles peuvent aller dans n'importe quelle direction à tout instant.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",
