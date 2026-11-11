@@ -217,11 +217,20 @@
       const orbit = new OrbitControls(camera, renderer.domElement);
       orbit.target.set(-0.3, 0.25, 0.05);
 
-      scene.add(new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2));
+      const hemi = new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2); scene.add(hemi);
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      scene.add(new THREE.GridHelper(4, 16, '#7a7a7a', '#3a3a3a'));
+      const grid = new THREE.GridHelper(4, 16, '#7a7a7a', '#3a3a3a'); scene.add(grid);
+      // light / dark ground: background, hemisphere ground colour and grid lines follow the site theme
+      { const gc = grid.geometry.attributes.color, g0 = gc.array.slice(), mid = (new THREE.Color('#7a7a7a').r + new THREE.Color('#3a3a3a').r) / 2;
+        RB.onTheme((L) => {
+          scene.background.set(L ? '#e7ebf0' : '#262626'); hemi.groundColor.set(L ? '#c9d0d8' : '#3a3a3a');
+          const a = new THREE.Color(L ? '#8792a0' : '#7a7a7a'), b = new THREE.Color(L ? '#c3cad3' : '#3a3a3a');
+          for (let i = 0; i < g0.length; i += 3) { const c = g0[i] > mid ? a : b; gc.array[i] = c.r; gc.array[i + 1] = c.g; gc.array[i + 2] = c.b; }
+          gc.needsUpdate = true;
+          box.classList.toggle('light3d', L);
+        }); }
 
       // the robot is generated from the STD table above
       const arm = DHArm.build(THREE, STD, {
