@@ -307,11 +307,11 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       .andef b { display: block; font: 600 0.72rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; } .andef p { margin: 0; max-width: none; }
       .anframe { position: absolute; transform: translate(-50%, -50%); font: 700 13px var(--mono); pointer-events: none; text-shadow: 0 0 3px #000, 0 1px 4px #000; } .anframe sub { font-size: 9px; }
       .angizmo { position: absolute; right: 10px; bottom: 10px; width: 88px; height: 88px; pointer-events: none; } .angizmo .bg { fill: rgba(20, 22, 26, 0.55); stroke: rgba(255, 255, 255, 0.15); } .angizmo text { fill: #fff; font: 700 10px var(--mono); text-anchor: middle; }
-      .anviews { position: absolute; left: 10px; top: 10px; z-index: 3; display: flex; gap: 6px; padding: 5px; border-radius: 16px; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); }
-      .anviews button, .anfull { display: grid; place-items: center; gap: 3px; min-width: 58px; min-height: 0; padding: 7px 8px 6px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.04); color: #c9d2de; font: 600 11px var(--sans, inherit); cursor: pointer; }
-      .anviews button svg, .anfull svg { width: 20px; height: 20px; } .anviews button:hover, .anfull:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+      .anviews { position: absolute; left: 10px; top: 10px; z-index: 3; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); }
+      .anviews button, .anfull { display: grid; place-items: center; gap: 2px; min-width: 44px; min-height: 0; padding: 4px 6px 3px; border-radius: 9px; border: 1px solid rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.04); color: #c9d2de; font: 600 10px var(--sans, inherit); cursor: pointer; }
+      .anviews button svg, .anfull svg { width: 15px; height: 15px; } .anviews button:hover, .anfull:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
       .anviews button.on { color: #fff; border-color: #8b7bff; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); box-shadow: 0 0 0 1px rgba(139, 123, 255, 0.5), 0 6px 18px -6px rgba(109, 93, 252, 0.8); }
-      .anfull { position: absolute; right: 10px; top: 10px; z-index: 3; min-width: 0; width: 40px; height: 40px; padding: 0; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); }
+      .anfull { position: absolute; right: 10px; top: 10px; z-index: 3; min-width: 0; width: 32px; height: 32px; padding: 0; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); }
       #anatView:fullscreen { width: 100vw; height: 100vh; border-radius: 0; border: 0; }
       #anatView.light .anviews, #anatView.light .anfull { background: rgba(255, 255, 255, 0.78); border-color: rgba(20, 30, 50, 0.12); }
       #anatView.light .anviews button, #anatView.light .anfull { color: #3a4556; background: rgba(20, 30, 50, 0.04); border-color: rgba(20, 30, 50, 0.08); }
@@ -321,12 +321,14 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       #anatView.light .anframe { text-shadow: 0 0 3px #fff, 0 1px 3px #fff; }
       #anatView.light .angizmo .bg { fill: rgba(255, 255, 255, 0.72); stroke: rgba(20, 30, 50, 0.15); }
       @media (max-width: 600px) { .anviews button { min-width: 0; padding: 6px; } .anviews button span { display: none; } }
+      .toolbar { justify-content: center; }
+      #anatView .anviews button, #anatView .anfull { font-size: 11px; line-height: 1.1; font-weight: 600; min-height: 0; }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
       .ancall { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; display: none; }
       .ancall path { fill: none; stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0.75; transition: opacity 0.2s ease, stroke-width 0.2s ease; } .ancall path.lit { stroke-width: 2.6; stroke-dasharray: none; opacity: 1; }
       @media (min-width: 1000px) {
-        .anat { grid-template-columns: 230px minmax(0, 1fr) 230px; column-gap: 16px; row-gap: 10px; align-items: center; width: min(96vw, 1560px); margin-left: calc(50% - min(48vw, 780px)); }
-        #anatView { grid-column: 2; grid-row: 1 / span var(--rows, 3); align-self: stretch; height: auto; min-height: max(640px, calc(100vh - 140px)); }
+        .anat { grid-template-columns: 210px minmax(0, 1fr) 210px; column-gap: 14px; row-gap: 10px; align-items: center; }
+        #anatView { grid-column: 2; grid-row: 1 / span var(--rows, 3); align-self: stretch; height: auto; min-height: clamp(520px, calc(100vh - 220px), 680px); }
         .ancards { display: contents; }
         .ancard { align-self: center; }
         .ancard[data-side="left"] { grid-column: 1; border-left: 1px solid var(--border); border-right: 5px solid var(--c); } .ancard[data-side="left"].on, .ancard[data-side="left"].lit { border-color: var(--c); }
@@ -355,7 +357,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       <button id="wristBtn" type="button">${tx(...R.special)}</button>
       <button id="resetBtn" type="button">${tx('Reset', 'Réinitialiser')}</button>
     </div>
-    <div class="anat wide">
+    <div class="anat">
       <div id="anatView"></div>
       ${cmdCard}<div class="ancards">
         ${cards}

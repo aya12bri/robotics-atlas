@@ -34,6 +34,8 @@ const CFG = {
 }[KIND];
 const COL = CFG.col, LIM = CFG.lim, N = CFG.n, NQ = CFG.nq || CFG.n;
 const DEC = CFG.dec || 0;
+// pull the camera back a little so the whole robot sits comfortably in the frame
+CFG.cam = CFG.cam.map((c, i) => CFG.target[i] + (c - CFG.target[i]) * 1.22);
 const q = CFG.home.slice();
 
 const box = document.getElementById('anatView');
