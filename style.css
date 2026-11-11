@@ -871,3 +871,15 @@ table.dh.ops td:first-child { white-space: nowrap; }
 @keyframes sys-pulse { 50% { box-shadow: 0 0 0 6px rgba(48, 164, 108, 0.35); } }
 .sys-pins button { transition: background 0.15s; }
 .sys-where { padding: 0.35rem 0.6rem; border-radius: 8px; background: color-mix(in srgb, #30a46c 14%, transparent); }
+/* explanation card shown on the 3D view when a component is clicked */
+.insd-pop, .sys-pop { position: absolute; z-index: 4; left: 10px; bottom: 10px; width: min(360px, calc(100% - 20px)); max-height: calc(100% - 70px); overflow: auto; padding: 0.75rem 0.9rem 0.8rem; border-radius: 12px; background: rgba(18, 20, 28, 0.9); color: #eef2f7; border: 1px solid rgba(139, 123, 255, 0.6); box-shadow: 0 14px 40px -14px rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); font-size: 0.86rem; line-height: 1.45; }
+.insd-pop[hidden], .sys-pop[hidden] { display: none; }
+.insd-pop b, .sys-pop h4 { display: block; margin: 0.15rem 1.6rem 0.3rem 0; font-size: 0.98rem; }
+.insd-pop span { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #6d5dfc; color: #fff; font-size: 0.75rem; font-weight: 800; }
+.insd-pop p, .sys-pop p { margin: 0.25rem 0 0; }
+.insd-x, .sys-x { position: absolute; top: 6px; right: 6px; min-height: 0; width: 28px; height: 28px; padding: 0; border-radius: 50%; font-size: 1.1rem; line-height: 1; background: rgba(255, 255, 255, 0.12); color: #fff; border: 0; }
+.sys-pop .sys-where { background: rgba(48, 164, 108, 0.25); } .sys-pop .sys-ex { opacity: 0.8; font-size: 0.8rem; }
+.insdemo.light .insd-pop, .sysdemo.light .sys-pop { background: rgba(255, 255, 255, 0.96); color: #1d2633; }
+.insdemo.light .insd-x, .sysdemo.light .sys-x { background: rgba(20, 30, 50, 0.08); color: #1d2633; }
+.sys-pop ~ .sys-flow { z-index: 3; }
+@media (max-width: 600px) { .insd-pop, .sys-pop { font-size: 0.78rem; max-height: 55%; } }

@@ -277,11 +277,12 @@ function mount(host) {
     lin: L('The motor turns the ball screw; the balls rolling in the nut turn this rotation into a straight motion: one turn = 20 mm. The carriage glides on the two rails, and the limit switches mark both ends.', 'Le moteur fait tourner la vis à billes ; les billes qui roulent dans l\'écrou transforment cette rotation en mouvement droit : un tour = 20 mm. Le chariot glisse sur les deux rails, et les fins de course marquent les deux bouts.'),
     pla: L('The motor turns the small sun gear; the three planets roll inside the fixed ring and carry the planet carrier round: it turns 5 times slower and 5 times stronger. The encoder at the back counts the motor turns.', 'Le moteur fait tourner le petit pignon solaire ; les trois satellites roulent dans la couronne fixe et entraînent le porte-satellites : il tourne 5 fois moins vite et 5 fois plus fort. Le codeur à l\'arrière compte les tours du moteur.')
   };
-  host.innerHTML = `<div class="insd-stage"><div class="insd-tags"></div><div class="insd-read" hidden></div><p class="insd-hint">${L('Drag to turn · scroll to zoom', 'Glisser pour tourner · molette pour zoomer')}</p></div>
+  host.innerHTML = `<div class="insd-stage"><div class="insd-tags"></div><div class="insd-read" hidden></div><div class="insd-pop" hidden><button type="button" class="insd-x" aria-label="${L('Close', 'Fermer')}">×</button><span></span><b></b><p></p></div><p class="insd-hint">${L('Drag to turn · scroll to zoom', 'Glisser pour tourner · molette pour zoomer')}</p></div>
     <nav class="insd-step" aria-label="${L('Steps', 'Étapes')}"><button type="button" class="insd-prev" aria-label="${L('Previous step', 'Étape précédente')}">‹</button><ol class="insd-dots">${LAYERS.map((l, i) => `<li><button type="button" aria-label="${i + 1}. ${l[0]}"></button></li>`).join('')}</ol><button type="button" class="insd-next" aria-label="${L('Next step', 'Étape suivante')}">›</button></nav>
     <div class="insd-card"><span class="insd-n"></span><h3></h3><p></p></div>
     <div class="insd-parts"></div><div class="insd-detail" hidden></div>`;
   const stage = host.querySelector('.insd-stage'), tagsEl = host.querySelector('.insd-tags'), readEl = host.querySelector('.insd-read');
+  const pop = host.querySelector('.insd-pop'); pop.querySelector('.insd-x').addEventListener('click', () => { if (sel) pick(sel); });
   const card = host.querySelector('.insd-card'), partsEl = host.querySelector('.insd-parts'), detail = host.querySelector('.insd-detail');
 
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 0.005, 40);
@@ -346,6 +347,7 @@ function mount(host) {
     tagsEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.p === sel));
     mech.g.traverse((m) => { if (m.isMesh && m.userData.part && m.material.emissive) { if (!m.userData.baseMat) m.userData.baseMat = m.material; m.material = m.userData.part === sel ? hl(m.userData.baseMat) : m.userData.baseMat; } });
     detail.hidden = !sel; if (sel) detail.innerHTML = `<b>${PART[sel][0]}</b><p>${PART[sel][1]}</p>`;
+    pop.hidden = !sel; if (sel) { pop.querySelector('span').textContent = (mech.ids.indexOf(sel) + 1) + ''; pop.querySelector('b').textContent = PART[sel][0]; pop.querySelector('p').textContent = PART[sel][1]; }
   };
   const hlCache = new Map(); const hl = (m) => { if (!hlCache.has(m)) { const c = m.clone(); c.emissive = new THREE.Color('#6d5dfc'); c.emissiveIntensity = 0.55; hlCache.set(m, c); } return hlCache.get(m); };
   partsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });

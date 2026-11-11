@@ -7,7 +7,7 @@
 // Usage:  <div class="sysdemo" data-set="arm|mobile|humanoid|drone"></div>  +  <script type="module" src="system-demo.js"></script>
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { articulated, scara, delta, gantry, makeAMR } from './ops-demo.js';
+import { articulated, scara, delta, gantry, makeAMR, makePerson } from './ops-demo.js';
 import { callouts } from './inside-demo.js';
 
 const FR = (window.RA && RA.lang) === 'fr';
@@ -258,7 +258,7 @@ function makeRobot(key) {
 }
 // which slot each component goes to, for each set (cell slots are around the robot)
 const SLOT = {
-  arm: { cam: 'tool', cam3d: 'camstand', ft: 'wrist', prox: 'conveyor', photo: 'conveyor', cabinet: 'cabinet', plc: 'cabinet', pendant: 'panel', pcb: 'cabinet', pid: 'cabinet', psu: 'cabinet', drive: 'cabinet', bus: 'cable', harness: 'cable',
+  arm: { cam: 'tool', cam3d: 'camstand', ft: 'wrist', prox: 'conveyor', photo: 'conveyor', cabinet: 'cabinet', plc: 'cabinet', pendant: 'operator', pcb: 'cabinet', pid: 'cabinet', psu: 'cabinet', drive: 'cabinet', bus: 'cable', harness: 'cable',
     servo: 'j2', stepper: 'tool', brake: 'j2', enc: 'j3', harmonic: 'wrist', rv: 'j1', struct: 'link', gripper: 'tool', vacuum: 'tool', estop: 'panel', curtain: 'fence', scanner: 'fence', laptop: 'desk', cyl: 'conveyor' },
   mobile: { lidar: 'lidar', cam3d: 'front', us: 'front', imu: 'inside', cam: 'front', prox: 'side', gps: 'top', ai: 'inside', sbc: 'inside', mcu: 'inside', pcb: 'inside', radio: 'inside', router: 'pole', battery: 'inside', driver: 'inside',
     heatsink: 'inside', cables: 'inside', dc: 'wheel', planet: 'wheel', enc: 'wheel', hobby: 'top', stepper: 'top', wheel: 'wheel', track: 'wheel', chassis: 'inside', enclosure: 'top', bumper: 'bumper', scanner: 'front', estop: 'back', laptop: 'desk', pid: 'inside', cyl: 'top' },
@@ -268,7 +268,7 @@ const SLOT = {
     dc: 'motor', planet: 'motor', enc: 'motor', prop: 'prop', chassis: 'arm', enclosure: 'center', scanner: 'bottom', estop: 'desk', laptop: 'desk', pid: 'center', cyl: 'bottom' }
 };
 SLOT.cobot = SLOT.arm;
-const WHERE = { j1: L('axis 1, in the base', 'axe 1, dans la base'), j2: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), j3: L('the elbow (axis 3)', 'le coude (axe 3)'), wrist: L('the wrist', 'le poignet'), tool: L('the tool, at the end of the arm', 'l\'outil, au bout du bras'),
+const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dans les mains de l\'opératrice (pupitre de programmation)'), j1: L('axis 1, in the base', 'axe 1, dans la base'), j2: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), j3: L('the elbow (axis 3)', 'le coude (axe 3)'), wrist: L('the wrist', 'le poignet'), tool: L('the tool, at the end of the arm', 'l\'outil, au bout du bras'),
   link: L('the arm itself', 'le bras lui-même'), cable: L('along the arm (cable hose)', 'le long du bras (gaine de câbles)'), base: L('the base', 'la base'), cabinet: L('in the controller cabinet next to the robot', 'dans l\'armoire de commande à côté du robot'),
   panel: L('on the cabinet, for the operator', 'sur l\'armoire, pour l\'opérateur'), desk: L('on the engineer\'s desk', 'sur le bureau de l\'ingénieur'), conveyor: L('on the conveyor that feeds the robot', 'sur le convoyeur qui alimente le robot'),
   camstand: L('on a stand above the work area', 'sur un support au-dessus de la zone de travail'), fence: L('at the entrance of the cell', 'à l\'entrée de la cellule'), pole: L('on the wall of the building', 'au mur du bâtiment'),
@@ -283,11 +283,12 @@ function mount(host) {
   const list = SET.parts.map(([id, x, z], i) => ({ id, x, z, n: i + 1, def: PARTS[id] }));
   host.innerHTML = `<div class="sys-stage"><div class="sys-pins"></div><div class="sys-flow" hidden></div>
       <div class="sys-ctl"><button type="button" class="sys-mode"></button><button type="button" class="sys-play">${L('▶ How it works', '▶ Comment ça marche')}</button><button type="button" class="sys-stop">${L('Emergency stop', 'Arrêt d\'urgence')}</button><button type="button" class="sys-all">${L('Overview', 'Vue d\'ensemble')}</button></div>
-      <p class="sys-hint">${L('Click a number or a part', 'Cliquez sur un numéro ou une pièce')}</p></div>
+      <div class="sys-pop" hidden><button type="button" class="sys-x" aria-label="${L('Close', 'Fermer')}">×</button><div class="sys-pop-in"></div></div><p class="sys-hint">${L('Click a number or a part', 'Cliquez sur un numéro ou une pièce')}</p></div>
     <div class="sys-legend">${Object.entries(WIRE).map(([k, [c, n]]) => `<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>
     <div class="sys-detail" hidden></div>
     <div class="sys-cats"></div>`;
   const stage = host.querySelector('.sys-stage'), pinsEl = host.querySelector('.sys-pins'), flowEl = host.querySelector('.sys-flow'), detail = host.querySelector('.sys-detail'), catsEl = host.querySelector('.sys-cats');
+  const pop = host.querySelector('.sys-pop'); pop.querySelector('.sys-x').addEventListener('click', () => { if (sel) select(sel, false); });
   const playBtn = host.querySelector('.sys-play'), stopBtn = host.querySelector('.sys-stop'), allBtn = host.querySelector('.sys-all'), modeBtn = host.querySelector('.sys-mode');
 
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.01, 50);
@@ -343,10 +344,14 @@ function mount(host) {
     prop(G(bx(0.05, 1.5, 0.05, C.grey), bx(0.2, 0.05, 0.12, C.black, 0, 1.2, 0.06)), -1.7, -0.3);
     prop(G(bx(0.5, 0.36, 0.35, C.grey), bx(0.3, 0.012, 0.2, C.dark, 0, 0.36)), -1.6, 0.6);
   }
+  // the operator, at real size next to the robot, with the teach pendant (a tablet for mobile robots)
+  const HUMAN = { six: 0.58, cobot: 0.6, scara: 0.72, delta: 0.75, gantry: 0.62, stewart: 0.7, humanoid: 0.95, quadrotor: 0.6, mobile: 1, wheels: 1, drives: 1 }[host.dataset.robot || 'six'] || 0.7;
+  const oper = makePerson({ female: true, pendant: true, helmet: armSet }); oper.scale.setScalar(Math.min(1.25, HUMAN * robotG.scale.x)); oper.position.set(RC.x - 1.05, 0, RC.z + 0.3); oper.rotation.y = Math.PI / 2; scene.add(oper);
+  oper.updateMatrixWorld(true); const pendantW = oper.userData.pendant.getWorldPosition(V(0, 0, 0));
   const CELL = { cabinet: V(-1.6, 0.45, -0.08), panel: V(-1.6, 0.6, -0.08), desk: V(-1.6, 0.42, 0.6), conveyor: V(1.6, 0.33, 0.05), camstand: V(1.58, 1.28, -0.4), fence: V(1.0, 0.55, 0.95), pole: V(-1.7, 1.25, -0.24) };
   robotG.updateMatrixWorld(true);
   const slotOf = (id) => (SLOT[setName] || SLOT.arm)[id];
-  const slotW = (id) => { const k = slotOf(id); return rob.slots[k] ? rob.g.localToWorld(rob.slots[k].clone()) : CELL[k] ? RC.clone().add(CELL[k]) : RC.clone().add(V(0, 0.6, 0)); };
+  const slotW = (id) => { const k = slotOf(id); if (k === 'operator') return pendantW.clone(); return rob.slots[k] ? rob.g.localToWorld(rob.slots[k].clone()) : CELL[k] ? RC.clone().add(CELL[k]) : RC.clone().add(V(0, 0.6, 0)); };
   // where each part is when it sits in the robot, and where it lands on the bench
   for (const p of list) { const o = objs[p.id]; o.userData.home = o.position.clone(); o.userData.hs = o.scale.x; o.userData.slot = slotW(p.id); o.userData.ord = Math.random() * 0.35; }
   let mode = 'robot', mk = 0;                                    // mk: 0 = everything inside the robot, 1 = everything on the bench
@@ -378,11 +383,12 @@ function mount(host) {
     }
     wires.forEach((w) => { w.tube.material.opacity = !sel || w.a === sel || w.b === sel ? (w.type === 'mech' ? 0.5 : 0.9) : 0.12; });
     host.querySelectorAll('[data-p]').forEach((b) => b.classList.toggle('on', b.dataset.p === sel));
-    detail.hidden = !sel;
+    detail.hidden = !sel; pop.hidden = !sel;
     if (sel) {
       const p = list.find((q) => q.id === sel), d = p.def[2], i = FR ? 1 : 0, c = CATS[p.def[0]];
       const links = wires.filter((w) => w.a === sel || w.b === sel).map((w) => `<li><i style="background:${WIRE[w.type][0]}"></i>${WIRE[w.type][1]} : ${PARTS[w.a === sel ? w.b : w.a][2][0][i]}</li>`).join('');
       detail.innerHTML = `<span class="sys-tag" style="--c:${c[1]}">${p.n} · ${c[0]}</span><h3>${d[0][i]}</h3><p class="sys-where"><b>${L('Where in the robot', 'Où dans le robot')} :</b> ${WHERE[slotOf(sel)] || ''}</p><p><b>${L('Examples', 'Exemples')} :</b> ${d[1][i]}</p><p><b>${L('Role', 'Rôle')} :</b> ${d[2][i]}</p><p><b>${L('How it works', 'Comment ça marche')} :</b> ${d[3][i]}</p>${links ? `<ul class="sys-links">${links}</ul>` : ''}`;
+      pop.querySelector('.sys-pop-in').innerHTML = `<span class="sys-tag" style="--c:${c[1]}">${p.n} · ${c[0]}</span><h4>${d[0][i]}</h4><p class="sys-where"><b>${L('Where', 'Où')} :</b> ${WHERE[slotOf(sel)] || ''}</p><p><b>${L('Role', 'Rôle')} :</b> ${d[2][i]}</p><p><b>${L('How it works', 'Comment ça marche')} :</b> ${d[3][i]}</p><p class="sys-ex"><b>${L('Examples', 'Exemples')} :</b> ${d[1][i]}</p>`;
       if (flyTo && mode === 'robot') { const sw = objs[sel].userData.slot; fly(sw.clone().add(V(0.7, 0.55, 1.1)), sw.clone()); }
       else if (flyTo) { const a = anchors[sel], sw = objs[sel].userData.slot, mid = a.mid.clone().lerp(sw, 0.5); fly(mid.clone().add(V(0.3, 1.0, 1.0).multiplyScalar(Math.max(2.0, a.mid.distanceTo(sw) * 1.45))), mid); }
     } else if (flyTo) fly((mode === 'robot' ? ROBOTCAM : HOME).p.clone(), (mode === 'robot' ? ROBOTCAM : HOME).t.clone());

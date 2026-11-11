@@ -290,15 +290,47 @@ function marker(u, ok) { const m = new THREE.Mesh(new THREE.RingGeometry(0.42 * 
 function flashCone(u, h) { const m = new THREE.Mesh(new THREE.ConeGeometry(0.75 * u, h, 32, 1, true).translate(0, -h / 2, 0), new THREE.MeshBasicMaterial({ color: '#7fd1ff', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false })); return m; }
 
 // ---------------------------------------------------------------- people, safety fence, DataMatrix
-function makePerson() {                                     // an operator, 1.75 m, facing +z; userData.arms = [left, right] (rotate x < 0 to reach forward)
-  const g = new THREE.Group(), suit = M('#2f4f7a'), skin = M('#e8b98f'), vest = M('#f5c518', { emissive: '#3a2f00', emissiveIntensity: 0.25 });
-  for (const sx of [-1, 1]) { const leg = cyl(0.065, 0.84, suit, 14); leg.position.x = sx * 0.1; g.add(leg); const shoe = box(0.11, 0.06, 0.2, MAT.black); shoe.position.set(sx * 0.1, 0, 0.03); g.add(shoe); }
-  const torso = box(0.38, 0.58, 0.22, suit); torso.position.y = 0.82; g.add(torso);
-  const v = box(0.4, 0.36, 0.24, vest); v.position.y = 0.98; g.add(v);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.105, 18, 14), skin); head.position.y = 1.55; g.add(head);
-  const hat = new THREE.Mesh(new THREE.SphereGeometry(0.118, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), M('#f4f6f8')); hat.position.y = 1.58; g.add(hat);
-  const arms = [-1, 1].map((sx) => { const piv = new THREE.Group(); piv.position.set(sx * 0.24, 1.36, 0); const a = cyl(0.05, 0.6, suit, 12, false); a.position.y = -0.3; piv.add(a); const hd = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), skin); hd.position.y = -0.62; piv.add(hd); g.add(piv); return piv; });
-  g.userData.arms = arms; g.traverse((m) => { if (m.isMesh) m.castShadow = true; }); return g;
+function makePerson(o = {}) {                               // a real-size operator (1.75 m), man or woman, facing +z; optional teach pendant in the hands
+  // o.female, o.pendant, o.helmet (default true), o.shirt
+  const g = new THREE.Group(), cap = (r, l, m) => { const x = new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 6, 14), m); x.castShadow = true; return x; };
+  const skin = M(o.female ? '#e9b896' : '#c98f68', { roughness: 0.7 }), trousers = M('#2b3a55', { roughness: 0.85 }), shirt = M(o.shirt || (o.female ? '#4f7fbf' : '#3f5f8f'), { roughness: 0.8 });
+  const vest = M('#f5c518', { roughness: 0.6, emissive: '#3a2f00', emissiveIntensity: 0.2 }), refl = M('#e8eef5', { roughness: 0.3, metalness: 0.4 }), hairM = M(o.female ? '#5a3825' : '#2a1d14', { roughness: 0.9 });
+  for (const sx of [-1, 1]) {                                 // legs and safety shoes
+    const thigh = cap(0.075, 0.36, trousers); thigh.position.set(sx * 0.1, 0.72, 0); g.add(thigh);
+    const shin = cap(0.06, 0.34, trousers); shin.position.set(sx * 0.1, 0.3, 0); g.add(shin);
+    const shoe = box(0.11, 0.08, 0.27, MAT.black); shoe.position.set(sx * 0.1, 0, 0.04); g.add(shoe);
+  }
+  const hips = cap(0.15, 0.06, trousers); hips.rotation.z = Math.PI / 2; hips.scale.set(1, 1, 0.75); hips.position.y = 0.95; g.add(hips);
+  const chest = cap(o.female ? 0.16 : 0.18, 0.32, shirt); chest.scale.set(1, 1, 0.68); chest.position.y = 1.22; g.add(chest);
+  const v = cap(o.female ? 0.168 : 0.188, 0.26, vest); v.scale.set(1, 1, 0.7); v.position.y = 1.2; g.add(v);
+  for (const y of [1.08, 1.2]) { const st = new THREE.Mesh(new THREE.CylinderGeometry(o.female ? 0.17 : 0.19, o.female ? 0.17 : 0.19, 0.025, 24, 1, true), refl); st.scale.set(1, 1, 0.7); st.position.y = y; g.add(st); }
+  const neck = cyl(0.045, 0.1, skin, 12); neck.position.y = 1.44; g.add(neck);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.105, 24, 18), skin); head.scale.set(0.92, 1.08, 1); head.position.y = 1.62; head.castShadow = true; g.add(head);
+  const nose = box(0.02, 0.035, 0.03, skin); nose.position.set(0, 1.6, 0.1); g.add(nose);
+  for (const sx of [-1, 1]) { const eye = new THREE.Mesh(new THREE.SphereGeometry(0.011, 8, 6), MAT.black); eye.position.set(sx * 0.036, 1.645, 0.09); g.add(eye); }
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.112, 24, 14, 0, Math.PI * 2, 0, Math.PI * (o.female ? 0.62 : 0.5)), hairM); hair.scale.set(0.95, 1.05, 1.03); hair.position.set(0, 1.635, -0.008); g.add(hair);
+  if (o.female) { const tail = cap(0.045, 0.16, hairM); tail.position.set(0, 1.55, -0.12); tail.rotation.x = 0.35; g.add(tail); }
+  if (o.helmet !== false) { const hat = new THREE.Mesh(new THREE.SphereGeometry(0.125, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M('#f4f6f8', { roughness: 0.35 })); hat.position.y = 1.66; g.add(hat); const brim = cyl(0.135, 0.012, M('#f4f6f8'), 24); brim.position.set(0, 1.655, 0.02); g.add(brim); }
+  const arms = [], fore = [];
+  for (const sx of [-1, 1]) {                                 // shoulder pivot > upper arm > elbow pivot > forearm + hand
+    const piv = new THREE.Group(); piv.position.set(sx * (o.female ? 0.2 : 0.22), 1.42, 0); g.add(piv);
+    const up = cap(0.05, 0.22, shirt); up.position.y = -0.15; piv.add(up);
+    const el = new THREE.Group(); el.position.y = -0.29; piv.add(el);
+    const fa = cap(0.042, 0.2, shirt); fa.position.y = -0.13; el.add(fa);
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.045, 14, 10), skin); hand.scale.set(0.8, 1.15, 0.6); hand.position.y = -0.28; el.add(hand);
+    piv.rotation.z = sx * 0.06; arms.push(piv); fore.push(el);
+  }
+  g.userData = { arms, fore };
+  if (o.pendant) {                                            // holds a teach pendant in front of the chest
+    arms.forEach((a, i) => { a.rotation.x = -0.3; a.rotation.z = (i ? 1 : -1) * -0.12; }); fore.forEach((f) => { f.rotation.x = -1.2; });
+    const pd = new THREE.Group(); pd.position.set(0, 1.12, 0.36); pd.rotation.x = -0.75; g.add(pd);
+    pd.add(box(0.32, 0.035, 0.22, M('#e6e1d6', { roughness: 0.55 }), false));
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.14).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#1d3b5c' })); scr.position.set(-0.03, 0.019, 0); pd.add(scr);
+    const es = cyl(0.022, 0.02, MAT.red, 18); es.position.set(0.12, 0.017, -0.06); pd.add(es);
+    for (let i = 0; i < 4; i++) { const k = box(0.022, 0.008, 0.022, MAT.dark); k.position.set(0.12, 0.017, -0.01 + i * 0.03); pd.add(k); }
+    g.userData.pendant = pd;
+  }
+  g.traverse((m) => { if (m.isMesh) m.castShadow = true; }); return g;
 }
 function meshTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d');
@@ -812,7 +844,7 @@ function mount(host) {
       { const fr = box(0.06, 1.6, 1.0, MAT.frame); fr.position.x = -0.05; st.add(fr); const scr = box(0.04, 0.3, 0.45, MAT.black); scr.position.set(0.02, 1.25, 0); st.add(scr);
         const desk = box(0.5, 0.85, 0.7, MAT.frame); desk.position.set(0.45, 0, -0.75); st.add(desk); }
       const tote = add(binBox(1, 0.4, 0.3, 0.16, MAT.bin), 2.7, 0.85, -1.85);
-      const op = makePerson(); add(op, 2.9, 0, -1.1); op.rotation.y = -Math.PI / 2;
+      const op = makePerson({ female: true, helmet: false }); add(op, 2.9, 0, -1.1); op.rotation.y = -Math.PI / 2;
       const k = podNext++ % pods.length, pod = pods[k], [px, pz] = spots[k];
       amr.position.set(1.5, 0, 0.5); amr.rotation.y = Math.PI;
       c.say('An order arrives: the robot goes to get the shelf that holds the item', 'Une commande arrive : le robot va chercher l\'étagère qui contient l\'article');
@@ -864,7 +896,7 @@ function mount(host) {
         sh.traverse((m) => { if (m.isMesh) m.castShadow = m.receiveShadow = true; });
       }
       const stA = station(-2.6, -1.4, '1'), stB = station(2.6, -0.2, '2'), stC = station(-0.2, 2.6, '3'); stB.rotation.y = Math.PI; stC.rotation.y = Math.PI / 2;
-      const person = new THREE.Group(); { const b = cyl(0.13, 0.75, MAT.blue); b.position.y = 0.75; person.add(b); const legs = cyl(0.11, 0.75, MAT.dark); person.add(legs); const hd = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), M('#f0c8a0')); hd.position.y = 1.62; person.add(hd); }
+      const person = makePerson({ helmet: false, shirt: '#8a4fbf' });
       add(person, 1.2, 0, 3.4); person.visible = false;
       amr.position.set(-2.6, 0, -0.7); amr.rotation.y = 0;
       c.say('Stop 1: load the order', 'Arrêt 1 : charger la commande'); await c.wait(0.8);
@@ -876,7 +908,7 @@ function mount(host) {
       person.visible = true; person.position.set(2.0 + 1.6, 0, 1.9);
       const ring = amr.userData.ring;
       c.say('A person crosses: the safety scanner stops the AMR', 'Une personne traverse : le scanner de sécurité arrête l\'AMR');
-      await c.tw(2.4, (k) => { person.position.x = 3.6 - 3.2 * k; person.rotation.y = Math.PI; ring.material.color.set(k < 0.85 ? '#e5484d' : '#f5c518'); ring.material.opacity = 0.6; });
+      await c.tw(2.4, (k) => { person.position.x = 3.6 - 3.2 * k; person.rotation.y = -Math.PI / 2; person.userData.arms.forEach((ar, i) => { ar.rotation.x = Math.sin(k * 18 + i * Math.PI) * 0.4; }); ring.material.color.set(k < 0.85 ? '#e5484d' : '#f5c518'); ring.material.opacity = 0.6; });
       person.visible = false; ring.material.color.set('#30a46c');
       c.say('Path clear: the AMR goes on', 'Voie libre : l\'AMR repart');
       await amrDrive(c, [V(1.0, 0, 2.6), V(0.5, 0, 2.6)]);
@@ -891,12 +923,12 @@ function mount(host) {
   const showAlert = (html, kind) => { alertEl.hidden = !html; if (html) { alertEl.innerHTML = html; alertEl.dataset.kind = kind; } };
   if (R.safety === 'cage') {
     cage = buildCage(R.cage); scene.add(cage.group);
-    person = makePerson(); person.scale.setScalar(R.human); scene.add(person);
+    person = makePerson({ female: true, pendant: true }); person.scale.setScalar(R.human); scene.add(person);
     safeTag.textContent = L('Industrial robot: works inside a cage', 'Robot industriel : travaille dans une cage');
     safeBtn.textContent = L('Open the cage door', 'Ouvrir la porte de la cage');
     safeBtn.addEventListener('click', () => { doorOpen = !doorOpen; safeBtn.textContent = doorOpen ? L('Close the door', 'Fermer la porte') : L('Open the cage door', 'Ouvrir la porte de la cage'); });
   } else if (R.safety === 'collab') {
-    person = makePerson(); person.scale.setScalar(R.human); scene.add(person);
+    person = makePerson({ helmet: false }); person.scale.setScalar(R.human); scene.add(person);
     halo = new THREE.Mesh(new THREE.RingGeometry(0.86, 0.9, 64).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#30a46c', transparent: true, opacity: 0.55, depthWrite: false })); halo.position.y = 0.004; scene.add(halo);
     safeTag.textContent = L('Cobot: no cage, it shares the space with people', 'Cobot : sans cage, il partage l\'espace avec les personnes');
     safeBtn.textContent = L('The operator comes close', 'L\'opérateur s\'approche');
@@ -910,7 +942,7 @@ function mount(host) {
       const on = doorOpen && inCell; cage.ang += (((on ? 1 : 0) - cage.ang) * Math.min(1, dt * 4)); cage.door.rotation.y = 1.45 * cage.ang;
       const d = cage.door.userData.at, outside = V(d.x, 0, d.z - 0.8 * R.human), inDoor = V(d.x, 0, d.z - 0.1);
       person.position.copy(outside.clone().lerp(inDoor, cage.ang)); person.rotation.y = 0;
-      person.userData.arms[1].rotation.x = -1.2 * Math.min(1, cage.ang * 1.5);
+      if (!person.userData.pendant) person.userData.arms[1].rotation.x = -1.2 * Math.min(1, cage.ang * 1.5);
       halted = on || cage.ang > 0.03;
       showAlert(halted ? L('<b>Door open: the robot stops at once</b> (safety stop). An industrial robot is fast and strong and does not feel a person, so a fence keeps everyone out while it works.', '<b>Porte ouverte : le robot s\'arrête aussitôt</b> (arrêt de sécurité). Un robot industriel est rapide et puissant et ne sent pas une personne : une cage tient tout le monde à l\'écart pendant qu\'il travaille.') : '', 'stop');
     }
@@ -991,4 +1023,4 @@ function mount(host) {
 }
 document.querySelectorAll('.opsdemo').forEach(mount);
 
-export { articulated, arm3, scara, gantry, delta, makeAMR, MAT, M, box, cyl, cylZ, cylX, V, ease, textTexture };
+export { makePerson, articulated, arm3, scara, gantry, delta, makeAMR, MAT, M, box, cyl, cylZ, cylX, V, ease, textTexture };
