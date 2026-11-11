@@ -905,3 +905,10 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .insd-targets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0 0.6rem; }
 .insd-targets button { min-height: 0; padding: 0.4rem 0.8rem; border-radius: 999px; font-size: 0.84rem; font-weight: 700; background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 .insd-targets button[aria-pressed="true"] { color: #fff; border-color: #6d5dfc; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); }
+.sys-cell { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.sys-cell[hidden] { display: none; }
+.sys-cell span { position: absolute; transform: translate(-50%, -100%); padding: 0.15rem 0.5rem; border-radius: 7px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; color: #fff; background: rgba(42, 49, 59, 0.82); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+.sys-cell span::after { content: ''; position: absolute; left: 50%; bottom: -5px; transform: translateX(-50%); border: 5px solid transparent; border-bottom: 0; border-top-color: rgba(42, 49, 59, 0.82); }
+.sys-cell span.op { background: rgba(48, 164, 108, 0.9); } .sys-cell span.op::after { border-top-color: rgba(48, 164, 108, 0.9); }
+@media (max-width: 600px) { .sys-cell span { font-size: 0.6rem; } }
+.sys-cell span.tool { background: rgba(109, 93, 252, 0.92); } .sys-cell span.tool::after { border-top-color: rgba(109, 93, 252, 0.92); }

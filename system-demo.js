@@ -229,7 +229,9 @@ function stewartModel() {
   for (let i = 0; i < 6; i++) { const a = (Math.floor(i / 2) * 2 * Math.PI) / 3 + (i % 2 ? 0.3 : -0.3), b2 = (Math.floor(((i + 1) % 6) / 2) * 2 * Math.PI) / 3 + 1.05 * (i % 2 ? -1 : 1) * 0;
     const P0 = V(Math.cos(a) * 0.4, 0.07, Math.sin(a) * 0.4), P1 = V(Math.cos(a + (i % 2 ? 0.75 : -0.75)) * 0.26, 0.66, Math.sin(a + (i % 2 ? 0.75 : -0.75)) * 0.26);
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1, 12), C.alu), d = P1.clone().sub(P0); leg.position.copy(P0).addScaledVector(d, 0.5); leg.scale.y = d.length(); leg.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); g.add(leg); void b2; }
-  return { g, slots: { base: V(0, 0.04, 0.3), j1: V(0.4, 0.08, 0.05), j2: V(0.33, 0.36, 0.12), j3: V(0.25, 0.64, 0.08), wrist: V(0, 0.69, 0), tool: V(0, 0.8, 0), link: V(-0.3, 0.36, 0.15), cable: V(-0.42, 0.08, 0.1) } };
+  const cup = B.vacuum(); cup.rotation.x = Math.PI; cup.scale.setScalar(1.6); cup.position.y = 0.71 + 0.112 * 1.6; g.add(cup);   // the tool: a vacuum cup facing up
+  g.add(bx(0.22, 0.03, 0.16, C.cream, 0, 0.71 + 0.112 * 1.6 + 0.002));                                                         // the part it holds
+  return { g, slots: { base: V(0, 0.04, 0.3), j1: V(0.4, 0.08, 0.05), j2: V(0.33, 0.36, 0.12), j3: V(0.25, 0.64, 0.08), wrist: V(0, 0.69, 0), tool: V(0, 0.86, 0), link: V(-0.3, 0.36, 0.15), cable: V(-0.42, 0.08, 0.1) } };
 }
 function makeRobot(key) {
   let g, slots;
@@ -295,7 +297,7 @@ function mount(host) {
   const setName = host.dataset.set || 'arm', SET = SETS[setName]; if (!SET) return;
   const list = SET.parts.map(([id, x, z], i) => ({ id, x, z, n: i + 1, def: PARTS[id] }));
   host.innerHTML = `<div class="sys-stage"><div class="sys-pins"></div><div class="sys-flow" hidden></div>
-      <div class="sys-labs"><svg class="sys-lines"></svg></div>
+      <div class="sys-labs"><svg class="sys-lines"></svg></div><div class="sys-cell"></div>
       <div class="sys-ctl"><button type="button" class="sys-play">${L('▶ How it works', '▶ Comment ça marche')}</button><button type="button" class="sys-stop">${L('Emergency stop', 'Arrêt d\'urgence')}</button><button type="button" class="sys-all">${L('Overview', 'Vue d\'ensemble')}</button></div>
       <div class="sys-pop" hidden><button type="button" class="sys-x" aria-label="${L('Close', 'Fermer')}">×</button><div class="sys-pop-in"></div></div><p class="sys-hint">${L('Click a name or a part', 'Cliquez sur un nom ou une pièce')}</p></div>
     <nav class="sys-layers" aria-label="${L('Layers', 'Couches')}"><button type="button" class="sys-prev" aria-label="${L('Previous layer', 'Couche précédente')}">‹</button><div class="sys-lchips">${LAYERS.map((l, i) => `<button type="button" data-l="${i}">${i && i < LAYERS.length - 1 ? `<b>${i}</b>` : ''}${l[0]}</button>`).join('')}</div><button type="button" class="sys-next" aria-label="${L('Next layer', 'Couche suivante')}">›</button></nav>
@@ -352,14 +354,22 @@ function mount(host) {
   const armSet = setName === 'arm' || setName === 'cobot';
   if (armSet) {
     prop(G(bx(0.45, 0.8, 0.32, C.cream), bx(0.08, 0.1, 0.02, C.dark, 0.12, 0.6, 0.17), bx(0.12, 0.09, 0.02, C.yellow, -0.1, 0.55, 0.17), cy(0.025, 0.02, C.red, -0.1, 0.62, 0.17)), -1.6, -0.25);
-    prop(G(bx(0.5, 0.36, 0.35, C.grey), bx(0.3, 0.012, 0.2, C.dark, 0, 0.36)), -1.6, 0.6);
-    prop(G(bx(0.35, 0.3, 1.1, C.grey), bx(0.33, 0.02, 1.08, C.black, 0, 0.3)), 1.6, 0.05);
-    prop(G(bx(0.04, 1.35, 0.04, C.grey), bx(0.3, 0.03, 0.03, C.grey, -0.13, 1.33), bx(0.07, 0.05, 0.06, C.black, -0.27, 1.27)), 1.85, -0.4);
-    prop(G(bx(0.04, 0.9, 0.04, C.yellow, -0.35), bx(0.04, 0.9, 0.04, C.yellow, 0.35)), 1.0, 0.95);
+    prop(desk(), -1.6, 0.6);
+    prop(conveyorProp(), 1.6, 0.05);
+    prop(G(bx(0.04, 1.35, 0.04, C.grey), bx(0.3, 0.03, 0.03, C.grey, -0.13, 1.33), bx(0.07, 0.05, 0.06, C.black, -0.27, 1.27), cyZ(0.015, 0.02, C.lens, -0.27, 1.27, 0.03)), 1.85, -0.4);
+    const cur = B.curtain(); cur.scale.setScalar(2.2); cur.children.forEach((m) => { if (m.material && m.material.opacity === 0.08) m.material.opacity = 0.16; }); prop(cur, 1.0, 0.95);
   } else {
     prop(G(bx(0.05, 1.5, 0.05, C.grey), bx(0.2, 0.05, 0.12, C.black, 0, 1.2, 0.06)), -1.7, -0.3);
-    prop(G(bx(0.5, 0.36, 0.35, C.grey), bx(0.3, 0.012, 0.2, C.dark, 0, 0.36)), -1.6, 0.6);
+    prop(desk(), -1.6, 0.6);
   }
+  function desk() { const g = G(bx(0.7, 0.04, 0.45, C.wood, 0, 0.4)); for (const [x, z] of [[-0.32, -0.19], [0.32, -0.19], [-0.32, 0.19], [0.32, 0.19]]) g.add(bx(0.04, 0.4, 0.04, C.grey, x, 0, z)); const lp = B.laptop(); lp.scale.setScalar(1.3); lp.position.y = 0.44; g.add(lp); return g; }
+  function conveyorProp() { const g = new THREE.Group(), L2 = 1.1; for (const x of [-0.15, 0.15]) for (const z of [-0.5, 0.5]) g.add(bx(0.04, 0.26, 0.04, C.grey, x, 0, z));
+    for (const x of [-0.17, 0.17]) g.add(bx(0.03, 0.06, L2, C.grey, x, 0.24)); g.add(bx(0.32, 0.02, L2 - 0.06, C.rubber, 0, 0.28));
+    for (const z of [-0.52, 0.52]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.32, 16).rotateZ(Math.PI / 2), C.steel); r.position.set(0, 0.28, z); g.add(r); }
+    g.add(bx(0.16, 0.12, 0.16, C.cream, 0, 0.3, -0.15)); g.add(bx(0.16, 0.12, 0.16, C.cream, 0, 0.3, 0.25)); return g; }
+  const cellLabels = armSet ? [[L('Controller cabinet', 'Armoire de commande'), V(-1.6, 0.85, -0.25)], [L('Programming desk', 'Poste de programmation'), V(-1.6, 0.75, 0.6)], [L('Conveyor (brings the parts)', 'Convoyeur (amène les pièces)'), V(1.6, 0.5, 0.05)],
+      [L('Camera on its stand', 'Caméra sur son support'), V(1.6, 1.42, -0.4)], [L('Light curtain (entrance of the cell)', 'Barrière immatérielle (entrée de la cellule)'), V(1.0, 1.0, 0.95)]]
+    : [[L('Wi-Fi access point', 'Point d\'accès Wi-Fi'), V(-1.7, 1.55, -0.3)], [L('Supervision desk', 'Poste de supervision'), V(-1.6, 0.75, 0.6)]];
   // the operator, at real size next to the robot, with the teach pendant (a tablet for mobile robots)
   const HUMAN = { six: 0.58, cobot: 0.6, scara: 0.72, delta: 0.75, gantry: 0.62, stewart: 0.7, humanoid: 0.95, quadrotor: 0.6, mobile: 1, wheels: 1, drives: 1 }[host.dataset.robot || 'six'] || 0.7;
   const oper = makePerson({ female: true, pendant: true, helmet: armSet }); oper.scale.setScalar(Math.min(1.25, HUMAN * robotG.scale.x)); oper.position.set(RC.x - (armSet ? 1.05 : 1.3), 0, RC.z + (armSet ? 0.3 : -0.45)); oper.rotation.y = Math.PI / 2; scene.add(oper);
@@ -375,6 +385,9 @@ function mount(host) {
   const LAYERCAM = { p: V(0.15, 2.35, 2.45), t: V(0.05, 0.42, -1.75) };
   const layerOf = (p) => LAYERS.findIndex((l) => Array.isArray(l[1]) && l[1].includes(p.def[0]));
   // a dotted line + a dot at the place in the robot, for each part of the current layer
+  const cellEl = host.querySelector('.sys-cell');
+  if (armSet && rob.slots.tool) cellLabels.push([host.dataset.robot === 'stewart' ? L('The tool: a vacuum cup', 'L\'outil : une ventouse') : L('The tool: a gripper', 'L\'outil : une pince'), null, rob.g.localToWorld(rob.slots.tool.clone()).add(V(0, 0.08, 0))]);
+  cellEl.innerHTML = cellLabels.map(([n, , w], i) => `<span class="${w ? 'tool' : ''}">${n}</span>`).join('') + `<span class="op">${L('Operator with the teach pendant', 'Opératrice avec le pupitre')}</span>`;
   const leaders = {};
   for (const p of list) {
     const col = CATS[p.def[0]][1], ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 1, 0)]), new THREE.LineDashedMaterial({ color: col, dashSize: 0.05, gapSize: 0.035, depthTest: false, transparent: true }));
@@ -492,6 +505,9 @@ function mount(host) {
       });
     }
     svgL.innerHTML = d;
+    // names of the objects around the robot (cabinet, desk, conveyor, light curtain…), on the robot and layer views
+    cellEl.hidden = all;
+    if (!all) [...cellEl.children].forEach((el, i) => { const w3 = i < cellLabels.length ? (cellLabels[i][2] ? cellLabels[i][2].clone() : RC.clone().add(cellLabels[i][1])) : oper.localToWorld(V(0, 1.95, 0)); v.copy(w3).project(camera); el.style.display = v.z > 1 ? 'none' : ''; el.style.left = ((v.x + 1) / 2 * r.width) + 'px'; el.style.top = ((1 - v.y) / 2 * r.height) + 'px'; });
     if (camK < 1 && camGoal) { camK = Math.min(1, camK + dt / 1.1); const e = camK * camK * (3 - 2 * camK); camera.position.copy(camFrom.p.clone().lerp(camGoal.p, e)); orbit.target.copy(camFrom.t.clone().lerp(camGoal.t, e)); }
   }
   function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = camera.aspect < 0.9 ? 50 : 36; camera.updateProjectionMatrix();
