@@ -79,9 +79,9 @@ let floor, grid;
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
 function paintGround() {
   const light = isLight(), g = grid.geometry.attributes.color;
-  scene.background.set(light ? '#e7ebf0' : '#23262b');
-  floor.material.color.set(light ? '#d3d9e1' : '#25282d'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
-  const c1 = new THREE.Color(light ? '#97a1ae' : '#5a5f68'), c2 = new THREE.Color(light ? '#bcc4ce' : '#383c43'), n = g.count;
+  scene.background.set(light ? '#e1e5ea' : '#23262b');
+  floor.material.color.set(light ? '#b9c1cb' : '#25282d'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
+  const c1 = new THREE.Color(light ? '#8a95a3' : '#5a5f68'), c2 = new THREE.Color(light ? '#a7b0bb' : '#383c43'), n = g.count;
   for (let i = 0; i < n; i += 4) { const c = (i / 4) === Math.floor(n / 8) ? c1 : c2; for (let k = 0; k < 4 && i + k < n; k++) g.setXYZ(i + k, c.r, c.g, c.b); }   // GridHelper: 4 vertices per line, the centre lines get colour 1
   g.needsUpdate = true; grid.material.opacity = light ? 0.75 : 0.5;
   hemi.groundColor.set(light ? '#b9c0ca' : '#3a3d44'); hemi.intensity = light ? 0.45 : 0.25;
