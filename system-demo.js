@@ -287,16 +287,23 @@ const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dan
 // ---------------------------------------------------------------- "how it works": a few key components, laid out clearly, with big callout cards
 // [candidate ids (first one present is used), x, z on the bench, step of the loop it belongs to (0 = safety)]
 const HOWSET = {
-  arm: [[['estop'], -1.9, 1.55, 0], [['srelay'], -0.75, 1.55, 0], [['photo', 'prox'], -1.9, 0.35, 1], [['cam'], -1.8, -0.9, 1], [['plc'], -0.8, 0.3, 2], [['cabinet'], 0.15, -0.85, 2], [['drive'], 0.5, 0.6, 3], [['servo'], 1.55, 0.05, 4], [['enc'], 1.55, -0.38, 5]],
-  cobot: [[['estop'], -1.9, 1.55, 0], [['srelay'], -0.75, 1.55, 0], [['photo', 'prox'], -1.9, 0.35, 1], [['cam'], -1.8, -0.9, 1], [['plc'], -0.8, 0.3, 2], [['cabinet'], 0.15, -0.85, 2], [['drive'], 0.95, 0.45, 3], [['servo'], 1.6, 0.05, 4], [['enc'], 1.6, -0.38, 5], [['jtq'], 1.95, 0.75, 0]],
-  mobile: [[['estop', 'bumper'], -1.9, 1.55, 0], [['srelay'], -0.75, 1.55, 0], [['lidar'], -1.9, -0.55, 1], [['us', 'imu'], -1.9, 0.5, 1], [['sbc', 'ai'], -0.6, -0.95, 2], [['mcu'], -0.55, 0.5, 2], [['battery'], 0.55, 1.45, 3], [['driver', 'esc'], 0.55, 0.15, 3], [['mot3', 'prop', 'dc'], 1.55, -0.45, 4], [['enc'], 1.55, -0.85, 5]]
+  arm: [[['cam'], -2.05, -1.0, 1], [['photo', 'prox'], -2.05, -0.15, 1], [['ft'], -2.05, 0.7, 1],
+    [['plc'], -1.0, -1.0, 2], [['pendant'], -1.0, -0.15, 2], [['cabinet'], -0.95, 0.75, 2],
+    [['psu'], 0.05, -1.0, 3], [['drive'], 0.05, -0.15, 3],
+    [['servo'], 1.0, -0.75, 4], [['enc'], 1.0, -1.18, 5], [['brake'], 1.0, 0.05, 4], [['harmonic'], 1.95, -0.75, 4], [['gripper'], 1.95, 0.15, 4],
+    [['estop'], -2.05, 1.65, 0], [['curtain', 'scanner'], -0.95, 1.65, 0], [['srelay'], 0.05, 1.65, 0]],
+  mobile: [[['lidar'], -2.05, -1.05, 1], [['cam', 'cam3d'], -2.05, -0.3, 1], [['us'], -2.05, 0.4, 1], [['imu'], -2.05, 1.0, 1],
+    [['sbc', 'ai'], -1.0, -1.0, 2], [['mcu'], -1.0, -0.2, 2], [['radio'], -1.0, 0.55, 2],
+    [['battery'], 0.05, -1.0, 3], [['driver', 'esc'], 0.05, -0.15, 3],
+    [['mot3', 'dc'], 1.0, -0.75, 4], [['enc'], 1.0, -1.18, 5], [['planet'], 1.95, -0.75, 4], [['wheel', 'prop'], 1.95, 0.2, 4],
+    [['estop'], -1.0, 1.65, 0], [['bumper'], 0.05, 1.65, 0], [['scanner'], 1.0, 1.0, 0], [['srelay'], 1.95, 1.65, 0]]
 };
 const HOWTXT = {
   estop: [L('Emergency stop', 'Bouton d\'arrêt d\'urgence'), L('Stops the whole system in case of danger', 'Arrête le système en cas de danger')],
   bumper: [L('Safety bumper', 'Pare-chocs de sécurité'), L('A touch stops the robot at once', 'Un contact arrête le robot aussitôt')],
   photo: [L('Presence sensor', 'Capteur de présence'), L('Detects the part on the conveyor', 'Détecte la pièce sur le convoyeur')],
   prox: [L('Presence sensor', 'Capteur de présence'), L('Detects the part on the conveyor', 'Détecte la pièce sur le convoyeur')],
-  cam: [L('Inspection camera', 'Caméra de contrôle'), L('Finds the part and checks its quality', 'Repère la pièce et vérifie sa qualité')],
+  cam: [L('Camera', 'Caméra'), L('Finds the objects and checks them', 'Repère les objets et les vérifie')],
   plc: [L('PLC (cell brain)', 'Automate (cerveau de la cellule)'), L('Runs the cell and tells the robot what to do', 'Gère la cellule et dit au robot quoi faire')],
   cabinet: [L('Robot controller (robot brain)', 'Contrôleur robot (cerveau du robot)'), L('Computes the motion and gives the orders to the drives', 'Calcule le mouvement et donne les consignes aux variateurs')],
   srelay: [L('Safety relay', 'Relais de sécurité'), L('Cuts the motor power in case of danger', 'Coupe la puissance des moteurs en cas de danger')],
@@ -318,6 +325,18 @@ const HOWTXT = {
   dc: [L('Gear motor', 'Motoréducteur'), L('Turns the wheels', 'Fait tourner les roues')],
   cobotcab: [L('Cobot controller (robot brain)', 'Boîtier de commande du cobot'), L('Computes the motion and gives the orders to the joints', 'Calcule le mouvement et donne les consignes aux articulations')],
   cobotdrv: [L('Drive (inside the joint)', 'Variateur (dans l\'articulation)'), L('Gives the motor exactly the right current', 'Donne au moteur exactement le bon courant')],
+  curtain: [L('Light curtain', 'Barrière immatérielle'), L('Stops the robot if someone enters the cell', 'Arrête le robot si quelqu\'un entre dans la cellule')],
+  scanner: [L('Safety laser scanner', 'Scanner laser de sécurité'), L('Slows down, then stops, when someone comes close', 'Ralentit, puis arrête, quand quelqu\'un approche')],
+  pendant: [L('Teach pendant', 'Pupitre de programmation'), L('To move the robot by hand and write its program', 'Pour bouger le robot à la main et écrire son programme')],
+  psu: [L('Power supply', 'Alimentation'), L('Turns the mains into the right voltages', 'Transforme le secteur en bonnes tensions')],
+  brake: [L('Holding brake', 'Frein de maintien'), L('Holds the arm when the power is off', 'Tient le bras quand le courant est coupé')],
+  harmonic: [L('Gearbox (reducer)', 'Réducteur'), L('Slows the motor down and makes it stronger', 'Ralentit le moteur et le rend plus fort')],
+  gripper: [L('Tool (gripper)', 'Outil (pince)'), L('Grabs and holds the part', 'Attrape et tient la pièce')],
+  ft: [L('Force sensor (wrist)', 'Capteur d\'effort (poignet)'), L('Feels the forces on the tool', 'Sent les efforts sur l\'outil')],
+  cam3d: [L('3D camera', 'Caméra 3D'), L('Sees the shape and distance of objects', 'Voit la forme et la distance des objets')],
+  radio: [L('Wi-Fi / Bluetooth', 'Wi-Fi / Bluetooth'), L('Receives the missions from the fleet manager', 'Reçoit les missions du gestionnaire de flotte')],
+  planet: [L('Gearbox', 'Réducteur'), L('Slows the motor down and makes it stronger', 'Ralentit le moteur et le rend plus fort')],
+  wheel: [L('Drive wheel', 'Roue motrice'), L('Pushes on the floor: the robot moves', 'Pousse sur le sol : le robot avance')],
   robot: [L('The robot moves', 'Le robot bouge'), L('The result: a precise motion', 'Le résultat : un mouvement précis')]
 };
 
@@ -440,7 +459,7 @@ function mount(host) {
   }
   // ---- the clean "how it works" layout: key components, dashed cables on the floor, callout cards
   const setKey = setName === 'cobot' ? 'cobot' : setName === 'arm' ? 'arm' : 'mobile', isArm = setKey !== 'mobile', isCobot = setKey === 'cobot';
-  const HOW = HOWSET[setKey].map(([cands, x, z, step]) => { const id = cands.find((c) => objs[c]); return id ? { id, x, z, step } : null; }).filter(Boolean);
+  const HOW = (isCobot ? HOWSET.arm.concat([[['jtq'], 1.95, 1.05, 0]]) : HOWSET[isArm ? 'arm' : 'mobile']).map(([cands, x, z, step]) => { const id = cands.find((c) => objs[c]); return id ? { id, x: x * 0.74, z: z * 0.92, step } : null; }).filter(Boolean);   // kept in the middle of the bench, between the two columns of cards
   const robotAnchor = () => rcen.clone().add(V(0, rmax * 0.15, 0));
   HOW.push({ id: 'robot', step: 4, robot: true });
   const TX = (id) => (isCobot && id === 'cabinet' ? HOWTXT.cobotcab : isCobot && id === 'drive' ? HOWTXT.cobotdrv : !isArm && id === 'enc' ? [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the wheel', 'Compte les tours de la roue')] : HOWTXT[id]);
@@ -449,11 +468,19 @@ function mount(host) {
   const has = (id) => HOW.some((q) => q.id === id);
   const W2 = (a, b, type) => (has(a) && has(b) ? [a, b, type] : null);
   const ids = HOW.map((h) => h.id), first = (...c) => c.find((x) => ids.includes(x));
-  const sensors = HOW.filter((h) => h.step === 1).map((h) => h.id), drv = first('drive', 'driver', 'esc'), mot = first('servo', 'mot3', 'prop', 'dc'), sb = first('sbc', 'ai'), sf = first('estop', 'bumper');
+  const sensors = HOW.filter((h) => h.step === 1).map((h) => h.id), drv = first('drive', 'driver', 'esc'), mot = first('servo', 'mot3', 'dc'), sb = first('sbc', 'ai'), sf = first('estop', 'bumper'), cur = first('curtain', 'scanner');
   const hw = [];
-  if (isArm) { sensors.forEach((sn) => hw.push(W2(sn, 'plc', 'sig'))); hw.push(W2('plc', 'cabinet', 'bus')); hw.push(W2('cabinet', drv, 'bus')); hw.push(W2('enc', drv, 'fb')); hw.push(W2('jtq', 'srelay', 'safe')); }
-  else { hw.push(W2('lidar', sb, 'sig')); hw.push(W2(first('us', 'imu'), 'mcu', 'sig')); hw.push(W2(sb, 'mcu', 'bus')); hw.push(W2('mcu', drv, 'bus')); hw.push(W2('battery', drv, 'pow')); hw.push(W2('enc', 'mcu', 'fb')); }
-  hw.push(W2(drv, mot, 'mot')); hw.push(W2(mot, 'robot', 'mech')); hw.push(W2(sf, 'srelay', 'safe')); hw.push(W2('srelay', drv, 'safe'));
+  if (isArm) {
+    hw.push(W2('cam', 'plc', 'sig'), W2(first('photo', 'prox'), 'plc', 'sig'), W2('ft', 'cabinet', 'sig'), W2('plc', 'cabinet', 'bus'), W2('pendant', 'cabinet', 'bus'), W2('cabinet', drv, 'bus'), W2('psu', 'cabinet', 'pow'), W2('psu', drv, 'pow'),
+      W2(drv, 'servo', 'mot'), W2(drv, 'brake', 'pow'), W2('servo', 'harmonic', 'mech'), W2('harmonic', 'robot', 'mech'), W2('cabinet', 'gripper', 'sig'), W2('enc', drv, 'fb'),
+      W2('estop', 'srelay', 'safe'), W2(cur, 'srelay', 'safe'), W2('jtq', 'srelay', 'safe'), W2('srelay', drv, 'safe'));
+  } else {
+    const out = first('wheel', 'prop');
+    hw.push(W2('lidar', sb, 'sig'), W2(first('cam', 'cam3d'), sb, 'sig'), W2('us', 'mcu', 'sig'), W2('imu', 'mcu', 'sig'), W2(sb, 'mcu', 'bus'), W2('radio', sb, 'bus'), W2('mcu', drv, 'bus'), W2('battery', drv, 'pow'), W2('battery', sb, 'pow'),
+      W2(drv, mot, 'mot'), W2(mot, 'planet', 'mech'), W2('planet', out, 'mech'), W2(out, 'robot', 'mech'), W2('enc', 'mcu', 'fb'),
+      W2('estop', 'srelay', 'safe'), W2('bumper', 'srelay', 'safe'), W2('scanner', 'srelay', 'safe'), W2('srelay', drv, 'safe'));
+    if (!has('planet')) hw.push(W2(mot, out || 'robot', 'mech'));
+  }
   const howWires = hw.filter(Boolean).map(([a, b, type], k) => {
     const A = hp(a), B2 = hp(b), zm = (A.z + B2.z) / 2 + (k % 3 - 1) * 0.06;            // right-angled route on the floor, like real cable trays
     const pts = [A, V(A.x, 0.012, zm), V(B2.x, 0.012, zm), B2], col = WIRE[type][0];
@@ -467,6 +494,7 @@ function mount(host) {
   // the encoder is mounted on the back of the motor: a short shaft joins them
   if (has('enc') && has(mot)) { const e = hp('enc'), m2 = hp(mot), sh = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1, 12), C.steel); sh.position.copy(e).lerp(m2, 0.5).setY(0.09); sh.scale.y = Math.max(0.05, e.distanceTo(m2) - 0.12); sh.quaternion.setFromUnitVectors(V(0, 1, 0), m2.clone().sub(e).setY(0).normalize()); howG.add(sh); }
   const howEl = host.querySelector('.sys-how');
+  howEl.insertAdjacentHTML('beforeend', HOW.map((h, i) => `<span class="sys-hpin" data-h="${h.id}" style="--c:${h.robot ? '#6d5dfc' : CATS[PARTS[h.id][0]][1]}">${i + 1}</span>`).join(''));
   howEl.insertAdjacentHTML('beforeend', HOW.map((h, i) => `<div class="sys-hcard" data-h="${h.id}" style="--c:${h.robot ? '#6d5dfc' : CATS[PARTS[h.id][0]][1]}"><b>${i + 1}</b><div><strong>${TX(h.id)[0]}</strong><span>${TX(h.id)[1]}</span></div></div>`).join(''));
   // ---- the written explanation under the view: the loop step by step, for complete beginners
   const N = (id) => { const k = HOW.findIndex((h) => h.id === id); return k < 0 ? '' : `<b class="sys-n" style="--c:${HOW[k].robot ? '#6d5dfc' : CATS[PARTS[id][0]][1]}">${k + 1}</b> <strong>${TX(id)[0]}</strong>`; };
@@ -475,15 +503,15 @@ function mount(host) {
   const STEPS = isArm ? [
     [1, L('1. The sensors see', '1. Les capteurs voient'), L(`${S1} watch the cell. The presence sensor sends a simple "yes / no" signal (24 V) when a part arrives on the conveyor. The camera takes a picture, finds exactly where the part is and checks that it is good. The sensors decide nothing: they only inform.`, `${S1} surveillent la cellule. Le capteur de présence envoie un simple signal « oui / non » (24 V) quand une pièce arrive sur le convoyeur. La caméra prend une photo, trouve exactement où est la pièce et vérifie qu'elle est bonne. Les capteurs ne décident rien : ils informent seulement.`), LIKE('the eyes.', 'les yeux.')],
     [2, L('2. Two brains decide', '2. Deux cerveaux décident'), L(`${N('plc')} is the brain of the <u>cell</u>: it reads all the sensors and follows the sequence ("a good part is here → robot, take it"). It sends this order to ${N('cabinet')}, the brain of the <u>robot</u>. The robot controller computes the path of the gripper and the angle each joint must reach (this calculation is called <i>inverse kinematics</i>), then sends a new position order to every drive each millisecond, through a fast network cable (EtherCAT).${isCobot ? ' On a cobot this controller is a small box, often programmed directly on the tablet.' : ''}`, `${N('plc')} est le cerveau de la <u>cellule</u> : il lit tous les capteurs et suit la séquence (« une bonne pièce est là → robot, prends-la »). Il envoie cet ordre à ${N('cabinet')}, le cerveau du <u>robot</u>. Le contrôleur robot calcule le trajet de la pince et l'angle que chaque articulation doit atteindre (ce calcul s'appelle la <i>cinématique inverse</i>), puis envoie une nouvelle consigne de position à chaque variateur toutes les millisecondes, par un câble réseau rapide (EtherCAT).${isCobot ? ' Sur un cobot, ce contrôleur est un petit boîtier, souvent programmé directement sur la tablette.' : ''}`), LIKE('the brain that plans the gesture.', 'le cerveau qui prépare le geste.')],
-    [3, L('3. The drive gives the power', '3. Le variateur donne la puissance'), L(`${N(drv)} is an amplifier. It receives a tiny order ("go to 35.2°") and turns it into a strong electric current, exactly measured, for the motor: more current = more force.${isCobot ? ' On a cobot, the drive is a small board hidden inside each joint, right next to its motor.' : ' On an industrial robot the drives are in the controller cabinet, one per axis.'}`, `${N(drv)} est un amplificateur. Il reçoit une toute petite consigne (« va à 35,2° ») et la transforme en un courant électrique fort, exactement dosé, pour le moteur : plus de courant = plus de force.${isCobot ? ' Sur un cobot, le variateur est une petite carte cachée dans chaque articulation, juste à côté de son moteur.' : ' Sur un robot industriel, les variateurs sont dans l\'armoire, un par axe.'}`), LIKE('the nerves that carry the order to the muscles.', 'les nerfs qui portent l\'ordre aux muscles.')],
-    [4, L('4. The motor moves the robot', '4. Le moteur fait bouger le robot'), L(`${N(mot)} turns fast (about 3 000 turns per minute) but with little force. The gearbox inside the joint slows it down about 100 times and makes it about 100 times stronger. The joint turns, and ${N('robot')}: the gripper goes to the part.`, `${N(mot)} tourne vite (environ 3 000 tours par minute) mais avec peu de force. Le réducteur dans l'articulation le ralentit environ 100 fois et le rend environ 100 fois plus fort. L'articulation tourne, et ${N('robot')} : la pince va vers la pièce.`), LIKE('the muscles.', 'les muscles.')],
+    [3, L('3. Power and the drive', '3. L\'énergie et le variateur'), L(`${N('psu')} turns the 230/400 V mains into the voltages each part needs. ${N(drv)} is an amplifier: it receives a tiny order ("go to 35.2°") and turns it into a strong electric current, exactly measured, for the motor: more current = more force.${isCobot ? ' On a cobot, the drive is a small board hidden inside each joint, right next to its motor.' : ' On an industrial robot the drives are in the controller cabinet, one per axis.'} ${N('pendant')} lets a person move the robot by hand and teach it its positions.`, `${N('psu')} transforme le secteur 230/400 V en tensions adaptées à chaque pièce. ${N(drv)} est un amplificateur : il reçoit une toute petite consigne (« va à 35,2° ») et la transforme en un courant électrique fort, exactement dosé, pour le moteur : plus de courant = plus de force.${isCobot ? ' Sur un cobot, le variateur est une petite carte cachée dans chaque articulation, juste à côté de son moteur.' : ' Sur un robot industriel, les variateurs sont dans l\'armoire, un par axe.'} ${N('pendant')} permet à une personne de bouger le robot à la main et de lui apprendre ses positions.`), LIKE('the food (energy) and the nerves that carry the order to the muscles.', 'la nourriture (l\'énergie) et les nerfs qui portent l\'ordre aux muscles.')],
+    [4, L('4. The motor moves the robot', '4. Le moteur fait bouger le robot'), L(`${N(mot)} turns fast (about 3 000 turns per minute) but with little force. ${N('harmonic')} slows it down about 100 times and makes it about 100 times stronger. ${N('brake')} is released while the robot moves, and closes as soon as the power is cut so the arm cannot fall. The joints turn, ${N('robot')}, and ${N('gripper')} at the end grabs the part.`, `${N(mot)} tourne vite (environ 3 000 tours par minute) mais avec peu de force. ${N('harmonic')} le ralentit environ 100 fois et le rend environ 100 fois plus fort. ${N('brake')} est relâché pendant que le robot bouge, et se serre dès que le courant est coupé pour que le bras ne tombe pas. Les articulations tournent, ${N('robot')}, et ${N('gripper')} au bout attrape la pièce.`), LIKE('the muscles, and the hand.', 'les muscles, et la main.')],
     [5, L('5. The encoder closes the loop', '5. Le codeur ferme la boucle'), L(`${N('enc')} is fixed at the back of the motor, on the same shaft: motor and encoder form one block. At every instant it measures the real angle and sends it back to the drive. The drive compares: if the arm is behind, it gives more current; if it is ahead, less. This is called a <i>closed loop</i>, and it runs thousands of times per second: that is why a robot is so precise.`, `${N('enc')} est fixé au dos du moteur, sur le même arbre : moteur et codeur forment un seul bloc. À chaque instant il mesure l'angle réel et le renvoie au variateur. Le variateur compare : si le bras est en retard, il donne plus de courant ; s'il est en avance, moins. On appelle cela une <i>boucle fermée</i>, et elle tourne des milliers de fois par seconde : c'est pour cela qu'un robot est si précis.`), LIKE('the sense that tells you where your arm is, even with your eyes closed.', 'le sens qui vous dit où est votre bras, même les yeux fermés.')],
-    [0, L('Safety, above everything', 'La sécurité, au-dessus de tout'), L(`${N(sf)} is <u>not</u> read by the program: it is wired to ${N('srelay')}, a special relay with two separate channels (if one fails, the other still works). When someone presses it, the relay switches off the power of the drives (this is called STO, "Safe Torque Off") and the brakes close. The robot stops, even if the program has a bug.${isCobot ? ` On a cobot, ${N('jtq')} in every joint also feels the effort: if the cobot touches a person, the effort is different from what was expected and it stops. That is why a cobot can work without a cage.` : ' An industrial robot does not feel people: this is why it works inside a cage.'}`, `${N(sf)} n'est <u>pas</u> lu par le programme : il est câblé sur ${N('srelay')}, un relais spécial à deux voies séparées (si l'une tombe en panne, l'autre fonctionne encore). Quand quelqu'un appuie, le relais coupe la puissance des variateurs (on appelle cela STO, « Safe Torque Off ») et les freins se serrent. Le robot s'arrête, même si le programme a un bug.${isCobot ? ` Sur un cobot, ${N('jtq')} dans chaque articulation sent aussi l'effort : si le cobot touche une personne, l'effort est différent de celui prévu et il s'arrête. C'est pour cela qu'un cobot peut travailler sans cage.` : ' Un robot industriel ne sent pas les personnes : c\'est pour cela qu\'il travaille dans une cage.'}`), LIKE('the reflex that pulls your hand back from a hot plate, without thinking.', 'le réflexe qui retire votre main d\'une plaque chaude, sans réfléchir.')]
+    [0, L('Safety, above everything', 'La sécurité, au-dessus de tout'), L(`${N(sf)} is <u>not</u> read by the program: it is wired to ${N('srelay')} — like ${N(cur)} at the entrance of the cell — a special relay with two separate channels (if one fails, the other still works). When someone presses it, the relay switches off the power of the drives (this is called STO, "Safe Torque Off") and the brakes close. The robot stops, even if the program has a bug.${isCobot ? ` On a cobot, ${N('jtq')} in every joint also feels the effort: if the cobot touches a person, the effort is different from what was expected and it stops. That is why a cobot can work without a cage.` : ' An industrial robot does not feel people: this is why it works inside a cage.'}`, `${N(sf)} n'est <u>pas</u> lu par le programme : il est câblé sur ${N('srelay')}, comme ${N(cur)} à l'entrée de la cellule : un relais spécial à deux voies séparées (si l'une tombe en panne, l'autre fonctionne encore). Quand quelqu'un appuie, le relais coupe la puissance des variateurs (on appelle cela STO, « Safe Torque Off ») et les freins se serrent. Le robot s'arrête, même si le programme a un bug.${isCobot ? ` Sur un cobot, ${N('jtq')} dans chaque articulation sent aussi l'effort : si le cobot touche une personne, l'effort est différent de celui prévu et il s'arrête. C'est pour cela qu'un cobot peut travailler sans cage.` : ' Un robot industriel ne sent pas les personnes : c\'est pour cela qu\'il travaille dans une cage.'}`), LIKE('the reflex that pulls your hand back from a hot plate, without thinking.', 'le réflexe qui retire votre main d\'une plaque chaude, sans réfléchir.')]
   ] : [
     [1, L('1. The sensors see', '1. Les capteurs voient'), L(`${S1} measure the world around the robot. The LiDAR is a laser that spins and measures thousands of distances per second: it draws the walls and obstacles all around. The other sensor watches what is very close, or how the robot is tilted.`, `${S1} mesurent le monde autour du robot. Le LiDAR est un laser qui tourne et mesure des milliers de distances par seconde : il dessine les murs et les obstacles tout autour. L'autre capteur surveille ce qui est tout proche, ou l'inclinaison du robot.`), LIKE('the eyes and the inner ear.', 'les yeux et l\'oreille interne.')],
     [2, L('2. Two brains decide', '2. Deux cerveaux décident'), L(`${N(sb)} is the "big brain": it builds a map, finds where the robot is on it and chooses a path around the obstacles. ${N('mcu')} is the "small fast brain": it turns this plan into precise speed orders for each motor, many times per second.`, `${N(sb)} est le « grand cerveau » : il construit une carte, trouve où est le robot dessus et choisit un chemin autour des obstacles. ${N('mcu')} est le « petit cerveau rapide » : il transforme ce plan en consignes de vitesse précises pour chaque moteur, plusieurs fois par seconde.`), LIKE('the brain that plans, and the spinal cord that reacts fast.', 'le cerveau qui planifie, et la moelle épinière qui réagit vite.')],
-    [3, L('3. Energy and power', '3. L\'énergie et la puissance'), L(`${N('battery')} stores the energy. ${N(drv)} takes it and switches it on and off very fast (this is called PWM): the longer it is "on", the faster the motor turns.`, `${N('battery')} stocke l'énergie. ${N(drv)} la prend et l'allume et l'éteint très vite (on appelle cela le PWM) : plus elle est « allumée » longtemps, plus le moteur tourne vite.`), LIKE('the food (energy) and the nerves (orders).', 'la nourriture (l\'énergie) et les nerfs (les ordres).')],
-    [4, L('4. The motors move the robot', '4. Les moteurs font bouger le robot'), L(`${N(mot)} turns, and ${N('robot')}: it drives, walks or flies along the chosen path.`, `${N(mot)} tourne, et ${N('robot')} : il roule, marche ou vole le long du chemin choisi.`), LIKE('the muscles.', 'les muscles.')],
+    [3, L('3. Energy and power', '3. L\'énergie et la puissance'), L(`${N('battery')} stores the energy and feeds the computer and the motors. ${N(drv)} takes it and switches it on and off very fast (this is called PWM): the longer it is "on", the faster the motor turns.`, `${N('battery')} stocke l'énergie et alimente l'ordinateur et les moteurs. ${N(drv)} la prend et l'allume et l'éteint très vite (on appelle cela le PWM) : plus elle est « allumée » longtemps, plus le moteur tourne vite.`), LIKE('the food (energy) and the nerves (orders).', 'la nourriture (l\'énergie) et les nerfs (les ordres).')],
+    [4, L('4. The motors move the robot', '4. Les moteurs font bouger le robot'), L(`${N(mot)} turns fast; ${N('planet')} slows it down and makes it stronger; ${N(first('wheel', 'prop'))} pushes on the floor (or on the air), and ${N('robot')}: it drives, walks or flies along the chosen path.`, `${N(mot)} tourne vite ; ${N('planet')} le ralentit et le rend plus fort ; ${N(first('wheel', 'prop'))} pousse sur le sol (ou sur l'air), et ${N('robot')} : il roule, marche ou vole le long du chemin choisi.`), LIKE('the muscles.', 'les muscles.')],
     [5, L('5. The encoder closes the loop', '5. Le codeur ferme la boucle'), L(`${N('enc')} is fixed on the motor of each wheel. It counts the turns and sends them back to the microcontroller: knowing the size of the wheel, it calculates how far the robot really went (this is called <i>odometry</i>) and corrects the speeds. The sensors then update the map, and the loop starts again.`, `${N('enc')} est fixé sur le moteur de chaque roue. Il compte les tours et les renvoie au microcontrôleur : connaissant la taille de la roue, il calcule de combien le robot a vraiment avancé (on appelle cela l'<i>odométrie</i>) et corrige les vitesses. Les capteurs mettent ensuite la carte à jour, et la boucle recommence.`), LIKE('counting your steps to know how far you walked.', 'compter ses pas pour savoir quelle distance on a marché.')],
     [0, L('Safety, above everything', 'La sécurité, au-dessus de tout'), L(`${N(sf)} is <u>not</u> read by the computer: it is wired to ${N('srelay')}, which cuts the power of the motors directly. The robot stops at once, even if the computer has crashed. Its safety laser scanner can also slow it down, then stop it, when someone comes close.`, `${N(sf)} n'est <u>pas</u> lu par l'ordinateur : il est câblé sur ${N('srelay')}, qui coupe directement la puissance des moteurs. Le robot s'arrête aussitôt, même si l'ordinateur a planté. Son scanner laser de sécurité peut aussi le ralentir, puis l'arrêter, quand quelqu'un s'approche.`), LIKE('the reflex that pulls your hand back from a hot plate, without thinking.', 'le réflexe qui retire votre main d\'une plaque chaude, sans réfléchir.')]
   ];
@@ -545,7 +573,7 @@ function mount(host) {
   const byCat = {}; list.forEach((p) => { const k = layerOf(p); (byCat[k] = byCat[k] || []).push(p); });
   catsEl.innerHTML = Object.entries(byCat).sort((a, b) => a[0] - b[0]).map(([k, ps]) => `<section style="--c:${CATS[ps[0].def[0]][1]}"><h3>${L('Layer ', 'Couche ')}${k} · ${LAYERS[k][0]}</h3><ul>${ps.map((p) => `<li><button type="button" data-p="${p.id}"><b>${p.n}</b><span><strong>${p.def[2][0][FR ? 1 : 0]}</strong><small>${p.def[2][1][FR ? 1 : 0]}</small><em>${p.def[2][2][FR ? 1 : 0]}</em></span></button></li>`).join('')}</ul></section>`).join('');
   let sel = null, camGoal = null, camFrom = null, camK = 1;
-  const HOME = { p: V(0.15, 4.3, 4.9), t: V(0.05, 0, -0.75) };
+  const HOME = { p: V(0.1, 5.6, 5.4), t: V(0.0, 0, -0.45) };
   function fly(p, t) { camFrom = { p: camera.position.clone(), t: orbit.target.clone() }; camGoal = { p, t }; camK = 0; }
   const hlMat = new Map();
   function select(id, flyTo = true) {
@@ -601,7 +629,7 @@ function mount(host) {
     for (const p of list) {
       const o = objs[p.id], u = o.userData, g = goals[p.id];
       if (!u.cur) { u.cur = u.slot.clone(); u.sc = 0.3; }
-      const to = g || u.slot; u.cur.lerp(to, kk); u.sc += ((g ? (all ? u.rowS * 1.45 : u.rowS) : 0.3) - u.sc) * kk;
+      const to = g || u.slot; u.cur.lerp(to, kk); u.sc += ((g ? (all ? u.rowS * 1.15 : u.rowS) : 0.3) - u.sc) * kk;
       const left = u.cur.distanceTo(to), lift = g && left > 0.05 ? Math.min(0.5, left * 0.4) : 0;
       o.position.copy(u.cur); o.position.y += lift; o.scale.setScalar(u.hs * u.sc); o.visible = !!g || u.cur.distanceTo(u.slot) > 0.08;
       u.ring.visible = false;
@@ -611,7 +639,7 @@ function mount(host) {
     wires.forEach((w) => { w.tube.visible = false; });
     // the clean "how it works" view: dashed cables, moving pulses on the active step, callout cards with arrows
     const settled = all && HOW.every((h) => h.robot || objs[h.id].userData.cur.distanceTo(V(h.x, 0, h.z)) < 0.05);
-    howG.visible = settled; howEl.hidden = !settled;
+    howG.visible = settled; howEl.hidden = !settled; host.classList.toggle('sys-how-on', settled);
     const act2 = active();
     for (const w of howWires) {
       const on = act2.includes(w.type) || (playing && !stopped && w.type === 'pow' && fStep >= 2);
@@ -639,14 +667,15 @@ function mount(host) {
       const curStep = stopped ? 0 : playing ? fStep + 1 : -1, items = [];
       explainEl.querySelectorAll('li').forEach((li) => li.classList.toggle('on', +li.dataset.s === curStep));
       howEl.querySelectorAll('.sys-hcard').forEach((c) => { const h = HOW.find((q) => q.id === c.dataset.h), w3 = h.robot ? robotAnchor() : (() => { const b0 = new THREE.Box3().setFromObject(objs[h.id]); return V(objs[h.id].position.x, b0.max.y, objs[h.id].position.z); })();
-        v.copy(w3).project(camera); items.push({ el: c, x: (v.x + 1) / 2 * r.width, y: (1 - v.y) / 2 * r.height });
+        v.copy(w3).project(camera); const it2 = { el: c, x: (v.x + 1) / 2 * r.width, y: (1 - v.y) / 2 * r.height - 14 }; items.push(it2);
+        const pin = howEl.querySelector(`.sys-hpin[data-h="${h.id}"]`); pin.style.left = it2.x + 'px'; pin.style.top = it2.y + 'px'; pin.classList.toggle('dim', curStep >= 0 && !(h.step === curStep || (curStep === 3 && h.id === 'battery')));
         c.classList.toggle('on', curStep >= 0 && (h.step === curStep || (curStep === 3 && h.id === 'battery'))); c.classList.toggle('dim', curStep >= 0 && !c.classList.contains('on')); c.classList.toggle('sel', h.id === sel); });
       const cols = [items.filter((it) => it.x < r.width / 2), items.filter((it) => it.x >= r.width / 2)]; let ad = '';
       cols.forEach((col, k) => { col.sort((a, b) => a.y - b.y); let prev = (k ? 54 : 8) - 6;
         for (const it of col) { const hh = it.el.offsetHeight || 54; it.top = Math.max(prev + 6, it.y - hh / 2); prev = it.top + hh; }
         let next = r.height - 8; for (const it of col.slice().reverse()) { const hh = it.el.offsetHeight || 54; it.top = Math.min(it.top, next - hh); next = it.top - 6; }
         for (const it of col) { const ww = it.el.offsetWidth || 200, hh = it.el.offsetHeight || 54, x0 = k ? r.width - 8 - ww : 8; it.el.style.left = x0 + 'px'; it.el.style.top = it.top + 'px';
-          const sx = k ? x0 : x0 + ww, sy = it.top + hh / 2; ad += `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} Q${((sx + it.x) / 2).toFixed(1)},${sy.toFixed(1)} ${it.x.toFixed(1)},${(it.y - 6).toFixed(1)}" style="stroke:${it.el.style.getPropertyValue('--c')}" class="${it.el.classList.contains('dim') ? 'dim' : ''}" marker-end="url(#sysarr)"/>`; } });
+          const sx = k ? x0 : x0 + ww, sy = it.top + hh / 2, ex = it.x + (k ? 11 : -11); ad += `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} L${ex.toFixed(1)},${it.y.toFixed(1)}" style="stroke:${it.el.style.getPropertyValue('--c')}" class="${it.el.classList.contains('dim') ? 'dim' : ''}" marker-end="url(#sysarr)"/>`; } });
       howEl.querySelector('svg').setAttribute('viewBox', `0 0 ${r.width} ${r.height}`); howEl.querySelector('svg g').innerHTML = ad;
     }
     // names of the objects around the robot (cabinet, desk, conveyor, light curtain…), on the robot and layer views
@@ -655,13 +684,13 @@ function mount(host) {
     if (camK < 1 && camGoal) { camK = Math.min(1, camK + dt / 1.1); const e = camK * camK * (3 - 2 * camK); camera.position.copy(camFrom.p.clone().lerp(camGoal.p, e)); orbit.target.copy(camFrom.t.clone().lerp(camGoal.t, e)); }
   }
   function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = camera.aspect < 0.9 ? 50 : 36; camera.updateProjectionMatrix();
-    if (camera.aspect < 0.9) { HOME.p.set(4.2, 4.3, -0.6); LAYERCAM.p.set(0.1, 3.6, 3.2); } else { HOME.p.set(0.15, 4.3, 4.9); LAYERCAM.p.set(0.15, 2.35, 2.45); } }   // portrait screens look along the bench
+    if (camera.aspect < 0.9) { HOME.p.set(4.2, 4.3, -0.6); LAYERCAM.p.set(0.1, 3.6, 3.2); } else { HOME.p.set(0.1, 5.6, 5.4); LAYERCAM.p.set(0.15, 2.35, 2.45); } }   // portrait screens look along the bench
   new ResizeObserver(resize).observe(stage); resize();
   camera.position.copy(ROBOTCAM.p); orbit.target.copy(ROBOTCAM.t); setLayer(0); camK = 1;
   let visible = true, last = performance.now();
   new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(stage);
   renderer.setAnimationLoop((now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!visible) return; frame(dt); orbit.update(); renderer.render(scene, camera); });
-  host.__layer = (i) => { setLayer(i); camK = 1; const H = layer === 0 ? ROBOTCAM : layer === LAYERS.length - 1 ? HOME : LAYERCAM; camera.position.copy(H.p); orbit.target.copy(H.t); for (const p of list) { const g = goals[p.id], u = objs[p.id].userData; u.cur = (g || u.slot).clone(); u.sc = g ? (layer === LAYERS.length - 1 ? u.rowS * 1.45 : u.rowS) : 0.3; } };
+  host.__layer = (i) => { setLayer(i); camK = 1; const H = layer === 0 ? ROBOTCAM : layer === LAYERS.length - 1 ? HOME : LAYERCAM; camera.position.copy(H.p); orbit.target.copy(H.t); for (const p of list) { const g = goals[p.id], u = objs[p.id].userData; u.cur = (g || u.slot).clone(); u.sc = g ? (layer === LAYERS.length - 1 ? u.rowS * 1.15 : u.rowS) : 0.3; } };
   host.__test = () => ({ parts: list.length, wires: wires.length, missing: SET.parts.filter(([id]) => !PARTS[id] || !B[PARTS[id][1]]).map((p) => p[0]) });
 }
 document.querySelectorAll('.sysdemo').forEach(mount);

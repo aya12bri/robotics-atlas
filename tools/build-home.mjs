@@ -32,8 +32,10 @@ const html = `<!-- anatomy-home -->
         <div class="anat-home" id="inside">
           <h3>${tx('Look inside the robots', 'Regarder à l\'intérieur des robots')}</h3>
           <p>${tx('Eleven robots in 3D. Turn them with the mouse, open them in X-ray to see the motors, gearboxes and cables, and take them apart component by component.', 'Onze robots en 3D. Tournez-les à la souris, ouvrez-les en rayons X pour voir les moteurs, réducteurs et câbles, et démontez-les composant par composant.')}</p>
-          <div class="anat-groups">${[GROUPS[0], GROUPS[1], GROUPS[3], GROUPS[2]].map(([g, gd, cards]) => `<section class="anat-group" style="--n:${cards.length}"><div class="anat-gh"><h4>${t(g)}</h4><span>${t(gd)}</span></div><div class="anat-grid">${cards.map(card).join('')}</div></section>`).join('')}</div>
+          <div class="anat-filter" role="group" aria-label="${tx('Type of robot', 'Type de robot')}"><button type="button" data-f="all" aria-pressed="true">${tx('All', 'Tous')} <i>11</i></button><button type="button" data-f="man" aria-pressed="false">${tx('Manipulators', 'Manipulateurs')} <i>6</i></button><button type="button" data-f="mob" aria-pressed="false">${tx('Mobile robots', 'Robots mobiles')} <i>3</i></button><button type="button" data-f="leg" aria-pressed="false">${tx('Humanoids and drones', 'Humanoïdes et drones')} <i>2</i></button></div>
+          <div class="anat-groups">${[[GROUPS[0], 'man'], [GROUPS[1], 'man'], [GROUPS[3], 'leg'], [GROUPS[2], 'mob']].map(([[g, gd, cards], ty]) => `<section class="anat-group" data-type="${ty}" style="--n:${cards.length}"><div class="anat-gh"><h4>${t(g)}</h4><span>${t(gd)}</span></div><div class="anat-grid">${cards.map(card).join('')}</div></section>`).join('')}</div>
         </div>
+          <script>document.querySelectorAll('.anat-filter button').forEach((b) => b.addEventListener('click', () => { const f = b.dataset.f; document.querySelectorAll('.anat-filter button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); document.querySelectorAll('.anat-group').forEach((g) => { g.hidden = f !== 'all' && g.dataset.type !== f; }); document.querySelector('.anat-groups').classList.toggle('filtered', f !== 'all'); }));</script>
         <!-- /anatomy-home -->
 `;
 const file = path.join(root, 'index.html'); let h = fs.readFileSync(file, 'utf8');
