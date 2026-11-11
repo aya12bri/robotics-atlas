@@ -902,3 +902,6 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .sys-lcard { padding: 0.75rem 1rem; border: 1px solid var(--border); border-left: 5px solid #6d5dfc; border-radius: 12px; background: var(--surface); }
 .sys-lcard h3 { margin: 0 0 0.25rem; font-size: 1.02rem; } .sys-lcard p { margin: 0; }
 @media (max-width: 600px) { .sys-labs button { font-size: 0.68rem; padding: 0.15rem 0.45rem 0.15rem 0.2rem; } .sys-lchips button { font-size: 0.74rem; padding: 0.3rem 0.55rem; } }
+.insd-targets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0 0.6rem; }
+.insd-targets button { min-height: 0; padding: 0.4rem 0.8rem; border-radius: 999px; font-size: 0.84rem; font-weight: 700; background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.insd-targets button[aria-pressed="true"] { color: #fff; border-color: #6d5dfc; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); }
