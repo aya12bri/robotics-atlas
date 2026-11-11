@@ -781,6 +781,36 @@ function buildHumanoid() {
 const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid }[KIND]();
 
 scene.traverse((o) => { if (o.isMesh && !o.userData.floor && !o.material.isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } });
+// ------------------------------------------------------------------ reference frame
+// Robotics convention: Z up, X and Y on the floor (right-handed). three.js has Y up, so X = x, Y = −z, Z = y.
+const FRAME = [['X', '#ff4d4d', new THREE.Vector3(1, 0, 0)], ['Y', '#3ddc84', new THREE.Vector3(0, 0, -1)], ['Z', '#4d8dff', new THREE.Vector3(0, 1, 0)]];
+// its size follows the robot: about a third of the model's largest dimension
+const modelBox = new THREE.Box3(); scene.traverse((o) => { if (o.isMesh && o.castShadow && o.visible) modelBox.expandByObject(o); });
+const modelSize = modelBox.isEmpty() ? VIEW_R * 0.5 : Math.max(modelBox.max.x - modelBox.min.x, modelBox.max.y - modelBox.min.y, modelBox.max.z - modelBox.min.z);
+const frameLen = Math.min(VIEW_R * 0.3, Math.max(0.1, modelSize * 0.38)), frame = new THREE.Group(); frame.renderOrder = 10; scene.add(frame);
+// drawn on top of the model, so the frame stays visible even where it starts inside the base
+const frameMat = (col) => new THREE.MeshBasicMaterial({ color: col, depthTest: false, depthWrite: false, transparent: true, opacity: 0.95 });
+const frameTags = FRAME.map(([name, col, dir]) => {
+  const len = name === 'Z' ? frameLen * 1.15 : frameLen;
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(len * 0.02, len * 0.02, len * 0.82, 12), frameMat(col)); shaft.renderOrder = 10;
+  const head = new THREE.Mesh(new THREE.ConeGeometry(len * 0.06, len * 0.18, 16), frameMat(col)); head.renderOrder = 10;
+  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  shaft.quaternion.copy(q); shaft.position.copy(dir).multiplyScalar(len * 0.41); head.quaternion.copy(q); head.position.copy(dir).multiplyScalar(len * 0.91);
+  frame.add(shaft, head);
+  const tip = dir.clone().multiplyScalar(len * 1.08), t = document.createElement('span'); t.className = 'anframe'; t.style.color = col; t.innerHTML = name + '<sub>0</sub>'; box.appendChild(t);
+  return { tip, t };
+});
+{ const o = new THREE.Mesh(new THREE.SphereGeometry(frameLen * 0.045, 16, 12), frameMat('#e8eef5')); o.renderOrder = 10; frame.add(o); }
+// the gizmo: the same three axes, turning with the camera, in the bottom-right corner
+const gizmo = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); gizmo.setAttribute('class', 'angizmo'); gizmo.setAttribute('viewBox', '-50 -50 100 100'); gizmo.setAttribute('aria-hidden', 'true'); box.appendChild(gizmo);
+const gq = new THREE.Quaternion(), gv = new THREE.Vector3();
+function drawFrame(w, h) {
+  frameTags.forEach(({ tip, t }) => { gv.copy(tip).project(camera); const off = gv.z > 1; t.style.display = off ? 'none' : ''; if (!off) { t.style.left = ((gv.x * 0.5 + 0.5) * w) + 'px'; t.style.top = ((-gv.y * 0.5 + 0.5) * h) + 'px'; } });
+  gq.copy(camera.quaternion).invert();
+  const ax = FRAME.map(([name, col, dir]) => { gv.copy(dir).applyQuaternion(gq); return { name, col, x: gv.x * 34, y: -gv.y * 34, z: gv.z }; }).sort((a, b) => a.z - b.z);
+  gizmo.innerHTML = '<circle r="46" class="bg"/>' + ax.map((a) => '<line x1="0" y1="0" x2="' + a.x.toFixed(1) + '" y2="' + a.y.toFixed(1) + '" stroke="' + a.col + '" stroke-width="3.5" stroke-linecap="round" opacity="' + (a.z < -0.2 ? 0.45 : 1) + '"/><circle cx="' + a.x.toFixed(1) + '" cy="' + a.y.toFixed(1) + '" r="8" fill="' + a.col + '"/><text x="' + a.x.toFixed(1) + '" y="' + (a.y + 3.5).toFixed(1) + '">' + a.name + '</text>').join('');
+}
+
 // ------------------------------------------------------------------ interface
 let sel = -1, xray = false, spin = false, play = false, t0 = 0, last = 0;
 const cards = [].slice.call(document.querySelectorAll(CFG.panel ? '.ancfg' : (CFG.cmd ? '.ancard:not(#anCmd)' : '.ancard')));
@@ -911,6 +941,7 @@ function loop(now) {
   const w = box.clientWidth, h = box.clientHeight;
   if (!arranged) arrange();
   layoutTags(w, h);
+  drawFrame(w, h);
 }
 // Once, from the starting view: each card goes to the side its part is on, and the cards of a side are stacked in the
 // order of their parts from top to bottom, so that the leaders do not cross.
