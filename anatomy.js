@@ -60,18 +60,34 @@ orbit.enableDamping = true;
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(studio, 0.03).texture; pm.dispose();
 }
 const VIEW_R = Math.hypot(CFG.cam[0] - CFG.target[0], CFG.cam[1] - CFG.target[1], CFG.cam[2] - CFG.target[2]);   // size of what the camera looks at
-scene.add(new THREE.HemisphereLight('#ffffff', '#3a3d44', 0.25));
+const hemi = new THREE.HemisphereLight('#ffffff', '#3a3d44', 0.25); scene.add(hemi);
 const sun = new THREE.DirectionalLight('#fff4e6', 2.6); scene.add(sun, sun.target);
 sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; sun.shadow.radius = 5;
 { const c = sun.shadow.camera, r = VIEW_R * 0.95; c.left = -r; c.right = r; c.top = r; c.bottom = -r; c.near = 0.01; c.far = VIEW_R * 8; c.updateProjectionMatrix(); }
 const fill = new THREE.DirectionalLight('#8fb4ff', 0.35); fill.position.set(-3, 2, -3); scene.add(fill);
 // the floor: a dark workshop floor that takes the shadows, with a faint grid for the scale
+let floor, grid;
 {
   const size = CFG.grid || 4;
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(size * 3, size * 3), new THREE.MeshStandardMaterial({ color: '#25282d', roughness: 0.85, metalness: 0, envMapIntensity: 0.35 }));
+  floor = new THREE.Mesh(new THREE.PlaneGeometry(size * 3, size * 3), new THREE.MeshStandardMaterial({ color: '#25282d', roughness: 0.85, metalness: 0, envMapIntensity: 0.35 }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -0.002; floor.receiveShadow = true; floor.userData.floor = true; scene.add(floor);
-  const grid = new THREE.GridHelper(size, size * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
+  grid = new THREE.GridHelper(size, size * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
 }
+// The ground follows the site theme: a dark workshop in dark mode, a light studio floor in light mode (same rule as nav.js).
+const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
+function paintGround() {
+  const light = isLight(), g = grid.geometry.attributes.color;
+  scene.background.set(light ? '#e7ebf0' : '#23262b');
+  floor.material.color.set(light ? '#d3d9e1' : '#25282d'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
+  const c1 = new THREE.Color(light ? '#97a1ae' : '#5a5f68'), c2 = new THREE.Color(light ? '#bcc4ce' : '#383c43'), n = g.count;
+  for (let i = 0; i < n; i += 4) { const c = (i / 4) === Math.floor(n / 8) ? c1 : c2; for (let k = 0; k < 4 && i + k < n; k++) g.setXYZ(i + k, c.r, c.g, c.b); }   // GridHelper: 4 vertices per line, the centre lines get colour 1
+  g.needsUpdate = true; grid.material.opacity = light ? 0.75 : 0.5;
+  hemi.groundColor.set(light ? '#b9c0ca' : '#3a3d44'); hemi.intensity = light ? 0.45 : 0.25;
+  box.classList.toggle('light', light);
+}
+paintGround();
+new MutationObserver(paintGround).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+matchMedia('(prefers-color-scheme: light)').addEventListener('change', paintGround);
 
 // ------------------------------------------------------------------ materials and helpers
 const shells = [];                                           // materials that become transparent in X-ray mode
@@ -847,6 +863,47 @@ function select(i) {
   if (pose.onSelect) pose.onSelect(i);
 }
 const $ = (id) => document.getElementById(id);
+
+// ------------------------------------------------------------------ preset views and full screen
+// The views are given in the robotics frame (Z up): 3D = the starting view, Top = from +Z, Front = from +X, Side = from +Y.
+const ICON = {
+  iso: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/>',
+  top: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+  front: '<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M12 8l2.5 4L12 16l-2.5-4z"/>',
+  side: '<path d="M7 4h6v6h4v10h-4v-6H7z"/>',
+  full: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  exit: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>'
+};
+const svgIcon = (k) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">' + ICON[k] + '</svg>';
+const VIEWS = [['iso', L('3D view', 'Vue 3D')], ['top', L('Top', 'Dessus')], ['front', L('Front', 'Face')], ['side', L('Side', 'Côté')]];
+const viewBar = document.createElement('div'); viewBar.className = 'anviews'; viewBar.setAttribute('role', 'group'); viewBar.setAttribute('aria-label', L('Camera views', 'Vues de la caméra'));
+let fly = null;
+function setView(k) {
+  const t = new THREE.Vector3(...CFG.target), d = new THREE.Vector3(...CFG.cam).sub(t).length(), to = t.clone();
+  if (k === 'iso') to.set(...CFG.cam);
+  else if (k === 'top') to.add(new THREE.Vector3(0, d, 0.0005 * d));                   // a hair off the vertical, so the controls keep X0 to the right
+  else if (k === 'front') to.add(new THREE.Vector3(d, 0, 0));
+  else to.add(new THREE.Vector3(0, 0, -d));
+  fly = { from: camera.position.clone(), to, tFrom: orbit.target.clone(), tTo: t, t0: performance.now() };
+  spin = false; syncBtn();
+  [].forEach.call(viewBar.children, (b) => { const on = b.dataset.view === k; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+VIEWS.forEach(([k, label], n) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.view = k; b.className = n ? '' : 'on'; b.setAttribute('aria-pressed', !n); b.innerHTML = svgIcon(k) + '<span>' + label + '</span>'; b.addEventListener('click', () => setView(k)); viewBar.appendChild(b); });
+box.appendChild(viewBar);
+renderer.domElement.addEventListener('pointerdown', () => { fly = null; [].forEach.call(viewBar.children, (b) => { b.classList.remove('on'); b.setAttribute('aria-pressed', false); }); });
+function flyStep(now) {
+  if (!fly) return;
+  const u = Math.min(1, (now - fly.t0) / 650), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+  camera.position.lerpVectors(fly.from, fly.to, e); orbit.target.lerpVectors(fly.tFrom, fly.tTo, e);
+  if (u >= 1) fly = null;
+}
+const fullBtn = document.createElement('button'); fullBtn.type = 'button'; fullBtn.className = 'anfull';
+const syncFull = () => { const on = document.fullscreenElement === box; fullBtn.innerHTML = svgIcon(on ? 'exit' : 'full'); fullBtn.setAttribute('aria-label', on ? L('Exit full screen', 'Quitter le plein écran') : L('Full screen', 'Plein écran')); fullBtn.title = fullBtn.getAttribute('aria-label'); };
+if (box.requestFullscreen) {
+  fullBtn.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else box.requestFullscreen().catch(() => {}); });
+  document.addEventListener('fullscreenchange', () => { syncFull(); resize(); });
+  syncFull(); box.appendChild(fullBtn);
+}
 function setXray(on) {
   xray = on; shells.forEach((m) => { m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; });
   scene.traverse((o) => { if (o.isMesh && shells.indexOf(o.material) >= 0) o.castShadow = !on; });
@@ -935,6 +992,7 @@ function loop(now) {
   }
   if (pose.tick) pose.tick(dt); else if (play) pose();
   if (pose.readout) readout.textContent = pose.readout();
+  flyStep(now);
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
   sun.target.position.copy(orbit.target); sun.position.set(orbit.target.x + VIEW_R * 1.2, orbit.target.y + VIEW_R * 2.4, orbit.target.z + VIEW_R * 0.9);
   renderer.render(scene, camera);

@@ -307,6 +307,20 @@ for (const [key, R] of Object.entries(ROBOTS)) {
       .andef b { display: block; font: 600 0.72rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; } .andef p { margin: 0; max-width: none; }
       .anframe { position: absolute; transform: translate(-50%, -50%); font: 700 13px var(--mono); pointer-events: none; text-shadow: 0 0 3px #000, 0 1px 4px #000; } .anframe sub { font-size: 9px; }
       .angizmo { position: absolute; right: 10px; bottom: 10px; width: 88px; height: 88px; pointer-events: none; } .angizmo .bg { fill: rgba(20, 22, 26, 0.55); stroke: rgba(255, 255, 255, 0.15); } .angizmo text { fill: #fff; font: 700 10px var(--mono); text-anchor: middle; }
+      .anviews { position: absolute; left: 10px; top: 10px; z-index: 3; display: flex; gap: 6px; padding: 5px; border-radius: 16px; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); }
+      .anviews button, .anfull { display: grid; place-items: center; gap: 3px; min-width: 58px; min-height: 0; padding: 7px 8px 6px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.04); color: #c9d2de; font: 600 11px var(--sans, inherit); cursor: pointer; }
+      .anviews button svg, .anfull svg { width: 20px; height: 20px; } .anviews button:hover, .anfull:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+      .anviews button.on { color: #fff; border-color: #8b7bff; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); box-shadow: 0 0 0 1px rgba(139, 123, 255, 0.5), 0 6px 18px -6px rgba(109, 93, 252, 0.8); }
+      .anfull { position: absolute; right: 10px; top: 10px; z-index: 3; min-width: 0; width: 40px; height: 40px; padding: 0; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); }
+      #anatView:fullscreen { width: 100vw; height: 100vh; border-radius: 0; border: 0; }
+      #anatView.light .anviews, #anatView.light .anfull { background: rgba(255, 255, 255, 0.78); border-color: rgba(20, 30, 50, 0.12); }
+      #anatView.light .anviews button, #anatView.light .anfull { color: #3a4556; background: rgba(20, 30, 50, 0.04); border-color: rgba(20, 30, 50, 0.08); }
+      #anatView.light .anviews button:hover, #anatView.light .anfull:hover { color: #111; background: rgba(20, 30, 50, 0.1); }
+      #anatView.light .anviews button.on { color: #fff; border-color: #6d5dfc; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); }
+      #anatView.light .anout { color: #1d2633; text-shadow: 0 1px 2px #fff; }
+      #anatView.light .anframe { text-shadow: 0 0 3px #fff, 0 1px 3px #fff; }
+      #anatView.light .angizmo .bg { fill: rgba(255, 255, 255, 0.72); stroke: rgba(20, 30, 50, 0.15); }
+      @media (max-width: 600px) { .anviews button { min-width: 0; padding: 6px; } .anviews button span { display: none; } }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
       .ancall { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; display: none; }
       .ancall path { fill: none; stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0.75; transition: opacity 0.2s ease, stroke-width 0.2s ease; } .ancall path.lit { stroke-width: 2.6; stroke-dasharray: none; opacity: 1; }
