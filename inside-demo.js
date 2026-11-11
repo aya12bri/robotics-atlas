@@ -225,6 +225,25 @@ function planetary(o) {
   return { g, parts, cover, lids, ids, run, read, len: o.arm ? 8 : 6 };
 }
 
+// ---------------------------------------------------------------- callouts: each name sits in a row above or below the picture, with a leader line to its part
+export function callouts(box, items, w, h) {
+  const svg = box.querySelector('svg'); svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('width', w); svg.setAttribute('height', h);
+  const sorted = items.slice().sort((a, b) => a.x - b.x), rows = [[], [], [], []];
+  sorted.forEach((it, i) => { rows[(i % 2 ? 2 : 0) + (Math.floor(i / 2) % 2)].push(it); });       // top-near, top-far, bottom-near, bottom-far
+  const Y = [22, 56, h - 52, h - 86], pad = 8; let d = '';
+  rows.forEach((row, k) => {
+    let right = -Infinity;
+    for (const it of row) {
+      const bw = it.el.offsetWidth || 90, bh = it.el.offsetHeight || 24;
+      let x = Math.max(pad + bw / 2, Math.min(w - pad - bw / 2, it.x)); if (x - bw / 2 < right + 6) x = right + 6 + bw / 2; right = x + bw / 2;
+      it.el.style.left = x + 'px'; it.el.style.top = Y[k] + 'px';
+      const ly = k < 2 ? Y[k] + bh / 2 : Y[k] - bh / 2;
+      d += `<line x1="${it.x.toFixed(1)}" y1="${it.y.toFixed(1)}" x2="${x.toFixed(1)}" y2="${ly.toFixed(1)}" class="${it.el.classList.contains('on') ? 'on' : ''}"/><circle cx="${it.x.toFixed(1)}" cy="${it.y.toFixed(1)}" r="3.5"/>`;
+    }
+  });
+  svg.innerHTML = d;
+}
+
 // ---------------------------------------------------------------- per robot: which joint, where, how big
 const ROB = {
   articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), pose: V(0.62, 0.62, 0), at: V(0, 0.45, 0), axis: 'z', k: 0.082, mech: () => rotaryJoint({}),
@@ -330,7 +349,7 @@ function mount(host) {
   };
   const hlCache = new Map(); const hl = (m) => { if (!hlCache.has(m)) { const c = m.clone(); c.emissive = new THREE.Color('#6d5dfc'); c.emissiveIntensity = 0.55; hlCache.set(m, c); } return hlCache.get(m); };
   partsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
-  tagsEl.innerHTML = mech.parts.map((p, i) => `<button type="button" data-p="${p.id}" title="${PART[p.id][0]}">${i + 1}</button>`).join('');
+  tagsEl.innerHTML = '<svg class="insd-lines"></svg>' + mech.parts.map((p, i) => `<button type="button" data-p="${p.id}"><b>${i + 1}</b>${PART[p.id][0]}</button>`).join('');
   tagsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
   // click on a part in 3D
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -361,7 +380,8 @@ function mount(host) {
     if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
     // labels in the exploded view
     tagsEl.hidden = !(layer === 3 && st.explode > 0.8);
-    if (!tagsEl.hidden) { const r = stage.getBoundingClientRect(); tagsEl.querySelectorAll('button').forEach((b, i) => { const p = mech.parts.find((q) => q.id === b.dataset.p); new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); b.style.left = ((proj.x + 1) / 2 * r.width) + 'px'; b.style.top = ((1 - proj.y) / 2 * r.height) + 'px'; }); }
+    if (!tagsEl.hidden) { const r = stage.getBoundingClientRect();
+      callouts(tagsEl, [...tagsEl.querySelectorAll('button')].map((b) => { const p = mech.parts.find((q) => q.id === b.dataset.p); new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); return { el: b, x: (proj.x + 1) / 2 * r.width, y: (1 - proj.y) / 2 * r.height }; }), r.width, r.height); }
     // camera
     if (camK < 1 && camFrom) { camK = Math.min(1, camK + dt / 1.3); const e = ease(camK), s = shotCam(layer); camera.position.copy(camFrom.p.clone().lerp(s.p, e)); orbit.target.copy(camFrom.t.clone().lerp(s.t, e)); }
   }

@@ -859,6 +859,15 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .sys-cats span { display: grid; gap: 0.1rem; } .sys-cats strong { font-size: 0.88rem; } .sys-cats small { font-size: 0.76rem; opacity: 0.75; } .sys-cats em { font-style: normal; font-size: 0.8rem; }
 .sysdemo.estop .sys-stage { box-shadow: 0 0 0 3px #d92d2d, 0 18px 50px -24px rgba(0, 0, 0, 0.55); }
 @media (max-width: 600px) { .sys-stage { height: 440px; } .sys-ctl { max-width: 100%; left: 10px; } .sys-hint { display: none; } .sys-pins button { width: 20px; height: 20px; font-size: 0.62rem; } }
-.insd-tags button { width: 26px; height: 26px; padding: 0; border-radius: 50%; display: grid; place-items: center; font-size: 0.78rem; font-weight: 800; transform: translate(-50%, -50%); }
+.insd-tags button { display: inline-flex; align-items: center; gap: 0.35rem; transform: translate(-50%, -50%); font-size: 0.76rem; padding: 0.2rem 0.55rem 0.2rem 0.25rem; border-radius: 999px; }
+.insd-tags button b { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; font-size: 0.66rem; color: #fff; background: #6d5dfc; }
+.insd-lines, .sys-lines { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.insd-lines line, .sys-lines line { stroke: #e5484d; stroke-width: 1.8; } .insd-lines line.on, .sys-lines line.on { stroke: #6d5dfc; stroke-width: 2.6; }
+.insd-lines circle, .sys-lines circle { fill: #e5484d; stroke: #fff; stroke-width: 1.5; }
 .insd-parts button b { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 0.4rem; border-radius: 50%; font-size: 0.7rem; color: #fff; background: #6d5dfc; }
 .insd-parts button[aria-pressed="true"] b { background: #fff; color: #3b4fd8; }
+.sys-ctl .sys-mode { background: #30a46c; color: #fff; border-color: #238a59; }
+.sys-ctl .sys-mode.on { animation: sys-pulse 1.6s infinite; }
+@keyframes sys-pulse { 50% { box-shadow: 0 0 0 6px rgba(48, 164, 108, 0.35); } }
+.sys-pins button { transition: background 0.15s; }
+.sys-where { padding: 0.35rem 0.6rem; border-radius: 8px; background: color-mix(in srgb, #30a46c 14%, transparent); }

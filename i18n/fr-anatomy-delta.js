@@ -28,5 +28,5 @@ RA.add({
  "237fp3e4qar": "<strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.",
  "2b353wowzel": "Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l'intérieur réel dépend de la marque.",
  "zq3mfy19s5": "Tous les composants, de A à Z",
- "we78wp8z9p": "Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
+ "4xif653etr": "D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });

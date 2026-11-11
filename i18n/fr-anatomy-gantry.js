@@ -28,5 +28,5 @@ RA.add({
  "t6caf3eqxk": "<strong>Contrôleur</strong> : souvent un automate ou une commande numérique dans une armoire à côté du bâti ; la même machine devient une imprimante 3D ou une fraiseuse quand l'outil change.",
  "13xkqmck4hx": "Les trois courses sont en cm comme sur la page du robot cartésien : la position de l'outil est simplement (q1, q2, hauteur). Les trois liaisons sont prismatiques (P) : il n'y a aucun angle. Le modèle est simplifié : l'intérieur réel dépend de la marque.",
  "zq3mfy19s5": "Tous les composants, de A à Z",
- "we78wp8z9p": "Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
+ "4xif653etr": "D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });

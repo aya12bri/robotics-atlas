@@ -108,8 +108,8 @@
     <ul><li><strong>Wheel motors</strong>: each driven wheel has a motor and a gearbox (in the hub or beside it) and an encoder; the controller computes every wheel speed from the commanded body motion (inverse kinematics).</li><li><strong>Steering motors</strong> (seen in X-ray on the steered wheels): a second motor and a slip ring per wheel; they make swerve modules heavy and expensive.</li><li><strong>Rollers</strong> of omni and Mecanum wheels: free rollers that let a wheel slide in one direction while it drives in the other.</li><li><strong>Suspension and floor</strong>: three wheels always touch the floor; four wheels need a suspension (or a rocker) so that all of them keep their grip.</li></ul>
     <p>The wheel speeds are computed live from the three commands (vx forward, vy to the left, ω turning left) with the inverse kinematics of each configuration, and the robot drives for real; the orange line is its path. A configuration that cannot do a motion (a sideways slide, for example) ignores it and says so. The model is simplified: wheel radius 0.07 m, see the wheels page for the equations.</p>
     <h2>All the components, from A to Z</h2>
-    <p>Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
-    <div class="sysdemo" data-set="mobile"></div>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="drives" data-set="mobile"></div>
     <script type="module" src="anatomy.js"></script>
     <script type="module" src="system-demo.js"></script>
   </body>
