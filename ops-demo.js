@@ -338,17 +338,17 @@ function dataMatrix(seed, n = 16) {                          // a DataMatrix-loo
 // ---------------------------------------------------------------- per-robot settings
 // A, B: centres of the two work zones (x, z) on the floor. u: size of a box. cam / target: initial camera.
 const ROBOTS = {
-  articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), u: 0.11, A: [0.25, 0.62], B: [0.66, -0.3], cam: [2.0, 2.0, 2.2], target: [0.32, 0.3, 0.12], v: 0.85, arc: true,
+  articulated: { human: 0.58, build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), u: 0.11, A: [0.25, 0.62], B: [0.66, -0.3], cam: [2.0, 2.0, 2.2], target: [0.32, 0.3, 0.12], v: 0.85, arc: true,
     safety: 'cage', cage: [-0.55, 1.15, -0.85, 1.12, 1.35], mm: { L: 1.0, X2: 1.9, zS: 0.6, cam: [1.2, 1.55, 2.5] } },
-  cobot: { build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, A: [0.2, 0.5], B: [0.52, -0.26], cam: [2.0, 1.65, 2.1], target: [0.3, 0.5, -0.2], v: 0.55, arc: true,
+  cobot: { human: 0.6, build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, A: [0.2, 0.5], B: [0.52, -0.26], cam: [2.0, 1.65, 2.1], target: [0.3, 0.5, -0.2], v: 0.55, arc: true,
     safety: 'collab', opFar: [-0.05, 0, -1.08], opClose: [0.28, 0, -0.66], mm: { L: 0.8, X2: 1.5, zS: 0.48, cam: [1.0, 1.3, 2.1] } },
-  arm: { build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.85, 1.85, 2.0], target: [0.3, 0.28, 0.12], v: 0.7, arc: true,
+  arm: { human: 0.6, build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.85, 1.85, 2.0], target: [0.3, 0.28, 0.12], v: 0.7, arc: true,
     safety: 'cage', cage: [-0.5, 1.05, -0.8, 1.0, 1.25], mm: { L: 0.9, X2: 1.7, zS: 0.55, cam: [1.1, 1.45, 2.3] } },
-  scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), u: 0.075, A: [0.2, 0.4], B: [0.45, -0.14], cam: [1.25, 1.3, 1.4], target: [0.22, 0.18, 0.1], v: 0.55, arc: true,
+  scara: { human: 0.72, build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), u: 0.075, A: [0.2, 0.4], B: [0.45, -0.14], cam: [1.25, 1.3, 1.4], target: [0.22, 0.18, 0.1], v: 0.55, arc: true,
     stationK: 1.5, safety: 'cage', cage: [-0.38, 0.82, -0.55, 0.75, 0.95], mm: { L: 0.75, X2: 1.25, zS: 0.42, cam: [0.8, 1.05, 1.7] } },
-  delta: { palLayers: 1, build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), u: 0.064, A: [0.0, 0.15], B: [0.0, -0.15], cam: [1.35, 1.3, 1.3], target: [0, 0.3, 0], v: 1.0,
+  delta: { human: 0.75, palLayers: 1, build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), u: 0.064, A: [0.0, 0.15], B: [0.0, -0.15], cam: [1.35, 1.3, 1.3], target: [0, 0.3, 0], v: 1.0,
     safety: 'cage', cage: [-0.85, 0.85, -0.8, 0.8, 1.0] },
-  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), u: 0.13, A: [-0.42, 0.18], B: [0.38, -0.12], cam: [0.55, 2.0, 2.65], target: [0, 0.32, 0], v: 0.8,
+  gantry: { human: 0.62, build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), u: 0.13, A: [-0.42, 0.18], B: [0.38, -0.12], cam: [0.55, 2.0, 2.65], target: [0, 0.32, 0], v: 0.8,
     safety: 'cage', cage: [-1.05, 1.05, -0.85, 0.85, 1.4] },
   mobile: { mobile: true, build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, v: 0.55, arc: true,
     cam: [3.2, 2.6, 3.6], target: [0, 0.1, 0], ops: ['shu', 'rou', 'mm'], fit: { shu: 3, rou: 3, mm: 2 }, mm: { L: 0.8, X2: 1.5, zS: 0.48, cam: [1.0, 1.3, 2.1] } }
@@ -365,7 +365,7 @@ const FIT = {
 const ALL = ['pal', 'enc', 'far', 'eti', 'ser', 'vis', 'bin', 'deg', 'con', 'amr', 'ass', 'fil'];
 for (const [k, f] of Object.entries(FIT)) {
   const Rb = ROBOTS[k]; f.fil = f.ass; if (Rb.mm) f.mm = f.amr;            // robots that can ride on an AMR show "mm" instead of "amr"
-  Rb.fit = f; Rb.ops = ALL.map((o) => (o === 'amr' && Rb.mm ? 'mm' : o)).sort((a, b) => f[b] - f[a]);
+  Rb.fit = f; Rb.ops = ALL.map((o) => (o === 'amr' && Rb.mm ? 'mm' : o)).filter((o) => f[o] >= 2).sort((a, b) => f[b] - f[a]);   // only what the robot really does: main use or possible
 }
 
 // ---------------------------------------------------------------- the widget
@@ -377,7 +377,7 @@ function mount(host) {
       <div class="opsd-ctl"><span class="opsd-speed" role="group" aria-label="${L('Speed', 'Vitesse')}"><button type="button" data-s="0.5" aria-pressed="false">0.5×</button><button type="button" data-s="1" aria-pressed="true">1×</button><button type="button" data-s="2" aria-pressed="false">2×</button></span><button type="button" class="opsd-pause">${L('Pause', 'Pause')}</button><button type="button" class="opsd-restart">${L('Restart', 'Recommencer')}</button></div>
       <div class="opsd-safe" hidden><span class="opsd-tag"></span><button type="button" class="opsd-safebtn"></button></div>
       <div class="opsd-alert" hidden></div></div>
-    <p class="opsd-legend"><span><i class="opsd-fit f3"></i>${L('main use', 'usage principal')}</span><span><i class="opsd-fit f2"></i>${L('possible', 'possible')}</span><span><i class="opsd-fit f1"></i>${L('rarely', 'rarement')}</span></p>`;
+    <p class="opsd-legend"><span><i class="opsd-fit f3"></i>${L('main use', 'usage principal')}</span><span><i class="opsd-fit f2"></i>${L('possible', 'possible')}</span></p>`;
   const bar = host.querySelector('.opsd-bar'), what = host.querySelector('.opsd-what'), view = host.querySelector('.opsd-view'), txt = host.querySelector('.opsd-txt');
   const pauseBtn = host.querySelector('.opsd-pause'), restartBtn = host.querySelector('.opsd-restart');
   const safeBox = host.querySelector('.opsd-safe'), safeTag = host.querySelector('.opsd-tag'), safeBtn = host.querySelector('.opsd-safebtn'), alertEl = host.querySelector('.opsd-alert');
@@ -846,12 +846,12 @@ function mount(host) {
   const showAlert = (html, kind) => { alertEl.hidden = !html; if (html) { alertEl.innerHTML = html; alertEl.dataset.kind = kind; } };
   if (R.safety === 'cage') {
     cage = buildCage(R.cage); scene.add(cage.group);
-    person = makePerson(); scene.add(person);
+    person = makePerson(); person.scale.setScalar(R.human); scene.add(person);
     safeTag.textContent = L('Industrial robot: works inside a cage', 'Robot industriel : travaille dans une cage');
     safeBtn.textContent = L('Open the cage door', 'Ouvrir la porte de la cage');
     safeBtn.addEventListener('click', () => { doorOpen = !doorOpen; safeBtn.textContent = doorOpen ? L('Close the door', 'Fermer la porte') : L('Open the cage door', 'Ouvrir la porte de la cage'); });
   } else if (R.safety === 'collab') {
-    person = makePerson(); scene.add(person);
+    person = makePerson(); person.scale.setScalar(R.human); scene.add(person);
     halo = new THREE.Mesh(new THREE.RingGeometry(0.86, 0.9, 64).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#30a46c', transparent: true, opacity: 0.55, depthWrite: false })); halo.position.y = 0.004; scene.add(halo);
     safeTag.textContent = L('Cobot: no cage, it shares the space with people', 'Cobot : sans cage, il partage l\'espace avec les personnes');
     safeBtn.textContent = L('The operator comes close', 'L\'opérateur s\'approche');
@@ -863,7 +863,7 @@ function mount(host) {
     pT += dt;
     if (cage) {
       const on = doorOpen && inCell; cage.ang += (((on ? 1 : 0) - cage.ang) * Math.min(1, dt * 4)); cage.door.rotation.y = 1.45 * cage.ang;
-      const d = cage.door.userData.at, outside = V(d.x, 0, d.z - 0.8), inDoor = V(d.x, 0, d.z - 0.12);
+      const d = cage.door.userData.at, outside = V(d.x, 0, d.z - 0.8 * R.human), inDoor = V(d.x, 0, d.z - 0.1);
       person.position.copy(outside.clone().lerp(inDoor, cage.ang)); person.rotation.y = 0;
       person.userData.arms[1].rotation.x = -1.2 * Math.min(1, cage.ang * 1.5);
       halted = on || cage.ang > 0.03;
