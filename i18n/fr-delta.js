@@ -86,6 +86,8 @@ RA.add({"21xo9ntisyc":"Voir en 3D, avec l'intérieur du robot →"});
 RA.add({
  "1uguwkyv014": "Opérations industrielles",
  "1g8isye08vm": "Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.",
+ "1plkhzdfpna": "Démo des opérations",
+ "e97lgcs55z": "Choisissez une opération : le robot la réalise dans une petite cellule 3D, étape par étape. Tournez la vue à la souris ou au doigt, et utilisez Pause pour regarder de près.",
  "1ata9ppdhpl": "Opération",
  "18kmrwt93jx": "Explication simple",
  "1awtd631nv": "Pour ce robot",
