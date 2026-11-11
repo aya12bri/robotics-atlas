@@ -320,7 +320,7 @@ function mount(host) {
     readEl.hidden = layer !== 4; partsEl.hidden = layer < 2;
   }
   // part chips + detail
-  partsEl.innerHTML = mech.ids.map((id) => `<button type="button" data-p="${id}">${PART[id][0]}</button>`).join('');
+  partsEl.innerHTML = mech.ids.map((id, i) => `<button type="button" data-p="${id}"><b>${i + 1}</b>${PART[id][0]}</button>`).join('');
   const pick = (id) => {
     sel = sel === id ? null : id;
     partsEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.p === sel)));
@@ -330,7 +330,7 @@ function mount(host) {
   };
   const hlCache = new Map(); const hl = (m) => { if (!hlCache.has(m)) { const c = m.clone(); c.emissive = new THREE.Color('#6d5dfc'); c.emissiveIntensity = 0.55; hlCache.set(m, c); } return hlCache.get(m); };
   partsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
-  tagsEl.innerHTML = mech.parts.map((p) => `<button type="button" data-p="${p.id}">${PART[p.id][0]}</button>`).join('');
+  tagsEl.innerHTML = mech.parts.map((p, i) => `<button type="button" data-p="${p.id}" title="${PART[p.id][0]}">${i + 1}</button>`).join('');
   tagsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
   // click on a part in 3D
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -361,7 +361,7 @@ function mount(host) {
     if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
     // labels in the exploded view
     tagsEl.hidden = !(layer === 3 && st.explode > 0.8);
-    if (!tagsEl.hidden) { const r = stage.getBoundingClientRect(); tagsEl.querySelectorAll('button').forEach((b, i) => { const p = mech.parts.find((q) => q.id === b.dataset.p); b.style.transform = i % 2 ? 'translate(-50%, 70%)' : 'translate(-50%, -150%)'; new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); b.style.left = ((proj.x + 1) / 2 * r.width) + 'px'; b.style.top = ((1 - proj.y) / 2 * r.height) + 'px'; }); }
+    if (!tagsEl.hidden) { const r = stage.getBoundingClientRect(); tagsEl.querySelectorAll('button').forEach((b, i) => { const p = mech.parts.find((q) => q.id === b.dataset.p); new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); b.style.left = ((proj.x + 1) / 2 * r.width) + 'px'; b.style.top = ((1 - proj.y) / 2 * r.height) + 'px'; }); }
     // camera
     if (camK < 1 && camFrom) { camK = Math.min(1, camK + dt / 1.3); const e = ease(camK), s = shotCam(layer); camera.position.copy(camFrom.p.clone().lerp(s.p, e)); orbit.target.copy(camFrom.t.clone().lerp(s.t, e)); }
   }

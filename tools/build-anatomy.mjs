@@ -366,7 +366,11 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <h2>${tx('What is inside each joint?', 'Que contient chaque articulation ?')}</h2>
     ${UL(R.inside)}
     ${P(...(R.note || NOTE))}
+    <h2>${tx('All the components, from A to Z', 'Tous les composants, de A à Z')}</h2>
+    <p>${tx('Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.', 'Toutes les pièces du système robot complet, sur un même établi et câblées : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c\'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.')}</p>
+    <div class="sysdemo" data-set="${({ cobot: 'cobot', wheels: 'mobile', drives: 'mobile', mobile: 'mobile', humanoid: 'humanoid', quadrotor: 'drone' })[key] || 'arm'}"></div>
     <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>
 `;

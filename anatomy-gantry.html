@@ -103,6 +103,10 @@
     <h2>What is inside each joint?</h2>
     <ul><li><strong>Three motors</strong> (servo or stepper), one per axis, with <strong>belts, rack and pinion or ball screws</strong> that turn the rotation into a straight motion (seen in X-ray).</li><li><strong>Linear guides</strong>: rails with recirculating-ball carriages that carry the load and give a straight, rigid motion.</li><li><strong>Limit switches and homing</strong>: incremental encoders do not know the position at power-on, so each axis first goes to a switch.</li><li><strong>Cable chains</strong> carry the cables of the moving axes without breaking them.</li><li><strong>Controller</strong>: often a PLC or a CNC controller in a cabinet next to the frame; the same machine is a 3D printer or a milling machine when the tool changes.</li></ul>
     <p>The three travels are in cm as on the gantry page: the tool position is simply (q1, q2, height). The three joints are prismatic (P): there is no angle. The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-set="arm"></div>
     <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>

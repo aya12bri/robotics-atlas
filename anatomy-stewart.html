@@ -105,6 +105,10 @@
     <h2>What is inside each joint?</h2>
     <ul><li><strong>Six electric actuators</strong>: each has a motor and a ball screw inside a sleeve (seen in X-ray); hydraulic versions use oil cylinders for very heavy loads such as flight simulators.</li><li><strong>Universal and spherical joints</strong>: low-friction joints without play, because any play shows directly in the platform pose.</li><li><strong>Encoders or linear sensors</strong> measure each leg length; the controller converts the wanted pose into six lengths (inverse kinematics) and runs six position loops.</li><li><strong>Forward kinematics is the hard direction</strong>: from six lengths to a pose needs an iterative solution, the opposite of a serial robot.</li></ul>
     <p>The six leg lengths are computed live from the pose of the platform (inverse kinematics: one simple formula per leg, the distance between the base joint and the platform joint). A leg turns red when it leaves its stroke (550 to 950 mm here) and the pose is then not reachable. Angles are roll (about the forward axis), pitch and yaw. The model is simplified: the real inside depends on the make. Stewart platforms also have singular poses (see lesson 8 of the course on singularities).</p>
+    <h2>All the components, from A to Z</h2>
+    <p>Every part of the complete robot system, on one workbench and wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-set="arm"></div>
     <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>
