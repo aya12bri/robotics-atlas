@@ -200,9 +200,10 @@ function planetary(o) {
   const mk = boxC(0.14, 0.3, 0.2, P.orange); mk.position.set(0, 0.7, 0.12); carr.add(mk);
   add('carr', carr, V(0, 0, 4.5)); T.carr = carr;
   if (o.arm) {                                               // Delta: carbon upper arm + ball joints on the carrier
-    const a = new THREE.Group(); a.position.z = 1.25; const beam = boxC(0.5, 6.0, 0.45, P.black); beam.position.y = -3.0; a.add(beam); a.add(cylA(0.5, 0.5, P.orange, 32));
+    const a0 = o.armAngle || 0;                                 // the real arm leaves the motor at this angle (0 = straight down)
+    const a = new THREE.Group(); a.position.z = 1.25; a.rotation.z = a0; const beam = boxC(0.5, 6.0, 0.45, P.black); beam.position.y = -3.0; a.add(beam); a.add(cylA(0.5, 0.5, P.orange, 32));
     add('uarm', a, V(0, 0, 5.6)); T.arm = a;
-    const b = new THREE.Group(); b.position.set(0, -6.0, 1.25); for (const s of [-1, 1]) { const ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 14), P.steel); ball.position.z = s * 0.7; b.add(ball); const rod = cylA(0.09, 1.2, P.alu, 10); rod.position.z = s * 0.7; rod.rotation.x = 0; b.add(rod); }
+    const b = new THREE.Group(); b.position.set(Math.sin(a0) * 6.0, -Math.cos(a0) * 6.0, 1.25); for (const s of [-1, 1]) { const ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 14), P.steel); ball.position.z = s * 0.7; b.add(ball); const rod = cylA(0.09, 1.2, P.alu, 10); rod.position.z = s * 0.7; rod.rotation.x = 0; b.add(rod); }
     add('balls', b, V(0, -1.4, 6.4)); T.balls = b;
   }
   if (o.wheel) {                                             // mobile: wheel bolted on the carrier
@@ -217,11 +218,11 @@ function planetary(o) {
   const run = (th) => {
     const c = th / 5; T.rot.rotation.z = th; T.disc.rotation.z = th; T.sun.rotation.z = th; T.carr.rotation.z = c;
     planets.forEach((p, i) => { const a = c + (i / 3) * Math.PI * 2; p.position.set(Math.cos(a) * 0.77, Math.sin(a) * 0.77, 0); p.rotation.z = c - (12 / 18) * (th - c); });
-    if (T.arm) { const sw = 0.35 * Math.sin(c * 0.5); T.arm.rotation.z = sw; T.balls.position.set(Math.sin(sw) * 6.0, -Math.cos(sw) * 6.0, T.balls.position.z); }
+    if (T.arm) { const sw = (o.armAngle || 0) + 0.35 * Math.sin(c * 0.5); T.arm.rotation.z = sw; T.balls.position.set(Math.sin(sw) * 6.0, -Math.cos(sw) * 6.0, T.balls.position.z); }
     if (T.wheel) T.wheel.rotation.z = c;
   };
   const read = (th) => [[L('Motor', 'Moteur'), (o.wheel ? '3 000 ' : '3 000 ') + L('rpm', 'tr/min')], [L('Gear ratio', 'Rapport'), '1 + 48/12 = 5 : 1'], [L('Output', 'Sortie'), '600 ' + L('rpm', 'tr/min')],
-    o.wheel ? [L('Wheel speed', 'Vitesse de la roue'), '600 tr/min × π × 0.15 m ≈ 4.7 m/s max'] : [L('Arm angle', 'Angle du bras'), (0.35 * Math.sin(th / 10) * 57.3).toFixed(1) + '°']];
+    o.wheel ? [L('Wheel speed', 'Vitesse de la roue'), '600 tr/min × π × 0.15 m ≈ 4.7 m/s max'] : [L('Arm angle', 'Angle du bras'), ((0.35 * Math.sin(th / 10) - 0.076) * 57.3).toFixed(1) + '°']];
   return { g, parts, cover, lids, ids, run, read, len: o.arm ? 8 : 6 };
 }
 
@@ -268,9 +269,9 @@ const ROB = {
     joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: '' },
   scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), pose: V(0.45, 0.2, -0.25), at: V(0, 0.42 + 0.03, 0), axis: 'y', k: 0.05, mech: () => rotaryJoint({}),
     joint: L('joint 1 (the base)', 'l\'articulation 1 (la base)'), note: L('A SCARA joint turns about a vertical axis: the arm stays rigid up and down, which makes it fast and precise for assembly.', 'Une articulation de SCARA tourne autour d\'un axe vertical : le bras reste rigide en hauteur, d\'où sa vitesse et sa précision en assemblage.') },
-  delta: { build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), pose: V(0, 0.25, 0), at: V(0, 0.8, -0.13), axis: 'x', k: 0.04, mech: () => planetary({ arm: true }),
+  delta: { build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), pose: V(0, 0.25, 0), at: V(0, 0.8, -0.13), axis: 'x', k: 0.04, mech: () => planetary({ arm: true, armAngle: Math.PI / 2 + 0.076 }),
     joint: L('one of the three motors', 'l\'un des trois moteurs'), note: L('The three motors stay fixed on the frame: only light arms and rods move, which is why a Delta is so fast.', 'Les trois moteurs restent fixes sur le bâti : seuls des bras et des bielles légers bougent, d\'où la rapidité d\'un Delta.') },
-  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), pose: V(0.1, 0.3, 0), at: V(0, 1.05 + 0.03, 0.65), axis: 'x', k: 0.085, mech: () => linearAxis(),
+  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), pose: V(0, 0.3, 0), at: V(0, 1.05 + 0.03, 0.65), axis: 'x', k: 0.085, mech: () => linearAxis(),
     joint: L('the X axis', 'l\'axe X'), note: L('Each axis of a gantry is a straight line: the same set of parts, only the length changes.', 'Chaque axe d\'un portique est une ligne droite : les mêmes pièces, seule la longueur change.') },
   mobile: { amr: true, at: V(0, 0.9 * 0.075, 0.9 * 0.35 - 0.02), axis: 'z', k: 0.026, mech: () => planetary({ wheel: true }),
     joint: L('a drive wheel', 'une roue motrice'), note: L('Each drive wheel is a motor, a gearbox and an encoder in one block; two of them, driven at different speeds, steer the robot.', 'Chaque roue motrice réunit moteur, réducteur et codeur en un bloc ; deux roues entraînées à des vitesses différentes font tourner le robot.') }
@@ -393,7 +394,7 @@ function mount(host) {
       mech.cover.material.opacity = op; mech.cover.visible = mech.lids[0].visible = mech.lids[1].visible = op > 0.02 && layer > 0;
       mech.cover.position.y = up; mech.lids.forEach((l) => { l.position.y = up; }); }
     for (const p of mech.parts) { p.obj.position.copy(p.home).addScaledVector(p.ex, st.explode); if (p.obj.userData.dx !== undefined) p.obj.position.x += p.obj.userData.dx * (1 - st.explode); }
-    if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
+    if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); if (mech.linear && robot.reach) robot.reach(R.pose.clone().add(V((mech.g.userData.x || 0) * R.k, 0, 0))); /* the bridge rides on the carriage */ readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
     // labels in the exploded view
     tagsEl.hidden = !(layer === 3 && st.explode > 0.8);
     if (!tagsEl.hidden) { const r = stage.getBoundingClientRect();
