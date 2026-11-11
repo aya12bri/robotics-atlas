@@ -13,6 +13,8 @@ RA.add({
  "1ykvwzzkh7a": "Anatomie d'un robot Delta (3D)",
  "murrp4rwtk": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"delta.html\" style=\"color:#ff9f43\">Page du robot Delta</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "1d6i5k6gp3f": "Un <strong>robot Delta</strong> est un robot parallèle : trois bras entraînés par des moteurs fixés sur la base sont reliés à une petite plateforme par des parallélogrammes, qui gardent la plateforme toujours horizontale. Comme les moteurs ne bougent pas, les parties mobiles sont très légères et le robot est extrêmement rapide. On l'utilise pour la prise-dépose à grande cadence d'objets légers (alimentaire, pharmacie, électronique).",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

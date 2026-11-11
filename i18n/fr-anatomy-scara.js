@@ -11,6 +11,8 @@ RA.add({
  "t1n8okhnis": "Anatomie d'un robot SCARA (3D)",
  "1nr52ek7rtx": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"scara.html\" style=\"color:#ff9f43\">Page du SCARA</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "alwuaoi37q": "Un <strong>robot SCARA</strong> (Selective Compliance Assembly Robot Arm) a deux articulations rotatives d'axes verticaux qui déplacent l'outil dans un plan horizontal, une coulisse verticale et une rotation de l'outil : 4 degrés de liberté. Il est rigide verticalement et légèrement souple horizontalement, ce qui le rend rapide et précis pour l'assemblage et la prise-dépose par le dessus.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

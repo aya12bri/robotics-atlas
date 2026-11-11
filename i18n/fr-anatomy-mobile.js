@@ -15,6 +15,8 @@ RA.add({
  "2clim2m65tt": "Anatomie d'un robot mobile (3D)",
  "1cu00ed65lu": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"mobile.html\" style=\"color:#ff9f43\">Page du robot mobile</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "u6j7at39g6": "Un <strong>robot mobile à entraînement différentiel</strong> se déplace sur deux roues motrices placées sur le même axe, avec une roue folle pour l'équilibre. Il va droit quand les deux roues tournent à la même vitesse, tourne quand elles diffèrent, et pivote sur place quand elles sont opposées. Simple et bon marché, c'est la base des robots aspirateurs et de la plupart des robots d'entrepôt (AMR).",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

@@ -22,6 +22,8 @@ RA.add({
  "1i0z38divq6": "Anatomie d'un robot humanoïde (3D)",
  "10ojbam8vqx": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"learn-world.html\" style=\"color:#ff9f43\">Cours Les robots dans le monde réel</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "1evtt2sckld": "Un <strong>robot humanoïde</strong> a la forme d'un corps humain : deux jambes, un torse, deux bras avec des mains et une tête, avec environ 20 à 50 articulations. Il est fait pour travailler dans des lieux et avec des outils conçus pour les personnes. Son problème le plus difficile est l'équilibre : quand il marche il se tient sur un pied à la fois et doit maîtriser son centre de masse à chaque instant.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

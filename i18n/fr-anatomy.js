@@ -15,6 +15,8 @@ RA.add({
  "1rptxmzvqro": "Anatomie d'un robot 6 axes (3D)",
  "cqt576wfub": "<a href=\"index.html\" style=\"color:#ff9f43\">← Liste des robots</a> · <a href=\"articulated.html\" style=\"color:#ff9f43\">Page du robot 6 axes</a>",
  "sw38ej9mm4": "Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.",
+ "r0of29bpoi": "Définition",
+ "1od777s4yb8": "Un <strong>robot industriel 6 axes</strong> (bras articulé) est une chaîne série de six articulations rotatives fixée sur une base. Les trois premières placent le poignet dans l'espace et les trois dernières orientent l'outil : il peut donc atteindre n'importe quelle position avec n'importe quelle orientation dans son espace de travail. C'est le robot le plus répandu dans les usines : soudage, peinture, manutention et chargement de machines.",
  "2b15vcuym2x": "Rayons X (intérieur)",
  "1t4gay0hv3u": "Animer l'axe choisi",
  "1mq8o3plxrz": "Rotation automatique",

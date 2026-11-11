@@ -238,6 +238,32 @@ const ROBOTS = {
   }
 };
 
+
+// A short definition shown before each 3D model: what the robot is, how it moves, what it is used for.
+const DEFS = {
+  six: ['A <strong>6-axis industrial robot</strong> (articulated arm) is a serial chain of six rotary joints fixed on a base. The first three joints place the wrist in space and the last three orient the tool, so it can reach any position with any orientation inside its workspace. It is the most common robot in factories: welding, painting, handling and machine tending.',
+    'Un <strong>robot industriel 6 axes</strong> (bras articulé) est une chaîne série de six articulations rotatives fixée sur une base. Les trois premières placent le poignet dans l\'espace et les trois dernières orientent l\'outil : il peut donc atteindre n\'importe quelle position avec n\'importe quelle orientation dans son espace de travail. C\'est le robot le plus répandu dans les usines : soudage, peinture, manutention et chargement de machines.'],
+  scara: ['A <strong>SCARA robot</strong> (Selective Compliance Assembly Robot Arm) has two rotary joints with vertical axes that move the tool in a horizontal plane, a vertical slide and a rotation of the tool: 4 degrees of freedom. It is stiff vertically and slightly compliant horizontally, which makes it fast and precise for assembly and pick and place from above.',
+    'Un <strong>robot SCARA</strong> (Selective Compliance Assembly Robot Arm) a deux articulations rotatives d\'axes verticaux qui déplacent l\'outil dans un plan horizontal, une coulisse verticale et une rotation de l\'outil : 4 degrés de liberté. Il est rigide verticalement et légèrement souple horizontalement, ce qui le rend rapide et précis pour l\'assemblage et la prise-dépose par le dessus.'],
+  cobot: ['A <strong>collaborative robot</strong> (cobot) is a robot arm designed to work next to people without a safety fence. It is light, has rounded shapes, and measures the forces at its joints so that it stops when it touches something. It is slower and carries less than an industrial robot, but it is easy to install and to program by hand guiding.',
+    'Un <strong>robot collaboratif</strong> (cobot) est un bras robot conçu pour travailler à côté de personnes sans barrière de sécurité. Il est léger, a des formes arrondies, et mesure les efforts dans ses articulations pour s\'arrêter dès qu\'il touche quelque chose. Il est plus lent et porte moins qu\'un robot industriel, mais il est facile à installer et à programmer en le guidant à la main.'],
+  delta: ['A <strong>Delta robot</strong> is a parallel robot: three arms driven by motors fixed on the base are linked to one small platform by parallelograms, which keep the platform always horizontal. Because the motors do not move, the moving parts are very light and the robot is extremely fast. It is used for high-speed pick and place of light objects (food, pharmacy, electronics).',
+    'Un <strong>robot Delta</strong> est un robot parallèle : trois bras entraînés par des moteurs fixés sur la base sont reliés à une petite plateforme par des parallélogrammes, qui gardent la plateforme toujours horizontale. Comme les moteurs ne bougent pas, les parties mobiles sont très légères et le robot est extrêmement rapide. On l\'utilise pour la prise-dépose à grande cadence d\'objets légers (alimentaire, pharmacie, électronique).'],
+  gantry: ['A <strong>Cartesian robot</strong> (gantry) moves its tool along three straight axes at right angles, X, Y and Z, each one a sliding (prismatic) joint. Its kinematics is the simplest of all robots: the position of the tool is directly the three axis positions. It is stiff, precise and can be very large: 3D printers, CNC machines, palletising.',
+    'Un <strong>robot cartésien</strong> (portique) déplace son outil le long de trois axes rectilignes perpendiculaires, X, Y et Z, chacun étant une liaison glissière (prismatique). Sa cinématique est la plus simple de tous les robots : la position de l\'outil est directement la position des trois axes. Il est rigide, précis et peut être très grand : imprimantes 3D, machines à commande numérique, palettisation.'],
+  wheels: ['A <strong>wheel</strong> is what links a mobile robot to the ground. A standard wheel rolls forward and refuses to slide sideways; other wheels (castor, omni, Mecanum, ball) add free motions. The type of the wheels decides in which directions the robot can move, how much it can carry and how well it knows where it is.',
+    'Une <strong>roue</strong> est ce qui relie un robot mobile au sol. Une roue standard roule vers l\'avant et refuse de glisser de côté ; d\'autres roues (folle, omnidirectionnelle, Mecanum, bille) ajoutent des mouvements libres. Le type de roues décide dans quelles directions le robot peut se déplacer, ce qu\'il peut porter et la qualité de sa localisation.'],
+  drives: ['A <strong>drive configuration</strong> is the way the wheels of a mobile robot are arranged, driven and steered. It fixes how the robot can move: a differential drive turns by driving its two wheels at different speeds, a car steers its front wheels, and omnidirectional drives can move in any direction at once.',
+    'Une <strong>configuration de motorisation</strong> est la façon dont les roues d\'un robot mobile sont disposées, entraînées et orientées. Elle fixe la manière dont le robot peut se déplacer : un robot différentiel tourne en entraînant ses deux roues à des vitesses différentes, une voiture braque ses roues avant, et les motorisations omnidirectionnelles peuvent aller dans n\'importe quelle direction à tout instant.'],
+  stewart: ['A <strong>Stewart platform</strong> (hexapod) is a parallel robot with six legs of variable length between a fixed base and a moving platform. By changing the six lengths, the platform moves with 6 degrees of freedom: three translations and three rotations. It is very stiff and carries heavy loads in a small workspace: flight simulators, telescopes, precision positioning.',
+    'Une <strong>plateforme de Stewart</strong> (hexapode) est un robot parallèle à six vérins de longueur variable entre une base fixe et une plateforme mobile. En changeant les six longueurs, la plateforme se déplace avec 6 degrés de liberté : trois translations et trois rotations. Elle est très rigide et porte de lourdes charges dans un petit espace de travail : simulateurs de vol, télescopes, positionnement de précision.'],
+  quadrotor: ['A <strong>quadrotor</strong> is a flying robot lifted by four propellers. Two turn clockwise and two counter-clockwise so that their reaction torques cancel. It has only four motors for six degrees of freedom (it is underactuated): to move sideways it must first tilt. A flight controller with an inertial unit keeps it stable hundreds of times per second.',
+    'Un <strong>quadrirotor</strong> est un robot volant porté par quatre hélices. Deux tournent dans le sens horaire et deux dans le sens antihoraire pour que leurs couples de réaction s\'annulent. Il n\'a que quatre moteurs pour six degrés de liberté (il est sous-actionné) : pour se déplacer de côté il doit d\'abord s\'incliner. Un contrôleur de vol avec une centrale inertielle le stabilise des centaines de fois par seconde.'],
+  humanoid: ['A <strong>humanoid robot</strong> has the shape of a human body: two legs, a torso, two arms with hands and a head, with about 20 to 50 joints. It is made to work in places and with tools designed for people. Its hardest problem is balance: when it walks it stands on one foot at a time and must keep its centre of mass under control at every instant.',
+    'Un <strong>robot humanoïde</strong> a la forme d\'un corps humain : deux jambes, un torse, deux bras avec des mains et une tête, avec environ 20 à 50 articulations. Il est fait pour travailler dans des lieux et avec des outils conçus pour les personnes. Son problème le plus difficile est l\'équilibre : quand il marche il se tient sur un pied à la fois et doit maîtriser son centre de masse à chaque instant.'],
+  mobile: ['A <strong>differential-drive mobile robot</strong> moves on two driven wheels placed on the same axle, with a free castor for balance. It goes straight when the two wheels turn at the same speed, turns when they differ, and spins on the spot when they are opposite. Simple and cheap, it is the base of vacuum robots and of most warehouse robots (AMR).',
+    'Un <strong>robot mobile à entraînement différentiel</strong> se déplace sur deux roues motrices placées sur le même axe, avec une roue folle pour l\'équilibre. Il va droit quand les deux roues tournent à la même vitesse, tourne quand elles diffèrent, et pivote sur place quand elles sont opposées. Simple et bon marché, c\'est la base des robots aspirateurs et de la plupart des robots d\'entrepôt (AMR).']
+};
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });
 const bpage = await (await browser.newContext()).newPage();
 const hashAll = async (file, list) => {                               // fingerprints of English texts, computed in Chromium like nav.js does
@@ -259,35 +285,53 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <title>${tx(...R.title)}</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      .anat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin: 1rem 0 1.4rem; }
-      #anatView { position: sticky; top: 76px; width: 100%; height: min(580px, calc(100vh - 96px)); min-height: 340px; border-radius: 12px; overflow: hidden; touch-action: none; }
-      #anatView canvas { display: block; }
-      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
-      .antag.on { transform: translate(-50%, -50%) scale(1.3); }
-      .ancards { display: grid; gap: 0.6rem; }
-      .ancard { border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 80%, transparent); }
-      .ancard.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); }
-      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 1rem; }
+      /* The stage: the model in the middle, a callout card for each part on both sides, each tied to its part by a leader line.
+         On a phone: the model, then the cards as a row you swipe. */
+      .anat { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.8rem; margin: 1rem 0 1.4rem; }
+      #anatView { position: relative; width: 100%; height: 400px; border-radius: 14px; overflow: hidden; touch-action: none; border: 1px solid var(--border); box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.55); }
+      #anatView canvas { position: absolute; inset: 0; display: block; cursor: grab; } #anatView canvas:active { cursor: grabbing; }
+      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 0 0 4px color-mix(in srgb, var(--c, #fff) 28%, transparent), 0 2px 8px rgba(0,0,0,.5); }
+      .antag.on, .antag.lit { transform: translate(-50%, -50%) scale(1.3); }
+      .ancards { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 2px 10px; } .ancards::-webkit-scrollbar { display: none; }
+      .ancard { position: relative; z-index: 1; flex: 0 0 min(82%, 290px); scroll-snap-align: start; align-self: start; border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: 0 10px 22px -18px rgba(0, 0, 0, 0.6); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
+      .ancard.on, .ancard.lit { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); box-shadow: 0 0 0 1px var(--c), 0 14px 28px -18px var(--c); }
+      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 0.95rem; }
       .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
-      .ann { background: var(--c); flex: none; width: 2rem; height: 2rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.8rem var(--mono); }
-      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; color: var(--muted); max-width: none; }
+      .ann { background: var(--c); flex: none; width: 1.8rem; height: 1.8rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.72rem var(--mono); }
+      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.84rem; line-height: 1.4; color: var(--muted); max-width: none; }
       .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
       .anout { position: absolute; left: 10px; bottom: 8px; right: 10px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
       .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
+      #anCmd { flex: none; }
+      .andef { margin: 0.6rem 0 1rem; padding: 0.7rem 1rem 0.75rem; border: 1px solid var(--border); border-left: 5px solid var(--accent); border-radius: 12px; background: color-mix(in srgb, var(--accent) 6%, var(--surface)); max-width: 62rem; }
+      .andef b { display: block; font: 600 0.72rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; } .andef p { margin: 0; max-width: none; }
       .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
-      .ancard:not(.info):not(.on) p { display: none; }
-      @media (max-width: 900px) { .anat { grid-template-columns: minmax(0, 1fr); } #anatView { position: relative; top: auto; height: 400px; } .ancard:not(.info):not(.on) p { display: block; } }
+      .ancall { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; display: none; }
+      .ancall path { fill: none; stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0.75; transition: opacity 0.2s ease, stroke-width 0.2s ease; } .ancall path.lit { stroke-width: 2.6; stroke-dasharray: none; opacity: 1; }
+      @media (min-width: 1000px) {
+        .anat { grid-template-columns: 250px minmax(0, 1fr) 250px; column-gap: 18px; row-gap: 10px; align-items: center; }
+        #anatView { grid-column: 2; grid-row: 1 / span var(--rows, 3); align-self: stretch; height: auto; min-height: 540px; }
+        .ancards { display: contents; }
+        .ancard { align-self: center; }
+        .ancard[data-side="left"] { grid-column: 1; border-left: 1px solid var(--border); border-right: 5px solid var(--c); } .ancard[data-side="left"].on, .ancard[data-side="left"].lit { border-color: var(--c); }
+        .ancard[data-side="right"] { grid-column: 3; }
+        #anCmd { grid-column: 2; grid-row: calc(var(--rows, 3) + 1); align-self: start; }
+        .ancard:not(.info):not(.on) p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+        .ancall { display: block; }
+      }
     </style>
-    <link rel="modulepreload" href="vendor/three.module.min.js" />
-    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
     <script type="importmap">
       { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
     </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="${key}">
     <h1>${tx(...R.title)}</h1>
     <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
     <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
+    <div class="andef"><b>${tx('Definition', 'Définition')}</b><p>${tx(...DEFS[key])}</p></div>
     <div class="toolbar">
       <button id="xrayBtn" type="button" aria-pressed="false">${tx('X-ray (inside)', 'Rayons X (intérieur)')}</button>
       <button id="playBtn" type="button" aria-pressed="false">${tx('Animate the selected axis', 'Animer l\'axe choisi')}</button>
@@ -297,8 +341,8 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     </div>
     <div class="anat">
       <div id="anatView"></div>
-      <div class="ancards">
-        ${cmdCard}${cards}
+      ${cmdCard}<div class="ancards">
+        ${cards}
       </div>
     </div>
     <h2>${tx('What is inside each joint?', 'Que contient chaque articulation ?')}</h2>
