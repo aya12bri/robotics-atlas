@@ -334,6 +334,7 @@ function mount(host) {
       <div class="sys-pop" hidden><button type="button" class="sys-x" aria-label="${L('Close', 'Fermer')}">×</button><div class="sys-pop-in"></div></div><p class="sys-hint">${L('Click a name or a part', 'Cliquez sur un nom ou une pièce')}</p></div>
     <nav class="sys-layers" aria-label="${L('Layers', 'Couches')}"><button type="button" class="sys-prev" aria-label="${L('Previous layer', 'Couche précédente')}">‹</button><div class="sys-lchips">${LAYERS.map((l, i) => `<button type="button" data-l="${i}">${i && i < LAYERS.length - 1 ? `<b>${i}</b>` : ''}${l[0]}</button>`).join('')}</div><button type="button" class="sys-next" aria-label="${L('Next layer', 'Couche suivante')}">›</button></nav>
     <div class="sys-lcard"><h3></h3><p></p></div>
+    <div class="sys-explain" hidden></div>
     <div class="sys-legend">${Object.entries(WIRE).map(([k, [c, n]]) => `<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>
     <div class="sys-detail" hidden></div>
     <div class="sys-cats"></div>`;
@@ -454,6 +455,27 @@ function mount(host) {
   });
   const howEl = host.querySelector('.sys-how');
   howEl.insertAdjacentHTML('beforeend', HOW.map((h, i) => `<div class="sys-hcard" data-h="${h.id}" style="--c:${h.robot ? '#6d5dfc' : CATS[PARTS[h.id][0]][1]}"><b>${i + 1}</b><div><strong>${HOWTXT[h.id][0]}</strong><span>${HOWTXT[h.id][1]}</span></div></div>`).join(''));
+  // ---- the written explanation under the view: the loop step by step, with the numbers of the cards
+  const N = (id) => { const k = HOW.findIndex((h) => h.id === id); return k < 0 ? '' : `<b class="sys-n" style="--c:${HOW[k].robot ? '#6d5dfc' : CATS[PARTS[id][0]][1]}">${k + 1}</b> <strong>${HOWTXT[id][0]}</strong>`; };
+  const S1 = sensors.map(N).join(L(' and ', ' et ')), sb = first('sbc', 'ai'), sf = first('estop', 'bumper');
+  const STEPS = setKey === 'arm' ? [
+    [1, L('The sensors see', 'Les capteurs voient'), L(`${S1} watch the cell: the presence sensor switches when a part arrives on the conveyor, and the camera finds exactly where it is and checks that it is good. They send these signals (a 24 V signal, an image) to the brain.`, `${S1} surveillent la cellule : le capteur de présence bascule quand une pièce arrive sur le convoyeur, et la caméra trouve exactement où elle est et vérifie qu'elle est bonne. Ils envoient ces signaux (un signal 24 V, une image) au cerveau.`)],
+    [2, L('The brain decides', 'Le cerveau décide'), L(`${N(brains[0])} reads all the inputs and runs its program: "a good part is here, so pick it". It computes the path of the gripper and the angle of every joint (inverse kinematics), then sends a new position order every millisecond on the industrial network (EtherCAT, PROFINET).`, `${N(brains[0])} lit toutes les entrées et exécute son programme : « une bonne pièce est là, donc la prendre ». Il calcule le trajet de la pince et l'angle de chaque articulation (cinématique inverse), puis envoie une nouvelle consigne de position chaque milliseconde sur le réseau industriel (EtherCAT, PROFINET).`)],
+    [3, L('The drive gives the power', 'Le variateur donne la puissance'), L(`${N(drv)} receives the order, compares it with the real position and sends the motor exactly the three-phase current it needs: more current = more torque.`, `${N(drv)} reçoit la consigne, la compare à la position réelle et envoie au moteur exactement le courant triphasé nécessaire : plus de courant = plus de couple.`)],
+    [4, L('The motor moves the robot', 'Le moteur fait bouger le robot'), L(`${N(mot)} turns fast; the gearbox in the joint slows it down about 100 times and makes it 100 times stronger. The joint turns, and ${N('robot')}: the gripper goes to the part.`, `${N(mot)} tourne vite ; le réducteur de l'articulation le ralentit environ 100 fois et le rend 100 fois plus fort. L'articulation tourne, et ${N('robot')} : la pince va vers la pièce.`)],
+    [5, L('The encoder closes the loop', 'Le codeur ferme la boucle'), L(`${N('enc')} measures the real angle of the motor and sends it back to the drive. If the robot is a little behind or ahead, the drive corrects at once. This loop runs thousands of times per second: that is why the robot is so precise.`, `${N('enc')} mesure l'angle réel du moteur et le renvoie au variateur. Si le robot est un peu en retard ou en avance, le variateur corrige aussitôt. Cette boucle tourne des milliers de fois par seconde : c'est pour cela que le robot est si précis.`)],
+    [0, L('Safety, above everything', 'La sécurité, au-dessus de tout'), L(`${N(sf)} is wired on a separate safety loop, not through the program: pressed, it cuts the power of the drives and the brakes close. The robot stops whatever the program says.`, `${N(sf)} est câblé sur une boucle de sécurité séparée, pas à travers le programme : appuyé, il coupe la puissance des variateurs et les freins se serrent. Le robot s'arrête, quoi que dise le programme.`)]
+  ] : [
+    [1, L('The sensors see', 'Les capteurs voient'), L(`${S1} measure the world around the robot: the LiDAR spins and measures thousands of distances per second, the other sensor watches what is close or how the robot is tilted.`, `${S1} mesurent le monde autour du robot : le LiDAR tourne et mesure des milliers de distances par seconde, l'autre capteur surveille ce qui est proche ou l'inclinaison du robot.`)],
+    [2, L('The brain decides', 'Le cerveau décide'), L(`${N(sb)} builds a map, finds where the robot is on it and chooses a path around the obstacles. ${N('mcu')} turns this plan into precise speed orders for each motor.`, `${N(sb)} construit une carte, trouve où est le robot dessus et choisit un chemin autour des obstacles. ${N('mcu')} transforme ce plan en consignes de vitesse précises pour chaque moteur.`)],
+    [3, L('Energy and power', 'L\'énergie et la puissance'), L(`${N('battery')} gives the energy. ${N(drv)} takes it and switches it very fast (PWM) to send each motor exactly the current that matches the speed order.`, `${N('battery')} fournit l'énergie. ${N(drv)} la prend et la commute très vite (PWM) pour envoyer à chaque moteur exactement le courant qui correspond à la consigne de vitesse.`)],
+    [4, L('The motors move the robot', 'Les moteurs font bouger le robot'), L(`${N(mot)} turns, and ${N('robot')}: it drives, walks or flies along the chosen path.`, `${N(mot)} tourne, et ${N('robot')} : il roule, marche ou vole le long du chemin choisi.`)],
+    [5, L('The encoder closes the loop', 'Le codeur ferme la boucle'), L(`${N('enc')} counts the turns of the motor and sends them back to the microcontroller (odometry): it knows how far the robot really went and corrects the speeds. The sensors then update the map, and the loop starts again.`, `${N('enc')} compte les tours du moteur et les renvoie au microcontrôleur (odométrie) : il sait de combien le robot a vraiment avancé et corrige les vitesses. Les capteurs mettent ensuite la carte à jour, et la boucle recommence.`)],
+    [0, L('Safety, above everything', 'La sécurité, au-dessus de tout'), L(`${N(sf)} cuts the power of the motors directly, without going through the computer: the robot stops at once.`, `${N(sf)} coupe directement la puissance des moteurs, sans passer par l'ordinateur : le robot s'arrête aussitôt.`)]
+  ];
+  const explainEl = host.querySelector('.sys-explain');
+  explainEl.innerHTML = `<h3>${L('How it works, step by step', 'Comment ça marche, étape par étape')}</h3><ol>${STEPS.map(([st2, title, txt]) => `<li data-s="${st2}" class="${st2 ? '' : 'safe'}"><span class="sys-sn">${st2 || '!'}</span><div><h4>${title}</h4><p>${txt}</p></div></li>`).join('')}</ol>
+    <p class="sys-sum"><b>${L('In short', 'En résumé')} :</b> ${setKey === 'arm' ? L('sensors → brain → drive → motor → movement → encoder → back to the brain. The robot repeats this loop thousands of times per second.', 'capteurs → cerveau → variateur → moteur → mouvement → codeur → retour au cerveau. Le robot répète cette boucle des milliers de fois par seconde.') : L('sensors → computer → microcontroller → driver (with the battery) → motors → movement → encoders → back to the microcontroller. The loop runs many times per second.', 'capteurs → ordinateur → microcontrôleur → driver (avec la batterie) → moteurs → mouvement → codeurs → retour au microcontrôleur. La boucle tourne plusieurs fois par seconde.')}</p>`;
   howEl.querySelectorAll('.sys-hcard').forEach((c) => c.addEventListener('click', () => { if (c.dataset.h !== 'robot') select(c.dataset.h, false); }));
 
   let layer = 0;
@@ -471,7 +493,7 @@ function mount(host) {
     lchips.forEach((b, k) => b.setAttribute('aria-pressed', String(k === layer)));
     host.querySelector('.sys-prev').disabled = layer === 0; host.querySelector('.sys-next').disabled = layer === LAYERS.length - 1;
     lcard.querySelector('h3').textContent = (layer && layer < LAYERS.length - 1 ? L('Layer ', 'Couche ') + layer + ' · ' : '') + LAYERS[layer][0]; lcard.querySelector('p').textContent = LAYERS[layer][2];
-    const all = layer === LAYERS.length - 1; host.classList.toggle('sys-all-on', all);
+    const all = layer === LAYERS.length - 1; host.classList.toggle('sys-all-on', all); explainEl.hidden = !all;
     if (!all && playing) playBtn.click();
     labsEl.querySelectorAll('button').forEach((b) => { b.hidden = !goals[b.dataset.p] || all; });
     const H = layer === 0 ? ROBOTCAM : all ? HOME : LAYERCAM; fly(H.p.clone(), H.t.clone());
@@ -578,6 +600,7 @@ function mount(host) {
     svgL.innerHTML = d;
     if (settled) {                                             // cards in a left and a right column, in the same top-to-bottom order as their parts: arrows never cross
       const curStep = stopped ? 0 : playing ? fStep + 1 : -1, items = [];
+      explainEl.querySelectorAll('li').forEach((li) => li.classList.toggle('on', +li.dataset.s === curStep));
       howEl.querySelectorAll('.sys-hcard').forEach((c) => { const h = HOW.find((q) => q.id === c.dataset.h), w3 = h.robot ? robotAnchor() : (() => { const b0 = new THREE.Box3().setFromObject(objs[h.id]); return V(objs[h.id].position.x, b0.max.y, objs[h.id].position.z); })();
         v.copy(w3).project(camera); items.push({ el: c, x: (v.x + 1) / 2 * r.width, y: (1 - v.y) / 2 * r.height });
         c.classList.toggle('on', curStep >= 0 && (h.step === curStep || (curStep === 3 && h.id === 'battery'))); c.classList.toggle('dim', curStep >= 0 && !c.classList.contains('on')); c.classList.toggle('sel', h.id === sel); });
