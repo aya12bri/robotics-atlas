@@ -75,6 +75,37 @@ const PART = {
   carr: [L('Planet carrier (output)', 'Porte-satellites (sortie)'), L('Holds the three planet axles. It is the output: 5 times slower and 5 times stronger than the motor.', 'Tient les axes des trois satellites. C\'est la sortie : 5 fois plus lente et 5 fois plus forte que le moteur.')],
   uarm: [L('Upper arm', 'Bras supérieur'), L('A light carbon-fibre arm bolted to the gearbox output. With the two others, it moves the platform through the parallel rods.', 'Un bras léger en fibre de carbone vissé sur la sortie du réducteur. Avec les deux autres, il déplace la plateforme par les bielles parallèles.')],
   balls: [L('Ball joints', 'Rotules'), L('Small ball joints at the ends of the rods let them swing in every direction, so the platform always stays flat.', 'De petites rotules aux bouts des bielles les laissent pivoter dans tous les sens : la plateforme reste toujours horizontale.')],
+  // electric gripper
+  gfl: [L('Tool flange (ISO 9409)', 'Bride d\'outil (ISO 9409)'), L('The standard bolt pattern that fixes the gripper on the robot wrist, with a dowel pin so it always goes back in the same place.', 'Le perçage standard qui fixe la pince sur le poignet du robot, avec un pion de centrage pour qu\'elle revienne toujours au même endroit.')],
+  gmot: [L('Gripper motor + encoder', 'Moteur de la pince + codeur'), L('A small brushless motor: the drive limits its current, which sets the gripping force.', 'Un petit moteur sans balais : le variateur limite son courant, ce qui règle la force de serrage.')],
+  gred: [L('Gearbox', 'Réducteur'), L('Slows the motor down so the fingers close slowly but firmly.', 'Ralentit le moteur pour que les doigts se ferment lentement mais fermement.')],
+  gscr: [L('Left/right lead screw', 'Vis à double pas (gauche / droite)'), L('Half of the screw has a right-hand thread, half a left-hand thread: when it turns, the two jaws move towards each other (or apart) symmetrically.', 'La moitié de la vis a un pas à droite, l\'autre un pas à gauche : quand elle tourne, les deux mors se rapprochent (ou s\'écartent) symétriquement.')],
+  gjaw: [L('Jaws on a linear guide', 'Mors sur guidage linéaire'), L('Two carriages that slide on a small rail and carry the fingers.', 'Deux chariots qui glissent sur un petit rail et portent les doigts.')],
+  gfin: [L('Fingers', 'Doigts'), L('Machined to the shape of the part; they are easy to change for a new product.', 'Usinés à la forme de la pièce ; on les change facilement pour un nouveau produit.')],
+  gpad: [L('Grip pads', 'Patins de préhension'), L('Soft rubber pads: more friction, no scratches on the part.', 'Patins en caoutchouc souple : plus d\'adhérence, pas de rayure sur la pièce.')],
+  gsen: [L('Grip sensor', 'Capteur de prise'), L('Measures the finger position and the force: the robot knows if the part is there, and if it slipped.', 'Mesure la position des doigts et la force : le robot sait si la pièce est là, et si elle a glissé.')],
+  gcov: [L('Gripper body', 'Corps de la pince'), L('Aluminium housing: it holds the guide, the screw and the motor, and seals them from dust.', 'Boîtier en aluminium : il tient le guidage, la vis et le moteur, et les protège de la poussière.')],
+  // controller cabinet
+  cmain: [L('Main switch', 'Interrupteur-sectionneur'), L('The red and yellow handle that cuts all the power to the cabinet; it can be locked for maintenance.', 'La poignée rouge et jaune qui coupe toute l\'alimentation de l\'armoire ; on peut la cadenasser pour la maintenance.')],
+  cpsu: [L('24 V power supply', 'Alimentation 24 V'), L('Turns 230/400 V AC into 24 V DC for the electronics, the sensors and the brakes.', 'Transforme le 230/400 V alternatif en 24 V continu pour l\'électronique, les capteurs et les freins.')],
+  ccpu: [L('Robot controller (CPU)', 'Contrôleur robot (CPU)'), L('An industrial computer: it runs the program, computes the trajectories and the inverse kinematics every millisecond.', 'Un ordinateur industriel : il exécute le programme, calcule les trajectoires et la cinématique inverse chaque milliseconde.')],
+  cdrv: [L('Servo drives (one per axis)', 'Variateurs (un par axe)'), L('Six drives side by side: each one feeds one motor with exactly the right three-phase current.', 'Six variateurs côte à côte : chacun alimente un moteur avec exactement le bon courant triphasé.')],
+  csaf: [L('Safety relay / safety PLC', 'Relais de sécurité / automate de sécurité'), L('Watches the emergency stops, the door and the light curtains on two channels; if one opens, it cuts the motor power.', 'Surveille les arrêts d\'urgence, la porte et les barrières sur deux voies ; si l\'une s\'ouvre, il coupe la puissance des moteurs.')],
+  cio: [L('I/O modules', 'Modules d\'entrées / sorties'), L('Connect the sensors, valves and lamps of the cell to the controller.', 'Relient les capteurs, distributeurs et voyants de la cellule au contrôleur.')],
+  cterm: [L('Terminal blocks', 'Borniers'), L('Every wire coming in or out is screwed on a numbered terminal: easy to test and to repair.', 'Chaque fil qui entre ou sort est vissé sur une borne numérotée : facile à tester et à dépanner.')],
+  cduct: [L('Cable ducts', 'Goulottes'), L('Slotted channels that guide the wires tidily between the devices.', 'Des goulottes à fentes qui guident proprement les fils entre les appareils.')],
+  cfan: [L('Fans and filters', 'Ventilateurs et filtres'), L('Blow fresh, filtered air through the cabinet: drives give off heat.', 'Soufflent de l\'air frais filtré dans l\'armoire : les variateurs chauffent.')],
+  cdoor: [L('Cabinet door', 'Porte de l\'armoire'), L('Steel door with a seal (IP54) and a key; the main switch handle goes through it.', 'Porte en acier avec joint (IP54) et clé ; la poignée du sectionneur la traverse.')],
+  // mobile robot electronics
+  mbat: [L('Battery pack (LiFePO4)', 'Batterie (LiFePO4)'), L('Lithium cells in series and parallel: 48 V, about 8 hours of work, recharged at the charging station.', 'Des cellules lithium en série et en parallèle : 48 V, environ 8 heures de travail, rechargées à la borne.')],
+  mbms: [L('BMS (battery management)', 'BMS (gestion de batterie)'), L('Watches the voltage and temperature of every cell, balances them and cuts the current if something is wrong.', 'Surveille la tension et la température de chaque cellule, les équilibre et coupe le courant en cas de problème.')],
+  mpc: [L('Main computer', 'Ordinateur principal'), L('Runs ROS 2: the map, the localisation, the path planning and the link with the fleet manager.', 'Fait tourner ROS 2 : la carte, la localisation, la planification de trajet et le lien avec le gestionnaire de flotte.')],
+  mdrv: [L('Motor drivers', 'Drivers moteurs'), L('One per drive wheel: they turn the speed orders into motor currents and read the encoders.', 'Un par roue motrice : ils transforment les consignes de vitesse en courant moteur et lisent les codeurs.')],
+  mlid: [L('Safety LiDAR', 'LiDAR de sécurité'), L('Scans 270° around the robot: it maps the room and slows or stops the robot when someone is too close.', 'Balaye 270° autour du robot : il cartographie la pièce et ralentit ou arrête le robot quand quelqu\'un est trop près.')],
+  mimu: [L('IMU', 'Centrale inertielle (IMU)'), L('Measures turns and accelerations; mixed with the wheel encoders it gives a precise odometry.', 'Mesure rotations et accélérations ; mélangée aux codeurs des roues, elle donne une odométrie précise.')],
+  mestop: [L('Emergency stop', 'Arrêt d\'urgence'), L('A red button on each side: pressed, it cuts the motor power at once.', 'Un bouton rouge de chaque côté : appuyé, il coupe tout de suite la puissance des moteurs.')],
+  mfuse: [L('Fuses and contactor', 'Fusibles et contacteur'), L('Protect the cables from short circuits and switch the motor power on and off.', 'Protègent les câbles des courts-circuits et mettent la puissance des moteurs sous et hors tension.')],
+  mcov: [L('Body cover', 'Capot'), L('The top cover; it carries the load and keeps water and dust out.', 'Le capot supérieur ; il porte la charge et protège de l\'eau et de la poussière.')],
   whl: [L('Wheel and tyre', 'Roue et bandage'), L('A polyurethane tyre on an aluminium hub, bolted to the gearbox output. The encoder counts its turns: that is the odometry.', 'Un bandage en polyuréthane sur un moyeu en aluminium, vissé sur la sortie du réducteur. Le codeur compte ses tours : c\'est l\'odométrie.')]
 };
 
@@ -155,7 +186,7 @@ function rotaryJoint(o) {
   const read = (th, t) => { const turns = th / (2 * Math.PI), counts = Math.floor(((turns % 1) + 1) % 1 * 131072);
     return [[L('Motor', 'Moteur'), '3 000 ' + L('rpm', 'tr/min')], [L('Gear ratio', 'Rapport'), '100 : 1'], [L('Output', 'Sortie'), '30 ' + L('rpm', 'tr/min') + ' · ' + ((-turns / 100 * 360) % 360).toFixed(1) + '°'],
       [L('Encoder', 'Codeur'), counts.toLocaleString() + ' / 131 072'], [L('Brake', 'Frein'), L('released', 'relâché')]].concat(o.trq ? [[L('Torque', 'Couple'), (12 + 3 * Math.sin(t * 3)).toFixed(1) + ' N·m']] : []); };
-  return { g, parts, cover, lids, ids, run, read, len: o.drv ? 4.6 : 4.0 };
+  return { g, parts, cover, lids, ids, run, read, len: o.drv ? 4.6 : 4.0, kind: 'rot' };
 }
 
 function linearAxis() {
@@ -177,7 +208,7 @@ function linearAxis() {
   const ids = parts.map((p) => p.id);
   const run = (th) => { screw.rotation.x = th; const x = 5.2 * Math.sin(th / 9); moving.forEach((p) => { p.obj.userData.dx = x; }); g.userData.x = x; };
   const read = (th) => { const x = 5.2 * Math.sin(th / 9); return [[L('Screw lead', 'Pas de la vis'), '20 mm / ' + L('turn', 'tour')], [L('Motor', 'Moteur'), '1 500 ' + L('rpm', 'tr/min')], [L('Carriage speed', 'Vitesse du chariot'), '0.5 m/s'], [L('Position', 'Position'), (x * 40).toFixed(0) + ' mm']]; };
-  return { g, parts, cover: null, lids: [], ids, run, read, moving, len: 20, linear: true };
+  return { g, parts, cover: null, lids: [], ids, run, read, moving, len: 20, linear: true, kind: 'lin' };
 }
 
 function planetary(o) {
@@ -200,9 +231,10 @@ function planetary(o) {
   const mk = boxC(0.14, 0.3, 0.2, P.orange); mk.position.set(0, 0.7, 0.12); carr.add(mk);
   add('carr', carr, V(0, 0, 4.5)); T.carr = carr;
   if (o.arm) {                                               // Delta: carbon upper arm + ball joints on the carrier
-    const a = new THREE.Group(); a.position.z = 1.25; const beam = boxC(0.5, 6.0, 0.45, P.black); beam.position.y = -3.0; a.add(beam); a.add(cylA(0.5, 0.5, P.orange, 32));
+    const a0 = o.armAngle || 0;                                 // the real arm leaves the motor at this angle (0 = straight down)
+    const a = new THREE.Group(); a.position.z = 1.25; a.rotation.z = a0; const beam = boxC(0.5, 6.0, 0.45, P.black); beam.position.y = -3.0; a.add(beam); a.add(cylA(0.5, 0.5, P.orange, 32));
     add('uarm', a, V(0, 0, 5.6)); T.arm = a;
-    const b = new THREE.Group(); b.position.set(0, -6.0, 1.25); for (const s of [-1, 1]) { const ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 14), P.steel); ball.position.z = s * 0.7; b.add(ball); const rod = cylA(0.09, 1.2, P.alu, 10); rod.position.z = s * 0.7; rod.rotation.x = 0; b.add(rod); }
+    const b = new THREE.Group(); b.position.set(Math.sin(a0) * 6.0, -Math.cos(a0) * 6.0, 1.25); for (const s of [-1, 1]) { const ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 14), P.steel); ball.position.z = s * 0.7; b.add(ball); const rod = cylA(0.09, 1.2, P.alu, 10); rod.position.z = s * 0.7; rod.rotation.x = 0; b.add(rod); }
     add('balls', b, V(0, -1.4, 6.4)); T.balls = b;
   }
   if (o.wheel) {                                             // mobile: wheel bolted on the carrier
@@ -217,13 +249,81 @@ function planetary(o) {
   const run = (th) => {
     const c = th / 5; T.rot.rotation.z = th; T.disc.rotation.z = th; T.sun.rotation.z = th; T.carr.rotation.z = c;
     planets.forEach((p, i) => { const a = c + (i / 3) * Math.PI * 2; p.position.set(Math.cos(a) * 0.77, Math.sin(a) * 0.77, 0); p.rotation.z = c - (12 / 18) * (th - c); });
-    if (T.arm) { const sw = 0.35 * Math.sin(c * 0.5); T.arm.rotation.z = sw; T.balls.position.set(Math.sin(sw) * 6.0, -Math.cos(sw) * 6.0, T.balls.position.z); }
+    if (T.arm) { const sw = (o.armAngle || 0) + 0.35 * Math.sin(c * 0.5); T.arm.rotation.z = sw; T.balls.position.set(Math.sin(sw) * 6.0, -Math.cos(sw) * 6.0, T.balls.position.z); }
     if (T.wheel) T.wheel.rotation.z = c;
   };
   const read = (th) => [[L('Motor', 'Moteur'), (o.wheel ? '3 000 ' : '3 000 ') + L('rpm', 'tr/min')], [L('Gear ratio', 'Rapport'), '1 + 48/12 = 5 : 1'], [L('Output', 'Sortie'), '600 ' + L('rpm', 'tr/min')],
-    o.wheel ? [L('Wheel speed', 'Vitesse de la roue'), '600 tr/min × π × 0.15 m ≈ 4.7 m/s max'] : [L('Arm angle', 'Angle du bras'), (0.35 * Math.sin(th / 10) * 57.3).toFixed(1) + '°']];
-  return { g, parts, cover, lids, ids, run, read, len: o.arm ? 8 : 6 };
+    o.wheel ? [L('Wheel speed', 'Vitesse de la roue'), '600 tr/min × π × 0.15 m ≈ 4.7 m/s max'] : [L('Arm angle', 'Angle du bras'), ((0.35 * Math.sin(th / 10) - 0.076) * 57.3).toFixed(1) + '°']];
+  return { g, parts, cover, lids, ids, run, read, len: o.arm ? 8 : 6, kind: 'pla' };
 }
+
+function gripperMech() {                                     // electric parallel gripper, approach axis +z (fingers point +z)
+  const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
+  const T = {};
+  { const f = new THREE.Group(); f.position.z = -2.6; f.add(cylA(1.1, 0.25, P.alu, 40)); for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2, h = cylA(0.09, 0.27, P.black, 10); h.position.set(Math.cos(a) * 0.8, Math.sin(a) * 0.8, 0); f.add(h); } add('gfl', f, V(0, 0, -2.4)); }
+  { const s = new THREE.Group(); s.position.set(0, 0, -3.1); s.add(cylA(0.45, 0.3, P.pcb, 24)); const c = boxC(0.3, 0.3, 0.12, P.black); c.position.z = -0.18; s.add(c); add('gsen', s, V(0, 0, -3.6)); }
+  { const m = new THREE.Group(); m.position.z = -1.6; m.add(cylA(0.6, 1.5, P.black, 32)); const sh = cylA(0.08, 0.6, P.steel, 12); sh.position.z = 0.95; m.add(sh); T.mot = sh; add('gmot', m, V(0, 0, -1.5)); }
+  { const r = new THREE.Group(); r.position.z = -0.5; r.add(cylA(0.62, 0.6, P.alu, 32)); for (let i = 0; i < 3; i++) { const a = (i / 3) * Math.PI * 2, gg = gear(0.18, 10, 0.3, P.steel); gg.position.set(Math.cos(a) * 0.3, Math.sin(a) * 0.3, 0.35); r.add(gg); } add('gred', r, V(0, 0, -0.6)); }
+  const scrM = P.steel.clone(); scrM.map = stripes(40, '#c9d2db', '#6b7682'); const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 3.4, 20).rotateZ(Math.PI / 2), scrM);
+  { const sc = new THREE.Group(); sc.position.z = 0.35; sc.add(screw); add('gscr', sc, V(0, -1.6, 0.4)); T.screw = screw; }
+  const jaws = [], fingers = [], pads = [];
+  const jg = new THREE.Group(); jg.position.z = 0.35; const rail = boxC(3.6, 0.18, 0.5, P.dark); rail.position.y = -0.45; jg.add(rail);
+  for (const sx of [-1, 1]) { const j = boxC(0.8, 0.7, 0.9, P.orange); j.position.set(sx * 0.9, 0, 0); jg.add(j); jaws.push(j); }
+  add('gjaw', jg, V(0, 1.2, 0.9));
+  const fg = new THREE.Group(); fg.position.z = 0.35; for (const sx of [-1, 1]) { const f = boxC(0.35, 0.6, 2.4, P.alu); f.position.set(sx * 0.9, 0, 1.55); fg.add(f); fingers.push(f); } add('gfin', fg, V(0, 0, 2.2));
+  const pg = new THREE.Group(); pg.position.z = 0.35; for (const sx of [-1, 1]) { const p2 = boxC(0.1, 0.55, 0.8, P.rubber); p2.position.set(sx * 0.68, 0, 2.3); pg.add(p2); pads.push(p2); } add('gpad', pg, V(0, 0, 3.6));
+  const covM = P.dark.clone(); covM.transparent = true; covM.side = THREE.DoubleSide;
+  const cover = boxC(2.4, 1.6, 3.2, covM); cover.position.z = -0.9; cover.material.opacity = 0.9; g.add(cover); cover.userData.part = 'gcov';
+  const ids = parts.map((p) => p.id); ids.push('gcov');
+  const open = (o) => { jaws.forEach((j, i) => { j.position.x = (i ? 1 : -1) * (0.45 + 0.7 * o); }); fingers.forEach((f, i) => { f.position.x = (i ? 1 : -1) * (0.45 + 0.7 * o); }); pads.forEach((p2, i) => { p2.position.x = (i ? 1 : -1) * (0.23 + 0.7 * o); }); };
+  open(0.6);
+  const run = (th) => { const o = 0.5 + 0.5 * Math.sin(th / 6); T.screw.rotation.x = th; T.mot.rotation.z = th * 3; open(o); g.userData.o = o; };
+  const read = (th) => { const o = 0.5 + 0.5 * Math.sin(th / 6); return [[L('Opening', 'Ouverture'), (20 + 60 * o).toFixed(0) + ' mm'], [L('Grip force', 'Force de serrage'), o < 0.08 ? '140 N' : '0 N'], [L('Part', 'Pièce'), o < 0.08 ? L('held', 'tenue') : L('free', 'libre')]]; };
+  return { g, parts, cover, lids: [], ids, run, read, len: 6.5, kind: 'grip' };
+}
+
+function cabinetMech() {                                     // the robot controller cabinet, standing on the floor (y up), the door on +z
+  const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
+  const W = 4, H = 6.4, D = 2.2, T = { fans: [], leds: [] };
+  const shell = new THREE.Group(); const sm = M('#e6e1d6', { roughness: 0.6 }); for (const [w, h, d, x, y, z] of [[W, H, 0.08, 0, H / 2, -D / 2], [0.08, H, D, -W / 2, H / 2, 0], [0.08, H, D, W / 2, H / 2, 0], [W, 0.08, D, 0, H, 0], [W, 0.08, D, 0, 0.04, 0]]) { const b = boxC(w, h, d, sm); b.position.set(x, y, z); shell.add(b); } g.add(shell);
+  const plate = boxC(W - 0.3, H - 0.4, 0.05, P.alu); plate.position.set(0, H / 2, -D / 2 + 0.1); g.add(plate);
+  const z0 = -D / 2 + 0.2, row = (y) => y;
+  { const d = new THREE.Group(); for (const y of [1.6, 3.3, 4.9]) { const du = boxC(W - 0.5, 0.35, 0.4, P.white); du.position.set(0, y, z0 + 0.15); d.add(du); } const dv = boxC(0.35, H - 1, 0.4, P.white); dv.position.set(-W / 2 + 0.35, H / 2, z0 + 0.15); d.add(dv); add('cduct', d, V(0, 0, 0.6)); }
+  { const m = new THREE.Group(); m.position.set(-1.1, 5.6, z0 + 0.3); m.add(boxC(0.6, 0.8, 0.5, P.dark)); const h = cylA(0.22, 0.2, P.red, 20); h.position.z = 0.35; m.add(h); const y2 = boxC(0.7, 0.7, 0.05, M('#f5c518')); y2.position.z = 0.26; m.add(y2); add('cmain', m, V(-0.4, 0.4, 2.6)); }
+  { const p2 = new THREE.Group(); p2.position.set(0.2, 5.6, z0 + 0.3); p2.add(boxC(1.2, 0.7, 0.55, P.alu)); for (let i = 0; i < 6; i++) { const t = boxC(0.1, 0.12, 0.05, P.dark); t.position.set(-0.45 + i * 0.18, -0.25, 0.3); p2.add(t); } const led = boxC(0.06, 0.06, 0.03, P.red.clone()); led.position.set(0.5, 0.2, 0.29); led.material.color.set('#30ff8a'); led.material.emissive.set('#30ff8a'); p2.add(led); add('cpsu', p2, V(0, 0.4, 3.4)); }
+  { const c = new THREE.Group(); c.position.set(1.4, 5.5, z0 + 0.35); c.add(boxC(0.9, 1.1, 0.7, P.black)); const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.35), new THREE.MeshBasicMaterial({ color: '#1d3b5c' })); sc.position.set(0, 0.2, 0.36); c.add(sc); for (let i = 0; i < 3; i++) { const l = boxC(0.06, 0.06, 0.03, M('#30ff8a', { emissive: '#30ff8a', emissiveIntensity: 1 })); l.position.set(-0.25 + i * 0.12, -0.3, 0.36); c.add(l); T.leds.push(l); } add('ccpu', c, V(0.6, 0.4, 2.6)); }
+  { const dr = new THREE.Group(); dr.position.set(0, 2.45, z0 + 0.4); for (let i = 0; i < 6; i++) { const b = boxC(0.45, 1.3, 0.8, P.dark); b.position.x = -1.35 + i * 0.54; dr.add(b); const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.16), new THREE.MeshBasicMaterial({ color: '#2b6cb0' })); sc.position.set(-1.35 + i * 0.54, 0.4, 0.41); dr.add(sc); const l = boxC(0.05, 0.05, 0.03, M('#30ff8a', { emissive: '#30ff8a', emissiveIntensity: 1 })); l.position.set(-1.35 + i * 0.54, 0.15, 0.41); dr.add(l); T.leds.push(l); } add('cdrv', dr, V(0, 0, 3.2)); }
+  { const sf = new THREE.Group(); sf.position.set(-1.3, 4.15, z0 + 0.3); for (let i = 0; i < 2; i++) { const b = boxC(0.3, 0.7, 0.5, M('#f5c518')); b.position.x = i * 0.35; sf.add(b); } add('csaf', sf, V(-0.6, 0, 2.4)); }
+  { const io = new THREE.Group(); io.position.set(0.5, 4.15, z0 + 0.3); for (let i = 0; i < 6; i++) { const b = boxC(0.2, 0.7, 0.5, i % 2 ? P.white : M('#9aa5b1')); b.position.x = -0.6 + i * 0.22; io.add(b); } add('cio', io, V(0.4, 0, 2.6)); }
+  { const tb = new THREE.Group(); tb.position.set(0.2, 0.85, z0 + 0.25); const rail = boxC(W - 0.8, 0.08, 0.1, P.steel); tb.add(rail); const cols = ['#9aa5b1', '#2f6bff', '#e5484d', '#9aa5b1', '#f5c518', '#30a46c']; for (let i = 0; i < 22; i++) { const b = boxC(0.1, 0.45, 0.4, M(cols[i % cols.length])); b.position.set(-1.5 + i * 0.14, 0.1, 0.1); tb.add(b); } add('cterm', tb, V(0, -0.4, 2.4)); }
+  { const fs = new THREE.Group(); for (const y of [1.2, 5.0]) { const f = new THREE.Group(); f.position.set(W / 2 + 0.05, y, 0); f.add(boxC(0.1, 0.9, 0.9, P.black)); const bl = new THREE.Group(); bl.position.x = 0.07; for (let k = 0; k < 4; k++) { const b2 = boxC(0.02, 0.35, 0.12, P.dark); b2.rotation.x = (k / 4) * Math.PI; bl.add(b2); } f.add(bl); T.fans.push(bl); fs.add(f); } add('cfan', fs, V(1.4, 0, 0)); }
+  const doorM = M('#e6e1d6', { roughness: 0.6 }); doorM.transparent = true;
+  const door = boxC(W, H, 0.08, doorM); door.position.set(0, H / 2, D / 2); g.add(door); door.userData.part = 'cdoor';
+  const ids = parts.map((p) => p.id); ids.push('cdoor');
+  const run = (th, t) => { T.fans.forEach((f) => { f.rotation.x = th * 4; }); T.leds.forEach((l, i) => { l.material.emissiveIntensity = 0.4 + 0.6 * ((Math.sin(t * 6 + i) + 1) / 2); }); };
+  const read = (th, t) => [[L('Supply', 'Alimentation'), '400 V AC → 24 V DC'], [L('Drives', 'Variateurs'), '6 × ' + L('ready', 'prêts')], [L('Cycle', 'Cycle'), '1 ms'], [L('Safety', 'Sécurité'), L('OK (2 channels)', 'OK (2 voies)')], [L('Inside temperature', 'Température intérieure'), (34 + Math.sin(t / 3)).toFixed(1) + ' °C']];
+  return { g, parts, cover: door, lids: [], ids, run, read, len: 7, kind: 'cab' };
+}
+
+function mobileBox() {                                       // the body of a mobile robot, cover off: battery, BMS, computer, drivers, LiDAR, IMU (x forward, y up)
+  const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
+  const T = {};
+  const base = boxC(8.4, 0.2, 5.6, P.dark); base.position.y = 0.1; g.add(base);
+  { const b = new THREE.Group(); b.position.set(-1.6, 0.25, 0); b.add(boxC(3.6, 1.5, 3.2, M('#2f6bff', { roughness: 0.5 }))); for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) { const c = cylA(0.22, 0.12, P.steel, 16); c.rotation.x = Math.PI / 2; c.position.set(-1.4 + i * 0.56, 1.53, -1.2 + j * 0.8); b.add(c); } b.children[0].position.y = 0.75; add('mbat', b, V(-1.2, 0, 0)); }
+  { const bm = new THREE.Group(); bm.position.set(-1.6, 2.05, 0); bm.add(boxC(2.2, 0.08, 1.4, P.pcb)); for (let i = 0; i < 5; i++) { const c = boxC(0.25, 0.08, 0.25, P.black); c.position.set(-0.8 + i * 0.4, 0.08, 0); bm.add(c); } add('mbms', bm, V(-0.6, 1.6, 0)); }
+  { const pc = new THREE.Group(); pc.position.set(1.4, 0.25, -1.2); pc.add(boxC(1.8, 0.7, 1.4, P.alu)); for (let i = 0; i < 8; i++) { const f = boxC(0.06, 0.25, 1.4, P.alu); f.position.set(-0.8 + i * 0.22, 0.7, 0); pc.add(f); } add('mpc', pc, V(0.6, 1.4, -0.8)); }
+  { const dr = new THREE.Group(); dr.position.set(1.4, 0.25, 1.2); for (const x of [-0.5, 0.5]) { const b = boxC(0.8, 0.6, 1.1, P.pcbRed); b.position.x = x; dr.add(b); for (let k = 0; k < 4; k++) { const f = boxC(0.05, 0.25, 1.0, P.alu); f.position.set(x - 0.3 + k * 0.2, 0.6, 0); dr.add(f); } } add('mdrv', dr, V(0.6, 1.2, 0.9)); }
+  { const ld = new THREE.Group(); ld.position.set(3.6, 0.25, 0); ld.add(cy0(0.55, 0.6, P.black)); const top = cy0(0.48, 0.45, P.dark); top.position.y = 0.6; ld.add(top); T.lid = top; const win = boxC(0.05, 0.3, 0.6, P.red); win.position.set(0.5, 0.45, 0); ld.add(win); add('mlid', ld, V(1.6, 0.8, 0)); }
+  { const im = new THREE.Group(); im.position.set(0.2, 0.25, 0); im.add(boxC(0.6, 0.06, 0.5, P.pcbBlue)); const ch = boxC(0.2, 0.06, 0.2, P.black); ch.position.y = 0.06; im.add(ch); add('mimu', im, V(0, 1.0, 0)); }
+  { const es = new THREE.Group(); es.position.set(-3.6, 0.25, 2.2); es.add(boxC(0.6, 0.5, 0.6, M('#f5c518'))); const bt = cy0(0.24, 0.2, P.red); bt.position.y = 0.5; es.add(bt); add('mestop', es, V(-1.2, 0.6, 1.2)); }
+  { const fu = new THREE.Group(); fu.position.set(-3.6, 0.25, -1.6); for (let i = 0; i < 4; i++) { const f = boxC(0.25, 0.6, 0.5, P.white); f.position.x = i * 0.3 - 0.45; fu.add(f); } add('mfuse', fu, V(-1.2, 0.6, -1.0)); }
+  const covM = M('#eef1f4', { roughness: 0.5 }); covM.transparent = true; const cover = boxC(8.6, 2.6, 5.8, covM); cover.position.y = 1.3; g.add(cover); cover.userData.part = 'mcov';
+  const ids = parts.map((p) => p.id); ids.push('mcov');
+  const run = (th) => { T.lid.rotation.y = th * 2; };
+  const read = (th, t) => [[L('Battery', 'Batterie'), '48 V · ' + (86 - (t / 20) % 5).toFixed(0) + ' %'], [L('Current', 'Courant'), (12 + 4 * Math.sin(t)).toFixed(1) + ' A'], ['LiDAR', '15 ' + L('turns/s', 'tours/s')], [L('Position', 'Position'), 'x 12.40 m · y 3.85 m']];
+  return { g, parts, cover, lids: [], ids, run, read, len: 9, kind: 'bat' };
+}
+function cy0(r, h, mat) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 28).translate(0, h / 2, 0), mat); m.castShadow = m.receiveShadow = true; return m; }
 
 // ---------------------------------------------------------------- callouts: each name sits in a row above or below the picture, with a leader line to its part
 export function callouts(box, items, w, h) {
@@ -258,30 +358,64 @@ export function callouts(box, items, w, h) {
   svg.innerHTML = d;
 }
 
-// ---------------------------------------------------------------- per robot: which joint, where, how big
-const ROB = {
-  articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), pose: V(0.62, 0.62, 0), at: V(0, 0.45, 0), axis: 'z', k: 0.082, mech: () => rotaryJoint({}),
-    joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: L('On an industrial robot the drive electronics sit in the controller cabinet; a thick cable brings the motor power and the encoder signals.', 'Sur un robot industriel, l\'électronique de commande est dans l\'armoire ; un gros câble apporte la puissance du moteur et les signaux du codeur.') },
-  cobot: { build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), pose: V(0.5, 0.42, 0), at: V(0, 0.3, 0), axis: 'z', k: 0.052, mech: () => rotaryJoint({ drv: true, trq: true }),
-    joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: L('In a cobot each joint is a complete module: its own drive board and a torque sensor, so it feels contact.', 'Dans un cobot, chaque articulation est un module complet : sa propre carte variateur et un capteur de couple, pour sentir les contacts.') },
-  arm: { build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), pose: V(0.55, 0.55, 0), at: V(0, 0.42, 0), axis: 'z', k: 0.064, mech: () => rotaryJoint({}),
-    joint: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), note: '' },
-  scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), pose: V(0.45, 0.2, -0.25), at: V(0, 0.42 + 0.03, 0), axis: 'y', k: 0.05, mech: () => rotaryJoint({}),
-    joint: L('joint 1 (the base)', 'l\'articulation 1 (la base)'), note: L('A SCARA joint turns about a vertical axis: the arm stays rigid up and down, which makes it fast and precise for assembly.', 'Une articulation de SCARA tourne autour d\'un axe vertical : le bras reste rigide en hauteur, d\'où sa vitesse et sa précision en assemblage.') },
-  delta: { build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), pose: V(0, 0.25, 0), at: V(0, 0.8, -0.13), axis: 'x', k: 0.04, mech: () => planetary({ arm: true }),
-    joint: L('one of the three motors', 'l\'un des trois moteurs'), note: L('The three motors stay fixed on the frame: only light arms and rods move, which is why a Delta is so fast.', 'Les trois moteurs restent fixes sur le bâti : seuls des bras et des bielles légers bougent, d\'où la rapidité d\'un Delta.') },
-  gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), pose: V(0.1, 0.3, 0), at: V(0, 1.05 + 0.03, 0.65), axis: 'x', k: 0.085, mech: () => linearAxis(),
-    joint: L('the X axis', 'l\'axe X'), note: L('Each axis of a gantry is a straight line: the same set of parts, only the length changes.', 'Chaque axe d\'un portique est une ligne droite : les mêmes pièces, seule la longueur change.') },
-  mobile: { amr: true, at: V(0, 0.9 * 0.075, 0.9 * 0.35 - 0.02), axis: 'z', k: 0.026, mech: () => planetary({ wheel: true }),
-    joint: L('a drive wheel', 'une roue motrice'), note: L('Each drive wheel is a motor, a gearbox and an encoder in one block; two of them, driven at different speeds, steer the robot.', 'Chaque roue motrice réunit moteur, réducteur et codeur en un bloc ; deux roues entraînées à des vitesses différentes font tourner le robot.') }
-};
+// ---------------------------------------------------------------- per robot: every part you can open (where it is, its axis, its size)
+// axis: 'z' / 'x' / 'y' = the axis of the joint; 'down' = a tool pointing down; 'up' = a box standing on the floor
+function armJ(h1, L2, L3, L4, f) {                           // elbow and wrist positions of the arm models for a flange point f (z = 0)
+  const wy = f.y + L4, zz = wy - h1, D = (f.x * f.x + zz * zz - L2 * L2 - L3 * L3) / (2 * L2 * L3), a3 = -Math.acos(D), a2 = Math.atan2(zz, f.x) + Math.atan2(L3 * Math.sin(-a3), L2 + L3 * D);
+  return { el: V(L2 * Math.cos(a2), h1 + L2 * Math.sin(a2), 0), wr: V(f.x, wy, 0) };
+}
+const NOTE_IND = L('On an industrial robot the drive electronics sit in the controller cabinet; a thick cable brings the motor power and the encoder signals.', 'Sur un robot industriel, l\'électronique de commande est dans l\'armoire ; un gros câble apporte la puissance du moteur et les signaux du codeur.');
+const NOTE_COB = L('In a cobot each joint is a complete module: its own drive board and a torque sensor, so it feels contact.', 'Dans un cobot, chaque articulation est un module complet : sa propre carte variateur et un capteur de couple, pour sentir les contacts.');
+const tg = (name, at, axis, k, mech, note, link) => ({ name, at, axis, k, mech, note: note || '', link });
+const GRIP = (at, k) => tg([L('the gripper', 'la pince'), L('Gripper', 'Pince')], at.clone().add(V(0, 2.75 * k, 0)), 'down', k, () => gripperMech(), L('An electric gripper is a small robot of its own: motor, gearbox, screw, guide and sensor.', 'Une pince électrique est un petit robot à elle seule : moteur, réducteur, vis, guidage et capteur.'));
+const CAB = (at, k) => tg([L('the controller cabinet', 'l\'armoire de commande'), L('Cabinet', 'Armoire')], at, 'up', k, () => cabinetMech(), L('It stands next to the robot and is linked to it by one thick cable: the brain and the power of the robot are here.', 'Elle est posée à côté du robot et reliée à lui par un gros câble : le cerveau et la puissance du robot sont ici.'));
+const ROB = (() => {
+  const six = armJ(0.45, 0.5, 0.5, 0.14, V(0.62, 0.62, 0)), cob = armJ(0.3, 0.42, 0.38, 0.11, V(0.5, 0.42, 0)), a3 = armJ(0.42, 0.45, 0.45, 0.036, V(0.55, 0.55, 0));
+  const J = (n, en, fr) => [L(`${en}`, `${fr}`), n];
+  return {
+    articulated: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075 }), pose: V(0.62, 0.62, 0), targets: [
+      tg(J('J1', 'axis 1, the base', 'l\'axe 1, la base'), V(0, 0.25, 0), 'y', 0.08, () => rotaryJoint({}), NOTE_IND),
+      tg(J('J2', 'the shoulder (axis 2)', 'l\'épaule (axe 2)'), V(0, 0.45, 0), 'z', 0.082, () => rotaryJoint({}), NOTE_IND),
+      tg(J('J3', 'the elbow (axis 3)', 'le coude (axe 3)'), six.el, 'z', 0.066, () => rotaryJoint({}), NOTE_IND),
+      tg(J('J5', 'the wrist (axes 4-5-6)', 'le poignet (axes 4-5-6)'), six.wr, 'z', 0.048, () => rotaryJoint({}), L('The wrist has three small joints close together, so the tool can take any orientation.', 'Le poignet a trois petites articulations rapprochées, pour que l\'outil prenne n\'importe quelle orientation.')),
+      GRIP(V(0.62, 0.62, 0), 0.028), CAB(V(-0.8, 0, 0.45), 0.1)] },
+    cobot: { build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), pose: V(0.5, 0.42, 0), targets: [
+      tg(J('J1', 'axis 1, the base', 'l\'axe 1, la base'), V(0, 0.17, 0), 'y', 0.056, () => rotaryJoint({ drv: true, trq: true }), NOTE_COB),
+      tg(J('J2', 'the shoulder (axis 2)', 'l\'épaule (axe 2)'), V(0, 0.3, 0), 'z', 0.052, () => rotaryJoint({ drv: true, trq: true }), NOTE_COB),
+      tg(J('J3', 'the elbow (axis 3)', 'le coude (axe 3)'), cob.el, 'z', 0.045, () => rotaryJoint({ drv: true, trq: true }), NOTE_COB),
+      tg(J('J5', 'the wrist (axes 4-5-6)', 'le poignet (axes 4-5-6)'), cob.wr, 'z', 0.036, () => rotaryJoint({ drv: true, trq: true }), NOTE_COB),
+      GRIP(V(0.5, 0.42, 0), 0.022), CAB(V(-0.6, 0, 0.35), 0.06)] },
+    arm: { build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), pose: V(0.55, 0.55, 0), targets: [
+      tg(J('J1', 'axis 1, the base', 'l\'axe 1, la base'), V(0, 0.22, 0), 'y', 0.065, () => rotaryJoint({}), NOTE_IND),
+      tg(J('J2', 'the shoulder (axis 2)', 'l\'épaule (axe 2)'), V(0, 0.42, 0), 'z', 0.064, () => rotaryJoint({}), NOTE_IND),
+      tg(J('J3', 'the elbow (axis 3)', 'le coude (axe 3)'), a3.el, 'z', 0.055, () => rotaryJoint({}), NOTE_IND),
+      CAB(V(-0.75, 0, 0.4), 0.09)] },
+    scara: { build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), pose: V(0.45, 0.2, -0.25), targets: [
+      tg(J('J1', 'joint 1 (the base)', 'l\'articulation 1 (la base)'), V(0, 0.45, 0), 'y', 0.05, () => rotaryJoint({}), L('A SCARA joint turns about a vertical axis: the arm stays rigid up and down, which makes it fast and precise for assembly.', 'Une articulation de SCARA tourne autour d\'un axe vertical : le bras reste rigide en hauteur, d\'où sa vitesse et sa précision en assemblage.')),
+      tg(J('J2', 'joint 2 (the elbow)', 'l\'articulation 2 (le coude)'), V(0.339, 0.47, 0.029), 'y', 0.04, () => rotaryJoint({}), ''),
+      tg(J('Z', 'the Z axis (the quill)', 'l\'axe Z (la colonne)'), V(0.45, 0.32, -0.25), 'y', 0.017, () => linearAxis(), L('The quill moves up and down with a ball screw, and a ball spline lets it turn for axis 4.', 'La colonne monte et descend avec une vis à billes, et une cannelure à billes la laisse tourner pour l\'axe 4.'), V(0, 1, 0)),
+      GRIP(V(0.45, 0.2, -0.25), 0.02), CAB(V(-0.55, 0, 0.35), 0.075)] },
+    delta: { build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), pose: V(0, 0.25, 0), targets: [
+      tg([L('one of the three motors', 'l\'un des trois moteurs'), L('Motor 1', 'Moteur 1')], V(0, 0.8, -0.13), 'x', 0.04, () => planetary({ arm: true, armAngle: Math.PI / 2 + 0.076 }), L('The three motors stay fixed on the frame: only light arms and rods move, which is why a Delta is so fast.', 'Les trois moteurs restent fixes sur le bâti : seuls des bras et des bielles légers bougent, d\'où la rapidité d\'un Delta.')),
+      GRIP(V(0, 0.25, 0), 0.02), CAB(V(-0.7, 0, 0.4), 0.085)] },
+    gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), pose: V(0, 0.3, 0), targets: [
+      tg([L('the X axis', 'l\'axe X'), 'X'], V(0, 1.08, 0.65), 'x', 0.085, () => linearAxis(), L('Each axis of a gantry is a straight line: the same set of parts, only the length changes.', 'Chaque axe d\'un portique est une ligne droite : les mêmes pièces, seule la longueur change.'), V(1, 0, 0)),
+      tg([L('the Y axis', 'l\'axe Y'), 'Y'], V(0, 1.14, 0), 'z', 0.065, () => linearAxis(), L('The Y axis runs along the bridge and carries the vertical Z axis.', 'L\'axe Y court le long du pont et porte l\'axe vertical Z.'), V(0, 0, 1)),
+      tg([L('the Z axis', 'l\'axe Z'), 'Z'], V(0, 0.75, 0), 'y', 0.042, () => linearAxis(), L('The Z axis moves the tool up and down; its motor has a brake so the load cannot fall.', 'L\'axe Z monte et descend l\'outil ; son moteur a un frein pour que la charge ne tombe pas.'), V(0, 1, 0)),
+      GRIP(V(0, 0.3, 0), 0.03), CAB(V(-1.15, 0, 0.5), 0.1)] },
+    mobile: { amr: true, targets: [
+      tg([L('a drive wheel', 'une roue motrice'), L('Drive wheel', 'Roue motrice')], V(0, 0.9 * 0.075, 0.9 * 0.35 - 0.02), 'z', 0.026, () => planetary({ wheel: true }), L('Each drive wheel is a motor, a gearbox and an encoder in one block; two of them, driven at different speeds, steer the robot.', 'Chaque roue motrice réunit moteur, réducteur et codeur en un bloc ; deux roues entraînées à des vitesses différentes font tourner le robot.')),
+      tg([L('the body: battery and electronics', 'le châssis : batterie et électronique'), L('Battery and electronics', 'Batterie et électronique')], V(0, 0.055, 0), 'up', 0.1, () => mobileBox(), L('Under the cover: the energy, the brain and the safety of the robot.', 'Sous le capot : l\'énergie, le cerveau et la sécurité du robot.'))] }
+  };
+})();
 
 // ---------------------------------------------------------------- the widget
 function mount(host) {
   const R = ROB[host.dataset.robot]; if (!R) return;
+  let T = R.targets[0];
   const LAYERS = [
-    [L('The whole robot', 'Le robot entier'), L(`We are going inside ${R.joint}. Use the arrows (or the dots) to dive in, one step at a time.`, `Nous allons entrer dans ${R.joint}. Utilisez les flèches (ou les points) pour plonger, une étape à la fois.`)],
-    [L('The joint', 'L\'articulation'), R.mech === undefined ? '' : L('It has three jobs: move the next part with force and precision, hold it still when stopped, and always know where it is. The orange housing hides a stack of parts lined up on one axis.', 'Elle a trois missions : déplacer la pièce suivante avec force et précision, la tenir immobile à l\'arrêt, et toujours savoir où elle est. Le carter orange cache un empilement de pièces alignées sur un axe.')],
+    [L('The whole robot', 'Le robot entier'), ''],
+    [L('The part', 'La partie'), L('It has three jobs: move the next part with force and precision, hold it still when stopped, and always know where it is. The orange housing hides a stack of parts lined up on one axis.', 'Elle a trois missions : déplacer la pièce suivante avec force et précision, la tenir immobile à l\'arrêt, et toujours savoir où elle est. Le carter orange cache un empilement de pièces alignées sur un axe.')],
     [L('The cover comes off', 'Le capot s\'ouvre'), L('Without the housing you see the real parts in place. Click any part to read its name and role.', 'Sans le carter, on voit les vraies pièces en place. Cliquez sur une pièce pour lire son nom et son rôle.')],
     [L('Exploded view: every part', 'Vue éclatée : toutes les pièces'), L('The parts move apart along the axis, in the order they are assembled. Click a label or a part.', 'Les pièces s\'écartent le long de l\'axe, dans l\'ordre du montage. Cliquez sur une étiquette ou une pièce.')],
     [L('How it works', 'Comment ça marche'), '']
@@ -289,9 +423,12 @@ function mount(host) {
   const HOW = {
     rot: L('The motor turns fast but with little force. The wave generator bends the flexspline, which has 2 teeth fewer than the rigid ring: each motor turn shifts it back by 2 teeth, so the output turns 100 times slower and about 100 times stronger (watch the two orange marks). The encoder counts 131 072 steps per motor turn, and the brake coil stays powered so the brake is released.', 'Le moteur tourne vite mais avec peu de force. Le générateur d\'onde déforme la flexspline, qui a 2 dents de moins que la couronne : chaque tour moteur la décale de 2 dents, donc la sortie tourne 100 fois moins vite et environ 100 fois plus fort (regardez les deux repères orange). Le codeur compte 131 072 pas par tour moteur, et la bobine du frein reste alimentée pour le relâcher.'),
     lin: L('The motor turns the ball screw; the balls rolling in the nut turn this rotation into a straight motion: one turn = 20 mm. The carriage glides on the two rails, and the limit switches mark both ends.', 'Le moteur fait tourner la vis à billes ; les billes qui roulent dans l\'écrou transforment cette rotation en mouvement droit : un tour = 20 mm. Le chariot glisse sur les deux rails, et les fins de course marquent les deux bouts.'),
+    grip: L('The motor turns the lead screw through the gearbox; its two opposite threads bring the jaws together. When the pads touch the part, the current rises: the drive stops at the chosen force and the sensor says "part held".', 'Le moteur fait tourner la vis à travers le réducteur ; ses deux pas opposés rapprochent les mors. Quand les patins touchent la pièce, le courant monte : le variateur s\'arrête à la force choisie et le capteur dit « pièce tenue ».'),
+    cab: L('The mains comes in through the main switch, the 24 V supply feeds the electronics, the controller computes the motion every millisecond and sends it to the six drives, which feed the motors. The safety relay can cut the motor power at any moment, and the fans keep it all cool.', 'Le secteur entre par le sectionneur, l\'alimentation 24 V alimente l\'électronique, le contrôleur calcule le mouvement chaque milliseconde et l\'envoie aux six variateurs, qui alimentent les moteurs. Le relais de sécurité peut couper la puissance des moteurs à tout moment, et les ventilateurs refroidissent le tout.'),
+    bat: L('The battery and its BMS give the energy; the computer builds the map and plans the path; the drivers turn the speed orders into motor currents; the LiDAR spins to see all around and stops the robot if someone is too close.', 'La batterie et son BMS fournissent l\'énergie ; l\'ordinateur construit la carte et planifie le trajet ; les drivers transforment les consignes de vitesse en courant moteur ; le LiDAR tourne pour voir tout autour et arrête le robot si quelqu\'un est trop près.'),
     pla: L('The motor turns the small sun gear; the three planets roll inside the fixed ring and carry the planet carrier round: it turns 5 times slower and 5 times stronger. The encoder at the back counts the motor turns.', 'Le moteur fait tourner le petit pignon solaire ; les trois satellites roulent dans la couronne fixe et entraînent le porte-satellites : il tourne 5 fois moins vite et 5 fois plus fort. Le codeur à l\'arrière compte les tours du moteur.')
   };
-  host.innerHTML = `<div class="insd-stage"><div class="insd-tags"></div><div class="insd-read" hidden></div><div class="insd-pop" hidden><button type="button" class="insd-x" aria-label="${L('Close', 'Fermer')}">×</button><span></span><b></b><p></p></div><p class="insd-hint">${L('Drag to turn · scroll to zoom', 'Glisser pour tourner · molette pour zoomer')}</p></div>
+  host.innerHTML = `<div class="insd-targets" role="group" aria-label="${L('Part to open', 'Partie à ouvrir')}">${R.targets.map((t2, i) => `<button type="button" data-t="${i}">${t2.name[1]}</button>`).join('')}</div><div class="insd-stage"><div class="insd-tags"></div><div class="insd-read" hidden></div><div class="insd-pop" hidden><button type="button" class="insd-x" aria-label="${L('Close', 'Fermer')}">×</button><span></span><b></b><p></p></div><p class="insd-hint">${L('Drag to turn · scroll to zoom', 'Glisser pour tourner · molette pour zoomer')}</p></div>
     <nav class="insd-step" aria-label="${L('Steps', 'Étapes')}"><button type="button" class="insd-prev" aria-label="${L('Previous step', 'Étape précédente')}">‹</button><ol class="insd-dots">${LAYERS.map((l, i) => `<li><button type="button" aria-label="${i + 1}. ${l[0]}"></button></li>`).join('')}</ol><button type="button" class="insd-next" aria-label="${L('Next step', 'Étape suivante')}">›</button></nav>
     <div class="insd-card"><span class="insd-n"></span><h3></h3><p></p></div>
     <div class="insd-parts"></div><div class="insd-detail" hidden></div>`;
@@ -320,27 +457,39 @@ function mount(host) {
   robot.root.traverse((m) => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; robotMats.push(m.material); m.castShadow = m.receiveShadow = true; } });
   const setRobotFade = (o) => robotMats.forEach((m) => { m.opacity = o; m.depthWrite = o > 0.9; });
 
-  // the mechanism, placed in the joint
-  const mech = R.mech(), holder = new THREE.Group(); holder.add(mech.g); holder.position.copy(R.at); holder.scale.setScalar(R.k);
-  if (R.axis === 'y') holder.rotation.x = -Math.PI / 2; else if (R.axis === 'x') holder.rotation.y = Math.PI / 2;
-  if (mech.linear) { holder.rotation.set(0, 0, 0); }
-  scene.add(holder);
-  mech.g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
-  const axisW = R.axis === 'y' ? V(0, 1, 0) : R.axis === 'x' ? V(1, 0, 0) : V(0, 0, 1);
-
-  // camera shots, one per layer
+  // the mechanism of the chosen part, placed where it sits in the robot
   const box3 = new THREE.Box3().setFromObject(robot.root), rc = box3.getCenter(V(0, 0, 0)), rs = box3.getSize(V(0, 0, 0)).length();
-  const side = axisW.y > 0.5 ? V(1, 0.35, 0.75) : axisW.x > 0.5 ? V(0.45, 0.5, 1) : V(1, 0.45, 0.42);
-  side.normalize(); const S = R.k * mech.len;
-  const SHOTS = [
-    { at: rc, d: rs * 1.75, dir: V(1, 0.6, 1.1).normalize() },
-    { at: R.at, d: S * 2.4, dir: side },
-    { at: R.at.clone().add(V(0, S * 0.15, 0)), d: S * 2.5, dir: side },
-    { at: mech.linear ? R.at : R.at.clone().addScaledVector(axisW, S * (axisW.y > 0.5 ? 0.3 : 0.12)), d: S * (mech.linear ? 2.6 : axisW.y > 0.5 ? 4.0 : 3.0), dir: mech.linear ? V(0.2, 0.75, 1).normalize() : (axisW.y > 0.5 ? V(1, 0.15, 0.2) : axisW.x > 0.5 ? V(0.15, 0.35, 1) : V(1, 0.35, 0.15)).normalize() },
-    { at: R.at, d: S * 2.2, dir: V(side.x, side.y + 0.15, side.z).normalize() }
-  ];
+  let mech, holder, axisW, S, SHOTS = [];
+  function placeTarget() {
+    if (holder) { scene.remove(holder); }
+    mech = T.mech(); holder = new THREE.Group(); holder.add(mech.g); holder.position.copy(T.at); holder.scale.setScalar(T.k);
+    const ax = T.axis;
+    if (mech.linear) { if (ax === 'z') holder.rotation.y = -Math.PI / 2; else if (ax === 'y') holder.rotation.z = Math.PI / 2; }
+    else if (ax === 'y') holder.rotation.x = -Math.PI / 2; else if (ax === 'x') holder.rotation.y = Math.PI / 2; else if (ax === 'down') holder.rotation.x = Math.PI / 2;
+    scene.add(holder);
+    mech.g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+    axisW = ax === 'y' || ax === 'down' ? V(0, 1, 0) : ax === 'x' ? V(1, 0, 0) : ax === 'up' ? V(0, 0, 1) : V(0, 0, 1);
+    const box = ax === 'up';                                        // a cabinet or the body of a mobile robot: looked at from the front
+    const side = box ? V(0.55, 0.55, 1) : axisW.y > 0.5 ? V(1, 0.35, 0.75) : axisW.x > 0.5 ? V(0.45, 0.5, 1) : V(1, 0.45, 0.42); side.normalize(); S = T.k * mech.len;
+    const mid = box ? T.at.clone().add(V(0, mech.kind === 'cab' ? 3.2 * T.k : 1.2 * T.k, 0)) : T.at;
+    SHOTS = [
+      { at: rc, d: rs * 1.75, dir: V(1, 0.6, 1.1).normalize() },
+      { at: mid, d: S * 2.4, dir: side },
+      { at: mid.clone().add(V(0, S * 0.15, 0)), d: S * 2.5, dir: side },
+      box ? { at: mid, d: S * 3.0, dir: V(0.25, 0.45, 1).normalize() }
+        : { at: mech.linear ? mid : mid.clone().addScaledVector(axisW, S * (axisW.y > 0.5 ? (ax === 'down' ? -0.3 : 0.3) : 0.12)), d: S * (mech.linear ? 2.6 : axisW.y > 0.5 ? 4.0 : 3.0), dir: mech.linear ? (ax === 'y' ? V(1, 0.2, 0.5) : ax === 'z' ? V(1, 0.7, 0.25) : V(0.2, 0.75, 1)).normalize() : (axisW.y > 0.5 ? V(1, 0.15, 0.2) : axisW.x > 0.5 ? V(0.15, 0.35, 1) : V(1, 0.35, 0.15)).normalize() },
+      { at: mid, d: S * 2.2, dir: V(side.x, side.y + 0.15, side.z).normalize() }
+    ];
+    partsEl.innerHTML = mech.ids.map((id, i) => `<button type="button" data-p="${id}"><b>${i + 1}</b>${PART[id][0]}</button>`).join('');
+    tagsEl.innerHTML = '<svg class="insd-lines"></svg>' + mech.parts.map((p, i) => `<button type="button" data-p="${p.id}"><b>${i + 1}</b>${PART[p.id][0]}</button>`).join('');
+    sel = null; pop.hidden = true; detail.hidden = true; th = 0; t = 0;
+    if (robot.reach) robot.reach(R.pose);
+    mech.run(0, 0, false);
+    LAYERS[0][1] = L(`We are going inside ${T.name[0]}. Choose another part above, or use the arrows to dive in, one step at a time.`, `Nous allons entrer dans ${T.name[0]}. Choisissez une autre partie au-dessus, ou utilisez les flèches pour plonger, une étape à la fois.`);
+    host.querySelectorAll('.insd-targets button').forEach((b2) => b2.setAttribute('aria-pressed', String(R.targets[+b2.dataset.t] === T)));
+  }
 
-  let layer = 0, target = 0, pos = 0, sel = null, th = 0, t = 0;
+  let layer = 0, sel = null, th = 0, t = 0;
   let camFrom = null, camK = 1;
   function shotCam(i) { const s = SHOTS[i], narrow = Math.max(1, (i === 3 ? 1.5 : 1.15) / camera.aspect); return { p: s.at.clone().addScaledVector(s.dir, s.d * narrow), t: s.at.clone() }; }   // narrow screens: step back
   function go(i) {
@@ -350,11 +499,10 @@ function mount(host) {
     host.querySelector('.insd-prev').disabled = layer === 0; host.querySelector('.insd-next').disabled = layer === LAYERS.length - 1;
     card.querySelector('.insd-n').textContent = `${layer + 1} / ${LAYERS.length}`;
     card.querySelector('h3').textContent = LAYERS[layer][0];
-    card.querySelector('p').textContent = layer === 4 ? HOW[mech.linear ? 'lin' : mech.parts.some((p) => p.id === 'sun') ? 'pla' : 'rot'] : layer === 1 && R.note ? LAYERS[1][1] + ' ' + R.note : LAYERS[layer][1];
+    card.querySelector('p').textContent = layer === 4 ? HOW[mech.kind] : layer === 1 && T.note ? LAYERS[1][1] + ' ' + T.note : LAYERS[layer][1];
     readEl.hidden = layer !== 4; partsEl.hidden = layer < 2;
   }
   // part chips + detail
-  partsEl.innerHTML = mech.ids.map((id, i) => `<button type="button" data-p="${id}"><b>${i + 1}</b>${PART[id][0]}</button>`).join('');
   const pick = (id) => {
     sel = sel === id ? null : id;
     partsEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.p === sel)));
@@ -365,7 +513,6 @@ function mount(host) {
   };
   const hlCache = new Map(); const hl = (m) => { if (!hlCache.has(m)) { const c = m.clone(); c.emissive = new THREE.Color('#6d5dfc'); c.emissiveIntensity = 0.55; hlCache.set(m, c); } return hlCache.get(m); };
   partsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
-  tagsEl.innerHTML = '<svg class="insd-lines"></svg>' + mech.parts.map((p, i) => `<button type="button" data-p="${p.id}"><b>${i + 1}</b>${PART[p.id][0]}</button>`).join('');
   tagsEl.addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) pick(b.dataset.p); });
   // click on a part in 3D
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
@@ -389,11 +536,12 @@ function mount(host) {
     setRobotFade(st.fade);
     holder.visible = st.mech > 0.02;
     if (mech.cover) {                                           // the housing: closed at step 2, lifts off and fades at step 3
+      if (mech.cover.userData.y0 === undefined) mech.cover.userData.y0 = mech.cover.position.y;
       const up = st.lift * 2.6, op = 0.88 * (1 - Math.min(1, st.lift / 1.2));
-      mech.cover.material.opacity = op; mech.cover.visible = mech.lids[0].visible = mech.lids[1].visible = op > 0.02 && layer > 0;
-      mech.cover.position.y = up; mech.lids.forEach((l) => { l.position.y = up; }); }
+      mech.cover.material.opacity = op; mech.cover.visible = op > 0.02 && layer > 0; mech.lids.forEach((l) => { l.visible = mech.cover.visible; l.position.y = up; });
+      mech.cover.position.y = mech.cover.userData.y0 + (mech.kind === 'cab' ? 0 : up); if (mech.kind === 'cab') mech.cover.position.z = 1.1 + st.lift * 2.5; }
     for (const p of mech.parts) { p.obj.position.copy(p.home).addScaledVector(p.ex, st.explode); if (p.obj.userData.dx !== undefined) p.obj.position.x += p.obj.userData.dx * (1 - st.explode); }
-    if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
+    if (layer === 4 && st.explode < 0.05) { th += dt * (mech.linear ? 7 : 2 * Math.PI * 1.6); t += dt; mech.run(th, t, true); if (mech.linear && T.link && robot.reach) robot.reach(R.pose.clone().addScaledVector(T.link, (mech.g.userData.x || 0) * T.k)); /* the robot moves with the carriage */ readEl.innerHTML = mech.read(th, t).map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join(''); }
     // labels in the exploded view
     tagsEl.hidden = !(layer === 3 && st.explode > 0.8);
     if (!tagsEl.hidden) { const r = stage.getBoundingClientRect();
@@ -405,9 +553,12 @@ function mount(host) {
   new ResizeObserver(resize).observe(stage); resize();
   let visible = true, last = performance.now();
   new IntersectionObserver((es) => { visible = es[0].isIntersecting; }).observe(stage);
+  host.querySelectorAll('.insd-targets button').forEach((b2) => b2.addEventListener('click', () => { T = R.targets[+b2.dataset.t]; placeTarget(); go(layer === 0 ? 1 : Math.min(layer, 2)); }));
+  placeTarget();
   const s0 = shotCam(0); camera.position.copy(s0.p); orbit.target.copy(s0.t);
-  mech.run(0, 0, false); go(0);
+  go(0);
   renderer.setAnimationLoop((now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (!visible) return; frame(dt); orbit.update(); renderer.render(scene, camera); });
+  host.__target = (i) => { T = R.targets[i]; placeTarget(); };
   host.__go = (i) => { go(i); camK = 1; const s = shotCam(i); camera.position.copy(s.p); orbit.target.copy(s.t); for (let n = 0; n < 90; n++) frame(1 / 30); };
 }
 document.querySelectorAll('.insdemo').forEach(mount);
