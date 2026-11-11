@@ -148,8 +148,8 @@ function controller(parent, pos, rotY) {
 const rings = [], axes = [], anchors = [];
 function ring(i, parent, pos, axis, r, opt) {
   opt = opt || {};
-  const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4 });
-  const t = mesh(new THREE.TorusGeometry(r, 0.012, 12, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
+  const m = new THREE.MeshStandardMaterial({ color: COL[i], emissive: COL[i], emissiveIntensity: 0.35, roughness: 0.4, transparent: true, opacity: 0.85 });
+  const t = mesh(new THREE.TorusGeometry(r, 0.0075, 10, 64), m, parent, pos); if (axis === 'x') t.rotation.y = Math.PI / 2; else if (axis === 'y') t.rotation.x = Math.PI / 2;
   rings[i] = t; if (opt.xray) { t.visible = false; t.userData.xray = true; }
   const a = mesh(new THREE.CylinderGeometry(0.004, 0.004, opt.len || 0.9, 8), new THREE.MeshBasicMaterial({ color: COL[i], transparent: true, opacity: 0.9 }), opt.axisParent || parent, opt.axisPos || pos, axis === 'x' ? [0, 0, Math.PI / 2] : axis === 'z' ? [Math.PI / 2, 0, 0] : null);
   a.visible = false; axes[i] = a; if (opt.noAxis) a.userData.none = true;
@@ -855,7 +855,8 @@ tags.forEach((t, i) => { t.style.setProperty('--c', COL[i]); t.addEventListener(
 function light() {
   const lit = hover >= 0 ? hover : sel;
   cards.forEach((c, k) => c.classList.toggle('lit', !CFG.panel && k === hover)); tags.forEach((t, k) => t.classList.toggle('lit', k === hover));
-  rings.forEach((r, k) => { r.material.emissiveIntensity = k === lit ? 1.4 : 0.35; r.scale.setScalar(k === lit ? 1.12 : 1); });
+  // only the ring of the joint you point at (or have selected) is shown, so the rings never hide the robot
+  rings.forEach((r, k) => { r.material.emissiveIntensity = k === lit ? 1.2 : 0.35; r.scale.setScalar(k === lit ? 1.08 : 1); r.visible = k === lit && (!r.userData.xray || xray); });
 }
 function select(i) {
   sel = i;
@@ -911,7 +912,7 @@ if (box.requestFullscreen) {
 function setXray(on) {
   xray = on; shells.forEach((m) => { m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; });
   scene.traverse((o) => { if (o.isMesh && shells.indexOf(o.material) >= 0) o.castShadow = !on; });
-  inner.forEach((m) => { m.visible = on; }); rings.forEach((r) => { if (r.userData.xray) r.visible = on; });
+  inner.forEach((m) => { m.visible = on; }); light();
   $('xrayBtn').classList.toggle('on', on); $('xrayBtn').setAttribute('aria-pressed', on);
 }
 function syncBtn() { $('playBtn').classList.toggle('on', play); $('playBtn').setAttribute('aria-pressed', play); $('spinBtn').classList.toggle('on', spin); $('spinBtn').setAttribute('aria-pressed', spin); }
