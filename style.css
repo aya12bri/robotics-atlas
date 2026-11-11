@@ -979,3 +979,17 @@ table.dh.ops td:first-child { white-space: nowrap; }
 @media (max-width: 700px) { .sysdemo.sys-how-on .sys-hcard { width: auto; max-width: 44%; } .sys-hpin { width: 18px; height: 18px; font-size: 0.62rem; } }
 .sysdemo.sys-narrow .sys-hcard { display: none; }
 .sysdemo.sys-narrow.sys-how-on .sys-stage { height: 520px; }
+/* A-to-Z view: bigger stage, small view buttons, zoom, full screen */
+.sys-stage { height: clamp(520px, 82vh, 780px); }
+.sys-hint { display: none; }
+.sys-views { position: absolute; z-index: 4; left: 10px; top: 10px; display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: rgba(18, 20, 28, 0.62); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); }
+.sys-views button { display: inline-flex; align-items: center; gap: 0.25rem; min-height: 0; padding: 0.3rem 0.45rem; border-radius: 9px; font-size: 0.72rem; font-weight: 700; color: #dfe6ee; background: transparent; border: 0; }
+.sys-views svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.sys-views button:hover { background: rgba(255, 255, 255, 0.12); }
+.sys-views button[aria-pressed="true"] { color: #fff; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); }
+.sys-views .sys-zoom, .sys-views .sys-full { padding: 0.3rem 0.4rem; }
+.sys-views .sys-zoom:first-of-type { margin-left: 4px; border-left: 1px solid rgba(255, 255, 255, 0.15); border-radius: 0 9px 9px 0; }
+.sysdemo.light .sys-views { background: rgba(255, 255, 255, 0.86); border-color: rgba(20, 30, 50, 0.12); } .sysdemo.light .sys-views button { color: #2a3442; } .sysdemo.light .sys-views button[aria-pressed="true"] { color: #fff; }
+.sys-stage:fullscreen { width: 100vw; height: 100vh !important; border-radius: 0; border: 0; }
+.sysdemo.sys-how-on .sys-hcard { top: 0; } .sysdemo.sys-how-on .sys-views { top: auto; bottom: 10px; }
+@media (max-width: 600px) { .sys-views span { display: none; } .sys-stage { height: 460px; } }
