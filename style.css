@@ -937,3 +937,11 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .sys-explain h4 { margin: 0.1rem 0 0.2rem; font-size: 0.95rem; } .sys-explain p { margin: 0; line-height: 1.5; }
 .sys-n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; color: #fff; background: var(--c); vertical-align: 1px; }
 .sys-sum { margin: 0.8rem 0 0 !important; padding: 0.55rem 0.75rem; border-radius: 10px; background: color-mix(in srgb, #30a46c 12%, transparent); }
+.sys-intro { margin: 0 0 0.8rem !important; padding: 0.55rem 0.75rem; border-radius: 10px; background: color-mix(in srgb, #6d5dfc 8%, transparent); }
+.sys-like { display: block; margin-top: 0.35rem; font-size: 0.86rem; font-style: normal; color: #1f7a4c; }
+.sys-like::before { content: '💡 '; }
+.sysdemo:not(.light) .sys-like { color: #6fd6a2; }
+.sys-gh { margin: 1.1rem 0 0.5rem !important; font-size: 1rem; }
+.sys-gloss { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.45rem 0.9rem; margin: 0; }
+.sys-gloss div { padding: 0.45rem 0.6rem; border-radius: 9px; border: 1px solid var(--border); }
+.sys-gloss dt { font-weight: 700; font-size: 0.88rem; } .sys-gloss dd { margin: 0.15rem 0 0; font-size: 0.84rem; line-height: 1.4; }
