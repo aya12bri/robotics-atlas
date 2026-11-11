@@ -359,6 +359,7 @@ function mount(host) {
   const list = SET.parts.map(([id, x, z], i) => ({ id, x, z, n: i + 1, def: PARTS[id] }));
   host.innerHTML = `<div class="sys-stage"><div class="sys-pins"></div><div class="sys-flow" hidden></div>
       <div class="sys-labs"><svg class="sys-lines"></svg></div><div class="sys-cell"></div><div class="sys-how"><svg class="sys-harrows"><defs><marker id="sysarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs><g></g></svg></div>
+      <div class="sys-views" role="group" aria-label="${L('View', 'Vue')}"><button type="button" data-v="iso" aria-pressed="true" title="${L('3D view', 'Vue 3D')}"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z M4 7.5 12 12l8-4.5 M12 12v9"/></svg><span>3D</span></button><button type="button" data-v="top" aria-pressed="false" title="${L('Top view', 'Vue de dessus')}"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="12" cy="12" r="3"/></svg><span>${L('Top', 'Dessus')}</span></button><button type="button" data-v="front" aria-pressed="false" title="${L('Front view', 'Vue de face')}"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M5 15h14"/></svg><span>${L('Front', 'Face')}</span></button><button type="button" data-v="side" aria-pressed="false" title="${L('Side view', 'Vue de côté')}"><svg viewBox="0 0 24 24"><path d="M6 19V5l12 4v10z"/></svg><span>${L('Side', 'Côté')}</span></button><button type="button" class="sys-zoom" data-z="out" title="${L('Zoom out', 'Dézoomer')}"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M8 11h6M16 16l4 4"/></svg></button><button type="button" class="sys-zoom" data-z="in" title="${L('Zoom in', 'Zoomer')}"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M8 11h6M11 8v6M16 16l4 4"/></svg></button><button type="button" class="sys-full" title="${L('Full screen', 'Plein écran')}"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
       <div class="sys-ctl"><button type="button" class="sys-play">${L('▶ How it works', '▶ Comment ça marche')}</button><button type="button" class="sys-stop">${L('Emergency stop', 'Arrêt d\'urgence')}</button><button type="button" class="sys-all">${L('Overview', 'Vue d\'ensemble')}</button></div>
       <div class="sys-pop" hidden><button type="button" class="sys-x" aria-label="${L('Close', 'Fermer')}">×</button><div class="sys-pop-in"></div></div><p class="sys-hint">${L('Click a name or a part', 'Cliquez sur un nom ou une pièce')}</p></div>
     <nav class="sys-layers" aria-label="${L('Layers', 'Couches')}"><button type="button" class="sys-prev" aria-label="${L('Previous layer', 'Couche précédente')}">‹</button><div class="sys-lchips">${LAYERS.map((l, i) => `<button type="button" data-l="${i}">${i && i < LAYERS.length - 1 ? `<b>${i}</b>` : ''}${l[0]}</button>`).join('')}</div><button type="button" class="sys-next" aria-label="${L('Next layer', 'Couche suivante')}">›</button></nav>
@@ -374,7 +375,7 @@ function mount(host) {
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.01, 50);
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.prepend(renderer.domElement);
-  const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.maxPolarAngle = Math.PI * 0.47; orbit.minDistance = 0.4; orbit.maxDistance = 9;
+  const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.maxPolarAngle = Math.PI * 0.47; orbit.minDistance = 0.4; orbit.maxDistance = 14;
   scene.add(new THREE.HemisphereLight('#ffffff', '#5b6068', 1.15));
   const sun = new THREE.DirectionalLight('#ffffff', 1.9); sun.position.set(1.5, 4, 2.5); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 0.5, far: 12 }); sun.shadow.bias = -0.0004; scene.add(sun);
   // the workbench: dark grey grid area on a light floor
@@ -443,8 +444,8 @@ function mount(host) {
   // where each part is when it sits in the robot, and where it lands on the bench
   for (const p of list) { const o = objs[p.id]; o.userData.home = o.position.clone(); o.userData.hs = o.scale.x; { const b1 = new THREE.Box3().setFromObject(o).getSize(V(0, 0, 0)); o.userData.rowS = Math.min(1, 0.42 / Math.max(b1.x, b1.y, b1.z)); } o.userData.slot = slotW(p.id); o.userData.ord = Math.random() * 0.35; }
   const rbox = new THREE.Box3().setFromObject(robotG), rcen = rbox.getCenter(V(0, 0, 0)), rmax = Math.max(...rbox.getSize(V(0, 0, 0)).toArray());
-  const ROBOTCAM = { p: rcen.clone().add(V(0.55, 0.42, 0.85).normalize().multiplyScalar(rmax * 2.4 + 0.5)), t: rcen.clone() };
-  const LAYERCAM = { p: V(0.15, 2.35, 2.45), t: V(0.05, 0.42, -1.75) };
+  const ROBOTCAM = { p: RC.clone().add(V(1.2, 4.0, 6.0)), t: RC.clone().add(V(0, 0.55, 0)) };   // the whole cell: robot, operator, cabinet, desk, conveyor
+  const LAYERCAM = { p: V(0.15, 3.0, 3.4), t: V(0.05, 0.4, -1.75) };
   const layerOf = (p) => LAYERS.findIndex((l) => Array.isArray(l[1]) && l[1].includes(p.def[0]));
   // a dotted line + a dot at the place in the robot, for each part of the current layer
   const cellEl = host.querySelector('.sys-cell');
@@ -575,6 +576,17 @@ function mount(host) {
   let sel = null, camGoal = null, camFrom = null, camK = 1;
   const HOME = { p: V(0.1, 5.6, 5.4), t: V(0.0, 0, -0.45) };
   function fly(p, t) { camFrom = { p: camera.position.clone(), t: orbit.target.clone() }; camGoal = { p, t }; camK = 0; }
+  // small view buttons: 3D / top / front / side, zoom, full screen
+  const viewBtns = host.querySelectorAll('.sys-views [data-v]');
+  viewBtns.forEach((b) => b.addEventListener('click', () => {
+    const tg = orbit.target.clone(), d = Math.max(2.2, camera.position.distanceTo(tg)), k = b.dataset.v;
+    const dir = k === 'top' ? V(0, 1, 0.0008) : k === 'front' ? V(0, 0.18, 1) : k === 'side' ? V(1, 0.18, 0) : V(0.2, 0.62, 0.95);
+    fly(tg.clone().addScaledVector(dir.normalize(), d), tg); viewBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+  host.querySelectorAll('.sys-zoom').forEach((b) => b.addEventListener('click', () => { const tg = orbit.target.clone(), f = b.dataset.z === 'out' ? 1.35 : 1 / 1.35; fly(tg.clone().add(camera.position.clone().sub(tg).multiplyScalar(f)), tg); }));
+  const fullBtn = host.querySelector('.sys-full');
+  fullBtn.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen(); });
+  document.addEventListener('fullscreenchange', () => { const on = document.fullscreenElement === stage; host.classList.toggle('sys-fs', on); fullBtn.innerHTML = on ? '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'; });
   const hlMat = new Map();
   function select(id, flyTo = true) {
     sel = sel === id ? null : id;
@@ -700,7 +712,7 @@ function mount(host) {
     if (camK < 1 && camGoal) { camK = Math.min(1, camK + dt / 1.1); const e = camK * camK * (3 - 2 * camK); camera.position.copy(camFrom.p.clone().lerp(camGoal.p, e)); orbit.target.copy(camFrom.t.clone().lerp(camGoal.t, e)); }
   }
   function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = camera.aspect < 0.9 ? 50 : 36; camera.updateProjectionMatrix();
-    if (camera.aspect < 0.9) { HOME.p.set(3.6, 7.6, -0.45); LAYERCAM.p.set(0.1, 3.6, 3.2); } else { HOME.p.set(0.1, 5.6, 5.4); LAYERCAM.p.set(0.15, 2.35, 2.45); } }   // portrait screens look along the bench
+    if (camera.aspect < 0.9) { HOME.p.set(3.6, 7.6, -0.45); LAYERCAM.p.set(0.1, 3.6, 3.2); } else { HOME.p.set(0.1, 5.6, 5.4); LAYERCAM.p.set(0.15, 3.0, 3.4); } }   // portrait screens look along the bench
   new ResizeObserver(resize).observe(stage); resize();
   camera.position.copy(ROBOTCAM.p); orbit.target.copy(ROBOTCAM.t); setLayer(0); camK = 1;
   let visible = true, last = performance.now();
