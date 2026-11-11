@@ -69,13 +69,17 @@ sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.
 const fill = new THREE.DirectionalLight('#8fb4ff', 0.35); fill.position.set(-3, 2, -3); scene.add(fill);
 // the floor: a dark workshop floor that takes the shadows, with a faint grid for the scale
 let floor, grid, pad;
+const MOVING = ['drives', 'humanoid', 'mobile'].includes(KIND) || (CFG.grid || 4) > 8;
 {
   const size = CFG.grid || 4;
   floor = new THREE.Mesh(new THREE.PlaneGeometry(size * 3, size * 3), new THREE.MeshStandardMaterial({ color: '#25282d', roughness: 0.85, metalness: 0, envMapIntensity: 0.35 }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -0.002; floor.receiveShadow = true; floor.userData.floor = true; scene.add(floor);
   pad = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshStandardMaterial({ color: '#5b636d', roughness: 0.9, metalness: 0, envMapIntensity: 0.3 }));   // dark grey under the grid (light mode)
   pad.rotation.x = -Math.PI / 2; pad.position.y = -0.001; pad.receiveShadow = true; pad.userData.floor = true; scene.add(pad);
-  grid = new THREE.GridHelper(size, size * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
+  const gs = Math.min(size, 8);                                 // very long grid lines that pass behind the camera are not drawn: big floors get an 8 m grid that follows the robot
+  grid = new THREE.GridHelper(gs, gs * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
+  [floor, pad].forEach((m) => { m.material.polygonOffset = true; m.material.polygonOffsetFactor = 2; m.material.polygonOffsetUnits = 2; });   // the grid lines always stay on top of the floor (no flicker from far away)
+  grid.position.y = 0.002;
 }
 // The ground follows the site theme: a dark workshop in dark mode, a light studio floor in light mode (same rule as nav.js).
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
@@ -997,6 +1001,10 @@ function loop(now) {
   }
   if (pose.tick) pose.tick(dt); else if (play) pose();
   if (pose.readout) readout.textContent = pose.readout();
+  if (MOVING) {                                                  // robots that drive or walk: the floor follows them in 1 m steps, so they never leave the grid
+    const gx = Math.round(orbit.target.x), gz = Math.round(orbit.target.z);
+    [floor, pad, grid].forEach((o) => { o.position.x = gx; o.position.z = gz; });
+  }
   flyStep(now);
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
   sun.target.position.copy(orbit.target); sun.position.set(orbit.target.x + VIEW_R * 1.2, orbit.target.y + VIEW_R * 2.4, orbit.target.z + VIEW_R * 0.9);
