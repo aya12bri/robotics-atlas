@@ -29,6 +29,7 @@ const OPS = {
   ser: [L('Serialisation', 'Sérialisation'), L('Each box gets its own DataMatrix code and serial number: printed under the inkjet head, then read back by a camera, for traceability.', 'Chaque boîte reçoit son propre code DataMatrix et son numéro de série : imprimés sous la tête jet d\'encre, puis relus par une caméra, pour la traçabilité.')],
   fil: [L('Filling', 'Remplissage'), L('Each empty bottle is held under the filling nozzle until it is full, capped, then set down.', 'Chaque bouteille vide est tenue sous la buse de remplissage jusqu\'à ce qu\'elle soit pleine, bouchée, puis posée.')],
   ass: [L('Screwing / assembly', 'Vissage / assemblage'), L('The robot puts the cover on the housing, then drives the four screws.', 'Le robot pose le couvercle sur le boîtier, puis visse les quatre vis.')],
+  pod: [L('Goods to person (like Amazon)', 'Marchandise vers l\'opérateur (comme chez Amazon)'), L('The robot slides under a shelf, lifts it and brings it to the picking station: the operator does not walk, the shelf comes to them. Then it takes the shelf back.', 'Le robot se glisse sous une étagère, la soulève et l\'apporte au poste de préparation : l\'opérateur ne marche pas, c\'est l\'étagère qui vient à lui. Puis il ramène l\'étagère.')],
   shu: [L('Conveying with an AMR', 'Convoyage par AMR'), L('The AMR takes a tote from station A and delivers it to station B, with no rail or conveyor between them.', 'L\'AMR prend un bac au poste A et le livre au poste B, sans rail ni convoyeur entre les deux.')],
   rou: [L('AMR delivery route', 'Tournée d\'un AMR'), L('The AMR visits three stations, finds its way around the shelves and stops for a person crossing.', 'L\'AMR passe par trois postes, contourne les étagères et s\'arrête pour une personne qui traverse.')]
 };
@@ -308,23 +309,30 @@ function buildCage([x0, x1, z0, z1, h]) {                    // safety fence: ye
   const g = new THREE.Group(), base = meshTexture(), post = M('#f5c518', { roughness: 0.5 }), rail = M('#2a313b');
   const panel = (len) => { const t = base.clone(); t.needsUpdate = true; t.repeat.set(len / 0.08, (h - 0.1) / 0.08);
     return new THREE.Mesh(new THREE.PlaneGeometry(len, h - 0.1), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide, depthWrite: false })); };
-  const corners = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
+  const corners = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]], normals = [V(0, 0, -1), V(1, 0, 0), V(0, 0, 1), V(-1, 0, 0)];
+  const sides = normals.map((n) => ({ n, mesh: [], solid: [], mat: M('#f5c518', { roughness: 0.5, transparent: true }), rmat: M('#2a313b', { transparent: true }), cut: false }));
   let door = null;
   for (let s = 0; s < 4; s++) {
+    const S = sides[s];
     const [ax, az] = corners[s], [bx, bz] = corners[(s + 1) % 4], len = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(len / 0.8)), ang = Math.atan2(-(bz - az), bx - ax);
     for (let i = 0; i < n; i++) {
       const t0 = i / n, t1 = (i + 1) / n, px = ax + (bx - ax) * t0, pz = az + (bz - az) * t0, seg = len / n;
-      const p = box(0.03, h + 0.04, 0.03, post); p.position.set(px, 0, pz); g.add(p);
+      const p = box(0.03, h + 0.04, 0.03, S.mat); p.position.set(px, 0, pz); g.add(p); S.solid.push(p);
       const isDoor = s === 0 && i === 0;                   // first panel of the z0 side (the back, away from the camera)
       const holder = new THREE.Group(); holder.position.set(px, 0, pz); holder.rotation.y = ang; g.add(holder);
       const piv = new THREE.Group(); holder.add(piv);
-      const m = panel(seg - 0.02); m.position.set(seg / 2, 0.05 + (h - 0.1) / 2, 0); piv.add(m);
-      for (const y of [0.05, h - 0.05]) { const r = box(seg - 0.02, 0.025, 0.025, isDoor ? post : rail, false); r.position.set(seg / 2, y, 0); piv.add(r); }
-      if (isDoor) { const side = box(0.025, h - 0.1, 0.025, post); side.position.set(seg - 0.02, 0.05, 0); piv.add(side); door = piv; door.userData.seg = seg; door.userData.at = V(px + (bx - ax) * (0.5 / n), 0, pz + (bz - az) * (0.5 / n)); }   // the door opens outwards (towards -z)
+      const m = panel(seg - 0.02); m.position.set(seg / 2, 0.05 + (h - 0.1) / 2, 0); piv.add(m); S.mesh.push(m);
+      for (const y of [0.05, h - 0.05]) { const r = box(seg - 0.02, 0.025, 0.025, isDoor ? S.mat : S.rmat, false); r.position.set(seg / 2, y, 0); piv.add(r); }
+      if (isDoor) { const side = box(0.025, h - 0.1, 0.025, S.mat); side.position.set(seg - 0.02, 0.05, 0); piv.add(side); door = piv; door.userData.seg = seg; door.userData.at = V(px + (bx - ax) * (0.5 / n), 0, pz + (bz - az) * (0.5 / n)); }   // the door opens outwards (towards -z)
     }
   }
   g.traverse((m) => { if (m.isMesh && !m.material.transparent) m.castShadow = true; });
-  return { group: g, door, ang: 0 };
+  const centre = V((x0 + x1) / 2, h / 2, (z0 + z1) / 2);
+  // cut-away: the sides that face the camera lose their wire mesh and fade their posts, so the robot is never hidden
+  const cutaway = (cam) => { const d = cam.clone().sub(centre); d.y = 0; d.normalize();
+    for (const S of sides) { const cut = S.n.dot(d) > 0.25; if (cut === S.cut) continue; S.cut = cut;
+      S.mesh.forEach((m) => { m.visible = !cut; }); S.mat.opacity = S.rmat.opacity = cut ? 0.28 : 1; S.mat.depthWrite = S.rmat.depthWrite = !cut; } };
+  return { group: g, door, ang: 0, cutaway };
 }
 function dataMatrix(seed, n = 16) {                          // a DataMatrix-looking code: solid L finder on the left and bottom, dotted top and right, data inside
   const c = document.createElement('canvas'); c.width = c.height = n * 8 + 16; const g = c.getContext('2d');
@@ -350,8 +358,7 @@ const ROBOTS = {
     safety: 'cage', cage: [-0.85, 0.85, -0.8, 0.8, 1.0] },
   gantry: { human: 0.62, build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), u: 0.13, A: [-0.42, 0.18], B: [0.38, -0.12], cam: [0.55, 2.0, 2.65], target: [0, 0.32, 0], v: 0.8,
     safety: 'cage', cage: [-1.05, 1.05, -0.85, 0.85, 1.4] },
-  mobile: { mobile: true, build: () => articulated({ h1: 0.3, L2: 0.42, L3: 0.38, L4: 0.11, r: 0.055, style: 'cobot' }), u: 0.085, v: 0.55, arc: true,
-    cam: [3.2, 2.6, 3.6], target: [0, 0.1, 0], ops: ['shu', 'rou', 'mm'], fit: { shu: 3, rou: 3, mm: 2 }, mm: { L: 0.8, X2: 1.5, zS: 0.48, cam: [1.0, 1.3, 2.1] } }
+  mobile: { mobile: true, u: 0.085, cam: [2.6, 3.2, 4.6], target: [0.4, 0.5, -0.6], ops: ['pod', 'shu', 'rou'], fit: { pod: 3, shu: 3, rou: 3 } }
 };
 // how well each robot suits each operation (same as the table on the page): 3 main use, 2 possible, 1 rarely
 const FIT = {
@@ -786,7 +793,45 @@ function mount(host) {
     const post = box(0.03, 0.8, 0.03, MAT.frame); post.position.set(0, 0, -0.26); g.add(post);
     return add(g, x, 0, z);
   }
+  function makePod() {                                       // a storage shelf on legs: the drive unit fits underneath
+    const g = new THREE.Group(), legH = 0.36, H = 1.9, w = 0.9, fab = [M('#f2c94c'), M('#3d6fb6'), M('#e5484d'), M('#30a46c')];
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const l = box(0.04, H, 0.04, MAT.dark); l.position.set(sx * (w / 2 - 0.02), 0, sz * (w / 2 - 0.02)); g.add(l); }
+    for (let i = 0; i < 5; i++) { const sh = box(w, 0.03, w, MAT.frame); sh.position.y = legH + i * (H - legH) / 4.4; g.add(sh); }
+    const bins = [];
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) for (const face of [-1, 1]) {
+      const b = box(0.26, 0.24, 0.4, fab[(i + j) % 4]); b.position.set(-0.29 + j * 0.29, legH + 0.03 + i * (H - legH) / 4.4, face * 0.22); g.add(b); bins.push(b); }
+    g.traverse((m) => { if (m.isMesh) m.castShadow = m.receiveShadow = true; }); g.userData = { legH, bins }; return g;
+  }
+  let podNext = 0;
   const SM = {
+    async pod(c) {
+      for (let i = 0; i < 40; i++) { const f = box(0.06, 0.002, 0.06, MAT.black); f.position.set(-3.2 + (i % 8) * 0.8, 0.002, -2.4 + Math.floor(i / 8) * 0.8); props.add(f); }   // floor markers the robots read
+      const spots = [[-1.6, -1.6], [-0.6, -1.6], [0.4, -1.6], [-1.6, -0.6], [-0.6, -0.6], [0.4, -0.6]];
+      const pods = spots.map(([x, z]) => add(makePod(), x, 0, z));
+      const st = add(new THREE.Group(), 2.25, 0, -1.1);
+      { const fr = box(0.06, 1.6, 1.0, MAT.frame); fr.position.x = -0.05; st.add(fr); const scr = box(0.04, 0.3, 0.45, MAT.black); scr.position.set(0.02, 1.25, 0); st.add(scr);
+        const desk = box(0.5, 0.85, 0.7, MAT.frame); desk.position.set(0.45, 0, -0.75); st.add(desk); }
+      const tote = add(binBox(1, 0.4, 0.3, 0.16, MAT.bin), 2.7, 0.85, -1.85);
+      const op = makePerson(); add(op, 2.9, 0, -1.1); op.rotation.y = -Math.PI / 2;
+      const k = podNext++ % pods.length, pod = pods[k], [px, pz] = spots[k];
+      amr.position.set(1.5, 0, 0.5); amr.rotation.y = Math.PI;
+      c.say('An order arrives: the robot goes to get the shelf that holds the item', 'Une commande arrive : le robot va chercher l\'étagère qui contient l\'article');
+      await amrDrive(c, [V(px, 0, 0.5), V(px, 0, pz)]);
+      c.say('It slides under the shelf and lifts it', 'Il se glisse sous l\'étagère et la soulève');
+      await c.tw(0.8, (e) => { pod.position.y = 0.05 * ease(e); });
+      amr.attach(pod);
+      c.say('It brings the whole shelf to the picking station', 'Il apporte toute l\'étagère au poste de préparation');
+      await amrDrive(c, [V(px, 0, 0.5), V(1.7, 0, 0.5), V(1.7, 0, -1.1)]);
+      c.say('The operator picks the item: the shelf comes to the person, not the other way round', 'L\'opérateur prend l\'article : c\'est l\'étagère qui vient à la personne, pas l\'inverse');
+      const item = box(0.12, 0.1, 0.16, MAT.card); const from = pod.userData.bins[13].getWorldPosition(V(0, 0, 0)).add(V(0, 0.24, 0)); item.position.copy(from); props.add(item);
+      const to = V(2.7, 0.88, -1.85);
+      await c.tw(1.6, (e) => { const k2 = ease(e); item.position.copy(from.clone().lerp(to, k2)).add(V(0, Math.sin(k2 * Math.PI) * 0.25, 0)); op.userData.arms[0].rotation.x = -1.3 * Math.sin(Math.min(1, e * 1.4) * Math.PI); });
+      c.say('The robot takes the shelf back to the storage area', 'Le robot ramène l\'étagère dans la zone de stockage');
+      await amrDrive(c, [V(1.7, 0, 0.5), V(px, 0, 0.5), V(px, 0, pz)]);
+      props.attach(pod); await c.tw(0.6, (e) => { pod.position.y = 0.05 * (1 - ease(e)); });
+      await amrDrive(c, [V(px, 0, 0.5), V(1.5, 0, 0.5)]);
+      c.say('Ready for the next order', 'Prêt pour la commande suivante'); await c.wait(0.8);
+    },
     async shu(c) {
       const sa = station(-2.2, -0.6, 'A'), sb = station(2.2, 0.8, 'B');
       sa.rotation.y = 0; sb.rotation.y = Math.PI;
@@ -839,7 +884,7 @@ function mount(host) {
       await amrDrive(c, [V(-0.3, 0, 1.0), V(-2.0, 0, 0.2), V(-2.6, 0, -0.7)]);
     }
   };
-  if (R.mobile) { amr = makeAMR(0.9); scene.add(amr); amr.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); amr.userData.nBase = amr.children.length; }
+  if (R.mobile) { amr = makeAMR(0.8); scene.add(amr); amr.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); amr.userData.nBase = amr.children.length; }
 
   // ------------------------------------------------ safety: industrial robots in a cage, the cobot next to an operator
   let halted = false, slow = 1, slowT = 1, cage = null, person = null, doorOpen = false, near = false, halo = null;
@@ -932,6 +977,7 @@ function mount(host) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (!visible) return;
     safetyTick(dt);
+    if (cage) cage.cutaway(camera.position);
     if (!paused && !halted) step(dt * speed * slow);
     orbit.update(); renderer.render(scene, camera);
   });
