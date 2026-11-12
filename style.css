@@ -993,3 +993,15 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .sys-stage:fullscreen { width: 100vw; height: 100vh !important; border-radius: 0; border: 0; }
 .sysdemo.sys-how-on .sys-hcard { top: 0; } .sysdemo.sys-how-on .sys-views { top: auto; bottom: 10px; }
 @media (max-width: 600px) { .sys-views span { display: none; } .sys-stage { height: 460px; } }
+/* "how it works": step controls in the strip; view buttons at the top centre so they never cover the cards */
+.sys-flow { display: flex; align-items: center; gap: 0.5rem; text-align: left; pointer-events: auto; padding: 0.45rem 0.55rem; }
+.sys-flow[hidden] { display: none; }
+.sys-ftxt { flex: 1; text-align: center; }
+.sys-flow button { flex: none; min-height: 0; width: 34px; height: 34px; padding: 0; border-radius: 50%; font-size: 1rem; line-height: 1; color: #fff; background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.35); }
+.sys-flow button:hover { background: rgba(255, 255, 255, 0.32); }
+.sys-flow .sys-fpause { width: 40px; height: 40px; font-size: 0.9rem; background: #fff; color: #3b4fd8; }
+.sys-flow.paused { background: rgba(59, 79, 216, 0.97); } .sys-flow.paused .sys-fpause { animation: sys-pulse 1.4s infinite; }
+.sys-flow.stop button { display: none; }
+.sysdemo.sys-how-on .sys-views { top: 10px; bottom: auto; left: 50%; transform: translateX(-50%); }
+.sysdemo.sys-how-on .sys-flow { width: min(560px, calc(100% - 440px)); }
+@media (max-width: 1000px) { .sysdemo.sys-how-on .sys-flow { width: calc(100% - 20px); } }
