@@ -363,7 +363,7 @@ function mount(host) {
       <div class="sys-ctl"><button type="button" class="sys-play">${L('▶ How it works', '▶ Comment ça marche')}</button><button type="button" class="sys-stop">${L('Emergency stop', 'Arrêt d\'urgence')}</button><button type="button" class="sys-all">${L('Overview', 'Vue d\'ensemble')}</button></div>
       <div class="sys-pop" hidden><button type="button" class="sys-x" aria-label="${L('Close', 'Fermer')}">×</button><div class="sys-pop-in"></div></div><p class="sys-hint">${L('Click a name or a part', 'Cliquez sur un nom ou une pièce')}</p></div>
     <nav class="sys-layers" aria-label="${L('Layers', 'Couches')}"><button type="button" class="sys-prev" aria-label="${L('Previous layer', 'Couche précédente')}">‹</button><div class="sys-lchips">${LAYERS.map((l, i) => `<button type="button" data-l="${i}">${i && i < LAYERS.length - 1 ? `<b>${i}</b>` : ''}${l[0]}</button>`).join('')}</div><button type="button" class="sys-next" aria-label="${L('Next layer', 'Couche suivante')}">›</button></nav>
-    <div class="sys-lcard"><h3></h3><p></p></div>
+    <div class="sys-lcard"><h3></h3><p></p><div class="sys-lparts"></div></div>
     <div class="sys-explain" hidden></div>
     <div class="sys-legend">${Object.entries(WIRE).map(([k, [c, n]]) => `<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>
     <div class="sys-detail" hidden></div>
@@ -562,6 +562,7 @@ function mount(host) {
     const all = layer === LAYERS.length - 1; host.classList.toggle('sys-all-on', all); explainEl.hidden = !all;
     if (!all && playing) playBtn.click();
     labsEl.querySelectorAll('button').forEach((b) => { b.hidden = !goals[b.dataset.p] || all; });
+    lcard.querySelector('.sys-lparts').innerHTML = all ? '' : list.filter((p) => goals[p.id]).map((p) => `<button type="button" data-p="${p.id}" style="--c:${CATS[p.def[0]][1]}" class="${p.id === sel ? 'on' : ''}"><b>${p.n}</b>${p.def[2][0][FR ? 1 : 0]}</button>`).join('');   // the names, as a list (shown on phones, where the view shows only numbers)
     const H = layer === 0 ? ROBOTCAM : all ? HOME : LAYERCAM; fly(H.p.clone(), H.t.clone());
   }
   host.querySelector('.sys-prev').addEventListener('click', () => setLayer(layer - 1));
@@ -674,6 +675,9 @@ function mount(host) {
     if (labs.length) {
       const items = labs.map((b) => { const o = objs[b.dataset.p]; v.copy(o.position).project(camera); return { el: b, x: (v.x + 1) / 2 * r.width, y: (1 - v.y) / 2 * r.height }; }).sort((a, b) => a.x - b.x);
       const tiers = [[], []]; items.forEach((it, i) => tiers[i % 2].push(it));
+      labsEl.classList.remove('compact');                       // names too wide for the view (phones): only the numbers, the list under the view gives the names
+      if (tiers.some((tier) => tier.reduce((a, it) => a + (it.el.offsetWidth || 120) + 6, 0) > r.width - 16)) labsEl.classList.add('compact');
+      host.classList.toggle('sys-compact', labsEl.classList.contains('compact'));
       tiers.forEach((tier, k) => {                              // two tiers of names under the row, in the same order as the parts: no crossing lines
         const Y = r.height - 26 - k * 34; let prev = -Infinity;
         for (const it of tier) { const half = (it.el.offsetWidth || 120) / 2; it.p = Math.max(8 + half, it.x, prev + 6 + half); prev = it.p + half; }
