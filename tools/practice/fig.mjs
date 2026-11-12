@@ -29,6 +29,7 @@ export function plot(o) {
     s += `<path d="${d}" fill="none" stroke="${cv.c || C.o}" stroke-width="${cv.w || 3}"${cv.dash ? ` stroke-dasharray="${cv.dash}"` : ''}/>`;
     if (cv.label) s += `<rect x="${L + 10}" y="${Tp + 8 + k * 22}" width="14" height="4" fill="${cv.c || C.o}"/>` + T(L + 30, Tp + 14 + k * 22, cv.label, { fs: 13, c: cv.c || C.o });
   });
+  (o.segs || []).forEach(([x1, y1, x2, y2, c, w]) => { s += LINE(X(x1), Y(y1), X(x2), Y(y2), c || C.o, w || 8); });
   (o.marks || []).forEach(([x, y, lab, c]) => { s += DOT(X(x), Y(y), c || C.y, 5) + (lab ? T(X(x) + 8, Y(y) - 8, lab, { fs: 13, c: c || C.y }) : ''); });
   if (o.xl) s += T(L + pw, H - 6, o.xl, { a: 'end', fs: 13, c: C.axis });
   if (o.yl) s += T(8, Tp - 4 + 2, o.yl, { fs: 13, c: C.axis });
