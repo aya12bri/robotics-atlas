@@ -202,10 +202,10 @@
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<nav class="nav-l" aria-label="Main">' +
-      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a>` + link('learn.html', ui.learn) : link('index.html', ui.home) + link('learn.html', ui.learn) + `<a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.start}</a>`) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>`) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
       '<div class="nav-r">' +
-      `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
-      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>' +
+      (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
+      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
       `<button class="icon-btn theme-btn" type="button" aria-label="${ui.theme}" title="${ui.theme}"></button>` +
@@ -227,9 +227,11 @@
     const links = nav.querySelector('.nav-l'), toggle = nav.querySelector('.nav-toggle');
     const ddBtn = nav.querySelector('.dd-btn'), dd = nav.querySelector('.dd');
     toggle.addEventListener('click', () => { const o = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(o)); });
-    ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
-    document.addEventListener('click', () => { dd.classList.remove('open'); ddBtn.setAttribute('aria-expanded', 'false'); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { dd.classList.remove('open'); nav.classList.remove('open'); } });
+    if (ddBtn) {
+      ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
+      document.addEventListener('click', () => { dd.classList.remove('open'); ddBtn.setAttribute('aria-expanded', 'false'); });
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (dd) dd.classList.remove('open'); nav.classList.remove('open'); } });
 
     const foot = document.createElement('footer');
     foot.className = 'site-foot';
