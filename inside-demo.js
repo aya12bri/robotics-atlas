@@ -326,7 +326,9 @@ function mobileBox() {                                       // the body of a mo
 function cy0(r, h, mat) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 28).translate(0, h / 2, 0), mat); m.castShadow = m.receiveShadow = true; return m; }
 
 // ---------------------------------------------------------------- callouts: each name sits in a row above or below the picture, with a leader line to its part
-export function callouts(box, items, w, h) {
+export function callouts(box, items, w, h, opt = {}) {
+  // narrow screens (opt.compact): the names would cover the picture, so only the numbers are shown; the list under the picture gives the names
+  if (opt.compact) { box.classList.remove('compact'); const widest = Math.max(0, ...items.map((it) => it.el.offsetWidth || 0)); box.classList.toggle('compact', 2 * widest + 120 > w); }
   // Lay the names out so that no two leader lines cross:
   //  - parts spread out up and down  -> names in a left and a right column, in the same top-to-bottom order as the parts
   //  - parts spread out left to right -> names in a top and a bottom row, in the same left-to-right order as the parts
@@ -545,7 +547,7 @@ function mount(host) {
     // labels in the exploded view
     tagsEl.hidden = !(layer === 3 && st.explode > 0.8);
     if (!tagsEl.hidden) { const r = stage.getBoundingClientRect();
-      callouts(tagsEl, [...tagsEl.querySelectorAll('button')].map((b) => { const p = mech.parts.find((q) => q.id === b.dataset.p); new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); return { el: b, x: (proj.x + 1) / 2 * r.width, y: (1 - proj.y) / 2 * r.height }; }), r.width, r.height); }
+      callouts(tagsEl, [...tagsEl.querySelectorAll('button')].map((b) => { const p = mech.parts.find((q) => q.id === b.dataset.p); new THREE.Box3().setFromObject(p.obj).getCenter(tmp); proj.copy(tmp).project(camera); return { el: b, x: (proj.x + 1) / 2 * r.width, y: (1 - proj.y) / 2 * r.height }; }), r.width, r.height, { compact: true }); }
     // camera
     if (camK < 1 && camFrom) { camK = Math.min(1, camK + dt / 1.3); const e = ease(camK), s = shotCam(layer); camera.position.copy(camFrom.p.clone().lerp(s.p, e)); orbit.target.copy(camFrom.t.clone().lerp(s.t, e)); }
   }

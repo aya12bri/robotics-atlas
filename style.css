@@ -1130,3 +1130,6 @@ table.dh.ops td:first-child { white-space: nowrap; }
 :is(.lesson, .wsvg, .figure) svg [stroke="#b07cff" i], :is(.lesson, .wsvg, .figure) [stroke="#b07cff" i] { stroke: var(--f-p); }
 :is(.lesson, .figure) svg circle[fill="#262626" i] { fill: var(--f-joint); }
 .lesson[hidden], .lessons > section[hidden] { display: none; }
+/* inside the robot, narrow screens: the exploded-view labels show only their number (the list under the picture gives the names) */
+.insd-tags.compact button { font-size: 0; padding: 0.12rem; border-radius: 999px; }
+.insd-tags.compact button b { font-size: 0.78rem; margin: 0; }
