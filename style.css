@@ -1149,3 +1149,11 @@ svg#schema, svg#zoom, svg#arena, svg#sim { background: var(--fpanel) !important;
 :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#6bdc8b" i] { fill: var(--f-g); }
 :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#6bdc8b" i] { stroke: var(--f-g); }
 :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) text:is([fill="#ffffff" i], [fill="#fff" i], [fill="white" i]) { fill: var(--f-ink); }
+/* whole-system demo, narrow views: the layer labels show only their number (the chips under the view give the names) */
+.sys-labs.compact button { font-size: 0; gap: 0; padding: 0.12rem; }
+.sys-labs.compact button b { font-size: 0.72rem; }
+.sys-lparts { display: none; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.6rem; }
+.sysdemo.sys-compact:not(.sys-all-on) .sys-lparts { display: flex; }
+.sys-lparts button { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 0; padding: 0.2rem 0.6rem 0.2rem 0.2rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: var(--surface); color: var(--text); border: 1.5px solid var(--c); }
+.sys-lparts button b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-size: 0.68rem; color: #fff; background: var(--c); }
+.sys-lparts button.on { background: var(--c); color: #fff; }
