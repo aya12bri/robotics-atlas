@@ -81,7 +81,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the inverse of a rotation matrix?</p><p class="a">Its transpose: <i>R</i><sup>−1</sup> = <i>R</i><sup>T</sup>.</p></li><li><p class="q">What does the left exponent in <sup>0</sup><i>R</i><sub>1</sub> mean?</p><p class="a">The frame in which the coordinates are expressed (<i>R</i><sub>0</sub>).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the inverse of a rotation matrix?</p><p class="a">Its transpose: <i>R</i><sup>−1</sup> = <i>R</i><sup>T</sup>.</p></li><li><p class="q">What does the left exponent in <sup>0</sup><i>R</i><sub>1</sub> mean?</p><p class="a">The frame in which the coordinates are expressed (<i>R</i><sub>0</sub>).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-1-1"><p class="q">The columns of a rotation matrix are…</p><ol class="opts" type="A"><li data-ok="1">the unit axes of the new frame, seen in the old one</li><li>random numbers</li></ol><p class="fb" aria-live="polite"></p><p class="a">Each column is a unit vector and they are perpendicular.</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -129,7 +129,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Euler (moving axes) or Cardan (fixed axes): on which side do you multiply the new rotation?</p><p class="a">Euler: on the right. Cardan: on the left.</p></li><li><p class="q">When is the extraction of the Cardan angles singular?</p><p class="a">When cos <i>β</i> = 0, that is <i>β</i> = ±π/2 (gimbal lock).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Euler (moving axes) or Cardan (fixed axes): on which side do you multiply the new rotation?</p><p class="a">Euler: on the right. Cardan: on the left.</p></li><li><p class="q">When is the extraction of the Cardan angles singular?</p><p class="a">When cos <i>β</i> = 0, that is <i>β</i> = ±π/2 (gimbal lock).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-2-1"><p class="q">How many angles describe an orientation (Euler or Cardan)?</p><ol class="opts" type="A"><li data-ok="1">3</li><li>2</li><li>9</li></ol><p class="fb" aria-live="polite"></p><p class="a">3 angles, even if the matrix has 9 numbers.</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -179,7 +179,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In a 4×4 homogeneous matrix, what does the last row always contain?</p><p class="a">(0 0 0 1).</p></li><li><p class="q">What is the 4th component of a point? Of a vector?</p><p class="a">1 for a point (the translation applies), 0 for a vector (it does not).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In a 4×4 homogeneous matrix, what does the last row always contain?</p><p class="a">(0 0 0 1).</p></li><li><p class="q">What is the 4th component of a point? Of a vector?</p><p class="a">1 for a point (the translation applies), 0 for a vector (it does not).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-3-1"><p class="q">A homogeneous matrix 4×4 contains…</p><ol class="opts" type="A"><li data-ok="1">a rotation and a translation</li><li>only a rotation</li></ol><p class="fb" aria-live="polite"></p><p class="a">3×3 rotation + 3×1 translation + the row (0 0 0 1).</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -252,7 +252,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which DHm parameters are always constant?</p><p class="a"><i>α</i><sub>j</sub> and <i>d</i><sub>j</sub>.</p></li><li><p class="q">For a slider joint, what is the joint variable?</p><p class="a"><i>q</i><sub>j</sub> = <i>r</i><sub>j</sub> (and <i>θ</i><sub>j</sub> is constant).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which DHm parameters are always constant?</p><p class="a"><i>α</i><sub>j</sub> and <i>d</i><sub>j</sub>.</p></li><li><p class="q">For a slider joint, what is the joint variable?</p><p class="a"><i>q</i><sub>j</sub> = <i>r</i><sub>j</sub> (and <i>θ</i><sub>j</sub> is constant).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-4-1"><p class="q">In DHm, the z axis of frame j is placed…</p><ol class="opts" type="A"><li data-ok="1">along the axis of joint j</li><li>along the link, always</li></ol><p class="fb" aria-live="polite"></p><p class="a">z_j is the axis of rotation (or sliding) of joint j.</p></li><!-- END quizx --></ol></details>
           <p class="try"><a href="scara.html">Compare with the SCARA DHM table →</a></p>
           <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
@@ -293,7 +293,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Where do you read the position of the end effector in <sup>0</sup><i>T</i><sub>n</sub>?</p><p class="a">In the 4th column.</p></li><li><p class="q">How many solutions does the MGD have?</p><p class="a">Always exactly one.</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Where do you read the position of the end effector in <sup>0</sup><i>T</i><sub>n</sub>?</p><p class="a">In the 4th column.</p></li><li><p class="q">How many solutions does the MGD have?</p><p class="a">Always exactly one.</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-5-1"><p class="q">The MGD is computed by…</p><ol class="opts" type="A"><li data-ok="1">multiplying the matrices 0T1 · 1T2 · … · n−1Tn</li><li>adding the angles only</li></ol><p class="fb" aria-live="polite"></p><p class="a">Each matrix is one line of the DHm table.</p></li><!-- END quizx --></ol></details>
           <p class="try"><a href="arm.html">See the MGD computed live on the arm →</a></p>
           <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
@@ -345,7 +345,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">How many MGI solutions can a UR3-type 6R robot have, at most?</p><p class="a">8.</p></li><li><p class="q">In the SCARA MGI, what does the sign <i>δ</i> = ±1 choose?</p><p class="a">The aspect: elbow right or elbow left.</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">How many MGI solutions can a UR3-type 6R robot have, at most?</p><p class="a">8.</p></li><li><p class="q">In the SCARA MGI, what does the sign <i>δ</i> = ±1 choose?</p><p class="a">The aspect: elbow right or elbow left.</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-6-1"><p class="q">The MGI can have…</p><ol class="opts" type="A"><li data-ok="1">0, 1, several or infinitely many solutions</li><li>always exactly one solution</li></ol><p class="fb" aria-live="polite"></p><p class="a">Out of reach: 0; several postures: several; redundant robot: infinity.</p></li><!-- END quizx --></ol></details>
           <p class="try"><a href="scara.html">Watch the inverse kinematics of the SCARA live →</a></p>
           <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
@@ -389,7 +389,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">A straight line in the joint space: is it a straight line for the tool?</p><p class="a">No. In general the tool follows a curve.</p></li><li><p class="q">Which line separates the two aspects of a SCARA?</p><p class="a"><i>θ</i><sub>2</sub> = 0 (stretched arm); its image is the circle of radius <i>a</i><sub>1</sub> + <i>a</i><sub>2</sub>.</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">A straight line in the joint space: is it a straight line for the tool?</p><p class="a">No. In general the tool follows a curve.</p></li><li><p class="q">Which line separates the two aspects of a SCARA?</p><p class="a"><i>θ</i><sub>2</sub> = 0 (stretched arm); its image is the circle of radius <i>a</i><sub>1</sub> + <i>a</i><sub>2</sub>.</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-7-1"><p class="q">The workspace is limited by…</p><ol class="opts" type="A"><li data-ok="1">the link lengths and the joint limits</li><li>the colour of the robot</li></ol><p class="fb" aria-live="polite"></p><p class="a">It is the image of the joint domain by the MGD.</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="7"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -434,7 +434,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the determinant of the Jacobian of the planar 2-axis arm when the arm is stretched?</p><p class="a">det <i>J</i> = <i>a</i><sub>1</sub><i>a</i><sub>2</sub> sin <i>θ</i><sub>2</sub> = 0: it is a singularity.</p></li><li><p class="q">Which formula links the motor torques to a force exerted by the tool?</p><p class="a"><i>Γ</i> = <i>J</i><sup>T</sup>(<i>q</i>) <i>F</i>.</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the determinant of the Jacobian of the planar 2-axis arm when the arm is stretched?</p><p class="a">det <i>J</i> = <i>a</i><sub>1</sub><i>a</i><sub>2</sub> sin <i>θ</i><sub>2</sub> = 0: it is a singularity.</p></li><li><p class="q">Which formula links the motor torques to a force exerted by the tool?</p><p class="a"><i>Γ</i> = <i>J</i><sup>T</sup>(<i>q</i>) <i>F</i>.</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-8-1"><p class="q">At a singularity, the Jacobian…</p><ol class="opts" type="A"><li data-ok="1">loses rank (det J = 0 for a square J)</li><li>becomes larger</li></ol><p class="fb" aria-live="polite"></p><p class="a">The tool can no longer move in some direction.</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="8"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -503,7 +503,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">When does the trapezoid degrade into a triangle?</p><p class="a">When <i>X</i> ≤ <i>V</i><sub>max</sub>²/<i>a</i>: the robot does not have the time to reach <i>V</i><sub>max</sub>.</p></li><li><p class="q"><i>X</i> = 0.1 m, <i>V</i><sub>max</sub> = 0.5 m/s, <i>a</i> = 0.5 m/s²: what is the total time?</p><p class="a"><i>V</i><sub>max</sub>²/<i>a</i> = 0.5 &gt; 0.1: triangle; <i>T</i><sub>tot</sub> = 2√(0.1/0.5) ≈ 0.894 s.</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">When does the trapezoid degrade into a triangle?</p><p class="a">When <i>X</i> ≤ <i>V</i><sub>max</sub>²/<i>a</i>: the robot does not have the time to reach <i>V</i><sub>max</sub>.</p></li><li><p class="q"><i>X</i> = 0.1 m, <i>V</i><sub>max</sub> = 0.5 m/s, <i>a</i> = 0.5 m/s²: what is the total time?</p><p class="a"><i>V</i><sub>max</sub>²/<i>a</i> = 0.5 &gt; 0.1: triangle; <i>T</i><sub>tot</sub> = 2√(0.1/0.5) ≈ 0.894 s.</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-9-1"><p class="q">Why not a bang-bang law with infinite jerk?</p><ol class="opts" type="A"><li data-ok="1">The sudden jumps of acceleration shake the robot</li><li>It is too slow</li></ol><p class="fb" aria-live="polite"></p><p class="a">Smoother laws (trapezoid of acceleration, degree 5) limit vibrations.</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="9"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -541,7 +541,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What are the three kinds of terms in the dynamic model besides friction?</p><p class="a">Inertia (<i>A</i><i>q¨</i>), centrifugal/Coriolis (<i>C</i><i>q˙</i>) and gravity (<i>Q</i>).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What are the three kinds of terms in the dynamic model besides friction?</p><p class="a">Inertia (<i>A</i><i>q¨</i>), centrifugal/Coriolis (<i>C</i><i>q˙</i>) and gravity (<i>Q</i>).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-model-10-1"><p class="q">Holding the arm still (q̇ = q̈ = 0) needs which term?</p><ol class="opts" type="A"><li data-ok="1">Gravity Q(q)</li><li>Inertia A q̈</li><li>Coriolis C q̇</li></ol><p class="fb" aria-live="polite"></p><p class="a">With no motion, only gravity (and friction) remain.</p></li><li class="qm" data-id="q-model-10-2"><p class="q">A PID that adds a computed gravity term is called…</p><ol class="opts" type="A"><li data-ok="1">PID with gravity compensation</li><li>open loop</li></ol><p class="fb" aria-live="polite"></p><p class="a">The model gives the gravity torque, the PID only corrects the rest.</p></li><!-- END quizx --></ol></details>
           <label class="lesson-done"><input type="checkbox" data-lesson="10"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -570,6 +570,7 @@
 </div>
 </section>
           <!-- END practice -->
+<!-- BEGIN quizx --><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li class="qm" data-id="q-model-11-1"><p class="q">MGD: X = f(q). MGI: …</p><ol class="opts" type="A"><li data-ok="1">q = f⁻¹(X)</li><li>Ẋ = J q̇</li></ol><p class="fb" aria-live="polite"></p><p class="a">The MGI goes back from the tool to the joints.</p></li><li class="qm" data-id="q-model-11-2"><p class="q">Ẋ = J(q) q̇ is the…</p><ol class="opts" type="A"><li data-ok="1">direct kinematic model</li><li>dynamic model</li></ol><p class="fb" aria-live="polite"></p><p class="a">It links speeds, not torques.</p></li><li class="qm" data-id="q-model-11-3"><p class="q">Γ = A q̈ + C q̇ + Q is the…</p><ol class="opts" type="A"><li data-ok="1">dynamic model</li><li>geometric model</li></ol><p class="fb" aria-live="polite"></p><p class="a">It gives the motor torques Γ needed for a motion.</p></li></ol></details><!-- END quizx -->
           <label class="lesson-done"><input type="checkbox" data-lesson="11"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
 
@@ -611,5 +612,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
     </script>
     <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
   </body>
 </html>

@@ -1010,3 +1010,24 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .box.key .bt::before { content: '✔ '; }
 .pfig { margin: 1rem 0; } .pfig svg { width: 100%; height: auto; max-width: 680px; display: block; margin: 0 auto; border-radius: 10px; }
 .pfig figcaption { text-align: center; color: var(--muted); font-size: 0.86rem; margin-top: 0.35rem; }
+
+/* end-of-lesson quiz and previous / next lesson buttons (lesson-quiz.js) */
+.lquiz { margin: 1.4rem 0 0.6rem; padding: 1rem 1.1rem; border: 1px solid var(--border); border-left: 4px solid #8e5bd6; border-radius: 12px; background: color-mix(in srgb, #8e5bd6 5%, var(--surface, transparent)); }
+.lquiz h3 { margin: 0 0 0.3rem; font-size: 1.15rem; } .lquiz h3::before { content: '🎯 '; }
+.lquiz .lqnote { margin: 0 0 0.4rem; color: var(--muted); font-size: 0.92rem; }
+.lquiz .qa > li { padding: 0.2rem 0 0.6rem; border-bottom: 1px dashed var(--border); }
+.lquiz .q { margin: 0.6rem 0 0.35rem; font-weight: 600; }
+.lquiz .a { margin: 0.3rem 0 0; padding: 0.5rem 0.8rem; border-left: 3px solid var(--good); background: color-mix(in srgb, var(--good) 9%, transparent); border-radius: 0 8px 8px 0; }
+.lquiz .a[hidden] { display: none; }
+.lqbtns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.2rem 0; }
+.lqbtns button, .lqagain { font: inherit; font-size: 0.9rem; padding: 0.35rem 0.9rem; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--text); cursor: pointer; }
+.lqbtns button.yes { border-color: #2e9e5b; } .lqbtns button.no { border-color: #c0392b; }
+.lqbtns button:hover, .lqagain:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.lqscore { margin: 0.8rem 0 0.4rem; font-weight: 600; } .lqscore.ok { color: #2e9e5b; } .lqscore.bad { color: #c0392b; }
+.lesson-pager { display: flex; justify-content: space-between; align-items: stretch; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap; }
+.lesson-pager a { text-decoration: none; border-radius: 12px; padding: 0.6rem 1rem; border: 1px solid var(--border); color: var(--text); display: flex; flex-direction: column; justify-content: center; }
+.lesson-pager a.prev { color: var(--muted); }
+.lesson-pager a.next { margin-left: auto; background: var(--btn); border-color: var(--btn); color: var(--btn-ink); text-align: right; max-width: 100%; }
+.lesson-pager a.next small { opacity: 0.85; font-size: 0.82rem; } .lesson-pager a.next b { font-size: 1rem; }
+.lesson-pager a:hover { border-color: var(--accent); } .lesson-pager a.next:hover { background: var(--btn-hover); }
+.lquiz .qa .opts li { counter-increment: none; }

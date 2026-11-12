@@ -163,7 +163,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">With <i>L</i> = 1 m and <i>θ</i> = 90°, where is the end of the arm?</p><p class="a"><i>x</i> = 1·cos 90° = 0 and <i>y</i> = 1·sin 90° = 1: straight up, at (0, 1).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">With <i>L</i> = 1 m and <i>θ</i> = 90°, where is the end of the arm?</p><p class="a"><i>x</i> = 1·cos 90° = 0 and <i>y</i> = 1·sin 90° = 1: straight up, at (0, 1).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-maths-3-1"><p class="q">L = 1 m, θ = 0°: where is the end of the arm?</p><ol class="opts" type="A"><li data-ok="1">(1, 0)</li><li>(0, 1)</li></ol><p class="fb" aria-live="polite"></p><p class="a">x = cos 0° = 1, y = sin 0° = 0.</p></li><li class="qm" data-id="q-maths-3-2"><p class="q">If we double L, the end of the arm…</p><ol class="opts" type="A"><li data-ok="1">goes twice as far, same direction</li><li>turns by twice the angle</li></ol><p class="fb" aria-live="polite"></p><p class="a">x and y are both multiplied by L.</p></li><!-- END quizx --></ol></details>
           <p class="try"><a href="arm.html">Move the joints of a real arm →</a></p>
           <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
@@ -326,7 +326,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which two DH numbers describe the fixed shape of the robot?</p><p class="a"><i>α</i> (twist between axes) and <i>d</i> (distance between axes).</p></li><li><p class="q">For a slider joint, which number moves?</p><p class="a"><i>r</i>, the shift along the <i>z</i> axis (for a pivot it is <i>θ</i>).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which two DH numbers describe the fixed shape of the robot?</p><p class="a"><i>α</i> (twist between axes) and <i>d</i> (distance between axes).</p></li><li><p class="q">For a slider joint, which number moves?</p><p class="a"><i>r</i>, the shift along the <i>z</i> axis (for a pivot it is <i>θ</i>).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-maths-6-1"><p class="q">How many DH numbers describe each joint?</p><ol class="opts" type="A"><li data-ok="1">4</li><li>3</li><li>6</li></ol><p class="fb" aria-live="polite"></p><p class="a">Two angles (θ, α) and two lengths (d, a).</p></li><!-- END quizx --></ol></details>
           <p class="try"><a href="arm.html">Compare DH and DHM tables on the arm page →</a></p>
           <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
@@ -412,7 +412,7 @@
 </div>
 </section>
           <!-- END practice -->
-<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which two models translate between the “language of the motors” and the “language of the tool”?</p><p class="a">The direct geometric model (MGD) and the inverse geometric model (MGI).</p></li></ol></details>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which two models translate between the “language of the motors” and the “language of the tool”?</p><p class="a">The direct geometric model (MGD) and the inverse geometric model (MGI).</p></li><!-- BEGIN quizx --><li class="qm" data-id="q-maths-8-1"><p class="q">The Jacobian links…</p><ol class="opts" type="A"><li data-ok="1">joint speeds to tool speed</li><li>the colour to the size</li></ol><p class="fb" aria-live="polite"></p><p class="a">Ẋ = J q̇.</p></li><li class="qm" data-id="q-maths-8-2"><p class="q">A motion law (e.g. trapezoid) gives…</p><ol class="opts" type="A"><li data-ok="1">how the position changes over time, smoothly</li><li>the shape of the robot</li></ol><p class="fb" aria-live="polite"></p><p class="a">It sets acceleration, cruising speed and braking.</p></li><!-- END quizx --></ol></details>
           <p class="try"><a href="learn-model.html">Continue with the full course →</a></p>
           <label class="lesson-done"><input type="checkbox" data-lesson="8"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
         </article>
@@ -455,5 +455,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
     </script>
     <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
   </body>
 </html>
