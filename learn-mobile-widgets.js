@@ -341,7 +341,7 @@
         var vm = Math.hypot(vx, vy); if (vm > 1e-6) arrow(svg, ox, oy, ox + 60 * vx / vm * Math.min(1, vm + 0.3), oy - 60 * vy / vm * Math.min(1, vm + 0.3), RED, 4);
         out.innerHTML = '<ul>' + names.map(function (n, i) { return '<li>φ̇<sub>' + n + '</sub> = <b>' + f(ph[i], 1) + '</b> rad/s</li>'; }).join('') + '</ul>' +
           L('Condition FL + FR = RL + RR: ', 'Condition AVG + AVD = ARG + ARD : ') + '<b>' + f(ph[0] + ph[1], 1) + ' = ' + f(ph[2] + ph[3], 1) + '</b><br>' +
-          (sc > 1 ? '<span style="color:#ff6b6b">' + L('Motor limit exceeded: all wheels are divided by s = ', 'Limite moteur dépassée : toutes les roues sont divisées par s = ') + f(sc, 2) + '</span><br>' + L('The robot goes in the same direction, ', 'Le robot va dans la même direction, ') + f(sc, 2) + L(' times slower.', ' fois plus lentement.') : L('All wheels are within the motor limit.', 'Toutes les roues sont dans la limite des moteurs.'));
+          (sc > 1 ? '<span style="color:var(--f-r)">' + L('Motor limit exceeded: all wheels are divided by s = ', 'Limite moteur dépassée : toutes les roues sont divisées par s = ') + f(sc, 2) + '</span><br>' + L('The robot goes in the same direction, ', 'Le robot va dans la même direction, ') + f(sc, 2) + L(' times slower.', ' fois plus lentement.') : L('All wheels are within the motor limit.', 'Toutes les roues sont dans la limite des moteurs.'));
       } else {
         var mods = [[0.3, 0.25], [0.3, -0.25], [-0.3, 0.25], [-0.3, -0.25]], KS = 200, li = '<ul>';
         var X2 = function (x) { return ox + KS * x; }, Y2 = function (y) { return oy - KS * y; };
@@ -392,7 +392,7 @@
       sv('circle', { cx: X(0), cy: Y(-0.4), r: 4, fill: ORANGE }, svg);
       if (maxe > 0.02 && Math.abs(worst[1]) < 3.5) { sv('circle', { cx: X(worst[0]), cy: Y(worst[1]), r: 6, fill: 'none', stroke: RED, 'stroke-width': 2 }, svg); }
       if (ok) window.RA_chal('pursuit');
-      out.innerHTML = '<ul><li>' + L('maximum cross-track error', 'erreur transversale maximale') + ': <b>' + f(maxe, 3) + '</b> m</li><li>' + L('RMS error', 'erreur RMS') + ': <b>' + f(rms, 3) + '</b> m</li><li>' + (done ? L('end of the path reached', 'fin du chemin atteinte') : '<span style="color:#ff6b6b">' + L('lost the path (unstable)', 'chemin perdu (instable)') + '</span>') + '</li></ul>' +
+      out.innerHTML = '<ul><li>' + L('maximum cross-track error', 'erreur transversale maximale') + ': <b>' + f(maxe, 3) + '</b> m</li><li>' + L('RMS error', 'erreur RMS') + ': <b>' + f(rms, 3) + '</b> m</li><li>' + (done ? L('end of the path reached', 'fin du chemin atteinte') : '<span style="color:var(--f-r)">' + L('lost the path (unstable)', 'chemin perdu (instable)') + '</span>') + '</li></ul>' +
         chalLine(ok, L('Challenge: with lag = 0.4 s and v ≥ 1.0 m/s, keep the maximum error below 0.15 m.', 'Défi : avec un retard de 0,4 s et v ≥ 1,0 m/s, gardez l\'erreur maximale sous 0,15 m.'));
     }
     run();
@@ -436,7 +436,7 @@
       arrow(svg, X(0), Y(0), X(0) + 30, Y(0), GREEN, 3); arrow(svg, X(gx), Y(gy), X(gx) + 30 * Math.cos(gt), Y(gy) - 30 * Math.sin(gt), RED, 3);
       sv('circle', { cx: X(0), cy: Y(0), r: 4, fill: GREEN }, svg); sv('circle', { cx: X(gx), cy: Y(gy), r: 4, fill: RED }, svg);
       var direct = Math.hypot(gx, gy);
-      out.innerHTML = '<ul>' + ws.map(function (o, i) { return '<li' + (i === 0 ? ' style="color:#ff9f43"' : '') + '>' + o.w + ': <b>' + f(o.len, 2) + '</b> m (t = ' + f(o.t, 2) + ', p = ' + f(o.p, 2) + ', q = ' + f(o.q, 2) + ')</li>'; }).join('') + '</ul>' + L('straight distance', 'distance en ligne droite') + ': <b>' + f(direct, 2) + '</b> m' + (ws.length ? ' · ' + L('extra length for the heading', 'longueur en plus pour le cap') + ': <b>' + f(ws[0].len - direct, 2) + '</b> m' : '');
+      out.innerHTML = '<ul>' + ws.map(function (o, i) { return '<li' + (i === 0 ? ' style="color:var(--f-o)"' : '') + '>' + o.w + ': <b>' + f(o.len, 2) + '</b> m (t = ' + f(o.t, 2) + ', p = ' + f(o.p, 2) + ', q = ' + f(o.q, 2) + ')</li>'; }).join('') + '</ul>' + L('straight distance', 'distance en ligne droite') + ': <b>' + f(direct, 2) + '</b> m' + (ws.length ? ' · ' + L('extra length for the heading', 'longueur en plus pour le cap') + ': <b>' + f(ws[0].len - direct, 2) + '</b> m' : '');
     }
     draw();
   }
@@ -534,7 +534,7 @@
       st.fixes.slice(-6).forEach(function (z) { sv('circle', { cx: X(z[0]), cy: Y(z[1]), r: 3, fill: BLUE }, svg); });
       sv('circle', { cx: X(st.tru[0]), cy: Y(st.tru[1]), r: 5, fill: GREEN }, svg); sv('circle', { cx: X(st.mu[0]), cy: Y(st.mu[1]), r: 4, fill: ORANGE }, svg);
       var err = Math.hypot(st.mu[0] - st.tru[0], st.mu[1] - st.tru[1]);
-      out.innerHTML = '<ul><li>t = <b>' + f(st.t, 1) + '</b> s</li><li>' + L('real error', 'erreur réelle') + ': <b>' + f(err * 100, 1) + '</b> cm</li><li>σ<sub>x</sub> = <b>' + f(Math.sqrt(st.S[0][0]) * 100, 1) + '</b> cm, σ<sub>y</sub> = <b>' + f(Math.sqrt(st.S[1][1]) * 100, 1) + '</b> cm, σ<sub>θ</sub> = <b>' + f(Math.sqrt(st.S[2][2]) * deg, 2) + '</b>°</li>' + (st.d2 !== null ? '<li>d² = <b>' + f(st.d2, 2) + '</b> ' + (st.rejected ? '<span style="color:#ff6b6b">(' + L('rejected: above 9.21', 'rejeté : au-dessus de 9,21') + ')</span>' : '(' + L('accepted', 'accepté') + ')') + '</li>' : '') + '</ul>' + L('Green = truth, orange = estimate, blue = position fixes.', 'Vert = vérité, orange = estimation, bleu = recalages de position.');
+      out.innerHTML = '<ul><li>t = <b>' + f(st.t, 1) + '</b> s</li><li>' + L('real error', 'erreur réelle') + ': <b>' + f(err * 100, 1) + '</b> cm</li><li>σ<sub>x</sub> = <b>' + f(Math.sqrt(st.S[0][0]) * 100, 1) + '</b> cm, σ<sub>y</sub> = <b>' + f(Math.sqrt(st.S[1][1]) * 100, 1) + '</b> cm, σ<sub>θ</sub> = <b>' + f(Math.sqrt(st.S[2][2]) * deg, 2) + '</b>°</li>' + (st.d2 !== null ? '<li>d² = <b>' + f(st.d2, 2) + '</b> ' + (st.rejected ? '<span style="color:var(--f-r)">(' + L('rejected: above 9.21', 'rejeté : au-dessus de 9,21') + ')</span>' : '(' + L('accepted', 'accepté') + ')') + '</li>' : '') + '</ul>' + L('Green = truth, orange = estimate, blue = position fixes.', 'Vert = vérité, orange = estimation, bleu = recalages de position.');
     }
     reset();
   }
