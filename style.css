@@ -33,7 +33,7 @@
   --ax: #d63a3a;  --ay: #1f9a4f;  --az: #1f6fe0;
   --good: #15803d;  --bad: #be123c;
   --line: rgba(0, 0, 0, 0.18);
-  --fpanel: #fafbfc;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
+  --fpanel: #fafbfc;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
   --f-base: #c9ced6;  --f-mute: #6b7686;  --f-gray: #8a8a8a;  --f-joint: #ffffff;  --f-pn: rgba(0, 0, 0, 0.03);
   --f-o: #d9730d;  --f-b: #1f6fe0;  --f-b2: #2f6bd6;  --f-g: #1f9a4f;  --f-r: #d63a3a;  --f-y: #a87b00;  --f-p: #7b3fd6;
   color-scheme: light;
@@ -48,7 +48,7 @@
     --ax: #d63a3a;  --ay: #1f9a4f;  --az: #1f6fe0;
     --good: #15803d;  --bad: #be123c;
     --line: rgba(0, 0, 0, 0.18);
-    --fpanel: #fafbfc;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
+    --fpanel: #fafbfc;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
     --f-base: #c9ced6;  --f-mute: #6b7686;  --f-gray: #8a8a8a;  --f-joint: #ffffff;  --f-pn: rgba(0, 0, 0, 0.03);
     --f-o: #d9730d;  --f-b: #1f6fe0;  --f-b2: #2f6bd6;  --f-g: #1f9a4f;  --f-r: #d63a3a;  --f-y: #a87b00;  --f-p: #7b3fd6;
     color-scheme: light;
@@ -725,7 +725,7 @@ html, body { overflow-x: clip; }
 .fb { min-height: 1.2rem; margin: 0.2rem 0; font-size: 0.92rem; } .fb.ok { color: #2e9e5b; } .fb.bad { color: #c0392b; }
 details.hint, details.sol { margin: 0.35rem 0; border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.8rem; } details.hint summary, details.sol summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); } details.sol[open] summary, details.hint[open] summary { color: var(--accent); }
 .box.lab { border-color: #2e9e5b; } .box.lab .bt { background: #2e9e5b; } .labchk { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0; font-size: 0.92rem; cursor: pointer; } .labchk input { width: 1.1rem; height: 1.1rem; }
-pre.code { margin: 0.6rem 0; padding: 0.8rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: #1c2128; color: #d6deeb; font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; } pre.code code { font-family: inherit; }
+pre.code { margin: 0.6rem 0; padding: 0.8rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: var(--code-bg, #1c2128); color: var(--code-ink, #d6deeb); font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; } pre.code code { font-family: inherit; background: none; padding: 0; border: 0; color: inherit; font-size: inherit; }
 pre.out { margin: 0.4rem 0 0.8rem; padding: 0.6rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px dashed var(--border); font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
 #examSum { margin: 1rem 0; padding: 0.8rem 1.1rem; border: 2px solid var(--accent); border-radius: 12px; } #examSum ul { list-style: none; padding: 0; margin: 0 0 0.5rem; } #examSum li { margin: 0.3rem 0; } #examSum li.good { color: #2e9e5b; } #examSum .verdict { font-weight: 600; }
 .chalist { list-style: none; padding: 0; } .chalist li { margin: 0.4rem 0; padding: 0.4rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; } .chalist li::before { content: '○ '; color: var(--muted); } .chalist li.good { border-color: #2e9e5b; } .chalist li.good::before { content: '✓ '; color: #2e9e5b; font-weight: 700; }
