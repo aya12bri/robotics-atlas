@@ -100,6 +100,40 @@
     if (!lessons.length) return;
     lessons.forEach(function (art) { var d = art.querySelector('details.quiz'); if (d) quiz(d, art); });
     pager(lessons);
+    oneAtATime(lessons);
+  }
+
+  // only one lesson is shown at a time; "next lesson", the checklist and #lN links switch the lesson
+  function oneAtATime(lessons) {
+    var box = lessons[0].parentNode, after = [].slice.call(box.children).filter(function (e) { return e.tagName === 'SECTION' && e.compareDocumentPosition(lessons[lessons.length - 1]) & Node.DOCUMENT_POSITION_PRECEDING; });
+    var nav = document.getElementById('lessonNav'), SK = 'ra-cur:' + location.pathname.split('/').pop(), cur = -1;
+    var idx = function (hash) { for (var i = 0; i < lessons.length; i++) if ('#' + lessons[i].id === hash) return i; return -1; };
+    function mark() { if (nav) [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i === cur); }); }
+    function show(i, scroll) {
+      if (i < 0 || i >= lessons.length) return;
+      cur = i;
+      lessons.forEach(function (l, k) { l.hidden = k !== i; });
+      after.forEach(function (e) { e.hidden = i !== lessons.length - 1; });
+      mark();
+      try { localStorage.setItem(SK, String(i)); } catch (e) { /* private mode */ }
+      if (location.hash !== '#' + lessons[i].id) history.replaceState(null, '', '#' + lessons[i].id);
+      window.dispatchEvent(new Event('resize'));
+      if (scroll) {
+        var y = Math.max(0, lessons[i].getBoundingClientRect().top + window.scrollY - 90);
+        if (window.RA && RA.smoothTo) RA.smoothTo(y); else window.scrollTo(0, y);
+      }
+    }
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+      var i = idx(a.getAttribute('href')); if (i < 0) return;
+      e.preventDefault(); show(i, true);
+    }, true);                                                         // capture: before the generic smooth-scroll of nav.js
+    window.addEventListener('hashchange', function () { var i = idx(location.hash); if (i >= 0 && i !== cur) show(i, true); });
+    window.addEventListener('scroll', mark, { passive: true });     // the page's own scroll-spy does not know about hidden lessons
+    var start = idx(location.hash), saved = -1;
+    try { saved = +localStorage.getItem(SK); } catch (e) { /* private mode */ }
+    if (start >= 0) { show(start, false); requestAnimationFrame(function () { lessons[start].scrollIntoView({ behavior: 'instant', block: 'start' }); }); }
+    else show(saved > 0 && saved < lessons.length ? saved : 0, false);
   }
   // after the page's own DOMContentLoaded handlers (they listen for the "lesson done" checkbox)
   if (document.readyState !== 'complete') document.addEventListener('DOMContentLoaded', init); else init();

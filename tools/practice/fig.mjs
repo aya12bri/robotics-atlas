@@ -15,7 +15,7 @@ export const ARC = (cx, cy, r, a0, a1, c = C.y) => { const p = (a) => [cx + r * 
 
 // a graph: plot({ x: [0, 5], y: [-1, 1], curves: [{ f, c, label }], xl, yl, marks, w, h, ticks })
 export function plot(o) {
-  const W = o.w || 640, H = o.h || 300, L = 56, R = 18, Tp = 18, B = 44, pw = W - L - R, ph = H - Tp - B;
+  const W = o.w || 640, H = o.h || 300, L = 56, R = 18, Tp = 24, B = 44, pw = W - L - R, ph = H - Tp - B;
   const X = (x) => L + (x - o.x[0]) / (o.x[1] - o.x[0]) * pw, Y = (y) => Tp + (1 - (y - o.y[0]) / (o.y[1] - o.y[0])) * ph;
   let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#1b1f25" rx="10"/>`;
   const nx = o.ticks ? o.ticks[0] : 5, ny = o.ticks ? o.ticks[1] : 4;
@@ -32,7 +32,7 @@ export function plot(o) {
   (o.segs || []).forEach(([x1, y1, x2, y2, c, w]) => { s += LINE(X(x1), Y(y1), X(x2), Y(y2), c || C.o, w || 8); });
   (o.marks || []).forEach(([x, y, lab, c]) => { s += DOT(X(x), Y(y), c || C.y, 5) + (lab ? T(X(x) + 8, Y(y) - 8, lab, { fs: 13, c: c || C.y }) : ''); });
   if (o.xl) s += T(L + pw, H - 6, o.xl, { a: 'end', fs: 13, c: C.axis });
-  if (o.yl) s += T(8, Tp - 4 + 2, o.yl, { fs: 13, c: C.axis });
+  if (o.yl) s += T(L + 4, Tp - 5, o.yl, { fs: 12, c: C.axis });
   return { vb: `0 0 ${W} ${H}`, svg: s };
 }
 // a two-link arm in the plane: arm2(l1, l2, t1, t2 (deg), opts)

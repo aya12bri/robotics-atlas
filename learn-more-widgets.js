@@ -141,7 +141,7 @@
       txt(svg, X0 + 6, 174, L('tool speed obtained / wanted', 'vitesse d\'outil obtenue / voulue'), '');
       txt(svg, X0, 286, '0.3 m', '', 'start'); txt(svg, X0 + W, 286, '0.8 m', '', 'end'); txt(svg, X0 + W / 2, 286, L('tool position x', 'position de l\'outil x'), '', 'middle');
       var r0 = at(S.x);
-      out.innerHTML = L('At x = ', 'À x = ') + f(S.x, 2) + ' m:<br><span style="color:#ff6b6b">' + L('exact inverse', 'inverse exacte') + ': ' + f(r0.exact, 1) + ' rad/s</span><br><span style="color:#4ed17f">' + L('damped inverse', 'inverse amortie') + ': ' + f(r0.damped, 1) + ' rad/s</span><br>' + L('tool speed obtained: ', 'vitesse d\'outil obtenue : ') + f(r0.ratio * 100, 0) + ' %<br>' + (r0.exact > LIM && r0.damped <= LIM ? L('The exact inverse exceeds the motor limit, the damped one does not.', 'L\'inverse exacte dépasse la limite du moteur, l\'amortie non.') : '');
+      out.innerHTML = L('At x = ', 'À x = ') + f(S.x, 2) + ' m:<br><span style="color:var(--f-r)">' + L('exact inverse', 'inverse exacte') + ': ' + f(r0.exact, 1) + ' rad/s</span><br><span style="color:var(--f-g)">' + L('damped inverse', 'inverse amortie') + ': ' + f(r0.damped, 1) + ' rad/s</span><br>' + L('tool speed obtained: ', 'vitesse d\'outil obtenue : ') + f(r0.ratio * 100, 0) + ' %<br>' + (r0.exact > LIM && r0.damped <= LIM ? L('The exact inverse exceeds the motor limit, the damped one does not.', 'L\'inverse exacte dépasse la limite du moteur, l\'amortie non.') : '');
     }
     draw();
   }
@@ -168,7 +168,7 @@
       sv('rect', { x: 20, y: 218, width: Math.min(360, 360 * Math.abs(tot) / (LIM * 1.2)), height: 14, fill: Math.abs(tot) > LIM ? '#ff6b6b' : '#4ed17f' }, svg);
       sv('line', { x1: 20 + 360 / 1.2, y1: 212, x2: 20 + 360 / 1.2, y2: 238, stroke: '#ffd60a', 'stroke-width': 2 }, svg);
       txt(svg, 20 + 360 / 1.2, 252, L('limit 20 N·m', 'limite 20 N·m'), '', 'middle');
-      out.innerHTML = L('gravity: ', 'gravité : ') + f(tg, 1) + ' N·m<br>' + L('acceleration: ', 'accélération : ') + f(ti, 1) + ' N·m<br><b>' + L('total: ', 'total : ') + f(tot, 1) + ' N·m</b>' + (Math.abs(tot) > LIM ? '<br><span style="color:#ff6b6b">' + L('Too much for this motor', 'Trop pour ce moteur') + '</span>' : '');
+      out.innerHTML = L('gravity: ', 'gravité : ') + f(tg, 1) + ' N·m<br>' + L('acceleration: ', 'accélération : ') + f(ti, 1) + ' N·m<br><b>' + L('total: ', 'total : ') + f(tot, 1) + ' N·m</b>' + (Math.abs(tot) > LIM ? '<br><span style="color:var(--f-r)">' + L('Too much for this motor', 'Trop pour ce moteur') + '</span>' : '');
     }
     draw();
   }
@@ -202,7 +202,7 @@
       sv('polyline', { points: pts.map(function (p) { return px(p[0]).toFixed(1) + ',' + Math.max(10, Math.min(230, py(p[1]))).toFixed(1); }).join(' '), fill: 'none', stroke: '#5aa9ff', 'stroke-width': 2 }, svg);
       txt(svg, 34, py(1) + 4, '1', '', 'end'); txt(svg, 34, py(0) + 4, '0', '', 'end'); txt(svg, 40, 252, '0 s', '', 'start'); txt(svg, 385, 252, '3 s', '', 'end'); txt(svg, 212, 252, 'θ (rad)', '', 'middle');
       var last = pts[pts.length - 1][1], err = 1 - last;
-      out.innerHTML = L('overshoot: ', 'dépassement : ') + f(os * 100, 0) + ' %<br>' + L('settling time (2 %): ', 'temps de réponse (2 %) : ') + (tset >= T - 0.3 ? L('not reached', 'non atteint') : f(tset, 2) + ' s') + '<br>' + L('final error: ', 'erreur finale : ') + f(err * 100, 1) + ' %' + (Math.abs(err) > 0.03 ? '<br><span style="color:#ff9f43">' + L('Steady-state error: add Ki, or compensate the load.', 'Erreur statique : ajoutez Ki, ou compensez la charge.') + '</span>' : '');
+      out.innerHTML = L('overshoot: ', 'dépassement : ') + f(os * 100, 0) + ' %<br>' + L('settling time (2 %): ', 'temps de réponse (2 %) : ') + (tset >= T - 0.3 ? L('not reached', 'non atteint') : f(tset, 2) + ' s') + '<br>' + L('final error: ', 'erreur finale : ') + f(err * 100, 1) + ' %' + (Math.abs(err) > 0.03 ? '<br><span style="color:var(--f-o)">' + L('Steady-state error: add Ki, or compensate the load.', 'Erreur statique : ajoutez Ki, ou compensez la charge.') + '</span>' : '');
     }
     draw();
   }
@@ -255,7 +255,7 @@
       var shown = 0;
       S.timer = setInterval(function () {
         shown = Math.min(order.length, shown + 4); draw(order.slice(0, shown), shown >= order.length ? path : null);
-        if (shown >= order.length) { stop(); out.innerHTML = L('explored cells: ', 'cellules explorées : ') + order.length + '<br>' + (found ? L('path length: ', 'longueur du chemin : ') + f(cost, 1) : '<span style="color:#ff6b6b">' + L('no path', 'pas de chemin') + '</span>'); }
+        if (shown >= order.length) { stop(); out.innerHTML = L('explored cells: ', 'cellules explorées : ') + order.length + '<br>' + (found ? L('path length: ', 'longueur du chemin : ') + f(cost, 1) : '<span style="color:var(--f-r)">' + L('no path', 'pas de chemin') + '</span>'); }
       }, 20);
     }
     var down = false, mode = 1;
@@ -294,7 +294,7 @@
       meas.forEach(function (v, i) { sv('circle', { cx: px(i), cy: py(v), r: 2, fill: '#ffd60a', opacity: 0.8 }, svg); });
       line(est, '#5aa9ff', 2.5);
       txt(svg, 36, 262, L('time step →', 'pas de temps →'), '');
-      out.innerHTML = L('RMS error:', 'Erreur quadratique :') + '<br><span style="color:#ffd60a">' + L('raw sensor: ', 'capteur brut : ') + f(Math.sqrt(e1 / N), 2) + ' m</span><br><span style="color:#5aa9ff">' + L('Kalman: ', 'Kalman : ') + f(Math.sqrt(e2 / N), 2) + ' m</span><br><span style="color:#ff6b6b">' + L('dead reckoning: ', 'estime seule : ') + f(Math.sqrt(e3 / N), 2) + ' m</span>';
+      out.innerHTML = L('RMS error:', 'Erreur quadratique :') + '<br><span style="color:var(--f-y)">' + L('raw sensor: ', 'capteur brut : ') + f(Math.sqrt(e1 / N), 2) + ' m</span><br><span style="color:var(--f-b)">' + L('Kalman: ', 'Kalman : ') + f(Math.sqrt(e2 / N), 2) + ' m</span><br><span style="color:var(--f-r)">' + L('dead reckoning: ', 'estime seule : ') + f(Math.sqrt(e3 / N), 2) + ' m</span>';
     }
     draw();
   }
@@ -339,7 +339,7 @@
           clearInterval(S.timer); S.timer = 0;
           if (ok) { var len = 0, j; for (j = 1; j < path.length; j++) len += Math.hypot(path[j][0] - path[j - 1][0], path[j][1] - path[j - 1][1]); var sm = [path[0]], a = 0; while (a < path.length - 1) { var b = path.length - 1; while (b > a + 1 && !segFree(path[a], path[b])) b--; sm.push(path[b]); a = b; } var len2 = 0; for (j = 1; j < sm.length; j++) len2 += Math.hypot(sm[j][0] - sm[j - 1][0], sm[j][1] - sm[j - 1][1]); setTimeout(function () { base(nodes, sm, true); }, 700);
             out.innerHTML = L('nodes: ', 'nœuds : ') + nodes.length + '<br>' + L('raw path: ', 'chemin brut : ') + f(len, 0) + ' px<br>' + L('after shortcuts: ', 'après raccourcis : ') + f(len2, 0) + ' px (' + L('green', 'vert') + ')'; }
-          else out.innerHTML = '<span style="color:#ff6b6b">' + L('no path found yet: run again or raise the goal bias', 'pas de chemin trouvé : relancez ou augmentez le biais vers le but') + '</span>';
+          else out.innerHTML = '<span style="color:var(--f-r)">' + L('no path found yet: run again or raise the goal bias', 'pas de chemin trouvé : relancez ou augmentez le biais vers le but') + '</span>';
         } else out.innerHTML = L('nodes: ', 'nœuds : ') + nodes.length;
       }, 30);
     }
