@@ -1042,94 +1042,110 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .lquiz .qa .opts li { counter-increment: none; }
 
 /* figures, graphs and widgets of the courses follow the theme: their colours are set as attributes, mapped here to the theme tokens */
-:is(.lesson, .wsvg, .figure) svg [fill="#1b1f25" i], :is(.lesson, .wsvg, .figure) [fill="#1b1f25" i] { fill: var(--fpanel); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#1b1f25" i], :is(.lesson, .wsvg, .figure) [stroke="#1b1f25" i] { stroke: var(--fpanel); }
-:is(.lesson, .wsvg, .figure) svg [fill="#262626" i], :is(.lesson, .wsvg, .figure) [fill="#262626" i] { fill: var(--fpanel); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#262626" i], :is(.lesson, .wsvg, .figure) [stroke="#262626" i] { stroke: var(--fpanel); }
-:is(.lesson, .wsvg, .figure) svg [fill="#23262b" i], :is(.lesson, .wsvg, .figure) [fill="#23262b" i] { fill: var(--fpanel); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#23262b" i], :is(.lesson, .wsvg, .figure) [stroke="#23262b" i] { stroke: var(--fpanel); }
-:is(.lesson, .wsvg, .figure) svg [fill="#cfd8e3" i], :is(.lesson, .wsvg, .figure) [fill="#cfd8e3" i] { fill: var(--f-ink); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#cfd8e3" i], :is(.lesson, .wsvg, .figure) [stroke="#cfd8e3" i] { stroke: var(--f-ink); }
-:is(.lesson, .wsvg, .figure) svg [fill="#e8eef5" i], :is(.lesson, .wsvg, .figure) [fill="#e8eef5" i] { fill: var(--f-ink2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#e8eef5" i], :is(.lesson, .wsvg, .figure) [stroke="#e8eef5" i] { stroke: var(--f-ink2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#d8d8d8" i], :is(.lesson, .wsvg, .figure) [fill="#d8d8d8" i] { fill: var(--f-ink); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#d8d8d8" i], :is(.lesson, .wsvg, .figure) [stroke="#d8d8d8" i] { stroke: var(--f-ink); }
-:is(.lesson, .wsvg, .figure) svg [fill="#c9ced6" i], :is(.lesson, .wsvg, .figure) [fill="#c9ced6" i] { fill: var(--f-ink); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#c9ced6" i], :is(.lesson, .wsvg, .figure) [stroke="#c9ced6" i] { stroke: var(--f-ink); }
-:is(.lesson, .wsvg, .figure) svg [fill="#9aa7b6" i], :is(.lesson, .wsvg, .figure) [fill="#9aa7b6" i] { fill: var(--f-axis); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#9aa7b6" i], :is(.lesson, .wsvg, .figure) [stroke="#9aa7b6" i] { stroke: var(--f-axis); }
-:is(.lesson, .wsvg, .figure) svg [fill="#9fb0c3" i], :is(.lesson, .wsvg, .figure) [fill="#9fb0c3" i] { fill: var(--f-axis); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#9fb0c3" i], :is(.lesson, .wsvg, .figure) [stroke="#9fb0c3" i] { stroke: var(--f-axis); }
-:is(.lesson, .wsvg, .figure) svg [fill="#9aa3ae" i], :is(.lesson, .wsvg, .figure) [fill="#9aa3ae" i] { fill: var(--f-axis); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#9aa3ae" i], :is(.lesson, .wsvg, .figure) [stroke="#9aa3ae" i] { stroke: var(--f-axis); }
-:is(.lesson, .wsvg, .figure) svg [fill="#6f7b8c" i], :is(.lesson, .wsvg, .figure) [fill="#6f7b8c" i] { fill: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#6f7b8c" i], :is(.lesson, .wsvg, .figure) [stroke="#6f7b8c" i] { stroke: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#7a8696" i], :is(.lesson, .wsvg, .figure) [fill="#7a8696" i] { fill: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#7a8696" i], :is(.lesson, .wsvg, .figure) [stroke="#7a8696" i] { stroke: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#8c96a2" i], :is(.lesson, .wsvg, .figure) [fill="#8c96a2" i] { fill: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#8c96a2" i], :is(.lesson, .wsvg, .figure) [stroke="#8c96a2" i] { stroke: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#7d8794" i], :is(.lesson, .wsvg, .figure) [fill="#7d8794" i] { fill: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#7d8794" i], :is(.lesson, .wsvg, .figure) [stroke="#7d8794" i] { stroke: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#3a4552" i], :is(.lesson, .wsvg, .figure) [fill="#3a4552" i] { fill: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#3a4552" i], :is(.lesson, .wsvg, .figure) [stroke="#3a4552" i] { stroke: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [fill="#4a5566" i], :is(.lesson, .wsvg, .figure) [fill="#4a5566" i] { fill: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#4a5566" i], :is(.lesson, .wsvg, .figure) [stroke="#4a5566" i] { stroke: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [fill="#3a3f48" i], :is(.lesson, .wsvg, .figure) [fill="#3a3f48" i] { fill: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#3a3f48" i], :is(.lesson, .wsvg, .figure) [stroke="#3a3f48" i] { stroke: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [fill="#4a4a4a" i], :is(.lesson, .wsvg, .figure) [fill="#4a4a4a" i] { fill: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#4a4a4a" i], :is(.lesson, .wsvg, .figure) [stroke="#4a4a4a" i] { stroke: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [fill="#3c3c3c" i], :is(.lesson, .wsvg, .figure) [fill="#3c3c3c" i] { fill: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#3c3c3c" i], :is(.lesson, .wsvg, .figure) [stroke="#3c3c3c" i] { stroke: var(--f-grid); }
-:is(.lesson, .wsvg, .figure) svg [fill="#262c35" i], :is(.lesson, .wsvg, .figure) [fill="#262c35" i] { fill: var(--f-box); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#262c35" i], :is(.lesson, .wsvg, .figure) [stroke="#262c35" i] { stroke: var(--f-box); }
-:is(.lesson, .wsvg, .figure) svg [fill="#303030" i], :is(.lesson, .wsvg, .figure) [fill="#303030" i] { fill: var(--f-box); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#303030" i], :is(.lesson, .wsvg, .figure) [stroke="#303030" i] { stroke: var(--f-box); }
-:is(.lesson, .wsvg, .figure) svg [fill="#2b2e33" i], :is(.lesson, .wsvg, .figure) [fill="#2b2e33" i] { fill: var(--f-box); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#2b2e33" i], :is(.lesson, .wsvg, .figure) [stroke="#2b2e33" i] { stroke: var(--f-box); }
-:is(.lesson, .wsvg, .figure) svg [fill="#3a3a3a" i], :is(.lesson, .wsvg, .figure) [fill="#3a3a3a" i] { fill: var(--f-base); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#3a3a3a" i], :is(.lesson, .wsvg, .figure) [stroke="#3a3a3a" i] { stroke: var(--f-base); }
-:is(.lesson, .wsvg, .figure) svg [fill="#5b6573" i], :is(.lesson, .wsvg, .figure) [fill="#5b6573" i] { fill: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#5b6573" i], :is(.lesson, .wsvg, .figure) [stroke="#5b6573" i] { stroke: var(--f-axis2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#6b7686" i], :is(.lesson, .wsvg, .figure) [fill="#6b7686" i] { fill: var(--f-mute); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#6b7686" i], :is(.lesson, .wsvg, .figure) [stroke="#6b7686" i] { stroke: var(--f-mute); }
-:is(.lesson, .wsvg, .figure) svg [fill="#7f8ea3" i], :is(.lesson, .wsvg, .figure) [fill="#7f8ea3" i] { fill: var(--f-mute); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#7f8ea3" i], :is(.lesson, .wsvg, .figure) [stroke="#7f8ea3" i] { stroke: var(--f-mute); }
-:is(.lesson, .wsvg, .figure) svg [fill="#8aa4c8" i], :is(.lesson, .wsvg, .figure) [fill="#8aa4c8" i] { fill: var(--f-mute); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#8aa4c8" i], :is(.lesson, .wsvg, .figure) [stroke="#8aa4c8" i] { stroke: var(--f-mute); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ff9f43" i], :is(.lesson, .wsvg, .figure) [fill="#ff9f43" i] { fill: var(--f-o); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ff9f43" i], :is(.lesson, .wsvg, .figure) [stroke="#ff9f43" i] { stroke: var(--f-o); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ffa94d" i], :is(.lesson, .wsvg, .figure) [fill="#ffa94d" i] { fill: var(--f-o); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ffa94d" i], :is(.lesson, .wsvg, .figure) [stroke="#ffa94d" i] { stroke: var(--f-o); }
-:is(.lesson, .wsvg, .figure) svg [fill="#5aa9ff" i], :is(.lesson, .wsvg, .figure) [fill="#5aa9ff" i] { fill: var(--f-b); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#5aa9ff" i], :is(.lesson, .wsvg, .figure) [stroke="#5aa9ff" i] { stroke: var(--f-b); }
-:is(.lesson, .wsvg, .figure) svg [fill="#6b97ff" i], :is(.lesson, .wsvg, .figure) [fill="#6b97ff" i] { fill: var(--f-b); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#6b97ff" i], :is(.lesson, .wsvg, .figure) [stroke="#6b97ff" i] { stroke: var(--f-b); }
-:is(.lesson, .wsvg, .figure) svg [fill="#7fa8ff" i], :is(.lesson, .wsvg, .figure) [fill="#7fa8ff" i] { fill: var(--f-b); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#7fa8ff" i], :is(.lesson, .wsvg, .figure) [stroke="#7fa8ff" i] { stroke: var(--f-b); }
-:is(.lesson, .wsvg, .figure) svg [fill="#5b8fd6" i], :is(.lesson, .wsvg, .figure) [fill="#5b8fd6" i] { fill: var(--f-b2); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#5b8fd6" i], :is(.lesson, .wsvg, .figure) [stroke="#5b8fd6" i] { stroke: var(--f-b2); }
-:is(.lesson, .wsvg, .figure) svg [fill="#4ed17f" i], :is(.lesson, .wsvg, .figure) [fill="#4ed17f" i] { fill: var(--f-g); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#4ed17f" i], :is(.lesson, .wsvg, .figure) [stroke="#4ed17f" i] { stroke: var(--f-g); }
-:is(.lesson, .wsvg, .figure) svg [fill="#3ddc84" i], :is(.lesson, .wsvg, .figure) [fill="#3ddc84" i] { fill: var(--f-g); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#3ddc84" i], :is(.lesson, .wsvg, .figure) [stroke="#3ddc84" i] { stroke: var(--f-g); }
-:is(.lesson, .wsvg, .figure) svg [fill="#6bdc8b" i], :is(.lesson, .wsvg, .figure) [fill="#6bdc8b" i] { fill: var(--f-g); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#6bdc8b" i], :is(.lesson, .wsvg, .figure) [stroke="#6bdc8b" i] { stroke: var(--f-g); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ff6b6b" i], :is(.lesson, .wsvg, .figure) [fill="#ff6b6b" i] { fill: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ff6b6b" i], :is(.lesson, .wsvg, .figure) [stroke="#ff6b6b" i] { stroke: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ff5c5c" i], :is(.lesson, .wsvg, .figure) [fill="#ff5c5c" i] { fill: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ff5c5c" i], :is(.lesson, .wsvg, .figure) [stroke="#ff5c5c" i] { stroke: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ff5a5a" i], :is(.lesson, .wsvg, .figure) [fill="#ff5a5a" i] { fill: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ff5a5a" i], :is(.lesson, .wsvg, .figure) [stroke="#ff5a5a" i] { stroke: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ff8a8a" i], :is(.lesson, .wsvg, .figure) [fill="#ff8a8a" i] { fill: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ff8a8a" i], :is(.lesson, .wsvg, .figure) [stroke="#ff8a8a" i] { stroke: var(--f-r); }
-:is(.lesson, .wsvg, .figure) svg [fill="#ffd60a" i], :is(.lesson, .wsvg, .figure) [fill="#ffd60a" i] { fill: var(--f-y); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#ffd60a" i], :is(.lesson, .wsvg, .figure) [stroke="#ffd60a" i] { stroke: var(--f-y); }
-:is(.lesson, .wsvg, .figure) svg [fill="#f5c518" i], :is(.lesson, .wsvg, .figure) [fill="#f5c518" i] { fill: var(--f-y); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#f5c518" i], :is(.lesson, .wsvg, .figure) [stroke="#f5c518" i] { stroke: var(--f-y); }
-:is(.lesson, .wsvg, .figure) svg [fill="#b07cff" i], :is(.lesson, .wsvg, .figure) [fill="#b07cff" i] { fill: var(--f-p); }
-:is(.lesson, .wsvg, .figure) svg [stroke="#b07cff" i], :is(.lesson, .wsvg, .figure) [stroke="#b07cff" i] { stroke: var(--f-p); }
-:is(.lesson, .figure) svg circle[fill="#262626" i] { fill: var(--f-joint); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#1b1f25" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#1b1f25" i] { fill: var(--fpanel); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#1b1f25" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#1b1f25" i] { stroke: var(--fpanel); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#262626" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#262626" i] { fill: var(--fpanel); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#262626" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#262626" i] { stroke: var(--fpanel); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#23262b" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#23262b" i] { fill: var(--fpanel); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#23262b" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#23262b" i] { stroke: var(--fpanel); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#cfd8e3" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#cfd8e3" i] { fill: var(--f-ink); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#cfd8e3" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#cfd8e3" i] { stroke: var(--f-ink); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#e8eef5" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#e8eef5" i] { fill: var(--f-ink2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#e8eef5" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#e8eef5" i] { stroke: var(--f-ink2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#d8d8d8" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#d8d8d8" i] { fill: var(--f-ink); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#d8d8d8" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#d8d8d8" i] { stroke: var(--f-ink); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#c9ced6" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#c9ced6" i] { fill: var(--f-ink); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#c9ced6" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#c9ced6" i] { stroke: var(--f-ink); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#9aa7b6" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#9aa7b6" i] { fill: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#9aa7b6" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#9aa7b6" i] { stroke: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#9fb0c3" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#9fb0c3" i] { fill: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#9fb0c3" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#9fb0c3" i] { stroke: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#9aa3ae" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#9aa3ae" i] { fill: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#9aa3ae" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#9aa3ae" i] { stroke: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#6f7b8c" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#6f7b8c" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#6f7b8c" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#6f7b8c" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#7a8696" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#7a8696" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#7a8696" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#7a8696" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#8c96a2" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#8c96a2" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#8c96a2" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#8c96a2" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#7d8794" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#7d8794" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#7d8794" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#7d8794" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#3a4552" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#3a4552" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#3a4552" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#3a4552" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#4a5566" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#4a5566" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#4a5566" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#4a5566" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#3a3f48" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#3a3f48" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#3a3f48" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#3a3f48" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#4a4a4a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#4a4a4a" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#4a4a4a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#4a4a4a" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#3c3c3c" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#3c3c3c" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#3c3c3c" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#3c3c3c" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#262c35" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#262c35" i] { fill: var(--f-box); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#262c35" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#262c35" i] { stroke: var(--f-box); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#303030" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#303030" i] { fill: var(--f-box); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#303030" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#303030" i] { stroke: var(--f-box); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#2b2e33" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#2b2e33" i] { fill: var(--f-box); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#2b2e33" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#2b2e33" i] { stroke: var(--f-box); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#3a3a3a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#3a3a3a" i] { fill: var(--f-base); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#3a3a3a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#3a3a3a" i] { stroke: var(--f-base); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#5b6573" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#5b6573" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#5b6573" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#5b6573" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#6b7686" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#6b7686" i] { fill: var(--f-mute); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#6b7686" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#6b7686" i] { stroke: var(--f-mute); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#7f8ea3" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#7f8ea3" i] { fill: var(--f-mute); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#7f8ea3" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#7f8ea3" i] { stroke: var(--f-mute); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#8aa4c8" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#8aa4c8" i] { fill: var(--f-mute); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#8aa4c8" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#8aa4c8" i] { stroke: var(--f-mute); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ff9f43" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ff9f43" i] { fill: var(--f-o); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ff9f43" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ff9f43" i] { stroke: var(--f-o); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ffa94d" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ffa94d" i] { fill: var(--f-o); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ffa94d" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ffa94d" i] { stroke: var(--f-o); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#5aa9ff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#5aa9ff" i] { fill: var(--f-b); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#5aa9ff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#5aa9ff" i] { stroke: var(--f-b); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#6b97ff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#6b97ff" i] { fill: var(--f-b); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#6b97ff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#6b97ff" i] { stroke: var(--f-b); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#7fa8ff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#7fa8ff" i] { fill: var(--f-b); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#7fa8ff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#7fa8ff" i] { stroke: var(--f-b); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#5b8fd6" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#5b8fd6" i] { fill: var(--f-b2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#5b8fd6" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#5b8fd6" i] { stroke: var(--f-b2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#4ed17f" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#4ed17f" i] { fill: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#4ed17f" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#4ed17f" i] { stroke: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#3ddc84" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#3ddc84" i] { fill: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#3ddc84" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#3ddc84" i] { stroke: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#6bdc8b" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#6bdc8b" i] { fill: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#6bdc8b" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#6bdc8b" i] { stroke: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ff6b6b" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ff6b6b" i] { fill: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ff6b6b" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ff6b6b" i] { stroke: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ff5c5c" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ff5c5c" i] { fill: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ff5c5c" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ff5c5c" i] { stroke: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ff5a5a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ff5a5a" i] { fill: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ff5a5a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ff5a5a" i] { stroke: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ff8a8a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ff8a8a" i] { fill: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ff8a8a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ff8a8a" i] { stroke: var(--f-r); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#ffd60a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#ffd60a" i] { fill: var(--f-y); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#ffd60a" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#ffd60a" i] { stroke: var(--f-y); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#f5c518" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#f5c518" i] { fill: var(--f-y); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#f5c518" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#f5c518" i] { stroke: var(--f-y); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [fill="#b07cff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#b07cff" i] { fill: var(--f-p); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) svg [stroke="#b07cff" i], :is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#b07cff" i] { stroke: var(--f-p); }
+:is(.lesson, .figure, #schema, #zoom, #arena, #sim) circle[fill="#262626" i], :is(.lesson, .figure) svg circle[fill="#262626" i] { fill: var(--f-joint); }
 .lesson[hidden], .lessons > section[hidden] { display: none; }
 /* inside the robot, narrow screens: the exploded-view labels show only their number (the list under the picture gives the names) */
 .insd-tags.compact button { font-size: 0; padding: 0.12rem; border-radius: 999px; }
 .insd-tags.compact button b { font-size: 0.78rem; margin: 0; }
+svg#schema, svg#zoom, svg#arena, svg#sim { background: var(--fpanel) !important; }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#7a7a7a" i] { fill: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#7a7a7a" i] { stroke: var(--f-axis); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#222a33" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#222a33" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#2c3b4d" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#2c3b4d" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#2b3745" i] { fill: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#2b3745" i] { stroke: var(--f-grid); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#4a5568" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#4a5568" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#667788" i] { fill: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#667788" i] { stroke: var(--f-axis2); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [fill="#6bdc8b" i] { fill: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) [stroke="#6bdc8b" i] { stroke: var(--f-g); }
+:is(.lesson, .wsvg, .figure, #schema, #zoom, #arena, #sim) text:is([fill="#ffffff" i], [fill="#fff" i], [fill="white" i]) { fill: var(--f-ink); }
