@@ -1005,3 +1005,8 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .sysdemo.sys-how-on .sys-views { top: 10px; bottom: auto; left: 50%; transform: translateX(-50%); }
 .sysdemo.sys-how-on .sys-flow { width: min(560px, calc(100% - 440px)); }
 @media (max-width: 1000px) { .sysdemo.sys-how-on .sys-flow { width: calc(100% - 20px); } }
+/* practice blocks in the courses: essentials, figure, worked exercises */
+.box.key { border-color: #30a46c; } .box.key .bt { background: #2e9e5b; }
+.box.key .bt::before { content: '✔ '; }
+.pfig { margin: 1rem 0; } .pfig svg { width: 100%; height: auto; max-width: 680px; display: block; margin: 0 auto; border-radius: 10px; }
+.pfig figcaption { text-align: center; color: var(--muted); font-size: 0.86rem; margin-top: 0.35rem; }
