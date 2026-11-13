@@ -41,6 +41,7 @@
         <p>Every main type of robot, drawn the way engineers draw it: a <strong>kinematic diagram</strong>, its <strong>DH and DHM tables</strong>, and a <strong>3D model</strong> you move with sliders. No prior knowledge needed.</p>
         <div class="cta">
           <a class="btn" href="learn.html">Start with the basics</a>
+          <a class="btn ghost" href="build.html">Build your first robot</a>
           <a class="btn ghost" href="#gallery">Browse the robots</a>
         </div>
       </div>
@@ -169,8 +170,8 @@
         <!-- /anatomy-home -->
         <div class="rm-head" id="road">
           <div>
-            <h2>Where to start?</h2>
-            <p>You can read the pages in any order. If you are new, follow this roadmap from top to bottom and tick every page you finish.</p>
+            <h2>Robotics learning roadmap</h2>
+            <p>Five levels, from your first robot to intelligent robotics. Follow them from top to bottom and tick every page you finish. You can also jump straight to the level you need.</p>
           </div>
           <div class="rm-prog" id="rmProg"></div>
         </div>
@@ -284,26 +285,28 @@ const RM = {
   ai: { href: 'learn-intelligence.html', tag: ['Course', 'Cours'], min: 115, lv: 3, t: ['Perception, planning and AI', 'Perception, planification et IA'], d: ['Vision, Kalman, SLAM, A*, RRT, behaviours, learning.', 'Vision, Kalman, SLAM, A*, RRT, comportements, apprentissage.'] },
   world: { href: 'learn-world.html', tag: ['Course', 'Cours'], min: 115, lv: 2, t: ['Robots in the real world', 'Les robots dans le monde réel'], d: ['Every robot family, grippers, electronics, ROS, safety, careers.', 'Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers.'] },
   wmr: { href: 'learn-mobile.html', tag: ['Course', 'Cours'], min: 450, lv: 3, t: ['Wheeled mobile robots', 'Robots mobiles à roues'], d: ['From zero to professional: every drive, control, calibration, EKF, sizing, ROS 2, safety, exam and labs.', 'De zéro au niveau professionnel : toutes les motorisations, commande, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP.'] },
+  build: { href: 'build.html', tag: ['Workshop', 'Atelier'], min: 20, lv: 1, t: ['Build your first robot', 'Construisez votre premier robot'], d: ['Choose a robot, assemble it in 3D, move it and see how its motion is computed.', 'Choisissez un robot, assemblez-le en 3D, bougez-le et voyez comment son mouvement est calculé.'] },
+  anatomy: { href: 'anatomy.html', tag: ['3D', '3D'], min: 20, lv: 1, t: ['Anatomy of a robot', 'Anatomie d\'un robot'], d: ['Every component of a robot cell, layer by layer, in 3D.', 'Tous les composants d\'une cellule robotisée, couche par couche, en 3D.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'mobile', 'wheels', 'wmr', 'model', 'sing', 'ctrl', 'ai', 'world'];
-const RM_ROWS = [
-  { phase: ['1 · Start here', '1 · Pour commencer'], c: 'learn', r: 'maths' },
-  { phase: ['2 · Serial robots', '2 · Robots série'], c: 'arm', l: 'gantry', r: 'scara' },
-  { c: 'articulated', l: 'cobot' },
-  { phase: ['3 · Parallel robots', '3 · Robots parallèles'], c: 'delta' },
-  { phase: ['4 · Mobile robots', '4 · Robots mobiles'], c: 'mobile', l: 'wmr', r: 'wheels' },
-  { phase: ['5 · Go further', '5 · Aller plus loin'], c: 'model', l: 'sing', r: 'ctrl' },
-  { phase: ['6 · The whole field', '6 · Tout le domaine'], c: 'ai', r: 'world' }
+const RM_ORDER = ['learn', 'build', 'anatomy', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'ctrl', 'mobile', 'wheels', 'wmr', 'ai', 'world'];
+// five levels; each row has a main page (c) and optional side pages (l, r)
+const RM_LEVELS = [
+  { t: ['Discover robotics', 'Découvrir la robotique'], d: ['What a robot is, its components, the robot types, the joints.', 'Ce qu\'est un robot, ses composants, les types de robots, les articulations.'], lv: 1, rows: [{ c: 'learn', l: 'build', r: 'anatomy' }] },
+  { t: ['Mathematics for robotics', 'Mathématiques pour la robotique'], d: ['Vectors, matrices, trigonometry, transformations.', 'Vecteurs, matrices, trigonométrie, transformations.'], lv: 1, rows: [{ c: 'maths' }] },
+  { t: ['Robot kinematics', 'Cinématique des robots'], d: ['Frames, DH tables, forward and inverse models (MGD, MGI), the Jacobian.', 'Repères, tableaux DH, modèles direct et inverse (MGD, MGI), la jacobienne.'], lv: 2, rows: [{ c: 'arm', l: 'gantry', r: 'scara' }, { c: 'articulated', l: 'cobot', r: 'delta' }, { c: 'model', r: 'sing' }] },
+  { t: ['Dynamics and control', 'Dynamique et commande'], d: ['Motors, dynamic models, PID, trajectories.', 'Moteurs, modèles dynamiques, PID, trajectoires.'], lv: 3, rows: [{ c: 'ctrl' }] },
+  { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'ai', r: 'world' }] }
 ];
 const LVL = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
 const rmEl = $('roadmap'), prog = () => (window.RA && RA.progress) || { get: () => false, set() {}, clear() {} };
 const rmNode = (id, cls) => { const n = RM[id]; if (!n) return ''; return `<article class="rm-node ${cls}" data-id="${id}"><div class="rm-top"><span class="rm-tag">${n.tag[+FR]}</span><span class="rm-meta">${n.min} min · <i class="lv l${n.lv}" title="${LVL[n.lv - 1][+FR]}"><b></b><b></b><b></b></i> ${LVL[n.lv - 1][+FR]}</span></div><h3><a href="${n.href}">${n.t[+FR]}</a></h3><p>${n.d[+FR]}</p><div class="rm-bot"><label class="rm-check"><input type="checkbox" data-id="${id}"><span class="box" aria-hidden="true"></span><span class="lbl">${L('Done', 'Fait')}</span></label><a class="rm-go" href="${n.href}">${L('Open', 'Ouvrir')} →</a></div></article>`; };
-rmEl.innerHTML = RM_ROWS.map((r) => (r.phase ? `<div class="rm-phase"><span>${r.phase[+FR]}</span></div>` : '') + `<div class="rm-row"><div class="rm-side l">${r.l ? rmNode(r.l, 'side') : ''}</div><div class="rm-main">${rmNode(r.c, 'main')}</div><div class="rm-side r">${r.r ? rmNode(r.r, 'side') : ''}</div></div>`).join('');
+rmEl.innerHTML = RM_LEVELS.map((lv, k) => `<div class="rm-level" data-lv="${k}"><span class="rm-ln">${L('Level', 'Niveau')} ${k + 1}</span><div><h3>${lv.t[+FR]}</h3><p>${lv.d[+FR]}</p></div><em><i class="lv l${lv.lv}"><b></b><b></b><b></b></i> ${LVL[lv.lv - 1][+FR]} · <b class="rm-lc"></b></em></div>` + lv.rows.map((r) => `<div class="rm-row"><div class="rm-side l">${r.l ? rmNode(r.l, 'side') : ''}</div><div class="rm-main">${rmNode(r.c, 'main')}</div><div class="rm-side r">${r.r ? rmNode(r.r, 'side') : ''}</div></div>`).join('')).join('');
 function paintRoad() {
   const P = prog(); let done = 0, next = null;
   RM_ORDER.forEach((id) => { const ok = P.get(id); if (ok) done++; else if (!next) next = id; });
   rmEl.querySelectorAll('.rm-node').forEach((el) => { const id = el.dataset.id, ok = P.get(id); el.classList.toggle('done', ok); el.classList.toggle('next', id === next); el.querySelector('input').checked = ok; el.querySelector('.lbl').textContent = ok ? L('Done', 'Fait') : L('Mark as done', 'Marquer comme fait'); });
+  rmEl.querySelectorAll('.rm-level').forEach((el) => { const ids = RM_LEVELS[+el.dataset.lv].rows.flatMap((r) => [r.c, r.l, r.r].filter(Boolean)), n = ids.filter((id) => P.get(id)).length; el.querySelector('.rm-lc').textContent = n + ' / ' + ids.length; el.classList.toggle('complete', n === ids.length); });
   const pct = Math.round((done / RM_ORDER.length) * 100);
   $('rmProg').innerHTML = `<div class="rm-count"><b>${done}</b> / ${RM_ORDER.length} <span>${L('pages finished', 'pages terminées')}</span></div><div class="rm-bar"><i style="width:${pct}%"></i></div><div class="rm-actions">${next ? `<a class="btn" href="${RM[next].href}">${done ? L('Continue', 'Continuer') : L('Start', 'Commencer')}: ${RM[next].t[+FR]} →</a>` : `<span class="rm-win">${L('Everything is done, congratulations!', 'Tout est terminé, bravo !')}</span>`}${done ? `<button type="button" class="btn ghost" id="rmReset">${L('Reset', 'Réinitialiser')}</button>` : ''}</div>`;
   const rs = $('rmReset'); if (rs) rs.addEventListener('click', () => { if (confirm(L('Clear your progress?', 'Effacer votre progression ?'))) prog().clear(Object.keys(prog().all ? prog().all() : {})); });

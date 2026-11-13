@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Build your first robot</title>
+    <!-- seo -->
+    <meta name="description" content="A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/build" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Build your first robot" />
+    <meta property="og:description" content="A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/build" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+  <script src="nav.js" defer></script></head>
+  <body>
+    <h1>Build your first robot</h1>
+    <p class="lead">A hands-on workshop in six steps: choose a robot, discover its parts, assemble it, understand its joints, move it, and see how its motion is computed. No prerequisites.</p>
+    <div class="byr wide" id="byr"></div>
+    <script type="module" src="build.js"></script>
+  </body>
+</html>

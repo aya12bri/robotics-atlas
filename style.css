@@ -1162,3 +1162,69 @@ svg#schema, svg#zoom, svg#arena, svg#sim { background: var(--fpanel) !important;
 .sysdemo.sys-narrow .sys-ctl { top: 54px; left: 10px; right: 10px; max-width: none; justify-content: flex-start; }
 .sysdemo.sys-narrow .sys-ctl button { font-size: 0.74rem; padding: 0.35rem 0.6rem; }
 .sysdemo.sys-narrow .sys-flow { font-size: 0.78rem; line-height: 1.3; width: calc(100% - 20px); }
+
+/* ===================== Build your first robot (build.js) ===================== */
+.byr { max-width: 1320px; margin: 1.2rem auto 2.5rem; padding: 0 var(--pad); }
+.byr-steps { list-style: none; display: flex; gap: 0.4rem; margin: 0 0 0.9rem; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.byr-steps li { flex: 1 0 auto; }
+.byr-steps button { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 0; padding: 0.45rem 0.8rem; border-radius: 999px; font-size: 0.86rem; font-weight: 600; white-space: nowrap; background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+.byr-steps button b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-size: 0.74rem; background: var(--border); color: var(--text); }
+.byr-steps button.ok { color: var(--text); } .byr-steps button.ok b { background: var(--good); color: #fff; }
+.byr-steps button.on { color: #fff; border-color: #6d5dfc; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); } .byr-steps button.on b { background: #fff; color: #3b4fd8; }
+.byr-steps button:disabled { opacity: 0.5; cursor: default; }
+.byr-main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr); gap: 1rem; align-items: start; }
+.byr-stage { position: sticky; top: 5.4rem; height: clamp(420px, 72vh, 680px); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.55); touch-action: none; }
+.byr-stage canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; cursor: grab; }
+.byr-hint { position: absolute; right: 10px; bottom: 8px; margin: 0; font-size: 0.75rem; opacity: 0.7; color: #e8eef5; pointer-events: none; } .byr.light .byr-hint { color: #2a3442; }
+.byr-labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.byr-labels span { position: absolute; transform: translate(-50%, -50%); padding: 0.12rem 0.5rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; color: #fff; background: var(--c); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+.byr-toast { position: absolute; z-index: 3; left: 50%; top: 12px; transform: translateX(-50%); width: min(520px, calc(100% - 24px)); padding: 0.6rem 0.9rem; border-radius: 12px; font-size: 0.9rem; text-align: center; color: #fff; background: rgba(190, 60, 40, 0.95); box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6); }
+.byr-toast.good { background: rgba(31, 140, 80, 0.96); } .byr-toast[hidden] { display: none; }
+.byr-panel { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 1.1rem 1.2rem 1rem; }
+.byr-body h2 { margin: 0 0 0.4rem; font-size: 1.45rem; } .byr-body h3 { margin: 1.1rem 0 0.3rem; font-size: 1.05rem; color: var(--accent); } .byr-body p { margin: 0.4rem 0; }
+.byr-nav { display: flex; justify-content: space-between; gap: 0.6rem; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+.byr-nav .btn { min-height: 0; cursor: pointer; border: 1px solid transparent; font-size: 0.95rem; } .byr-nav .btn.ghost { border-color: var(--border); } .byr-nav .btn:disabled { opacity: 0.45; cursor: default; }
+.byr-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.8rem; }
+.byr-cards button { display: grid; gap: 0.15rem; text-align: left; min-height: 0; padding: 0.75rem 0.85rem; border-radius: 12px; background: var(--bg); color: var(--text); border: 2px solid var(--border); font-weight: 400; }
+.byr-cards button:hover { border-color: var(--accent); } .byr-cards button.on { border-color: #6d5dfc; background: color-mix(in srgb, #6d5dfc 12%, var(--surface)); }
+.byr-cards strong { font-size: 1.08rem; } .byr-cards em { font-style: normal; font-size: 0.78rem; color: var(--accent); font-weight: 600; } .byr-cards small { color: var(--muted); font-size: 0.84rem; line-height: 1.4; }
+.byr-code { justify-self: start; font-family: var(--mono); font-size: 0.74rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.byr-parts, .byr-joints { list-style: none; margin: 0.6rem 0; padding: 0; display: grid; gap: 0.4rem; }
+.byr-parts button { width: 100%; display: flex; gap: 0.6rem; align-items: flex-start; text-align: left; min-height: 0; padding: 0.5rem 0.65rem; border-radius: 10px; background: var(--bg); color: var(--text); border: 1.5px solid var(--border); font-weight: 400; }
+.byr-parts button b, .byr-joints li > b { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.76rem; color: #fff; background: #6d5dfc; }
+.byr-parts strong, .byr-joints strong { display: block; font-size: 0.95rem; } .byr-parts small, .byr-joints small { color: var(--muted); font-size: 0.83rem; line-height: 1.4; }
+.byr-parts button.on { border-color: #6d5dfc; background: color-mix(in srgb, #6d5dfc 12%, var(--surface)); }
+.byr-joints li { display: flex; gap: 0.6rem; align-items: center; padding: 0.5rem 0.65rem; border-radius: 10px; background: var(--bg); border: 1.5px solid var(--c); }
+.byr-joints li > b { background: var(--c); width: 30px; height: 30px; } .byr-joints li > span { flex: 1; }
+.byr-joints button, .byr-tray button { min-height: 0; padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600; background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.byr-joints button:hover, .byr-tray button:hover:not(:disabled) { border-color: var(--accent); }
+.byr-tray { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.7rem 0; } .byr-tray button { padding: 0.5rem 0.85rem; border-width: 1.5px; font-size: 0.88rem; }
+.byr-tray button:disabled { opacity: 1; color: var(--good); border-color: var(--good); background: color-mix(in srgb, var(--good) 10%, transparent); cursor: default; }
+.byr-prog b { font-family: var(--mono); }
+.byr-link { min-height: 0; padding: 0; background: none; border: 0; color: var(--accent); font: inherit; font-size: 0.9rem; text-decoration: underline; cursor: pointer; }
+.byr-note { font-size: 0.88rem; color: var(--muted); padding: 0.5rem 0.7rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); border-radius: 0 8px 8px 0; }
+.byr-sum { display: flex; align-items: center; gap: 0.6rem; margin: 0.7rem 0 0.2rem; font-size: 1.05rem; } .byr-sum span { font-family: var(--mono); padding: 0.2rem 0.7rem; border-radius: 8px; background: var(--btn); color: var(--btn-ink); font-weight: 600; }
+.byr-sl { display: grid; gap: 0.35rem; margin: 0.7rem 0; }
+.byr-sl label { display: grid; grid-template-columns: 4.6rem 1fr 4.4rem; gap: 0.6rem; align-items: center; font-family: var(--mono); font-size: 0.88rem; }
+.byr-sl label b { color: var(--c); } .byr-sl input { width: 100%; accent-color: var(--c); } .byr-sl output { text-align: right; }
+.byr-pos { font-size: 0.95rem; } .byr-pos b, .byr-fk, .byr-chain, .byr-sol { font-family: var(--mono); } .byr .good { color: var(--good); }
+.byr-fk { margin: 0.5rem 0; padding: 0.6rem 0.8rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); font-size: 0.82rem; overflow-x: auto; } .byr-fk p { margin: 0.25rem 0; }
+.byr-chain { width: 100%; border-collapse: collapse; font-size: 0.84rem; } .byr-chain th, .byr-chain td { padding: 0.25rem 0.5rem; border-bottom: 1px solid var(--border); text-align: left; } .byr-chain tr.tool td { font-weight: 700; color: var(--accent); }
+.byr-sol { display: flex; flex-wrap: wrap; gap: 0.4rem; } .byr-sol span { padding: 0.25rem 0.6rem; border-radius: 8px; border: 1.5px solid var(--c); font-size: 0.86rem; }
+.byr-ik { min-height: 0; border: 0; cursor: pointer; padding: 0.55rem 1rem; font-size: 0.92rem; }
+.byr-end { margin-top: 1.1rem; padding: 0.9rem 1rem; border-radius: 12px; border: 1.5px solid var(--good); background: color-mix(in srgb, var(--good) 8%, transparent); }
+.byr-end strong { font-size: 1.05rem; } .byr-end .btn { min-height: 0; padding: 0.5rem 0.9rem; font-size: 0.9rem; margin: 0.2rem 0.2rem 0 0; cursor: pointer; } .byr-end .btn.ghost { border: 1px solid var(--border); }
+@media (max-width: 900px) {
+  .byr { padding: 0 0.8rem; } .byr-main { grid-template-columns: 1fr; } .byr-stage { position: relative; top: 0; height: 380px; }
+  .byr-steps button span { display: none; } .byr-steps button.on span { display: inline; } .byr-steps button { padding: 0.4rem 0.55rem; }
+  .byr-cards { grid-template-columns: 1fr; } .byr-hint { display: none; }
+  .byr-joints li { flex-wrap: wrap; } .byr-joints li > span { flex: 1 1 60%; min-width: 0; } .byr-joints button { margin-left: 2.6rem; }
+}
+/* roadmap: the five level headers */
+.rm-level { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center; margin: 1.6rem auto 0.6rem; padding: 0.85rem 1.1rem; max-width: 760px; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--btn); box-shadow: 0 0 0 6px var(--bg); }
+.rm-level:first-child { margin-top: 0.4rem; }
+.rm-ln { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.4rem 0.8rem; border-radius: 99px; background: var(--btn); color: #fff; white-space: nowrap; }
+.rm-level h3 { margin: 0; font-size: 1.2rem; } .rm-level p { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.rm-level em { font-style: normal; font-size: 0.8rem; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem; } .rm-level em .rm-lc { font-family: var(--mono); color: var(--text); }
+.rm-level.complete { border-color: var(--good); } .rm-level.complete .rm-ln { background: var(--good); }
+@media (max-width: 700px) { .rm-level { grid-template-columns: 1fr; gap: 0.4rem; } .rm-ln { justify-self: start; } }

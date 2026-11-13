@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', anatomy: 'Anatomy in 3D' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', anatomy: 'Anatomie en 3D' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -202,7 +202,7 @@
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<nav class="nav-l" aria-label="Main">' +
-      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>`) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
       '<div class="nav-r">' +
       (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
       ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there

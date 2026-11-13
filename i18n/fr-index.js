@@ -177,3 +177,6 @@ RA.add({
  "2dvqrwiuyz7": "De la roue simple à la roue omni et Mecanum."
 });
 // END anatomy-home
+// roadmap in five levels + build workshop
+RA.add({"y077n1xee0": "Parcours d'apprentissage de la robotique", "nz3p7nxpbd": "Cinq niveaux, de votre premier robot à la robotique intelligente. Suivez-les de haut en bas et cochez chaque page terminée. Vous pouvez aussi aller directement au niveau qu'il vous faut.", "o8xv2e03s8": "Construire mon premier robot"});
+RA.add({"1axhgj14hlr": "<a class=\"btn\" href=\"learn.html\">Commencer par les bases</a> <a class=\"btn ghost\" href=\"build.html\">Construire mon premier robot</a> <a class=\"btn ghost\" href=\"#gallery\">Voir les robots</a>"});
