@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ROS 2 from zero</title>
+    <!-- seo -->
+    <meta name="description" content="ROS 2 from zero: nodes, topics, your first Python nodes, services, actions, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first complete project." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/learn-ros" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="ROS 2 from zero" />
+    <meta property="og:description" content="ROS 2 from zero: nodes, topics, your first Python nodes, services, actions, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first complete project." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/learn-ros" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+  <script src="nav.js" defer></script></head>
+  <body class="learn">
+    <h1>ROS 2 from zero</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn.html" style="color:#ff9f43">The basics</a></p>
+    <p class="lead">ROS 2 is the software that most research, service and mobile robots run on. This course starts from nothing: what ROS 2 is, nodes and topics, your first nodes in Python, services and actions, launch files, frames and the robot model, simulation, the big navigation and arm stacks, and a first complete project. You only need basic Python and a computer with Ubuntu.</p>
+    <nav class="courses" aria-label="Courses"><a class="course" href="learn.html" data-prefix="lesson-" data-total="12" data-key="learn"><b>Foundations</b><span>12 short lessons: the ideas behind every robot</span><em class="cnt"></em></a><a class="course" href="learn-maths.html" data-prefix="maths-" data-total="8" data-key="maths"><b>Maths and motion, step by step</b><span>From zero: angles, a 2-axis arm, frames, DH and motion laws</span><em class="cnt"></em></a><a class="course" href="learn-model.html" data-prefix="model-" data-total="11" data-key="model"><b>Robot modelling, full course</b><span>Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics</span><em class="cnt"></em></a><a class="course" href="learn-singularities.html" data-prefix="sing-" data-total="8" data-key="sing"><b>Singularities and the Jacobian</b><span>Speeds, forces, lost directions, gimbal lock, redundancy</span><em class="cnt"></em></a><a class="course" href="learn-control.html" data-prefix="ctrl-" data-total="9" data-key="ctrl"><b>Dynamics, actuators and control</b><span>Motors, sensors, PID, computed torque, force control, trajectories</span><em class="cnt"></em></a><a class="course" href="learn-intelligence.html" data-prefix="ai-" data-total="9" data-key="ai"><b>Perception, planning and AI</b><span>Vision, Kalman, SLAM, A*, RRT, learning, multi-robot</span><em class="cnt"></em></a><a class="course" href="learn-world.html" data-prefix="world-" data-total="9" data-key="world"><b>Robots in the real world</b><span>Every robot family, grippers, electronics, ROS, safety, careers</span><em class="cnt"></em></a><a class="course current" href="learn-ros.html" data-prefix="ros-" data-total="9" data-key="ros"><b>ROS 2 from zero</b><span>Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project</span><em class="cnt"></em></a><a class="course" href="learn-mobile.html" data-prefix="wmr-" data-total="20" data-key="wmr"><b>Wheeled mobile robots</b><span>From zero to professional: every drive, control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs</span><em class="cnt"></em></a></nav>
+    <section class="intro">
+<div class="box idea"><div class="bt">How to follow this course</div><div class="bb"><p>ROS 2 is learned <strong>with the keyboard</strong>. Each lesson gives commands and short programs: type them, run them, change a value and see what happens. Lessons 1 to 5 need only ROS 2; lessons 6 to 9 use a free simulator, so you do not need a real robot.</p>
+<p>The programs of this course follow the official ROS 2 interfaces (Jazzy). The logic of the final project was checked by running it on simulated laser data; the commands depend on your installation, so read the error messages: the “classic mistakes” boxes cover the most frequent ones.</p></div></div>
+    </section>
+
+    <div class="learn-layout">
+      <aside class="lesson-nav" id="lessonNav" aria-label="Checklist"></aside>
+      <div class="lessons">
+
+        <article class="lesson" id="l1" data-id="ros-1">
+          <header class="lesson-head"><span class="num">1</span><h2>What ROS 2 is, and why robots use it</h2><span class="time">10 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what ROS 2 does for you, what it does not do, and how to install it and run your first two programs.</p></div>
+<h4>1.1 The problem ROS 2 solves</h4>
+<p>A robot runs many programs at the same time: one reads the camera, one reads the laser, one computes where the robot is, one plans the path, one drives the motors. They are written by different people, in different languages, and often run on different computers. <strong>They must talk to each other.</strong></p>
+<p><strong>ROS 2</strong> (Robot Operating System 2) is the free, open-source software that makes them talk. Despite its name it is <strong>not an operating system</strong>: it is installed on top of Linux (or Windows, macOS). It gives you three things:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">What</th><th class="left">In simple words</th><th class="left">Examples</th></tr><tr><td class="left"><strong>The plumbing</strong></td><td class="left">Programs send each other messages without knowing where the other one runs.</td><td class="left">topics, services, actions</td></tr><tr><td class="left"><strong>The tools</strong></td><td class="left">See, record, replay and debug what happens inside the robot.</td><td class="left"><code>ros2</code> commands, RViz, rosbag, Gazebo</td></tr><tr><td class="left"><strong>The libraries</strong></td><td class="left">Ready-made, tested solutions to the hard problems.</td><td class="left">Nav2 (navigation), MoveIt 2 (arms), slam_toolbox (maps)</td></tr></table></div>
+<div class="box idea"><div class="bt">The key idea</div><div class="bb"><p>With ROS 2 you do not write one big program. You write <strong>small programs that each do one job</strong>, and you connect them. You can then replace one of them (a real camera by a simulated one, your planner by a better one) without touching the others.</p></div></div>
+<figure class="figure"><svg viewBox="0 0 720 170" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <ellipse class="pn" cx="80" cy="45" rx="70" ry="20"/><text x="80" y="49" text-anchor="middle">camera driver</text><ellipse class="pn" cx="80" cy="125" rx="70" ry="20"/><text x="80" y="129" text-anchor="middle">laser driver</text>
+      <ellipse class="pn" cx="340" cy="45" rx="90" ry="20"/><text x="340" y="49" text-anchor="middle">object detector</text><ellipse class="pn" cx="340" cy="125" rx="90" ry="20"/><text x="340" y="129" text-anchor="middle">localisation</text>
+      <ellipse class="pn" cx="620" cy="85" rx="90" ry="20"/><text x="620" y="89" text-anchor="middle">motor controller</text>
+      <line class="ax" x1="150" y1="45" x2="248" y2="45" marker-end="url(#rosar)"/><line class="ax" x1="150" y1="125" x2="248" y2="125" marker-end="url(#rosar)"/><line class="ax" x1="428" y1="52" x2="532" y2="76" marker-end="url(#rosar)"/><line class="ax" x1="428" y1="118" x2="532" y2="94" marker-end="url(#rosar)"/>
+      <text x="199" y="36" text-anchor="middle" class="c-l">/image</text><text x="199" y="116" text-anchor="middle" class="c-l">/scan</text><text x="492" y="50" text-anchor="middle" class="c-l">/objects</text><text x="492" y="128" text-anchor="middle" class="c-l">/pose</text></svg></figure>
+<h4>1.2 What ROS 2 is not</h4>
+<ul><li>It is <strong>not</strong> a programming language: you write your nodes in <strong>Python</strong> or <strong>C++</strong>.</li><li>It does <strong>not</strong> replace the maths: the kinematics, the PID and the Kalman filter of the other courses are still there, inside the nodes.</li><li>It is <strong>not</strong> the safety system: an emergency stop never depends on ROS 2.</li></ul>
+<h4>1.3 Versions (distributions)</h4>
+<p>ROS 2 is released once a year under a name. Some releases are supported for five years (LTS): choose one of these to learn. This course uses <strong>Jazzy Jalisco</strong> (2024, LTS, on Ubuntu 24.04); everything here also works on <strong>Humble</strong> (2022, LTS, Ubuntu 22.04) by replacing <code>jazzy</code> with <code>humble</code>. For a newer release, check <strong>docs.ros.org</strong>: the ideas of this course do not change.</p>
+<div class="box warn"><div class="bt">ROS 1 is finished</div><div class="bb"><p>The first ROS (ROS 1, last version “Noetic”) reached its end of life in 2025. Many old tutorials still use it: if you see <code>roscore</code>, <code>rosrun</code> or <code>catkin_make</code>, it is ROS 1. In ROS 2 the commands start with <code>ros2</code> and the build tool is <code>colcon</code>.</p></div></div>
+<h4>1.4 Install it and say hello</h4>
+<p>The simplest way is a computer (or a virtual machine) with Ubuntu. The official guide on docs.ros.org gives the exact steps to add the ROS 2 package source; then:</p>
+<pre class="code"><code># Ubuntu 24.04 + ROS 2 Jazzy (after adding the ROS 2 apt repository, see docs.ros.org)
+sudo apt install ros-jazzy-desktop          # ROS 2, RViz, demos
+sudo apt install python3-colcon-common-extensions
+
+source /opt/ros/jazzy/setup.bash            # in every new terminal (or put it in ~/.bashrc)
+
+ros2 run demo_nodes_cpp talker              # terminal 1: publishes "Hello World: 1, 2, 3..."
+ros2 run demo_nodes_py listener             # terminal 2: prints what it hears</code></pre>
+<p>The talker and the listener are two separate programs. They found each other alone, with no address to configure: this is the plumbing of ROS 2 at work.</p>
+<div class="box keep"><div class="bt">The most common beginner error</div><div class="bb"><p><code>ros2: command not found</code> means you forgot <code>source /opt/ros/jazzy/setup.bash</code> in this terminal. Every new terminal needs it.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>middleware</li><li>node</li><li>distribution</li><li>LTS</li><li>colcon</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>ROS 2 is not an operating system: it is the software that lets the programs of a robot talk to each other, plus tools and libraries.</li><li>A robot is split into small programs (nodes) that each do one job.</li><li>In every new terminal: <code>source /opt/ros/jazzy/setup.bash</code>.</li></ul></div></div>
+          
+          <section class="exs" data-for="ros-1"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-1-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">What is ROS 2?</p><ol class="opts" type="A"><li data-ok="1">A middleware with tools and libraries, installed on top of Linux</li><li>An operating system that replaces Linux</li><li>A programming language</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>ROS 2 is a <b>middleware</b>: it carries the messages between programs written in Python or C++, on top of an operating system.</p></details>
+</div>
+<div class="ex" data-id="ros-1-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Jazzy came out in 2024 and is supported for 5 years. Until which year?</p><div class="numin" data-ans="2029" data-tol="0.1" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>2024 + 5 = <b>2029</b>. An LTS release gives you time to finish a project without changing version.</p></details>
+</div>
+<div class="ex" data-id="ros-1-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">You type <code>ros2 topic list</code> and get “ros2: command not found”. The most likely cause?</p><ol class="opts" type="A"><li data-ok="1">The setup file was not sourced in this terminal</li><li>No node is running</li><li>The robot is switched off</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The command itself is unknown, so ROS 2 is not loaded in this terminal: run <b>source /opt/ros/jazzy/setup.bash</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Is ROS 2 an operating system?</p><p class="a">No. It is a middleware and a set of tools and libraries, installed on top of an operating system such as Ubuntu.</p></li><li><p class="q">Why split a robot program into many small nodes?</p><p class="a">Each node does one job, can be tested alone, reused on another robot and replaced (for example by a simulated version) without changing the others.</p></li><li><p class="q">A tutorial tells you to type <code>roscore</code>. What does it tell you?</p><p class="a">It is a ROS 1 tutorial. ROS 2 has no roscore: the nodes discover each other.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l2" data-id="ros-2">
+          <header class="lesson-head"><span class="num">2</span><h2>Nodes, topics and messages</h2><span class="time">12 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how nodes exchange data with topics, what a message is, and the commands to look inside a running robot.</p></div>
+<h4>2.1 Publish and subscribe</h4>
+<p>A <strong>node</strong> is one running program. A <strong>topic</strong> is a named channel, like a radio station. A node that has data <strong>publishes</strong> it on a topic; every node that wants this data <strong>subscribes</strong> to the topic. The publisher does not know who listens, and it does not wait for an answer.</p>
+<figure class="figure"><svg viewBox="0 0 720 150" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <ellipse class="pn" cx="80" cy="75" rx="70" ry="20"/><text x="80" y="79" text-anchor="middle">laser driver</text><rect class="pn" x="230" y="55" width="80" height="40" rx="6"/><text x="270" y="79" text-anchor="middle" class="c-l">/scan</text>
+      <ellipse class="pn" cx="590" cy="28" rx="110" ry="20"/><text x="590" y="32" text-anchor="middle">obstacle detector</text><ellipse class="pn" cx="590" cy="75" rx="110" ry="20"/><text x="590" y="79" text-anchor="middle">map builder</text><ellipse class="pn" cx="590" cy="122" rx="110" ry="20"/><text x="590" y="126" text-anchor="middle">RViz (display)</text>
+      <line class="ax" x1="150" y1="75" x2="228" y2="75" marker-end="url(#rosar)"/><line class="ax" x1="310" y1="68" x2="478" y2="32" marker-end="url(#rosar)"/><line class="ax" x1="310" y1="75" x2="478" y2="75" marker-end="url(#rosar)"/><line class="ax" x1="310" y1="82" x2="478" y2="118" marker-end="url(#rosar)"/>
+      <text x="189" y="66" text-anchor="middle">publishes</text><text x="380" y="34" text-anchor="middle">subscribe</text></svg></figure>
+<ul><li>One topic can have <strong>several publishers</strong> and <strong>several subscribers</strong>.</li><li>Topics are for data that <strong>flows all the time</strong>: sensor readings, positions, speed commands.</li><li>Names look like paths: <code>/scan</code>, <code>/cmd_vel</code>, <code>/camera/image_raw</code>.</li></ul>
+<h4>2.2 Messages have a type</h4>
+<p>Every topic carries messages of <strong>one type</strong>, known in advance. A type is a list of named fields. The most used ones:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Type</th><th class="left">Contains</th><th class="left">Typical topic</th></tr><tr><td class="left"><code>std_msgs/msg/String</code></td><td class="left">a text</td><td class="left"><code>/chatter</code></td></tr><tr><td class="left"><code>geometry_msgs/msg/Twist</code></td><td class="left">a speed command: <code>linear.x</code> (m/s, forward) and <code>angular.z</code> (rad/s, turning)</td><td class="left"><code>/cmd_vel</code></td></tr><tr><td class="left"><code>sensor_msgs/msg/LaserScan</code></td><td class="left">one turn of a laser scanner: a list of distances <code>ranges</code>, the first angle and the angle step</td><td class="left"><code>/scan</code></td></tr><tr><td class="left"><code>sensor_msgs/msg/Image</code></td><td class="left">a camera image</td><td class="left"><code>/camera/image_raw</code></td></tr><tr><td class="left"><code>nav_msgs/msg/Odometry</code></td><td class="left">the position and speed of the robot, from its wheels</td><td class="left"><code>/odom</code></td></tr><tr><td class="left"><code>sensor_msgs/msg/JointState</code></td><td class="left">the angle and speed of every joint of an arm</td><td class="left"><code>/joint_states</code></td></tr></table></div>
+<div class="box keep"><div class="bt">Units: always the same</div><div class="bb"><p>ROS uses SI units everywhere: <strong>metres, seconds, radians, kilograms</strong>. Never degrees, never millimetres. The x axis of a robot points <strong>forward</strong>, y to the <strong>left</strong>, z <strong>up</strong>.</p></div></div>
+<h4>2.3 Look inside a running robot</h4>
+<p>Keep the talker and the listener of lesson 1 running, open a third terminal, and try:</p>
+<pre class="code"><code>ros2 node list                    # which nodes are running?
+ros2 topic list -t                # which topics exist, and their message type
+ros2 topic echo /chatter          # print the messages of a topic
+ros2 topic hz /chatter            # how many messages per second?
+ros2 topic info /chatter -v       # who publishes, who subscribes, with which QoS
+ros2 interface show geometry_msgs/msg/Twist    # what is inside a message type
+
+# publish by hand: drive a robot forward at 0.2 m/s while turning at 0.5 rad/s, 10 times per second
+ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.2}, angular: {z: 0.5}}"
+
+rqt_graph                         # draw the graph of nodes and topics</code></pre>
+<p>These few commands are how you debug 90 % of ROS 2 problems: is the node running, is the topic there, does data flow, at which rate, with the right type?</p>
+<h4>2.4 Quality of service (QoS), in short</h4>
+<p>Each publisher and subscriber chooses how messages are delivered. Two settings matter at the beginning:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Setting</th><th class="left">Choice</th><th class="left">Use it for</th></tr><tr><td class="left">Reliability</td><td class="left"><strong>reliable</strong>: lost messages are sent again</td><td class="left">commands, states, maps</td></tr><tr><td class="left">Reliability</td><td class="left"><strong>best effort</strong>: a lost message is forgotten, the next one comes soon</td><td class="left">fast sensors: laser, camera, IMU</td></tr><tr><td class="left">History depth</td><td class="left">how many messages wait if the subscriber is slow (often 10)</td><td class="left">every topic</td></tr></table></div>
+<div class="box warn"><div class="bt">A topic with no data? Check the QoS</div><div class="bb"><p>A <strong>reliable</strong> subscriber does not receive anything from a <strong>best effort</strong> publisher: the two are not compatible, and there is no error message. If <code>ros2 topic echo</code> shows data but your node receives nothing, compare the QoS with <code>ros2 topic info -v</code>.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>node</li><li>topic</li><li>publisher</li><li>subscriber</li><li>message type</li><li>quality of service (QoS)</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>A node publishes messages on a topic; any node can subscribe to it. Nobody answers.</li><li>Each topic has one message type. Units are always metres, seconds and radians.</li><li><code>ros2 topic list / echo / hz / info</code> show what really happens.</li></ul></div></div>
+          
+          <section class="exs" data-for="ros-2"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-2-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A topic carries 20 messages per second. Time between two messages (ms)?</p><div class="numin" data-ans="50" data-tol="0.1" data-unit="ms"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>1 / 20 = 0.05 s = <b>50 ms</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-2-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">A laser scan has 360 distances of 4 bytes each, 10 times per second. Data rate for the distances (kB/s, with 1 kB = 1000 bytes)?</p><div class="numin" data-ans="14.4" data-tol="0.05" data-unit="ko/s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>360 × 4 = 1440 bytes per scan; × 10 = 14 400 bytes/s = <b>14.4 kB/s</b>. A camera is thousands of times heavier: this is why images often use best effort.</p></details>
+</div>
+<div class="ex" data-id="ros-2-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A laser driver publishes in best effort. Your node subscribes in reliable. What happens?</p><ol class="opts" type="A"><li data-ok="1">Your node receives nothing, with no error</li><li>Your node receives everything</li><li>The driver crashes</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>A reliable subscriber asks for more than a best effort publisher offers: they are <b>not compatible</b> and do not connect. Subscribe with the sensor QoS.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Does a publisher know which nodes receive its messages?</p><p class="a">No. It publishes on the topic; any number of nodes (zero, one, many) can subscribe.</p></li><li><p class="q">In a <code>Twist</code> message, which fields drive a wheeled robot forward and make it turn?</p><p class="a"><code>linear.x</code> in m/s (forward) and <code>angular.z</code> in rad/s (turn, positive to the left).</p></li><li><p class="q">Which command shows how many messages per second a topic carries?</p><p class="a"><code>ros2 topic hz /name</code>.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l3" data-id="ros-3">
+          <header class="lesson-head"><span class="num">3</span><h2>Your first nodes in Python</h2><span class="time">14 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to create a workspace and a package, write a publisher and a subscriber with rclpy, build them and run them.</p></div>
+<h4>3.1 Workspace and package</h4>
+<ul><li>A <strong>package</strong> is a folder with your nodes and two description files (<code>package.xml</code>, <code>setup.py</code>). It is the unit you share and install.</li><li>A <strong>workspace</strong> is a folder that holds your packages in <code>src/</code>. The tool <code>colcon</code> builds them all.</li></ul>
+<pre class="code"><code>mkdir -p ~/ros2_ws/src &amp;&amp; cd ~/ros2_ws/src
+ros2 pkg create my_robot --build-type ament_python --dependencies rclpy std_msgs
+
+# put talker.py and listener.py in my_robot/my_robot/, then declare them in setup.py:
+#   entry_points={'console_scripts': [
+#       'talker = my_robot.talker:main',
+#       'listener = my_robot.listener:main',
+#   ]},
+
+cd ~/ros2_ws
+colcon build --symlink-install     # build every package of the workspace
+source install/setup.bash          # make the new package visible in this terminal
+
+ros2 run my_robot talker           # terminal 1
+ros2 run my_robot listener         # terminal 2 (source install/setup.bash first)</code></pre>
+<h4>3.2 A publisher</h4>
+<p>File <code>my_robot/my_robot/talker.py</code>. Read it from top to bottom: a node is a class; it creates a publisher and a timer; the timer calls <code>tick()</code>, which publishes one message.</p>
+<pre class="code"><code>import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+
+class Talker(Node):
+    def __init__(self):
+        super().__init__('talker')                               # the name of the node
+        self.pub = self.create_publisher(String, 'chatter', 10)  # type, topic, queue size
+        self.timer = self.create_timer(0.5, self.tick)           # call tick() every 0.5 s
+        self.count = 0
+
+    def tick(self):
+        msg = String()
+        msg.data = f'Hello robot: {self.count}'
+        self.pub.publish(msg)
+        self.get_logger().info(f'I said: "{msg.data}"')
+        self.count += 1
+
+
+def main():
+    rclpy.init()
+    node = Talker()
+    try:
+        rclpy.spin(node)             # wait and run the callbacks until Ctrl+C
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.try_shutdown()
+
+
+if __name__ == '__main__':
+    main()</code></pre>
+<h4>3.3 A subscriber</h4>
+<p>File <code>my_robot/my_robot/listener.py</code>. The subscriber gives ROS 2 a function, called a <strong>callback</strong>: ROS 2 calls it each time a message arrives.</p>
+<pre class="code"><code>import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+
+class Listener(Node):
+    def __init__(self):
+        super().__init__('listener')
+        # heard() is called each time a message arrives on the topic "chatter"
+        self.sub = self.create_subscription(String, 'chatter', self.heard, 10)
+
+    def heard(self, msg):
+        self.get_logger().info(f'I heard: "{msg.data}"')
+
+
+def main():
+    rclpy.init()
+    node = Listener()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.try_shutdown()
+
+
+if __name__ == '__main__':
+    main()</code></pre>
+<div class="box idea"><div class="bt">How a node really works</div><div class="bb"><p><code>rclpy.spin(node)</code> is a loop that waits. When a timer fires or a message arrives, it runs the matching callback, then waits again. So <strong>a callback must be short</strong>: while it runs, the node does nothing else. Never put <code>time.sleep(5)</code> or a long <code>while</code> loop inside a callback.</p></div></div>
+<h4>3.4 The pattern of every robot node</h4>
+<ol><li><strong>Subscribe</strong> to the sensors: each callback only stores the last value.</li><li><strong>A timer</strong> at a fixed rate (10 to 100 Hz) reads these values, computes, and <strong>publishes</strong> the command.</li><li>This is the loop “sense, think, act” of the first course, written with ROS 2. You will use it in lesson 9.</li></ol>
+<div class="box warn"><div class="bt">Three classic mistakes</div><div class="bb"><ul><li>You changed the code but nothing changes: you forgot <code>colcon build</code> (or use <code>--symlink-install</code> once, so Python files are linked, not copied).</li><li><code>Package 'my_robot' not found</code>: you forgot <code>source install/setup.bash</code> in this terminal.</li><li><code>No executable found</code>: the node is missing in <code>entry_points</code> of <code>setup.py</code>.</li></ul></div></div>
+<p>Python (<code>rclpy</code>) is perfect to learn and for most nodes. C++ (<code>rclcpp</code>) has the same ideas and the same names; it is used when speed matters (drivers, control loops, image processing).</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>workspace</li><li>package</li><li>rclpy</li><li>callback</li><li>timer</li><li>spin</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>A node is a class: it creates publishers, subscribers and timers.</li><li>ROS 2 calls your callbacks when a message arrives or a timer fires; keep them short.</li><li>Build with <code>colcon build</code>, then <code>source install/setup.bash</code>, then <code>ros2 run</code>.</li></ul></div></div>
+          <figure class="figure pfig"><svg viewBox="0 0 640 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="300" fill="#1b1f25" rx="10"/><line x1="56" y1="24" x2="56" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0</text><line x1="150.3" y1="24" x2="150.3" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="150.3" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.5</text><line x1="244.7" y1="24" x2="244.7" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="244.7" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1</text><line x1="339" y1="24" x2="339" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="339" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1.5</text><line x1="433.3" y1="24" x2="433.3" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="433.3" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">2</text><line x1="527.7" y1="24" x2="527.7" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="527.7" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">2.5</text><line x1="622" y1="24" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">3</text><line x1="56" y1="256" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="260" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="198" x2="622" y2="198" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="202" fill="#9fb0c3" font-size="12" text-anchor="end">4</text><line x1="56" y1="140" x2="622" y2="140" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="144" fill="#9fb0c3" font-size="12" text-anchor="end">8</text><line x1="56" y1="82" x2="622" y2="82" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="86" fill="#9fb0c3" font-size="12" text-anchor="end">12</text><line x1="56" y1="24" x2="622" y2="24" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="28" fill="#9fb0c3" font-size="12" text-anchor="end">16</text><line x1="56" y1="256" x2="622" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="24" x2="56" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,256L59.5,254.2L63.1,252.4L66.6,250.6L70.2,248.8L73.7,246.9L77.2,245.1L80.8,243.3L84.3,241.5L87.8,239.7L91.4,237.9L94.9,236.1L98.4,234.3L102,232.4L105.5,230.6L109.1,228.8L112.6,227L116.1,225.2L119.7,223.4L123.2,221.6L126.8,219.8L130.3,217.9L133.8,216.1L137.4,214.3L140.9,212.5L144.4,210.7L148,208.9L151.5,207.1L155.1,205.3L158.6,203.4L162.1,201.6L165.7,199.8L169.2,198L172.7,196.2L176.3,194.4L179.8,192.6L183.4,190.8L186.9,188.9L190.4,187.1L194,185.3L197.5,183.5L201,181.7L204.6,179.9L208.1,178.1L211.6,176.3L215.2,174.4L218.7,172.6L222.3,170.8L225.8,169L229.3,167.2L232.9,165.4L236.4,163.6L240,161.8L243.5,159.9L247,158.1L250.6,156.3L254.1,154.5L257.6,152.7L261.2,150.9L264.7,149.1L268.3,147.3L271.8,145.4L275.3,143.6L278.9,141.8L282.4,140L285.9,138.2L289.5,136.4L293,134.6L296.5,132.8L300.1,130.9L303.6,129.1L307.2,127.3L310.7,125.5L314.2,123.7L317.8,121.9L321.3,120.1L324.9,118.3L328.4,116.4L331.9,114.6L335.5,112.8L339,111L342.5,111L346.1,111L349.6,111L353.2,111L356.7,111L360.2,111L363.8,111L367.3,111L370.8,111L374.4,111L377.9,111L381.5,111L385,111L388.5,111L392.1,111L395.6,111L399.1,111L402.7,111L406.2,111L409.8,111L413.3,111L416.8,111L420.4,111L423.9,111L427.4,111L431,111L434.5,111L438,111L441.6,111L445.1,111L448.7,111L452.2,111L455.7,111L459.3,111L462.8,111L466.3,111L469.9,111L473.4,111L477,111L480.5,111L484,111L487.6,111L491.1,111L494.7,111L498.2,111L501.7,111L505.3,111L508.8,111L512.3,111L515.9,111L519.4,111L523,111L526.5,111L530,111L533.6,111L537.1,111L540.6,111L544.2,111L547.7,111L551.3,111L554.8,111L558.3,111L561.9,111L565.4,111L568.9,111L572.5,111L576,111L579.5,111L583.1,111L586.6,111L590.2,111L593.7,111L597.2,111L600.8,111L604.3,111L607.9,111L611.4,111L614.9,111L618.5,111L622,111" fill="none" stroke="#ff5c5c" stroke-width="3"/><rect x="66" y="32" width="14" height="4" fill="#ff5c5c"/><text x="86" y="38" fill="#ff5c5c" font-size="13" text-anchor="start">messages waiting (callback of 0.3 s)</text><path d="M56,253.1L59.5,253.1L63.1,253.1L66.6,253.1L70.2,253.1L73.7,253.1L77.2,253.1L80.8,253.1L84.3,253.1L87.8,253.1L91.4,253.1L94.9,253.1L98.4,253.1L102,253.1L105.5,253.1L109.1,253.1L112.6,253.1L116.1,253.1L119.7,253.1L123.2,253.1L126.8,253.1L130.3,253.1L133.8,253.1L137.4,253.1L140.9,253.1L144.4,253.1L148,253.1L151.5,253.1L155.1,253.1L158.6,253.1L162.1,253.1L165.7,253.1L169.2,253.1L172.7,253.1L176.3,253.1L179.8,253.1L183.4,253.1L186.9,253.1L190.4,253.1L194,253.1L197.5,253.1L201,253.1L204.6,253.1L208.1,253.1L211.6,253.1L215.2,253.1L218.7,253.1L222.3,253.1L225.8,253.1L229.3,253.1L232.9,253.1L236.4,253.1L240,253.1L243.5,253.1L247,253.1L250.6,253.1L254.1,253.1L257.6,253.1L261.2,253.1L264.7,253.1L268.3,253.1L271.8,253.1L275.3,253.1L278.9,253.1L282.4,253.1L285.9,253.1L289.5,253.1L293,253.1L296.5,253.1L300.1,253.1L303.6,253.1L307.2,253.1L310.7,253.1L314.2,253.1L317.8,253.1L321.3,253.1L324.9,253.1L328.4,253.1L331.9,253.1L335.5,253.1L339,253.1L342.5,253.1L346.1,253.1L349.6,253.1L353.2,253.1L356.7,253.1L360.2,253.1L363.8,253.1L367.3,253.1L370.8,253.1L374.4,253.1L377.9,253.1L381.5,253.1L385,253.1L388.5,253.1L392.1,253.1L395.6,253.1L399.1,253.1L402.7,253.1L406.2,253.1L409.8,253.1L413.3,253.1L416.8,253.1L420.4,253.1L423.9,253.1L427.4,253.1L431,253.1L434.5,253.1L438,253.1L441.6,253.1L445.1,253.1L448.7,253.1L452.2,253.1L455.7,253.1L459.3,253.1L462.8,253.1L466.3,253.1L469.9,253.1L473.4,253.1L477,253.1L480.5,253.1L484,253.1L487.6,253.1L491.1,253.1L494.7,253.1L498.2,253.1L501.7,253.1L505.3,253.1L508.8,253.1L512.3,253.1L515.9,253.1L519.4,253.1L523,253.1L526.5,253.1L530,253.1L533.6,253.1L537.1,253.1L540.6,253.1L544.2,253.1L547.7,253.1L551.3,253.1L554.8,253.1L558.3,253.1L561.9,253.1L565.4,253.1L568.9,253.1L572.5,253.1L576,253.1L579.5,253.1L583.1,253.1L586.6,253.1L590.2,253.1L593.7,253.1L597.2,253.1L600.8,253.1L604.3,253.1L607.9,253.1L611.4,253.1L614.9,253.1L618.5,253.1L622,253.1" fill="none" stroke="#3ddc84" stroke-width="3"/><rect x="66" y="54" width="14" height="4" fill="#3ddc84"/><text x="86" y="60" fill="#3ddc84" font-size="13" text-anchor="start">callback of 0.01 s: nothing waits</text><circle cx="339" cy="111" r="5" fill="#f5c518"/><text x="347" y="103" fill="#f5c518" font-size="13" text-anchor="start">queue full: messages are lost</text><text x="622" y="294" fill="#9fb0c3" font-size="13" text-anchor="end">time (s)</text></svg><figcaption>Messages arrive 10 times per second. A slow callback fills the queue of 10 in 1.5 s.</figcaption></figure>
+          <section class="exs" data-for="ros-3"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-3-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q"><code>create_timer(0.5, self.tick)</code>: how many times per second is <code>tick</code> called?</p><div class="numin" data-ans="2" data-tol="0.01" data-unit="Hz"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>1 / 0.5 = <b>2 Hz</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-3-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">You edited talker.py, ran <code>colcon build</code>, but <code>ros2 run my_robot talker</code> says the package is not found. What is missing?</p><ol class="opts" type="A"><li data-ok="1"><code>source install/setup.bash</code></li><li><code>rclpy.spin()</code></li><li>A second terminal</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The terminal does not know the workspace yet: <b>source install/setup.bash</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-3-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Messages arrive at 10 Hz. Your callback takes 0.3 s. The queue holds 10 messages. After how many seconds is it full?</p><div class="numin" data-ans="1.5" data-tol="0.05" data-unit="s"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Each second 10 messages arrive and 1 / 0.3 are processed.</p></details><details class="sol"><summary>Solution</summary><p>Processed: 1 / 0.3 = 3.33 per second. The queue grows by 10 − 3.33 = 6.67 per second: 10 / 6.67 = <b>1.5 s</b>. After that, messages are dropped and the robot reacts to old data.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does <code>rclpy.spin(node)</code> do?</p><p class="a">It waits, and runs the callbacks of the node (timers, messages) each time one is due, until the program is stopped.</p></li><li><p class="q">Why must a callback be short?</p><p class="a">While one callback runs, the node cannot run the others: messages wait and timers are late.</p></li><li><p class="q">After <code>colcon build</code>, which command makes your package visible in a terminal?</p><p class="a"><code>source install/setup.bash</code>, from the workspace folder.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l4" data-id="ros-4">
+          <header class="lesson-head"><span class="num">4</span><h2>Services, actions and parameters</h2><span class="time">13 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the three other ways nodes communicate, and how to choose between a topic, a service and an action.</p></div>
+<h4>4.1 Four tools, four jobs</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Tool</th><th class="left">Like…</th><th class="left">How it works</th><th class="left">Use it for</th></tr><tr><td class="left"><strong>Topic</strong></td><td class="left">a radio station</td><td class="left">one way, all the time, nobody answers</td><td class="left">sensor data, speed commands</td></tr><tr><td class="left"><strong>Service</strong></td><td class="left">a phone call with a quick question</td><td class="left">one request, one answer, right away</td><td class="left">“switch the light on”, “save the map”, “compute this”</td></tr><tr><td class="left"><strong>Action</strong></td><td class="left">ordering a pizza: you follow the delivery and can cancel</td><td class="left">a goal, then progress reports, then a result</td><td class="left">“go to the kitchen”, “move the arm along this path”</td></tr><tr><td class="left"><strong>Parameter</strong></td><td class="left">a setting of the node</td><td class="left">a named value, read at start or changed while running</td><td class="left">maximum speed, gains, name of a file</td></tr></table></div>
+<div class="box keep"><div class="bt">How to choose</div><div class="bb"><ul><li>Data that flows without being asked → <strong>topic</strong>.</li><li>A question with a quick answer (less than a second) → <strong>service</strong>.</li><li>A task that takes time, that you want to follow or cancel → <strong>action</strong>.</li></ul></div></div>
+<h4>4.2 A service and a parameter in Python</h4>
+<p>This node offers the service <code>add_two_ints</code>: it receives two numbers and answers with their sum. It also has a parameter <code>offset</code>. (Add <code>example_interfaces</code> to the dependencies in <code>package.xml</code>, and the node to <code>setup.py</code>.)</p>
+<pre class="code"><code>import rclpy
+from rclpy.node import Node
+from example_interfaces.srv import AddTwoInts      # request: a, b   response: sum
+
+
+class Adder(Node):
+    def __init__(self):
+        super().__init__('adder')
+        self.srv = self.create_service(AddTwoInts, 'add_two_ints', self.add)
+        self.declare_parameter('offset', 0)          # a parameter, with its default value
+
+    def add(self, request, response):
+        offset = self.get_parameter('offset').value
+        response.sum = request.a + request.b + offset
+        self.get_logger().info(f'{request.a} + {request.b} (+ {offset}) = {response.sum}')
+        return response
+
+
+def main():
+    rclpy.init()
+    node = Adder()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.try_shutdown()
+
+
+if __name__ == '__main__':
+    main()</code></pre>
+<p>Call it from the terminal, then change the parameter while the node runs:</p>
+<pre class="code"><code>ros2 run my_robot adder                                   # terminal 1: the server
+
+ros2 service list -t                                      # terminal 2
+ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
+#   -&gt; response: example_interfaces.srv.AddTwoInts_Response(sum=5)
+
+ros2 param list /adder
+ros2 param set /adder offset 10                           # change the parameter while the node runs
+ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
+#   -&gt; sum=15
+
+ros2 action list -t                                       # the actions, if a node offers some</code></pre>
+<h4>4.3 Actions: goal, feedback, result</h4>
+<figure class="figure"><svg viewBox="0 0 720 165" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <rect class="pn" x="5" y="62" width="150" height="40" rx="6"/><text x="80" y="80" text-anchor="middle" class="c-l">action client</text><text x="80" y="94" text-anchor="middle" class="sm">your program</text><rect class="pn" x="565" y="62" width="150" height="40" rx="6"/><text x="640" y="80" text-anchor="middle" class="c-l">action server</text><text x="640" y="94" text-anchor="middle" class="sm">navigation, arm…</text>
+      <line class="ax" x1="165" y1="42" x2="555" y2="42" marker-end="url(#rosar)"/><text x="360" y="33" text-anchor="middle">1. goal: “go to (2.0, 1.5)”</text>
+      <line class="ax" x1="555" y1="82" x2="165" y2="82" marker-end="url(#rosar)"/><text x="360" y="73" text-anchor="middle">2. feedback: “1.2 m left”, again and again</text>
+      <line class="ax" x1="555" y1="122" x2="165" y2="122" marker-end="url(#rosar)"/><text x="360" y="113" text-anchor="middle">3. result: “arrived” (or “failed”)</text>
+      <text x="360" y="152" text-anchor="middle">the client can cancel at any time</text></svg></figure>
+<p>You will rarely write an action server at the beginning, but you will <strong>call</strong> them all the time: the navigation stack offers <code>NavigateToPose</code>, the arm stack offers <code>FollowJointTrajectory</code>. From the terminal: <code>ros2 action send_goal /name type "{…}" --feedback</code>.</p>
+<h4>4.4 Interfaces: the three kinds of files</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">File</th><th class="left">Describes</th><th class="left">Parts</th></tr><tr><td class="left"><code>.msg</code></td><td class="left">a topic message</td><td class="left">the fields</td></tr><tr><td class="left"><code>.srv</code></td><td class="left">a service</td><td class="left">request <code>---</code> response</td></tr><tr><td class="left"><code>.action</code></td><td class="left">an action</td><td class="left">goal <code>---</code> result <code>---</code> feedback</td></tr></table></div>
+<p><code>ros2 interface show</code> prints any of them. Use the standard interfaces whenever one fits: your node then works with every existing tool.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>service</li><li>request / response</li><li>action</li><li>goal / feedback / result</li><li>parameter</li><li>interface</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Topic: data that flows. Service: a quick question and its answer. Action: a long task you can follow and cancel.</li><li>A parameter is a named setting of a node; it can be changed while the node runs.</li><li>Use the standard interfaces whenever one fits.</li></ul></div></div>
+          
+          <section class="exs" data-for="ros-4"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-4-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">“Is the gripper open?” (answer in 10 ms). Which tool?</p><ol class="opts" type="A"><li data-ok="1">A service</li><li>An action</li><li>A launch file</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>A quick question with one answer: a <b>service</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-4-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">With the node of the lesson and <code>offset</code> = 10, you call the service with a = 2 and b = 3. Sum?</p><div class="numin" data-ans="15" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>2 + 3 + 10 = <b>15</b>. The parameter changed the behaviour without restarting the node.</p></details>
+</div>
+<div class="ex" data-id="ros-4-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">“Move the arm along this 8-second trajectory, and stop if I ask.” Which tool?</p><ol class="opts" type="A"><li data-ok="1">An action</li><li>A service</li><li>A parameter</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>A long task with progress and cancellation: an <b>action</b> (here FollowJointTrajectory).</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">“Navigate to the charging station” takes 40 s and must be cancellable. Topic, service or action?</p><p class="a">An action: a long task with feedback and cancellation.</p></li><li><p class="q">Why not use a service to read a laser scanner 10 times per second?</p><p class="a">Data that flows all the time belongs on a topic: the driver publishes, and every node that needs it subscribes.</p></li><li><p class="q">What is a parameter?</p><p class="a">A named setting of a node (a number, a text, a boolean), given at start or changed while the node runs.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l5" data-id="ros-5">
+          <header class="lesson-head"><span class="num">5</span><h2>Launch files: start a whole robot with one command</h2><span class="time">10 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to start many nodes at once with their parameters, and to rename topics and group robots without changing the code.</p></div>
+<h4>5.1 Why launch files</h4>
+<p>A real robot runs 20 to 50 nodes. Nobody opens 50 terminals. A <strong>launch file</strong> is a list of the nodes to start, with their settings. One command starts everything, and Ctrl+C stops everything.</p>
+<pre class="code"><code>from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument('robot', default_value='r1'),   # ros2 launch ... robot:=r2
+
+        Node(package='my_robot', executable='talker',
+             namespace=LaunchConfiguration('robot'),           # topics become /r1/...
+             remappings=[('chatter', 'news')],                 # (name in the code, name on the network)
+             output='screen'),
+
+        Node(package='my_robot', executable='listener',
+             namespace=LaunchConfiguration('robot'),
+             remappings=[('chatter', 'news')],
+             output='screen'),
+
+        Node(package='my_robot', executable='adder',
+             parameters=[{'offset': 10}]),                     # or a YAML file
+    ])</code></pre>
+<pre class="code"><code># the file is my_robot/launch/demo.launch.py; add to setup.py (data_files):
+#   (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
+colcon build --symlink-install &amp;&amp; source install/setup.bash
+
+ros2 launch my_robot demo.launch.py                # starts the three nodes
+ros2 launch my_robot demo.launch.py robot:=r2      # same nodes, for a second robot
+ros2 launch my_robot demo.launch.py --show-args    # which arguments does it accept?</code></pre>
+<h4>5.2 Three ways to adapt a node without touching its code</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Tool</th><th class="left">What it changes</th><th class="left">Example</th></tr><tr><td class="left"><strong>Parameters</strong></td><td class="left">the settings of the node</td><td class="left"><code>parameters=[{'speed': 0.3}]</code>, or a YAML file</td></tr><tr><td class="left"><strong>Remapping</strong></td><td class="left">the name of a topic</td><td class="left">the node publishes <code>scan</code>, the robot expects <code>front_laser/scan</code></td></tr><tr><td class="left"><strong>Namespace</strong></td><td class="left">a prefix on every name of the node</td><td class="left">two robots: <code>/r1/cmd_vel</code> and <code>/r2/cmd_vel</code></td></tr></table></div>
+<div class="box idea"><div class="bt">Why node code uses names without a slash</div><div class="bb"><p>In lesson 3 the topic was <code>'chatter'</code>, not <code>'/chatter'</code>. A name without a leading slash is <strong>relative</strong>: it takes the namespace of the node. The same code then works for robot 1 and robot 2. A name that starts with <code>/</code> is absolute and ignores the namespace.</p></div></div>
+<h4>5.3 Parameters in a YAML file</h4>
+<p>When a node has many parameters, put them in a file <code>config/params.yaml</code> and give its path in <code>parameters=[…]</code>:</p>
+<pre class="code"><code>safe_driver:                 # the name of the node
+  ros__parameters:
+    speed: 0.15
+    stop_distance: 0.40</code></pre>
+<p>Launch files can also <strong>include</strong> other launch files: this is how the big stacks start. One line includes the whole navigation system.</p>
+<div class="box keep"><div class="bt">The layout of a tidy package</div><div class="bb"><pre class="code"><code>my_robot/
+  package.xml          dependencies
+  setup.py             nodes and installed files
+  my_robot/            the Python nodes
+  launch/              *.launch.py
+  config/              *.yaml (parameters)
+  urdf/                the model of the robot (lesson 6)</code></pre></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>launch file</li><li>launch argument</li><li>remapping</li><li>namespace</li><li>YAML</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>A launch file starts many nodes with one command.</li><li>Parameters change the settings, remapping changes a topic name, a namespace adds a prefix to all the names.</li><li>Names without a leading slash follow the namespace: the same code works for several robots.</li></ul></div></div>
+          
+          <section class="exs" data-for="ros-5"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-5-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A launch file starts 3 nodes. You launch it once for each of 4 robots. How many nodes run?</p><div class="numin" data-ans="12" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>3 × 4 = <b>12</b> nodes, started with 4 commands instead of 12.</p></details>
+</div>
+<div class="ex" data-id="ros-5-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">A node in the namespace <code>r2</code> publishes on <code>cmd_vel</code>. Full name of the topic?</p><ol class="opts" type="A"><li data-ok="1"><code>/r2/cmd_vel</code></li><li><code>/cmd_vel</code></li><li><code>/cmd_vel/r2</code></li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>A relative name takes the namespace as a prefix: <b>/r2/cmd_vel</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-5-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Your node subscribes to <code>scan</code>; the robot publishes <code>front/scan</code>. Which remapping do you write on your node?</p><ol class="opts" type="A"><li data-ok="1">('scan', 'front/scan')</li><li>('front/scan', 'scan')</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The pair is (name in the code, name on the network): <b>('scan', 'front/scan')</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Two identical robots must run the same nodes without mixing their topics. What do you use?</p><p class="a">A namespace for each robot (for example r1 and r2), given in the launch file.</p></li><li><p class="q">A driver publishes on <code>scan</code> but your node listens to <code>laser</code>. How do you connect them without editing the code?</p><p class="a">With a remapping in the launch file: ('laser', 'scan') on your node.</p></li><li><p class="q">In a node running in the namespace <code>r1</code>, which topic does the name <code>/cmd_vel</code> give?</p><p class="a"><code>/cmd_vel</code>: a name starting with a slash is absolute. The relative name <code>cmd_vel</code> would give <code>/r1/cmd_vel</code>.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l6" data-id="ros-6">
+          <header class="lesson-head"><span class="num">6</span><h2>Frames and the robot model: tf2 and URDF</h2><span class="time">14 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how ROS 2 keeps track of every frame of the robot, and how to describe a robot in a URDF file.</p></div>
+<h4>6.1 The question tf2 answers</h4>
+<p>The camera sees a cup at 0.6 m in front of <em>it</em>. Where is the cup for the gripper? For the map? You know the answer from the modelling course: multiply the homogeneous matrices from one frame to the other. <strong>tf2</strong> is the ROS 2 library that does it for you, for all the frames, all the time.</p>
+<p>Every frame has a name and exactly <strong>one parent</strong>: the frames form a <strong>tree</strong>. Each link of the tree is a transform (a translation and a rotation) published on the topics <code>/tf</code> and <code>/tf_static</code>.</p>
+<figure class="figure"><svg viewBox="0 0 720 200" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <rect class="pn" x="15" y="12" width="90" height="40" rx="6"/><text x="60" y="36" text-anchor="middle" class="c-l">map</text><rect class="pn" x="170" y="12" width="90" height="40" rx="6"/><text x="215" y="36" text-anchor="middle" class="c-l">odom</text><rect class="pn" x="325" y="12" width="120" height="40" rx="6"/><text x="385" y="36" text-anchor="middle" class="c-l">base_link</text>
+      <rect class="pn" x="525" y="12" width="130" height="40" rx="6"/><text x="590" y="36" text-anchor="middle" class="c-l">laser_link</text><rect class="pn" x="525" y="72" width="130" height="40" rx="6"/><text x="590" y="96" text-anchor="middle" class="c-l">camera_link</text><rect class="pn" x="325" y="140" width="120" height="40" rx="6"/><text x="385" y="164" text-anchor="middle" class="c-l">wheel_left</text><rect class="pn" x="525" y="140" width="130" height="40" rx="6"/><text x="590" y="164" text-anchor="middle" class="c-l">wheel_right</text>
+      <line class="ax" x1="105" y1="32" x2="168" y2="32" marker-end="url(#rosar)"/><line class="ax" x1="260" y1="32" x2="323" y2="32" marker-end="url(#rosar)"/><line class="ax" x1="445" y1="32" x2="523" y2="32" marker-end="url(#rosar)"/><line class="ax" x1="430" y1="52" x2="523" y2="84" marker-end="url(#rosar)"/><line class="ax" x1="385" y1="52" x2="385" y2="138" marker-end="url(#rosar)"/><line class="ax" x1="410" y1="52" x2="530" y2="142" marker-end="url(#rosar)"/>
+      <text x="137" y="22" text-anchor="middle" class="sm">localisation</text><text x="292" y="22" text-anchor="middle" class="sm">odometry</text>
+      <text x="165" y="120" text-anchor="middle">moving links: published by nodes</text><text x="165" y="140" text-anchor="middle">fixed links: written in the URDF</text></svg></figure>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Frame</th><th class="left">What it is</th></tr><tr><td class="left"><code>base_link</code></td><td class="left">the body of the robot: x forward, y left, z up</td></tr><tr><td class="left"><code>odom</code></td><td class="left">where the robot started. <code>odom → base_link</code> comes from the wheels: smooth, but it drifts.</td></tr><tr><td class="left"><code>map</code></td><td class="left">the fixed frame of the map. <code>map → odom</code> comes from the localisation: it corrects the drift, with small jumps.</td></tr><tr><td class="left"><code>laser_link</code>, <code>camera_link</code>…</td><td class="left">one frame per sensor, fixed on the body</td></tr></table></div>
+<h4>6.2 URDF: the robot in a file</h4>
+<p>A <strong>URDF</strong> file describes the robot as <strong>links</strong> (rigid parts) joined by <strong>joints</strong>, exactly the chain of the first course. Each joint says: its parent link, its child link, where it is (<code>origin</code>), around which axis it moves, and its type (<code>revolute</code>, <code>prismatic</code>, <code>continuous</code>, <code>fixed</code>). Here is the 2-axis arm of the maths course:</p>
+<pre class="code"><code>&lt;?xml version="1.0"?&gt;
+&lt;robot name="two_axis_arm"&gt;
+  &lt;link name="base_link"&gt;
+    &lt;visual&gt;&lt;geometry&gt;&lt;cylinder radius="0.10" length="0.05"/&gt;&lt;/geometry&gt;&lt;/visual&gt;
+  &lt;/link&gt;
+
+  &lt;link name="link1"&gt;
+    &lt;visual&gt;
+      &lt;origin xyz="0.25 0 0"/&gt;                       &lt;!-- the box is centred in the middle of the link --&gt;
+      &lt;geometry&gt;&lt;box size="0.50 0.05 0.05"/&gt;&lt;/geometry&gt;
+    &lt;/visual&gt;
+  &lt;/link&gt;
+
+  &lt;link name="link2"&gt;
+    &lt;visual&gt;
+      &lt;origin xyz="0.20 0 0"/&gt;
+      &lt;geometry&gt;&lt;box size="0.40 0.04 0.04"/&gt;&lt;/geometry&gt;
+    &lt;/visual&gt;
+  &lt;/link&gt;
+
+  &lt;joint name="joint1" type="revolute"&gt;              &lt;!-- theta1 --&gt;
+    &lt;parent link="base_link"/&gt; &lt;child link="link1"/&gt;
+    &lt;origin xyz="0 0 0.05"/&gt; &lt;axis xyz="0 0 1"/&gt;
+    &lt;limit lower="-3.14" upper="3.14" effort="10" velocity="2"/&gt;
+  &lt;/joint&gt;
+
+  &lt;joint name="joint2" type="revolute"&gt;              &lt;!-- theta2, at the end of link1 (L1 = 0.5 m) --&gt;
+    &lt;parent link="link1"/&gt; &lt;child link="link2"/&gt;
+    &lt;origin xyz="0.5 0 0"/&gt; &lt;axis xyz="0 0 1"/&gt;
+    &lt;limit lower="-2.6" upper="2.6" effort="10" velocity="2"/&gt;
+  &lt;/joint&gt;
+&lt;/robot&gt;</code></pre>
+<p>The node <strong>robot_state_publisher</strong> reads the URDF and the joint angles (topic <code>/joint_states</code>) and publishes all the frames of the robot on tf: it computes the forward kinematics for you.</p>
+<pre class="code"><code>sudo apt install ros-jazzy-urdf-tutorial ros-jazzy-tf2-tools
+
+ros2 launch urdf_tutorial display.launch.py model:=$PWD/robot.urdf
+#   -&gt; RViz shows the arm, and a small window with one slider per joint
+
+ros2 run tf2_ros tf2_echo base_link link2          # where is link2, seen from the base?
+ros2 run tf2_tools view_frames                     # writes frames.pdf: the whole tree
+
+# a fixed frame, for example a camera 0.2 m in front of the base and 0.5 m above it
+ros2 run tf2_ros static_transform_publisher --x 0.2 --z 0.5 --frame-id base_link --child-frame-id camera_link</code></pre>
+<div class="box example"><div class="bt">Check the forward kinematics yourself</div><div class="bb"><p>Set joint1 = 0.5 rad and joint2 = 0.8 rad with the sliders. The origin of <code>link2</code> is at the end of link 1: x = 0.5 cos 0.5 = <strong>0.439 m</strong>, y = 0.5 sin 0.5 = <strong>0.240 m</strong>, z = 0.05 m. <code>tf2_echo base_link link2</code> must print the same translation. It is the formula x = L₁ cos θ₁ of the maths course, computed by ROS 2.</p></div></div>
+<h4>6.3 RViz: see what the robot thinks</h4>
+<p><strong>RViz</strong> is the 3D viewer of ROS 2. It does not simulate anything: it <strong>draws the data</strong> that the nodes publish (the robot model, the frames, the laser points, the map, the planned path). Choose the <em>Fixed Frame</em> at the top left (<code>base_link</code>, <code>odom</code> or <code>map</code>), then add displays.</p>
+<div class="box warn"><div class="bt">Typical tf problems</div><div class="bb"><ul><li>“<em>frame does not exist</em>” or two separate trees: a link of the tree is missing. Look at the PDF of <code>view_frames</code>.</li><li>The sensor data appears at the wrong place: the <code>origin</code> of the sensor in the URDF is wrong (measure it on the real robot).</li><li>“<em>extrapolation into the future</em>”: the clocks of two computers differ, or simulated time is not enabled (<code>use_sim_time</code>).</li></ul></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>tf2</li><li>frame</li><li>transform</li><li>URDF</li><li>link / joint</li><li>robot_state_publisher</li><li>RViz</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>tf2 keeps the tree of all the frames and gives the transform between any two of them.</li><li>Usual chain of a mobile robot: map → odom → base_link → sensors.</li><li>The URDF describes links and joints; robot_state_publisher turns it into frames.</li></ul></div></div>
+          
+          <section class="exs" data-for="ros-6"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-6-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">With the URDF of the lesson and joint1 = 1.0 rad, x of the origin of link2 (m)?</p><div class="numin" data-ans="0.2701511529340699" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>x = L₁ cos θ₁ = 0.5 × cos(1.0) = 0.5 × 0.540 = <b>0.27 m</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-6-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">The robot is at x = 3 m, y = 1 m in the map, facing along x. Its camera is 0.2 m in front of base_link. x of the camera in the map (m)?</p><div class="numin" data-ans="3.2" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The robot looks along x, so “in front” is +x: 3 + 0.2 = <b>3.2 m</b> (y stays 1 m).</p></details>
+</div>
+<div class="ex" data-id="ros-6-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Same robot, now turned by 90° (facing along +y). y of the camera in the map (m)?</p><div class="numin" data-ans="1.2" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Rotate the vector (0.2, 0) by 90°, then add the position of the robot.</p></details><details class="sol"><summary>Solution</summary><p>(0.2, 0) turned by 90° is (0, 0.2). Camera: (3 + 0, 1 + 0.2) → y = <b>1.2 m</b>. This rotation then translation is exactly what tf2 computes for you.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why do the frames of a robot form a tree and not a free network?</p><p class="a">Each frame has exactly one parent, so there is exactly one path between two frames, and one single transform.</p></li><li><p class="q">What is the difference between the frames <code>odom</code> and <code>map</code>?</p><p class="a">odom → base_link comes from the wheels: smooth but drifting. map → odom comes from the localisation: it corrects the drift.</p></li><li><p class="q">Which node turns the URDF and the joint angles into frames on tf?</p><p class="a">robot_state_publisher.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l7" data-id="ros-7">
+          <header class="lesson-head"><span class="num">7</span><h2>Simulation and tools: Gazebo, RViz, rosbag</h2><span class="time">12 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to drive a simulated robot, read its sensors, and record a test to replay it later.</p></div>
+<h4>7.1 Simulate first</h4>
+<p>A simulator replaces the real robot and its world. It publishes the <strong>same topics</strong> as the real robot (<code>/scan</code>, <code>/odom</code>, <code>/tf</code>) and listens to the same commands (<code>/cmd_vel</code>). Your nodes do not know the difference: you test at your desk, without breaking anything, then move to the real robot.</p>
+<figure class="figure"><svg viewBox="0 0 720 150" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <rect class="pn" x="10" y="20" width="220" height="40" rx="6"/><text x="120" y="38" text-anchor="middle" class="c-l">Gazebo (simulator)</text><text x="120" y="52" text-anchor="middle" class="sm">physics, sensors, world</text><rect class="pn" x="10" y="92" width="220" height="40" rx="6"/><text x="120" y="110" text-anchor="middle" class="c-l">real robot</text><text x="120" y="124" text-anchor="middle" class="sm">drivers of motors and sensors</text>
+      <rect class="pn" x="350" y="56" width="140" height="40" rx="6"/><text x="420" y="74" text-anchor="middle" class="c-l">your nodes</text><text x="420" y="88" text-anchor="middle" class="sm">the same code</text><rect class="pn" x="555" y="56" width="150" height="40" rx="6"/><text x="630" y="74" text-anchor="middle" class="c-l">RViz</text><text x="630" y="88" text-anchor="middle" class="sm">shows the data</text>
+      <line class="ax" x1="232" y1="46" x2="348" y2="68" marker-end="url(#rosar)"/><line class="ax" x1="232" y1="106" x2="348" y2="84" marker-end="url(#rosar)"/><line class="ax" x1="492" y1="76" x2="553" y2="76" marker-end="url(#rosar)"/>
+      <text x="296" y="34" text-anchor="middle" class="c-l">/scan /odom</text><text x="296" y="122" text-anchor="middle" class="c-l">/cmd_vel</text><text x="120" y="80" text-anchor="middle" class="sm">one or the other</text></svg></figure>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Tool</th><th class="left">What it does</th></tr><tr><td class="left"><strong>Gazebo</strong></td><td class="left">Simulates physics, sensors and a 3D world. The standard free simulator with ROS 2.</td></tr><tr><td class="left"><strong>RViz</strong></td><td class="left">Displays the data of the robot, simulated or real (lesson 6).</td></tr><tr><td class="left"><strong>rosbag</strong></td><td class="left">Records topics in a file and replays them later, like a flight recorder.</td></tr><tr><td class="left"><strong>rqt</strong></td><td class="left">Small windows: the node graph, live plots, the list of parameters.</td></tr><tr><td class="left"><strong>ros2 doctor</strong></td><td class="left">Checks the installation and the network.</td></tr></table></div>
+<h4>7.2 Drive a simulated robot</h4>
+<p>The TurtleBot 3 is a small two-wheel robot with a laser scanner, used everywhere for learning. Its simulation is free:</p>
+<pre class="code"><code>sudo apt install ros-jazzy-turtlebot3-gazebo ros-jazzy-teleop-twist-keyboard
+export TURTLEBOT3_MODEL=burger
+
+ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py     # terminal 1: the simulated robot and its world
+
+ros2 run teleop_twist_keyboard teleop_twist_keyboard         # terminal 2: drive it with the keyboard
+ros2 topic echo /odom --once                                 # terminal 3: where the robot thinks it is
+ros2 topic echo /scan --once                                 #             one turn of the laser scanner
+rviz2                                                        # add the displays LaserScan, TF and RobotModel
+
+ros2 bag record -o run1 /scan /odom /tf /cmd_vel             # record a test...
+ros2 bag info run1
+ros2 bag play run1                                           # ...and replay it later, without the robot</code></pre>
+<div class="box warn"><div class="bt">If these packages are not available for your version</div><div class="bb"><p>The names of the simulation packages change from one distribution to the next. If <code>apt</code> does not find them, follow the TurtleBot 3 manual (emanual.robotis.com) for your distribution: the topics and the commands of this lesson stay the same.</p></div></div>
+<h4>7.3 The three topics of a mobile robot</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Topic</th><th class="left">Direction</th><th class="left">Content</th></tr><tr><td class="left"><code>/cmd_vel</code></td><td class="left">you → robot</td><td class="left">the speed you ask: <code>linear.x</code> (m/s) and <code>angular.z</code> (rad/s). The robot converts it into wheel speeds (mobile robot course).</td></tr><tr><td class="left"><code>/odom</code></td><td class="left">robot → you</td><td class="left">where the robot thinks it is, by counting wheel turns</td></tr><tr><td class="left"><code>/scan</code></td><td class="left">robot → you</td><td class="left">the distances measured by the laser, one per angle</td></tr></table></div>
+<div class="box example"><div class="bt">Read a laser scan</div><div class="bb"><p>A scan has <code>angle_min</code> = 0, <code>angle_increment</code> = 0.0175 rad (1°) and 360 values in <code>ranges</code>. The beam number <i>i</i> points at the angle <code>angle_min + i × angle_increment</code>: <code>ranges[0]</code> is straight ahead, <code>ranges[90]</code> is to the left, <code>ranges[180]</code> is behind. A value of <code>inf</code> means “nothing seen”.</p></div></div>
+<h4>7.4 Simulated time</h4>
+<p>A simulator can run slower or faster than a real clock. It publishes its own time on the topic <code>/clock</code>. Every node that works with a simulation must use it: set the parameter <code>use_sim_time:=true</code>. Forgetting it gives strange tf errors.</p>
+<div class="box idea"><div class="bt">Why rosbag is precious</div><div class="bb"><p>A bug that happens once an hour on the real robot is very hard to study. Record a bag during the tests: when the bug happens, you replay the exact same sensor data at your desk, as many times as you want, and you test your fix on it.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>simulator</li><li>Gazebo</li><li>rosbag</li><li>teleoperation</li><li>simulated time</li><li>LaserScan</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>The simulator offers the same topics as the real robot: the same nodes work on both.</li><li>A mobile robot: you send <code>/cmd_vel</code>, it gives <code>/odom</code> and <code>/scan</code>.</li><li>rosbag records the topics of a test and replays them at your desk.</li></ul></div></div>
+          
+          <section class="exs" data-for="ros-7"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-7-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A scan starts at angle 0 with a step of 1°. Which index of <code>ranges</code> points to the left (90°)?</p><div class="numin" data-ans="90" data-tol="0.1" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>angle = 0 + i × 1° → i = <b>90</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-7-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Another laser: <code>angle_min</code> = −180°, step 0.5°. Which index points straight ahead (0°)?</p><div class="numin" data-ans="360" data-tol="0.1" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>0 = −180 + i × 0.5 → i = 180 / 0.5 = <b>360</b>. Always compute the index from angle_min and angle_increment: never assume that index 0 is the front.</p></details>
+</div>
+<div class="ex" data-id="ros-7-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">You record <code>/scan</code> (3 kB per message, 10 Hz) for 60 s. Size of the bag for this topic (MB, with 1 MB = 1000 kB)?</p><div class="numin" data-ans="1.8" data-tol="0.01" data-unit="Mo"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>3 × 10 × 60 = 1800 kB = <b>1.8 MB</b>. Small: record the laser freely. Camera images fill a disk much faster.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why can the same node drive the simulated robot and the real one?</p><p class="a">Both offer the same topics with the same message types; the node only knows the topics.</p></li><li><p class="q">Does RViz simulate the robot?</p><p class="a">No. RViz only displays the data that is published. Gazebo simulates.</p></li><li><p class="q">What is a rosbag used for?</p><p class="a">To record topics during a test and replay them later, to analyse a problem or test a fix without the robot.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="7"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l8" data-id="ros-8">
+          <header class="lesson-head"><span class="num">8</span><h2>The big stacks: Nav2, MoveIt 2 and ros2_control</h2><span class="time">14 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what the main ready-made systems of ROS 2 do, how they fit together, and how to build a map and navigate in it.</p></div>
+<p>You now know the bricks. The strength of ROS 2 is that the hard problems of the other courses are already solved in open-source <strong>stacks</strong>: sets of nodes that you configure and launch.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Stack</th><th class="left">Job</th><th class="left">Course of this site</th></tr><tr><td class="left"><strong>slam_toolbox</strong></td><td class="left">Builds a map from the laser while the robot drives (SLAM).</td><td class="left">Perception, planning and AI, lesson 4</td></tr><tr><td class="left"><strong>Nav2</strong></td><td class="left">Takes a mobile robot from A to B in a map, avoiding obstacles.</td><td class="left">Perception, planning and AI, lessons 4, 5 and 7</td></tr><tr><td class="left"><strong>MoveIt 2</strong></td><td class="left">Plans the motion of an arm without collision: inverse kinematics, path planning, trajectory.</td><td class="left">Robot modelling; Perception, planning and AI, lesson 6</td></tr><tr><td class="left"><strong>ros2_control</strong></td><td class="left">The link between the controllers and the motors, in real time.</td><td class="left">Dynamics and control</td></tr><tr><td class="left"><strong>micro-ROS</strong></td><td class="left">Puts a small ROS 2 node on a microcontroller (ESP32, STM32).</td><td class="left">Robots in the real world, lesson 4</td></tr></table></div>
+<h4>8.1 Nav2: from A to B</h4>
+<figure class="figure"><svg viewBox="0 0 720 215" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <rect class="pn" x="10" y="25" width="130" height="40" rx="6"/><text x="75" y="43" text-anchor="middle" class="c-l">Map</text><text x="75" y="57" text-anchor="middle" class="sm">map_server</text><rect class="pn" x="10" y="95" width="130" height="40" rx="6"/><text x="75" y="113" text-anchor="middle" class="c-l">Localisation</text><text x="75" y="127" text-anchor="middle" class="sm">AMCL</text><rect class="pn" x="10" y="165" width="130" height="40" rx="6"/><text x="75" y="183" text-anchor="middle" class="c-l">Laser</text><text x="75" y="197" text-anchor="middle" class="sm">/scan</text>
+      <rect class="pn" x="200" y="25" width="180" height="40" rx="6"/><text x="290" y="43" text-anchor="middle" class="c-l">Global planner</text><text x="290" y="57" text-anchor="middle" class="sm">the whole path (A*)</text><rect class="pn" x="200" y="95" width="180" height="40" rx="6"/><text x="290" y="113" text-anchor="middle" class="c-l">Controller</text><text x="290" y="127" text-anchor="middle" class="sm">follows the path</text><rect class="pn" x="200" y="165" width="180" height="40" rx="6"/><text x="290" y="183" text-anchor="middle" class="c-l">Costmaps</text><text x="290" y="197" text-anchor="middle" class="sm">where it is dangerous</text>
+      <rect class="pn" x="445" y="65" width="200" height="40" rx="6"/><text x="545" y="83" text-anchor="middle" class="c-l">Behaviour tree</text><text x="545" y="97" text-anchor="middle" class="sm">decides, recovers</text><rect class="pn" x="600" y="160" width="100" height="40" rx="6"/><text x="650" y="178" text-anchor="middle" class="c-l">Robot</text><text x="650" y="192" text-anchor="middle" class="sm">/cmd_vel</text>
+      <line class="ax" x1="142" y1="45" x2="198" y2="45" marker-end="url(#rosar)"/><line class="ax" x1="142" y1="115" x2="198" y2="115" marker-end="url(#rosar)"/><line class="ax" x1="142" y1="185" x2="198" y2="185" marker-end="url(#rosar)"/><line class="ax" x1="290" y1="66" x2="290" y2="93" marker-end="url(#rosar)"/><line class="ax" x1="290" y1="164" x2="290" y2="137" marker-end="url(#rosar)"/><line class="ax" x1="382" y1="124" x2="598" y2="170" marker-end="url(#rosar)"/><line class="ax" x1="443" y1="76" x2="382" y2="52" marker-end="url(#rosar)"/><line class="ax" x1="443" y1="94" x2="382" y2="110" marker-end="url(#rosar)"/>
+      <text x="545" y="28" text-anchor="middle">goal: NavigateToPose (action)</text><line class="ax" x1="545" y1="36" x2="545" y2="63" marker-end="url(#rosar)"/></svg></figure>
+<ul><li><strong>Localisation</strong> (AMCL) compares the laser with the map to find where the robot is: it publishes <code>map → odom</code>.</li><li>The <strong>costmaps</strong> are grids that mark the walls and the obstacles seen right now, enlarged by the size of the robot.</li><li>The <strong>global planner</strong> finds the whole path in the map; the <strong>controller</strong> follows it and publishes <code>/cmd_vel</code> 20 times per second.</li><li>A <strong>behaviour tree</strong> runs the whole: plan, follow, and if the robot is stuck, clear the map, turn, back up, try again.</li></ul>
+<p>Build a map with slam_toolbox, save it, then navigate in it:</p>
+<pre class="code"><code>sudo apt install ros-jazzy-navigation2 ros-jazzy-nav2-bringup ros-jazzy-slam-toolbox
+
+# 1. build a map: drive the robot around while slam_toolbox draws the map
+ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+ros2 launch slam_toolbox online_async_launch.py use_sim_time:=true
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+ros2 run nav2_map_server map_saver_cli -f ~/my_map          # writes my_map.pgm and my_map.yaml
+
+# 2. navigate in this map: click "2D Pose Estimate", then "Nav2 Goal" in RViz
+ros2 launch nav2_bringup bringup_launch.py use_sim_time:=true map:=$HOME/my_map.yaml
+ros2 launch nav2_bringup rviz_launch.py</code></pre>
+<h4>8.2 MoveIt 2: move an arm without collision</h4>
+<ol><li>It reads the <strong>URDF</strong> of the arm and a description of the obstacles.</li><li>You give a target for the tool. MoveIt solves the <strong>inverse kinematics</strong>.</li><li>It <strong>plans a path</strong> in the joint space that touches nothing (RRT and its cousins).</li><li>It turns the path into a <strong>trajectory</strong> with speeds and accelerations inside the limits.</li><li>It sends it to the arm with the action <code>FollowJointTrajectory</code>.</li></ol>
+<h4>8.3 ros2_control: the last metre before the motors</h4>
+<p><strong>ros2_control</strong> separates two things. A <strong>hardware interface</strong> talks to the real motors (or to the simulator): it reads positions and writes commands. <strong>Controllers</strong> are plugged on top: <code>diff_drive_controller</code> turns <code>/cmd_vel</code> into wheel speeds and computes the odometry; <code>joint_trajectory_controller</code> follows the trajectories of MoveIt. To change the robot you only change the hardware interface.</p>
+<div class="box warn"><div class="bt">ROS 2 and safety</div><div class="bb"><p>These stacks are powerful but they are <strong>not certified safety systems</strong>. A node can crash, a message can be late. The emergency stop, the safety laser scanner and the speed limits of a real robot stay in certified hardware, outside ROS 2 (see the lesson on safety in “Robots in the real world”).</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>SLAM</li><li>Nav2</li><li>AMCL</li><li>costmap</li><li>MoveIt 2</li><li>ros2_control</li><li>hardware interface</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>slam_toolbox builds the map; Nav2 drives a mobile robot from A to B in it.</li><li>MoveIt 2 plans the motion of an arm without collision.</li><li>ros2_control links the controllers to the motors. Safety stays outside ROS 2.</li></ul></div></div>
+          <figure class="figure pfig"><svg viewBox="0 0 640 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="300" fill="#1b1f25" rx="10"/><line x1="56" y1="24" x2="56" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.1</text><line x1="136.9" y1="24" x2="136.9" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="136.9" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.3</text><line x1="217.7" y1="24" x2="217.7" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="217.7" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.5</text><line x1="298.6" y1="24" x2="298.6" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="298.6" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.7</text><line x1="379.4" y1="24" x2="379.4" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="379.4" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.9</text><line x1="460.3" y1="24" x2="460.3" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="460.3" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1.1</text><line x1="541.1" y1="24" x2="541.1" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="541.1" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1.3</text><line x1="622" y1="24" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1.5</text><line x1="56" y1="256" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="260" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="178.7" x2="622" y2="178.7" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="182.7" fill="#9fb0c3" font-size="12" text-anchor="end">1</text><line x1="56" y1="101.3" x2="622" y2="101.3" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="105.3" fill="#9fb0c3" font-size="12" text-anchor="end">2</text><line x1="56" y1="24" x2="622" y2="24" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="28" fill="#9fb0c3" font-size="12" text-anchor="end">3</text><line x1="56" y1="256" x2="622" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="24" x2="56" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,101.3L59.5,113.8L63.1,124.4L66.6,133.5L70.2,141.4L73.7,148.4L77.2,154.6L80.8,160.1L84.3,165L87.8,169.5L91.4,173.5L94.9,177.2L98.4,180.6L102,183.6L105.5,186.5L109.1,189.1L112.6,191.6L116.1,193.8L119.7,195.9L123.2,197.9L126.8,199.8L130.3,201.5L133.8,203.1L137.4,204.7L140.9,206.1L144.4,207.5L148,208.8L151.5,210L155.1,211.2L158.6,212.3L162.1,213.3L165.7,214.3L169.2,215.3L172.7,216.2L176.3,217.1L179.8,217.9L183.4,218.7L186.9,219.5L190.4,220.2L194,220.9L197.5,221.6L201,222.3L204.6,222.9L208.1,223.5L211.7,224.1L215.2,224.7L218.7,225.2L222.3,225.7L225.8,226.3L229.3,226.7L232.9,227.2L236.4,227.7L240,228.1L243.5,228.6L247,229L250.6,229.4L254.1,229.8L257.6,230.2L261.2,230.5L264.7,230.9L268.3,231.3L271.8,231.6L275.3,231.9L278.9,232.3L282.4,232.6L285.9,232.9L289.5,233.2L293,233.5L296.5,233.7L300.1,234L303.6,234.3L307.2,234.6L310.7,234.8L314.2,235.1L317.8,235.3L321.3,235.5L324.8,235.8L328.4,236L331.9,236.2L335.5,236.5L339,236.7L342.5,236.9L346.1,237.1L349.6,237.3L353.2,237.5L356.7,237.7L360.2,237.9L363.8,238L367.3,238.2L370.8,238.4L374.4,238.6L377.9,238.7L381.4,238.9L385,239.1L388.5,239.2L392.1,239.4L395.6,239.5L399.1,239.7L402.7,239.8L406.2,240L409.8,240.1L413.3,240.3L416.8,240.4L420.4,240.6L423.9,240.7L427.4,240.8L431,240.9L434.5,241.1L438.1,241.2L441.6,241.3L445.1,241.4L448.7,241.6L452.2,241.7L455.7,241.8L459.3,241.9L462.8,242L466.3,242.1L469.9,242.2L473.4,242.3L477,242.4L480.5,242.6L484,242.7L487.6,242.8L491.1,242.9L494.7,242.9L498.2,243L501.7,243.1L505.3,243.2L508.8,243.3L512.3,243.4L515.9,243.5L519.4,243.6L523,243.7L526.5,243.8L530,243.8L533.6,243.9L537.1,244L540.6,244.1L544.2,244.2L547.7,244.2L551.3,244.3L554.8,244.4L558.3,244.5L561.9,244.6L565.4,244.6L568.9,244.7L572.5,244.8L576,244.8L579.6,244.9L583.1,245L586.6,245.1L590.2,245.1L593.7,245.2L597.2,245.2L600.8,245.3L604.3,245.4L607.8,245.4L611.4,245.5L614.9,245.6L618.5,245.6L622,245.7" fill="none" stroke="#ff9f43" stroke-width="3"/><rect x="66" y="32" width="14" height="4" fill="#ff9f43"/><text x="86" y="38" fill="#ff9f43" font-size="13" text-anchor="start">v = 0.2 m/s</text><path d="M56,178.7L59.5,184.9L63.1,190.2L66.6,194.7L70.2,198.7L73.7,202.2L77.2,205.3L80.8,208L84.3,210.5L87.8,212.7L91.4,214.8L94.9,216.6L98.4,218.3L102,219.8L105.5,221.2L109.1,222.6L112.6,223.8L116.1,224.9L119.7,226L123.2,227L126.8,227.9L130.3,228.7L133.8,229.6L137.4,230.3L140.9,231.1L144.4,231.7L148,232.4L151.5,233L155.1,233.6L158.6,234.1L162.1,234.7L165.7,235.2L169.2,235.6L172.7,236.1L176.3,236.5L179.8,237L183.4,237.4L186.9,237.8L190.4,238.1L194,238.5L197.5,238.8L201,239.1L204.6,239.5L208.1,239.8L211.7,240.1L215.2,240.3L218.7,240.6L222.3,240.9L225.8,241.1L229.3,241.4L232.9,241.6L236.4,241.8L240,242.1L243.5,242.3L247,242.5L250.6,242.7L254.1,242.9L257.6,243.1L261.2,243.3L264.7,243.5L268.3,243.6L271.8,243.8L275.3,244L278.9,244.1L282.4,244.3L285.9,244.4L289.5,244.6L293,244.7L296.5,244.9L300.1,245L303.6,245.1L307.2,245.3L310.7,245.4L314.2,245.5L317.8,245.7L321.3,245.8L324.8,245.9L328.4,246L331.9,246.1L335.5,246.2L339,246.3L342.5,246.4L346.1,246.5L349.6,246.6L353.2,246.7L356.7,246.8L360.2,246.9L363.8,247L367.3,247.1L370.8,247.2L374.4,247.3L377.9,247.4L381.4,247.5L385,247.5L388.5,247.6L392.1,247.7L395.6,247.8L399.1,247.8L402.7,247.9L406.2,248L409.8,248.1L413.3,248.1L416.8,248.2L420.4,248.3L423.9,248.3L427.4,248.4L431,248.5L434.5,248.5L438.1,248.6L441.6,248.7L445.1,248.7L448.7,248.8L452.2,248.8L455.7,248.9L459.3,249L462.8,249L466.3,249.1L469.9,249.1L473.4,249.2L477,249.2L480.5,249.3L484,249.3L487.6,249.4L491.1,249.4L494.7,249.5L498.2,249.5L501.7,249.6L505.3,249.6L508.8,249.7L512.3,249.7L515.9,249.8L519.4,249.8L523,249.8L526.5,249.9L530,249.9L533.6,250L537.1,250L540.6,250L544.2,250.1L547.7,250.1L551.3,250.2L554.8,250.2L558.3,250.2L561.9,250.3L565.4,250.3L568.9,250.4L572.5,250.4L576,250.4L579.6,250.5L583.1,250.5L586.6,250.5L590.2,250.6L593.7,250.6L597.2,250.6L600.8,250.7L604.3,250.7L607.8,250.7L611.4,250.8L614.9,250.8L618.5,250.8L622,250.8" fill="none" stroke="#5aa9ff" stroke-width="3"/><rect x="66" y="54" width="14" height="4" fill="#5aa9ff"/><text x="86" y="60" fill="#5aa9ff" font-size="13" text-anchor="start">v = 0.1 m/s</text><circle cx="217.7" cy="225.1" r="5" fill="#f5c518"/><text x="225.7" y="217.1" fill="#f5c518" font-size="13" text-anchor="start">0.4 m</text><text x="622" y="294" fill="#9fb0c3" font-size="13" text-anchor="end">angular.z (rad/s)</text><text x="60" y="19" fill="#9fb0c3" font-size="12" text-anchor="start">radius of the turn (m)</text></svg><figcaption>The controller of Nav2 sends linear.x and angular.z: the robot follows a circle of radius r = v / ω.</figcaption></figure>
+          <section class="exs" data-for="ros-8"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-8-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q"><code>/cmd_vel</code>: linear.x = 0.2 m/s, angular.z = 0.5 rad/s. Radius of the circle (m)?</p><div class="numin" data-ans="0.4" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>r = v / ω = 0.2 / 0.5 = <b>0.4 m</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-8-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">The robot turns on the spot at 0.6 rad/s. Time to turn by 90° (s)?</p><div class="numin" data-ans="2.6179938779914944" data-tol="0.03" data-unit="s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>90° = π/2 = 1.571 rad; 1.571 / 0.6 = <b>2.62 s</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-8-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A 6-axis arm must pick a part between two machines without touching them. Which stack?</p><ol class="opts" type="A"><li data-ok="1">MoveIt 2</li><li>Nav2</li><li>slam_toolbox</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Collision-free motion of an arm is the job of <b>MoveIt 2</b>; Nav2 and slam_toolbox are for mobile robots.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In Nav2, which part publishes <code>/cmd_vel</code>?</p><p class="a">The controller (local planner): it follows the global path and avoids the obstacles seen right now.</p></li><li><p class="q">What does MoveIt 2 need to know about the arm?</p><p class="a">Its URDF (links, joints, limits, shapes for collisions) and how to send it a trajectory.</p></li><li><p class="q">Why is the emergency stop not a ROS 2 node?</p><p class="a">Safety must not depend on software that can crash or be late: it uses certified hardware that cuts the power.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="8"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l9" data-id="ros-9">
+          <header class="lesson-head"><span class="num">9</span><h2>Project: a robot that drives and avoids obstacles</h2><span class="time">15 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to write a complete node that reads the laser and drives the robot, test it in simulation, and know what to learn next.</p></div>
+<h4>9.1 The plan</h4>
+<p>The robot drives straight ahead. When the laser sees an obstacle closer than 40 cm in front, the robot turns on the spot until the way is free. It is the loop <strong>sense → think → act</strong>:</p>
+<figure class="figure"><svg viewBox="0 0 720 110" class="fig" role="img" aria-hidden="true"><defs><marker id="rosar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa7b6"/></marker></defs>
+      <rect class="pn" x="15" y="35" width="130" height="40" rx="6"/><text x="80" y="53" text-anchor="middle" class="c-l">Laser</text><text x="80" y="67" text-anchor="middle" class="sm">sense</text><rect class="pn" x="250" y="35" width="220" height="40" rx="6"/><text x="360" y="53" text-anchor="middle" class="c-l">safe_driver</text><text x="360" y="67" text-anchor="middle" class="sm">think: free or blocked?</text><rect class="pn" x="575" y="35" width="130" height="40" rx="6"/><text x="640" y="53" text-anchor="middle" class="c-l">Wheels</text><text x="640" y="67" text-anchor="middle" class="sm">act</text>
+      <line class="ax" x1="147" y1="55" x2="248" y2="55" marker-end="url(#rosar)"/><line class="ax" x1="472" y1="55" x2="573" y2="55" marker-end="url(#rosar)"/>
+      <text x="197" y="45" text-anchor="middle" class="c-l">/scan</text><text x="522" y="45" text-anchor="middle" class="c-l">/cmd_vel</text></svg></figure>
+<h4>9.2 The node</h4>
+<p>File <code>my_robot/my_robot/safe_driver.py</code> (declare it in <code>setup.py</code>, and add <code>geometry_msgs</code> and <code>sensor_msgs</code> to <code>package.xml</code>). It follows the pattern of lesson 3: the laser callback only stores the nearest distance in front; a 10 Hz timer decides and publishes.</p>
+<pre class="code"><code>import math
+
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
+
+
+class SafeDriver(Node):
+    """Drive forward, and turn on the spot when an obstacle is closer than stop_distance."""
+
+    def __init__(self):
+        super().__init__('safe_driver')
+        self.declare_parameter('speed', 0.15)             # m/s
+        self.declare_parameter('stop_distance', 0.40)     # m
+        self.front = math.inf                             # nearest obstacle in front (m)
+        self.cmd = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.scan = self.create_subscription(LaserScan, 'scan', self.on_scan, qos_profile_sensor_data)
+        self.timer = self.create_timer(0.1, self.control)  # the control loop: 10 Hz
+
+    def on_scan(self, msg):
+        # keep the beams within 25 degrees of straight ahead (angle 0)
+        near = []
+        for i, r in enumerate(msg.ranges):
+            angle = msg.angle_min + i * msg.angle_increment
+            angle = math.atan2(math.sin(angle), math.cos(angle))      # wrap to [-pi, pi]
+            if abs(angle) &lt; math.radians(25) and msg.range_min &lt; r &lt; msg.range_max:
+                near.append(r)
+        self.front = min(near) if near else math.inf
+
+    def control(self):
+        cmd = Twist()
+        if self.front &gt; self.get_parameter('stop_distance').value:
+            cmd.linear.x = self.get_parameter('speed').value          # the way is free: go
+        else:
+            cmd.angular.z = 0.6                                       # obstacle: turn left on the spot
+        self.cmd.publish(cmd)
+
+
+def main():
+    rclpy.init()
+    node = SafeDriver()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.cmd.publish(Twist())                                     # stop the robot before leaving
+        node.destroy_node()
+        rclpy.try_shutdown()
+
+
+if __name__ == '__main__':
+    main()</code></pre>
+<ul><li><code>qos_profile_sensor_data</code> is the <strong>best effort</strong> QoS of lesson 2: it matches what laser drivers publish.</li><li>The two parameters let you tune the robot without editing the code.</li><li>When the node stops, it publishes a zero speed: never leave a robot with its last command.</li></ul>
+<h4>9.3 Test it</h4>
+<pre class="code"><code>ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py          # terminal 1
+ros2 run my_robot safe_driver --ros-args -p use_sim_time:=true    # terminal 2
+ros2 param set /safe_driver speed 0.25                            # terminal 3: go faster
+ros2 topic echo /cmd_vel                                          #             see the commands</code></pre>
+<div class="box warn"><div class="bt">If the robot does not move</div><div class="bb"><p>Type <code>ros2 topic info /cmd_vel</code>. On recent distributions some robots, the TurtleBot 3 among them, expect the type <code>geometry_msgs/msg/TwistStamped</code> (a Twist with a time stamp) instead of <code>Twist</code>. In that case publish a <code>TwistStamped</code>: fill <code>msg.header.stamp = self.get_clock().now().to_msg()</code> and put the speeds in <code>msg.twist</code>. The two types on the same topic do not connect, and there is no error message.</p></div></div>
+<div class="box lab"><div class="bt">Make it better</div><div class="bb"><ol><li>Turn to the side where there is more free space (compare the beams on the left and on the right).</li><li>Slow down when the obstacle gets close: speed proportional to the distance (a P controller, like in the control course).</li><li>Write a launch file that starts the simulation and your node with a YAML file of parameters.</li><li>Record a bag of <code>/scan</code> and <code>/cmd_vel</code>, and replay it to check your logic without the simulator.</li></ol></div></div>
+<h4>9.4 Where to go next</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">If you want to…</th><th class="left">Learn</th><th class="left">On this site</th></tr><tr><td class="left">make a mobile robot navigate</td><td class="left">Nav2, slam_toolbox, robot_localization (Kalman filter)</td><td class="left">Wheeled mobile robots</td></tr><tr><td class="left">control a robot arm</td><td class="left">MoveIt 2, ros2_control</td><td class="left">Robot modelling; Dynamics and control</td></tr><tr><td class="left">use a camera</td><td class="left">image_transport, cv_bridge with OpenCV</td><td class="left">Perception, planning and AI</td></tr><tr><td class="left">build a real robot</td><td class="left">micro-ROS, a URDF of your robot, a hardware interface</td><td class="left">Robots in the real world</td></tr></table></div>
+<p>The official tutorials on <strong>docs.ros.org</strong> follow the same order as this course and go further on every point. Do them with the simulator open.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>control loop</li><li>sensor QoS</li><li>TwistStamped</li><li>teleoperation</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Sense → think → act: subscribe to the sensor, decide in a timer, publish the command.</li><li>Parameters let you tune the node without editing it.</li><li>Always send a zero speed when the node stops.</li></ul></div></div>
+          <figure class="figure pfig"><svg viewBox="0 0 640 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="300" fill="#1b1f25" rx="10"/><line x1="56" y1="24" x2="56" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0</text><line x1="169.2" y1="24" x2="169.2" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="169.2" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.4</text><line x1="282.4" y1="24" x2="282.4" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="282.4" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.8</text><line x1="395.6" y1="24" x2="395.6" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="395.6" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1.2</text><line x1="508.8" y1="24" x2="508.8" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="508.8" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1.6</text><line x1="622" y1="24" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">2</text><line x1="56" y1="256" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="260" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="178.7" x2="622" y2="178.7" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="182.7" fill="#9fb0c3" font-size="12" text-anchor="end">0.1</text><line x1="56" y1="101.3" x2="622" y2="101.3" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="105.3" fill="#9fb0c3" font-size="12" text-anchor="end">0.2</text><line x1="56" y1="24" x2="622" y2="24" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="28" fill="#9fb0c3" font-size="12" text-anchor="end">0.3</text><line x1="56" y1="256" x2="622" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="24" x2="56" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,256L59.5,256L63.1,256L66.6,256L70.2,256L73.7,256L77.2,256L80.8,256L84.3,256L87.8,256L91.4,256L94.9,256L98.4,256L102,256L105.5,256L109.1,256L112.6,256L116.1,256L119.7,256L123.2,256L126.8,256L130.3,256L133.8,256L137.4,256L140.9,256L144.4,256L148,256L151.5,256L155.1,256L158.6,256L162.1,256L165.7,256L169.2,256L172.7,251.2L176.3,246.3L179.8,241.5L183.4,236.7L186.9,231.8L190.4,227L194,222.2L197.5,217.3L201,212.5L204.6,207.7L208.1,202.8L211.7,198L215.2,193.2L218.7,188.3L222.3,183.5L225.8,178.7L229.3,173.8L232.9,169L236.4,164.2L240,159.3L243.5,154.5L247,149.7L250.6,144.8L254.1,140L257.6,135.2L261.2,130.3L264.7,125.5L268.3,120.7L271.8,115.8L275.3,111L278.9,106.2L282.4,101.3L285.9,96.5L289.5,91.7L293,86.8L296.5,82L300.1,77.2L303.6,72.3L307.2,67.5L310.7,62.7L314.2,62.7L317.8,62.7L321.3,62.7L324.8,62.7L328.4,62.7L331.9,62.7L335.5,62.7L339,62.7L342.5,62.7L346.1,62.7L349.6,62.7L353.2,62.7L356.7,62.7L360.2,62.7L363.8,62.7L367.3,62.7L370.8,62.7L374.4,62.7L377.9,62.7L381.4,62.7L385,62.7L388.5,62.7L392.1,62.7L395.6,62.7L399.1,62.7L402.7,62.7L406.2,62.7L409.8,62.7L413.3,62.7L416.8,62.7L420.4,62.7L423.9,62.7L427.4,62.7L431,62.7L434.5,62.7L438.1,62.7L441.6,62.7L445.1,62.7L448.7,62.7L452.2,62.7L455.7,62.7L459.3,62.7L462.8,62.7L466.3,62.7L469.9,62.7L473.4,62.7L477,62.7L480.5,62.7L484,62.7L487.6,62.7L491.1,62.7L494.7,62.7L498.2,62.7L501.7,62.7L505.3,62.7L508.8,62.7L512.3,62.7L515.9,62.7L519.4,62.7L523,62.7L526.5,62.7L530,62.7L533.6,62.7L537.1,62.7L540.6,62.7L544.2,62.7L547.7,62.7L551.3,62.7L554.8,62.7L558.3,62.7L561.9,62.7L565.4,62.7L568.9,62.7L572.5,62.7L576,62.7L579.6,62.7L583.1,62.7L586.6,62.7L590.2,62.7L593.7,62.7L597.2,62.7L600.8,62.7L604.3,62.7L607.9,62.7L611.4,62.7L614.9,62.7L618.5,62.7L622,62.7" fill="none" stroke="#3ddc84" stroke-width="3"/><rect x="66" y="32" width="14" height="4" fill="#3ddc84"/><text x="86" y="38" fill="#3ddc84" font-size="13" text-anchor="start">speed = 0.5 × (distance − 0.4), limited to 0.25</text><path d="M56,256L59.5,256L63.1,256L66.6,256L70.2,256L73.7,256L77.2,256L80.8,256L84.3,256L87.8,256L91.4,256L94.9,256L98.4,256L102,256L105.5,256L109.1,256L112.6,256L116.1,256L119.7,256L123.2,256L126.8,256L130.3,256L133.8,256L137.4,256L140.9,256L144.4,256L148,256L151.5,256L155.1,256L158.6,256L162.1,256L165.7,256L169.2,256L172.7,140L176.3,140L179.8,140L183.4,140L186.9,140L190.4,140L194,140L197.5,140L201,140L204.6,140L208.1,140L211.7,140L215.2,140L218.7,140L222.3,140L225.8,140L229.3,140L232.9,140L236.4,140L240,140L243.5,140L247,140L250.6,140L254.1,140L257.6,140L261.2,140L264.7,140L268.3,140L271.8,140L275.3,140L278.9,140L282.4,140L285.9,140L289.5,140L293,140L296.5,140L300.1,140L303.6,140L307.2,140L310.7,140L314.2,140L317.8,140L321.3,140L324.8,140L328.4,140L331.9,140L335.5,140L339,140L342.5,140L346.1,140L349.6,140L353.2,140L356.7,140L360.2,140L363.8,140L367.3,140L370.8,140L374.4,140L377.9,140L381.4,140L385,140L388.5,140L392.1,140L395.6,140L399.1,140L402.7,140L406.2,140L409.8,140L413.3,140L416.8,140L420.4,140L423.9,140L427.4,140L431,140L434.5,140L438.1,140L441.6,140L445.1,140L448.7,140L452.2,140L455.7,140L459.3,140L462.8,140L466.3,140L469.9,140L473.4,140L477,140L480.5,140L484,140L487.6,140L491.1,140L494.7,140L498.2,140L501.7,140L505.3,140L508.8,140L512.3,140L515.9,140L519.4,140L523,140L526.5,140L530,140L533.6,140L537.1,140L540.6,140L544.2,140L547.7,140L551.3,140L554.8,140L558.3,140L561.9,140L565.4,140L568.9,140L572.5,140L576,140L579.6,140L583.1,140L586.6,140L590.2,140L593.7,140L597.2,140L600.8,140L604.3,140L607.9,140L611.4,140L614.9,140L618.5,140L622,140" fill="none" stroke="#ff9f43" stroke-width="3" stroke-dasharray="6 5"/><rect x="66" y="54" width="14" height="4" fill="#ff9f43"/><text x="86" y="60" fill="#ff9f43" font-size="13" text-anchor="start">node of the lesson: 0.15 or 0</text><text x="622" y="294" fill="#9fb0c3" font-size="13" text-anchor="end">distance to the obstacle (m)</text><text x="60" y="19" fill="#9fb0c3" font-size="12" text-anchor="start">linear.x (m/s)</text></svg><figcaption>Improvement 2 of the project: the robot slows down smoothly instead of stopping at once.</figcaption></figure>
+          <section class="exs" data-for="ros-9"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="ros-9-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">The robot drives at 0.15 m/s. The obstacle is at 1.0 m and the stop distance is 0.40 m. Time before it stops going forward (s)?</p><div class="numin" data-ans="4" data-tol="0.05" data-unit="s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>It can travel 1.0 − 0.4 = 0.6 m: 0.6 / 0.15 = <b>4 s</b>.</p></details>
+</div>
+<div class="ex" data-id="ros-9-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Improved node: speed = 0.5 × (distance − 0.4). Speed when the obstacle is at 0.9 m (m/s)?</p><div class="numin" data-ans="0.25" data-tol="0.003" data-unit="m/s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>0.5 × (0.9 − 0.4) = 0.5 × 0.5 = <b>0.25 m/s</b>. The speed falls to zero as the robot reaches 0.4 m.</p></details>
+</div>
+<div class="ex" data-id="ros-9-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">The laser publishes at 10 Hz and the timer runs at 10 Hz. In the worst case the reaction is 0.2 s late. Distance travelled at 0.25 m/s during this delay (cm)?</p><div class="numin" data-ans="5" data-tol="0.05" data-unit="cm"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>0.25 × 0.2 = 0.05 m = <b>5 cm</b>. The stop distance must include this delay and the braking distance: this is why a fast robot needs a larger stop distance.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why does the laser callback only store a value instead of driving the robot?</p><p class="a">Callbacks must stay short, and the command must be sent at a regular rate by the timer, even if a scan is late.</p></li><li><p class="q">Why publish a zero speed when the node stops?</p><p class="a">Otherwise the robot may keep executing the last command it received.</p></li><li><p class="q">The node publishes <code>Twist</code> but the robot expects <code>TwistStamped</code>. What happens?</p><p class="a">Nothing: the types differ, so the publisher and the subscriber do not connect, and the robot does not move.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="9"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+        <section class="gloss">
+          <h2>Glossary</h2>
+          <p>All the words of the course in one place.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Node</td><td class="left">One running program that does one job.</td></tr><tr><td class="left">Topic</td><td class="left">A named channel where nodes publish and receive messages.</td></tr><tr><td class="left">Message</td><td class="left">One piece of data with a fixed type (fields with names).</td></tr><tr><td class="left">Service</td><td class="left">A request and its answer between two nodes.</td></tr><tr><td class="left">Action</td><td class="left">A long task with a goal, feedback and a result, that can be cancelled.</td></tr><tr><td class="left">Parameter</td><td class="left">A named setting of a node.</td></tr><tr><td class="left">QoS</td><td class="left">Quality of service: how messages are delivered (reliable or best effort, queue size).</td></tr><tr><td class="left">Package</td><td class="left">A folder with nodes, launch files and description files; the unit that is built and shared.</td></tr><tr><td class="left">Workspace</td><td class="left">The folder that holds your packages and where colcon builds them.</td></tr><tr><td class="left">colcon</td><td class="left">The build tool of ROS 2.</td></tr><tr><td class="left">Launch file</td><td class="left">A file that starts several nodes with their settings.</td></tr><tr><td class="left">Namespace</td><td class="left">A prefix added to the names of a node, to separate robots.</td></tr><tr><td class="left">tf2</td><td class="left">The library that keeps the tree of frames and computes the transform between any two of them.</td></tr><tr><td class="left">URDF</td><td class="left">An XML file that describes the links and joints of a robot.</td></tr><tr><td class="left">RViz</td><td class="left">The 3D viewer that displays the data of the robot.</td></tr><tr><td class="left">Gazebo</td><td class="left">The simulator: physics, sensors and a 3D world.</td></tr><tr><td class="left">rosbag</td><td class="left">A recording of topics that can be replayed.</td></tr><tr><td class="left">Nav2</td><td class="left">The navigation stack for mobile robots.</td></tr><tr><td class="left">MoveIt 2</td><td class="left">The motion planning stack for arms.</td></tr><tr><td class="left">ros2_control</td><td class="left">The layer between controllers and motors.</td></tr></table></div>
+        </section>
+
+        <section class="finish">
+          <h2>You can now read and write ROS 2!</h2>
+          <p>Install it, redo the project of lesson 9 in the simulator, then pick a stack: Nav2 for a mobile robot, MoveIt 2 for an arm.</p>
+          <p class="cta"><a class="btn" href="learn-mobile.html">Go to the wheeled mobile robots course →</a> <a class="btn ghost" href="index.html#road">Home page</a></p>
+        </section>
+      </div>
+    </div>
+    <script src="learn-more-widgets.js" defer></script>
+    <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+  var PREFIX = 'ros-', KEY = 'ros';
+  var lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el, i) { return '<li><a href="#l' + (i + 1) + '" data-i="' + (i + 1) + '"><span class="n">' + (i + 1) + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  function paint() {
+    var done = 0;
+    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
+    document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
+    document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
+    var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total; for (var i = 1; i <= t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+  }
+  document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
+  window.addEventListener('ra-progress', paint); paint();
+  function spy() { var m = window.scrollY + window.innerHeight * 0.3, cur = 1; lessons.forEach(function (el, i) { if (el.offsetTop <= m) cur = i + 1; }); [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i + 1 === cur); }); }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+});
+    </script>
+  </body>
+</html>

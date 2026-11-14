@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<robot name="two_axis_arm">
+  <link name="base_link">
+    <visual><geometry><cylinder radius="0.10" length="0.05"/></geometry></visual>
+  </link>
+
+  <link name="link1">
+    <visual>
+      <origin xyz="0.25 0 0"/>                       <!-- the box is centred in the middle of the link -->
+      <geometry><box size="0.50 0.05 0.05"/></geometry>
+    </visual>
+  </link>
+
+  <link name="link2">
+    <visual>
+      <origin xyz="0.20 0 0"/>
+      <geometry><box size="0.40 0.04 0.04"/></geometry>
+    </visual>
+  </link>
+
+  <joint name="joint1" type="revolute">              <!-- theta1 -->
+    <parent link="base_link"/> <child link="link1"/>
+    <origin xyz="0 0 0.05"/> <axis xyz="0 0 1"/>
+    <limit lower="-3.14" upper="3.14" effort="10" velocity="2"/>
+  </joint>
+
+  <joint name="joint2" type="revolute">              <!-- theta2, at the end of link1 (L1 = 0.5 m) -->
+    <parent link="link1"/> <child link="link2"/>
+    <origin xyz="0.5 0 0"/> <axis xyz="0 0 1"/>
+    <limit lower="-2.6" upper="2.6" effort="10" velocity="2"/>
+  </joint>
+</robot>

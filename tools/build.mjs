@@ -91,7 +91,8 @@ for (const c of COURSES) {
   const miss = await page.evaluate((have) => {
     const INLINE = /^(STRONG|EM|B|I|CODE|SUB|SUP|BR|SMALL|SPAN|A|KBD|MARK|ABBR|U)$/, out = [];
     const canReplace = (el) => !el.querySelector('input,select,button,textarea,canvas,svg,[id]') && Array.prototype.every.call(el.children, (c) => INLINE.test(c.tagName) && (!c.children.length || canReplace(c)));
-    const skipEl = (el) => el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.id === 'lessonNav' || el.classList.contains('lbl') || el.classList.contains('widget') || el.classList.contains('time') || el.classList.contains('cnt') || el.classList.contains('numin') || el.classList.contains('exscore') || el.classList.contains('fb') || el.id === 'examSum';
+    const JSUI = ['lesson-pager', 'lqnote', 'lqscore', 'lqbtns', 'lqagain', 'fb'];            // texts written by lesson-quiz.js, translated in the script itself
+    const skipEl = (el) => JSUI.some((c) => el.classList.contains(c)) || (el.tagName === 'H3' && el.parentElement.classList.contains('lquiz')) || el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.id === 'lessonNav' || el.classList.contains('lbl') || el.classList.contains('widget') || el.classList.contains('time') || el.classList.contains('cnt') || el.classList.contains('numin') || el.classList.contains('exscore') || el.classList.contains('fb') || el.id === 'examSum';
     (function walk(el) {
       if (el.namespaceURI && el.namespaceURI.indexOf('svg') >= 0) return;
       if (/^(SCRIPT|STYLE|CANVAS|TEXTAREA|NOSCRIPT)$/i.test(el.tagName) || skipEl(el) || !el.textContent.trim()) return;

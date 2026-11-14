@@ -13,7 +13,7 @@ const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 const COURSES = [
   ['learn', 'learn.html', 'lesson-', 'learn'], ['maths', 'learn-maths.html', 'maths-', 'learn-maths'], ['model', 'learn-model.html', 'model-', 'learn-model'],
   ['sing', 'learn-singularities.html', 'sing-', 'learn-singularities'], ['control', 'learn-control.html', 'ctrl-', 'learn-control'],
-  ['ai', 'learn-intelligence.html', 'ai-', 'learn-intelligence'], ['world', 'learn-world.html', 'world-', 'learn-world']
+  ['ai', 'learn-intelligence.html', 'ai-', 'learn-intelligence'], ['world', 'learn-world.html', 'world-', 'learn-world'], ['ros', 'learn-ros.html', 'ros-', 'learn-ros']
 ];
 const only = process.argv.slice(2);
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });

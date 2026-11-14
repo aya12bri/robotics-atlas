@@ -711,6 +711,8 @@ RA.add({
  "16kbfhezdgv": "Moteurs, capteurs, PID, couple calculé, commande en effort, trajectoires",
  "idmkxxiv1x": "Vision, Kalman, SLAM, A*, RRT, apprentissage, multi-robots",
  "mymr6s864y": "Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers",
+ "2c51142iegu": "ROS 2 depuis zéro",
+ "1qxojzpfhtj": "Nœuds, topics, Python, fichiers de lancement, tf2, URDF, simulation, Nav2, MoveIt 2 et un premier projet",
  "ngcr2dzsin": "Robots mobiles à roues",
  "3p25qdc1d5": "De zéro au niveau professionnel : toutes les motorisations, commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
  "25ocakmghjn": "Batterie / secteur",
