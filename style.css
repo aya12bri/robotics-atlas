@@ -1228,3 +1228,5 @@ svg#schema, svg#zoom, svg#arena, svg#sim { background: var(--fpanel) !important;
 .rm-level em { font-style: normal; font-size: 0.8rem; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem; } .rm-level em .rm-lc { font-family: var(--mono); color: var(--text); }
 .rm-level.complete { border-color: var(--good); } .rm-level.complete .rm-ln { background: var(--good); }
 @media (max-width: 700px) { .rm-level { grid-template-columns: 1fr; gap: 0.4rem; } .rm-ln { justify-self: start; } }
+svg.fig text.sm { font-size: 10.5px; }
+.figure svg.fig[viewBox^="0 0 720"] { max-width: 700px; }
