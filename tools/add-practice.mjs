@@ -11,7 +11,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 
 const COURSES = [
-  ['learn', 'learn.html', 'lesson-', 'learn'], ['maths', 'learn-maths.html', 'maths-', 'learn-maths'], ['model', 'learn-model.html', 'model-', 'learn-model'],
+  ['mathkit', 'learn-mathkit.html', 'mk-', 'learn-mathkit'], ['learn', 'learn.html', 'lesson-', 'learn'], ['maths', 'learn-maths.html', 'maths-', 'learn-maths'], ['model', 'learn-model.html', 'model-', 'learn-model'],
   ['sing', 'learn-singularities.html', 'sing-', 'learn-singularities'], ['control', 'learn-control.html', 'ctrl-', 'learn-control'],
   ['ai', 'learn-intelligence.html', 'ai-', 'learn-intelligence'], ['world', 'learn-world.html', 'world-', 'learn-world'], ['ros', 'learn-ros.html', 'ros-', 'learn-ros']
 ];
