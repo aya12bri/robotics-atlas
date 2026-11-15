@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The maths of robotics, one tool per lesson</title>
+    <!-- seo -->
+    <meta name="description" content="The maths of robotics, one tool per lesson: trigonometry, vectors, matrices, rotations, homogeneous transformations, standard DH and modified DH (DHM), with worked examples, exercises and quizzes." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/learn-mathkit" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="The maths of robotics, one tool per lesson" />
+    <meta property="og:description" content="The maths of robotics, one tool per lesson: trigonometry, vectors, matrices, rotations, homogeneous transformations, standard DH and modified DH (DHM), with worked examples, exercises and quizzes." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/learn-mathkit" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+  <script src="nav.js" defer></script></head>
+  <body class="learn">
+    <h1>The maths of robotics, one tool per lesson</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn.html" style="color:#ff9f43">The basics</a></p>
+    <p class="lead">Every maths tool a robot needs, each in its own short lesson, from zero: angles and trigonometry, vectors, matrices, rotations, frames and transformations, then the Denavit–Hartenberg method explained twice: the standard DH alone, the modified DH (DHM) alone, and the two side by side. Each lesson has worked examples, exercises and a quiz.</p>
+    <nav class="courses" aria-label="Courses"><a class="course" href="learn.html" data-prefix="lesson-" data-total="12" data-key="learn"><b>Foundations</b><span>12 short lessons: the ideas behind every robot</span><em class="cnt"></em></a><a class="course current" href="learn-mathkit.html" data-prefix="mk-" data-total="8" data-key="mk"><b>The maths of robotics</b><span>One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH alone and DHM alone</span><em class="cnt"></em></a><a class="course" href="learn-maths.html" data-prefix="maths-" data-total="8" data-key="maths"><b>Maths and motion, step by step</b><span>From zero: angles, a 2-axis arm, frames, DH and motion laws</span><em class="cnt"></em></a><a class="course" href="learn-model.html" data-prefix="model-" data-total="11" data-key="model"><b>Robot modelling, full course</b><span>Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics</span><em class="cnt"></em></a><a class="course" href="learn-singularities.html" data-prefix="sing-" data-total="8" data-key="sing"><b>Singularities and the Jacobian</b><span>Speeds, forces, lost directions, gimbal lock, redundancy</span><em class="cnt"></em></a><a class="course" href="learn-control.html" data-prefix="ctrl-" data-total="9" data-key="ctrl"><b>Dynamics, actuators and control</b><span>Motors, sensors, PID, computed torque, force control, trajectories</span><em class="cnt"></em></a><a class="course" href="learn-intelligence.html" data-prefix="ai-" data-total="9" data-key="ai"><b>Perception, planning and AI</b><span>Vision, Kalman, SLAM, A*, RRT, learning, multi-robot</span><em class="cnt"></em></a><a class="course" href="learn-world.html" data-prefix="world-" data-total="9" data-key="world"><b>Robots in the real world</b><span>Every robot family, grippers, electronics, ROS, safety, careers</span><em class="cnt"></em></a><a class="course" href="learn-ros.html" data-prefix="ros-" data-total="9" data-key="ros"><b>ROS 2 from zero</b><span>Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project</span><em class="cnt"></em></a><a class="course" href="learn-mobile.html" data-prefix="wmr-" data-total="20" data-key="wmr"><b>Wheeled mobile robots</b><span>From zero to professional: every drive, control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs</span><em class="cnt"></em></a></nav>
+    <section class="intro">
+<div class="box idea"><div class="bt">The path of this course</div><div class="bb"><p>Each lesson uses the one before. <strong>Trigonometry</strong> finds the end of one arm. <strong>Vectors</strong> add the arms. <strong>Matrices</strong> transform vectors. <strong>Rotation matrices</strong> turn them. <strong>Homogeneous matrices</strong> turn and move at once, and can be chained from the base to the tool. <strong>DH and DHM</strong> are two rules to write this chain as a small table.</p>
+<p>You only need the four operations and a calculator. If a lesson is already known to you, do its quiz and move on.</p></div></div>
+    </section>
+
+    <div class="learn-layout">
+      <aside class="lesson-nav" id="lessonNav" aria-label="Checklist"></aside>
+      <div class="lessons">
+
+        <article class="lesson" id="l1" data-id="mk-1">
+          <header class="lesson-head"><span class="num">1</span><h2>Angles and trigonometry</h2><span class="time">10 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to measure an angle in degrees and radians, to use sine and cosine to find a point, and atan2 to find an angle.</p></div>
+<h4>1.1 Degrees and radians</h4>
+<p>A robot joint turns by an <strong>angle</strong>. We know degrees: a full turn is 360°. Computers and formulas use <strong>radians</strong>: a full turn is 2π ≈ 6.28 rad. So:</p>
+<p class="eq">radians = degrees × π / 180        degrees = radians × 180 / π</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Degrees</th><th class="left">0°</th><th class="left">30°</th><th class="left">45°</th><th class="left">90°</th><th class="left">180°</th><th class="left">360°</th></tr><tr><td class="left">Radians</td><td class="left">0</td><td class="left">π/6 ≈ 0.52</td><td class="left">π/4 ≈ 0.79</td><td class="left">π/2 ≈ 1.57</td><td class="left">π ≈ 3.14</td><td class="left">2π ≈ 6.28</td></tr></table></div>
+<div class="box idea"><div class="bt">Why radians?</div><div class="bb"><p>With radians, the length of an arc is simply <strong>radius × angle</strong>. A wheel of radius 0.1 m that turns by 2 rad rolls 0.1 × 2 = 0.2 m. No factor to remember.</p></div></div>
+<h4>1.2 Sine and cosine: where is the end of the arm?</h4>
+<p>Take an arm of length <i>L</i>, fixed at the origin, tilted by an angle <i>θ</i> from the x axis. Its end is at:</p>
+<p class="eq"><i>x</i> = <i>L</i> cos <i>θ</i>        <i>y</i> = <i>L</i> sin <i>θ</i></p>
+<figure class="figure"><svg viewBox="0 0 340 190" class="fig" role="img" aria-hidden="true">
+      <line class="ax" x1="40" y1="160" x2="300" y2="160"/><line class="ax" x1="80" y1="180" x2="80" y2="20"/>
+      <text x="308" y="164">x</text><text x="76" y="14" text-anchor="end">y</text>
+      <line class="link1" x1="80" y1="160" x2="219.4" y2="62.4"/><circle class="jt" cx="80" cy="160" r="5"/><circle class="pt" cx="219.4" cy="62.4" r="5"/>
+      <line class="dash" x1="219.4" y1="62.4" x2="219.4" y2="160"/><line class="dash" x1="219.4" y1="62.4" x2="80" y2="62.4"/>
+      <path class="arc" d="M120,160 A40,40 0 0 0 112.8,137.1"/><text x="128" y="148">θ</text>
+      <text x="140" y="100" class="c-l">L</text>
+      <text x="150" y="178" text-anchor="middle" class="c-x">x = L cos θ</text><text x="90" y="54" class="c-y">y = L sin θ</text></svg></figure>
+<p>The cosine gives the part of the arm <strong>along x</strong>, the sine the part <strong>along y</strong>. Values to know by heart:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">θ</th><th class="left">0°</th><th class="left">30°</th><th class="left">45°</th><th class="left">60°</th><th class="left">90°</th><th class="left">180°</th></tr><tr><td class="left">cos θ</td><td class="left">1</td><td class="left">0.866</td><td class="left">0.707</td><td class="left">0.5</td><td class="left">0</td><td class="left">−1</td></tr><tr><td class="left">sin θ</td><td class="left">0</td><td class="left">0.5</td><td class="left">0.707</td><td class="left">0.866</td><td class="left">1</td><td class="left">0</td></tr></table></div>
+<div class="box example"><div class="bt">Worked example</div><div class="bb"><p>An arm of 0.8 m at 30°: <i>x</i> = 0.8 × 0.866 = <strong>0.693 m</strong>, <i>y</i> = 0.8 × 0.5 = <strong>0.4 m</strong>. Check with Pythagoras: √(0.693² + 0.4²) = 0.8 m, the length of the arm.</p></div></div>
+<h4>1.3 Two formulas you will meet everywhere</h4>
+<ul><li><strong>Pythagoras</strong>: cos² <i>θ</i> + sin² <i>θ</i> = 1. The distance from the origin to the point (<i>x</i>, <i>y</i>) is √(<i>x</i>² + <i>y</i>²).</li><li><strong>Sum of angles</strong>: cos(<i>a</i> + <i>b</i>) = cos <i>a</i> cos <i>b</i> − sin <i>a</i> sin <i>b</i>, and sin(<i>a</i> + <i>b</i>) = sin <i>a</i> cos <i>b</i> + cos <i>a</i> sin <i>b</i>. This is why a 2-axis arm has terms in cos(<i>θ</i><sub>1</sub> + <i>θ</i><sub>2</sub>).</li></ul>
+<h4>1.4 The other way: from a point to an angle (atan2)</h4>
+<p>You know the point (<i>x</i>, <i>y</i>) and want the angle. Use <strong><i>θ</i> = atan2(<i>y</i>, <i>x</i>)</strong>, found in every programming language. Note the order: <i>y</i> first.</p>
+<div class="box warn"><div class="bt">Never use arctan(y / x) alone</div><div class="bb"><p>The points (1, 1) and (−1, −1) have the same ratio <i>y</i>/<i>x</i> = 1, so arctan gives 45° for both. But the second one is at −135°. atan2 looks at the signs of <i>x</i> and <i>y</i> and gives the right angle over the full turn, even when <i>x</i> = 0.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>radian</li><li>sine / cosine</li><li>Pythagoras</li><li>atan2</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Radians = degrees × π / 180. A full turn is 2π.</li><li>The end of an arm of length L at angle θ is at x = L cos θ, y = L sin θ.</li><li>To find an angle from a point, use atan2(y, x), never arctan(y/x) alone.</li></ul></div></div>
+          <figure class="figure pfig"><svg viewBox="0 0 640 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="300" fill="#1b1f25" rx="10"/><line x1="56" y1="24" x2="56" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0</text><line x1="126.8" y1="24" x2="126.8" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="126.8" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">45</text><line x1="197.5" y1="24" x2="197.5" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="197.5" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">90</text><line x1="268.3" y1="24" x2="268.3" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="268.3" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">135</text><line x1="339" y1="24" x2="339" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="339" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">180</text><line x1="409.8" y1="24" x2="409.8" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="409.8" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">225</text><line x1="480.5" y1="24" x2="480.5" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="480.5" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">270</text><line x1="551.3" y1="24" x2="551.3" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="551.3" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">315</text><line x1="622" y1="24" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">360</text><line x1="56" y1="256" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="260" fill="#9fb0c3" font-size="12" text-anchor="end">-1.2</text><line x1="56" y1="198" x2="622" y2="198" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="202" fill="#9fb0c3" font-size="12" text-anchor="end">-0.6</text><line x1="56" y1="140" x2="622" y2="140" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="144" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="82" x2="622" y2="82" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="86" fill="#9fb0c3" font-size="12" text-anchor="end">0.6</text><line x1="56" y1="24" x2="622" y2="24" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="28" fill="#9fb0c3" font-size="12" text-anchor="end">1.2</text><line x1="56" y1="140" x2="622" y2="140" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="256" x2="622" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="24" x2="56" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,43.3L59.5,43.4L63.1,43.6L66.6,44L70.2,44.5L73.7,45.2L77.2,46L80.8,47L84.3,48.1L87.8,49.3L91.4,50.7L94.9,52.2L98.4,53.9L102,55.7L105.5,57.6L109.1,59.6L112.6,61.8L116.1,64.1L119.7,66.5L123.2,69L126.8,71.6L130.3,74.4L133.8,77.2L137.4,80.2L140.9,83.2L144.4,86.3L148,89.5L151.5,92.8L155.1,96.1L158.6,99.5L162.1,103L165.7,106.5L169.2,110.1L172.7,113.8L176.3,117.4L179.8,121.1L183.4,124.9L186.9,128.6L190.4,132.4L194,136.2L197.5,140L201,143.8L204.6,147.6L208.1,151.4L211.7,155.1L215.2,158.9L218.7,162.6L222.3,166.2L225.8,169.9L229.3,173.5L232.9,177L236.4,180.5L240,183.9L243.5,187.2L247,190.5L250.6,193.7L254.1,196.8L257.6,199.8L261.2,202.8L264.7,205.6L268.3,208.4L271.8,211L275.3,213.5L278.9,215.9L282.4,218.2L285.9,220.4L289.5,222.4L293,224.3L296.5,226.1L300.1,227.8L303.6,229.3L307.2,230.7L310.7,231.9L314.2,233L317.8,234L321.3,234.8L324.8,235.5L328.4,236L331.9,236.4L335.5,236.6L339,236.7L342.5,236.6L346.1,236.4L349.6,236L353.2,235.5L356.7,234.8L360.2,234L363.8,233L367.3,231.9L370.8,230.7L374.4,229.3L377.9,227.8L381.4,226.1L385,224.3L388.5,222.4L392.1,220.4L395.6,218.2L399.1,215.9L402.7,213.5L406.2,211L409.8,208.4L413.3,205.6L416.8,202.8L420.4,199.8L423.9,196.8L427.4,193.7L431,190.5L434.5,187.2L438.1,183.9L441.6,180.5L445.1,177L448.7,173.5L452.2,169.9L455.7,166.2L459.3,162.6L462.8,158.9L466.3,155.1L469.9,151.4L473.4,147.6L477,143.8L480.5,140L484,136.2L487.6,132.4L491.1,128.6L494.7,124.9L498.2,121.1L501.7,117.4L505.3,113.8L508.8,110.1L512.3,106.5L515.9,103L519.4,99.5L523,96.1L526.5,92.8L530,89.5L533.6,86.3L537.1,83.2L540.6,80.2L544.2,77.2L547.7,74.4L551.3,71.6L554.8,69L558.3,66.5L561.9,64.1L565.4,61.8L568.9,59.6L572.5,57.6L576,55.7L579.6,53.9L583.1,52.2L586.6,50.7L590.2,49.3L593.7,48.1L597.2,47L600.8,46L604.3,45.2L607.9,44.5L611.4,44L614.9,43.6L618.5,43.4L622,43.3" fill="none" stroke="#ff9f43" stroke-width="3"/><rect x="66" y="32" width="14" height="4" fill="#ff9f43"/><text x="86" y="38" fill="#ff9f43" font-size="13" text-anchor="start">cos θ</text><path d="M56,140L59.5,136.2L63.1,132.4L66.6,128.6L70.2,124.9L73.7,121.1L77.2,117.4L80.8,113.8L84.3,110.1L87.8,106.5L91.4,103L94.9,99.5L98.4,96.1L102,92.8L105.5,89.5L109.1,86.3L112.6,83.2L116.1,80.2L119.7,77.2L123.2,74.4L126.8,71.6L130.3,69L133.8,66.5L137.4,64.1L140.9,61.8L144.4,59.6L148,57.6L151.5,55.7L155.1,53.9L158.6,52.2L162.1,50.7L165.7,49.3L169.2,48.1L172.7,47L176.3,46L179.8,45.2L183.4,44.5L186.9,44L190.4,43.6L194,43.4L197.5,43.3L201,43.4L204.6,43.6L208.1,44L211.7,44.5L215.2,45.2L218.7,46L222.3,47L225.8,48.1L229.3,49.3L232.9,50.7L236.4,52.2L240,53.9L243.5,55.7L247,57.6L250.6,59.6L254.1,61.8L257.6,64.1L261.2,66.5L264.7,69L268.3,71.6L271.8,74.4L275.3,77.2L278.9,80.2L282.4,83.2L285.9,86.3L289.5,89.5L293,92.8L296.5,96.1L300.1,99.5L303.6,103L307.2,106.5L310.7,110.1L314.2,113.8L317.8,117.4L321.3,121.1L324.8,124.9L328.4,128.6L331.9,132.4L335.5,136.2L339,140L342.5,143.8L346.1,147.6L349.6,151.4L353.2,155.1L356.7,158.9L360.2,162.6L363.8,166.2L367.3,169.9L370.8,173.5L374.4,177L377.9,180.5L381.4,183.9L385,187.2L388.5,190.5L392.1,193.7L395.6,196.8L399.1,199.8L402.7,202.8L406.2,205.6L409.8,208.4L413.3,211L416.8,213.5L420.4,215.9L423.9,218.2L427.4,220.4L431,222.4L434.5,224.3L438.1,226.1L441.6,227.8L445.1,229.3L448.7,230.7L452.2,231.9L455.7,233L459.3,234L462.8,234.8L466.3,235.5L469.9,236L473.4,236.4L477,236.6L480.5,236.7L484,236.6L487.6,236.4L491.1,236L494.7,235.5L498.2,234.8L501.7,234L505.3,233L508.8,231.9L512.3,230.7L515.9,229.3L519.4,227.8L523,226.1L526.5,224.3L530,222.4L533.6,220.4L537.1,218.2L540.6,215.9L544.2,213.5L547.7,211L551.3,208.4L554.8,205.6L558.3,202.8L561.9,199.8L565.4,196.8L568.9,193.7L572.5,190.5L576,187.2L579.6,183.9L583.1,180.5L586.6,177L590.2,173.5L593.7,169.9L597.2,166.2L600.8,162.6L604.3,158.9L607.9,155.1L611.4,151.4L614.9,147.6L618.5,143.8L622,140" fill="none" stroke="#5aa9ff" stroke-width="3"/><rect x="66" y="54" width="14" height="4" fill="#5aa9ff"/><text x="86" y="60" fill="#5aa9ff" font-size="13" text-anchor="start">sin θ</text><text x="622" y="294" fill="#9fb0c3" font-size="13" text-anchor="end">θ (degrees)</text></svg><figcaption>Cosine starts at 1 and sine at 0; both repeat every 360°.</figcaption></figure>
+          <section class="exs" data-for="mk-1"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-1-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Convert 60° to radians.</p><div class="numin" data-ans="1.0471975511965976" data-tol="0.01" data-unit="rad"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>60 × π / 180 = π/3 ≈ <b>1.047 rad</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-1-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">An arm of 1.2 m is at 45°. x of its end (m)?</p><div class="numin" data-ans="0.848528137423857" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>x = 1.2 × cos 45° = 1.2 × 0.707 = <b>0.849 m</b> (y is the same, since sin 45° = cos 45°).</p></details>
+</div>
+<div class="ex" data-id="mk-1-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">The tool is at x = −1, y = 1. Angle atan2(y, x) in degrees?</p><div class="numin" data-ans="135" data-tol="0.5" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>The point is up and to the left.</p></details><details class="sol"><summary>Solution</summary><p>The point is in the upper-left quadrant, at 45° from the negative x axis: 180 − 45 = <b>135°</b>. arctan(1 / −1) alone would give −45°, the opposite direction.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">How many radians is 90°?</p><p class="a">π/2 ≈ 1.57 rad.</p></li><li><p class="q">An arm of 2 m is at 60°. Where is its end?</p><p class="a"><i>x</i> = 2 × 0.5 = 1 m, <i>y</i> = 2 × 0.866 = 1.73 m.</p></li><li><p class="q">Why use atan2(y, x) and not arctan(y/x)?</p><p class="a">atan2 uses the signs of x and y, so it gives the right angle in all four quadrants, and it works when x = 0.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l2" data-id="mk-2">
+          <header class="lesson-head"><span class="num">2</span><h2>Vectors</h2><span class="time">11 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what a vector is, how to add vectors, measure their length, and use the dot and cross products.</p></div>
+<h4>2.1 An arrow with numbers</h4>
+<p>A <strong>vector</strong> is an arrow: it has a direction and a length. We write it as a column of numbers, its <strong>components</strong>: <span class="mx c1"><span>3</span><span>1</span></span> means “3 to the right, 1 up”. In space there is a third number for the height: <span class="mx c1"><span><i>x</i></span><span><i>y</i></span><span><i>z</i></span></span>.</p>
+<p>In robotics vectors describe <strong>positions</strong> (where the tool is), <strong>speeds</strong> (how it moves), <strong>forces</strong> (how it pushes) and <strong>axes</strong> (around what a joint turns).</p>
+<h4>2.2 Adding vectors: one arrow after the other</h4>
+<p>To chain two moves, add the components one by one: <span class="mx c1"><span>3</span><span>1</span></span> + <span class="mx c1"><span>1</span><span>2</span></span> = <span class="mx c1"><span>4</span><span>3</span></span>.</p>
+<figure class="figure"><svg viewBox="0 0 340 190" class="fig" role="img" aria-hidden="true">
+      <line class="ax" x1="30" y1="170" x2="310" y2="170"/><line class="ax" x1="50" y1="185" x2="50" y2="15"/>
+      <line class="link1" x1="50" y1="170" x2="200" y2="120"/><line class="link2" x1="200" y1="120" x2="250" y2="20"/>
+      <line class="dash" x1="50" y1="170" x2="250" y2="20" style="stroke-width:2"/>
+      <circle class="jt" cx="50" cy="170" r="5"/><circle class="jt" cx="200" cy="120" r="5"/><circle class="pt" cx="250" cy="20" r="5"/>
+      <text x="125" y="165" class="c-l">a = (3, 1)</text><text x="236" y="80" class="c-l2">b = (1, 2)</text><text x="120" y="80" text-anchor="end">a + b = (4, 3)</text></svg></figure>
+<div class="box idea"><div class="bt">This is a robot arm</div><div class="bb"><p>Look at the picture again: the blue arrow is link 1, the orange arrow is link 2, and the dashed arrow goes from the base to the tool. <strong>The position of the tool is the sum of the arrows of the links.</strong> All of forward kinematics is in this sentence.</p></div></div>
+<h4>2.3 Length, scaling, unit vector</h4>
+<ul><li><strong>Length</strong> (norm): ‖<strong>v</strong>‖ = √(<i>x</i>² + <i>y</i>² + <i>z</i>²). For (4, 3): √(16 + 9) = 5.</li><li><strong>Multiply by a number</strong>: every component is multiplied. 2 × (4, 3) = (8, 6): same direction, twice as long.</li><li><strong>Unit vector</strong>: a vector of length 1, used to give a direction only. Divide a vector by its length: (4, 3) / 5 = (0.8, 0.6).</li></ul>
+<h4>2.4 The dot product: how much two arrows agree</h4>
+<p class="eq"><strong>a</strong> · <strong>b</strong> = <i>a</i><sub>x</sub><i>b</i><sub>x</sub> + <i>a</i><sub>y</sub><i>b</i><sub>y</sub> + <i>a</i><sub>z</sub><i>b</i><sub>z</sub> = ‖<strong>a</strong>‖ ‖<strong>b</strong>‖ cos <i>φ</i></p>
+<p>The result is a <strong>number</strong>. <i>φ</i> is the angle between the two arrows. Three cases to remember:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">The arrows are…</th><th class="left">Dot product</th><th class="left">Example</th></tr><tr><td class="left">in the same direction</td><td class="left">positive, maximum</td><td class="left">(1, 0) · (2, 0) = 2</td></tr><tr><td class="left">perpendicular</td><td class="left"><strong>zero</strong></td><td class="left">(1, 0) · (0, 3) = 0</td></tr><tr><td class="left">opposite</td><td class="left">negative</td><td class="left">(1, 0) · (−2, 0) = −2</td></tr></table></div>
+<p>Use: the dot product with a unit vector gives the <strong>part of a vector along that direction</strong> (the speed of a robot along its forward axis, the force along a joint axis).</p>
+<h4>2.5 The cross product: a vector perpendicular to two others</h4>
+<p>In 3D, <strong>a</strong> × <strong>b</strong> is a new <strong>vector</strong>, perpendicular to both <strong>a</strong> and <strong>b</strong>. Its direction is given by the right hand: index along <strong>a</strong>, middle finger along <strong>b</strong>, the thumb shows <strong>a</strong> × <strong>b</strong>.</p>
+<p class="eq"><strong>x</strong> × <strong>y</strong> = <strong>z</strong>        <strong>y</strong> × <strong>z</strong> = <strong>x</strong>        <strong>z</strong> × <strong>x</strong> = <strong>y</strong></p>
+<ul><li>It builds the third axis of a frame from the two others (lessons 5 and 6).</li><li>It gives the speed of a point that turns: <strong>v</strong> = <strong>ω</strong> × <strong>r</strong>, and the torque of a force: <strong>τ</strong> = <strong>r</strong> × <strong>F</strong>.</li></ul>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>vector</li><li>component</li><li>norm</li><li>unit vector</li><li>dot product</li><li>cross product</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>A vector is an arrow written as a column of numbers. Add vectors component by component.</li><li>Length: √(x² + y² + z²). A unit vector has length 1.</li><li>Dot product = 0 means perpendicular. The cross product gives a perpendicular vector.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-2"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-2-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Length of the vector (3, 4)?</p><div class="numin" data-ans="5" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>√(3² + 4²) = √25 = <b>5</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-2-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Link 1 is the arrow (0.4, 0.3) m and link 2 is (0.1, 0.5) m. y of the tool (m)?</p><div class="numin" data-ans="0.8" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Add the arrows: (0.4 + 0.1, 0.3 + 0.5) = (0.5, 0.8). y = <b>0.8 m</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-2-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A robot moves with the velocity (0.3, 0.4) m/s. Its forward direction is the unit vector (0.6, 0.8). Speed along the forward direction (m/s)?</p><div class="numin" data-ans="0.5" data-tol="0.005" data-unit="m/s"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Dot product with the unit vector.</p></details><details class="sol"><summary>Solution</summary><p>0.3 × 0.6 + 0.4 × 0.8 = 0.18 + 0.32 = <b>0.5 m/s</b>. It is also the full length of the velocity: the robot moves exactly forward.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is (2, 5) + (1, −3)?</p><p class="a">(3, 2): add the components one by one.</p></li><li><p class="q">Two vectors have a dot product of 0. What does it mean?</p><p class="a">They are perpendicular (or one of them is zero).</p></li><li><p class="q">What is the direction of x × y?</p><p class="a">The z axis: the cross product is perpendicular to both vectors (right-hand rule).</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l3" data-id="mk-3">
+          <header class="lesson-head"><span class="num">3</span><h2>Matrices</h2><span class="time">12 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to multiply a matrix by a vector and by another matrix, and what the identity, the transpose, the inverse and the determinant are.</p></div>
+<h4>3.1 A table that transforms a vector</h4>
+<p>A <strong>matrix</strong> is a table of numbers. Its job: take a vector and give back another vector (turned, stretched, moved). The rule is “<strong>row times column</strong>”: multiply the numbers of a row by the numbers of the column, one by one, and add.</p>
+<p class="eq"><span class="mx c2"><span><i>a</i></span><span><i>b</i></span><span><i>c</i></span><span><i>d</i></span></span> <span class="mx c1"><span><i>x</i></span><span><i>y</i></span></span> = <span class="mx c1"><span><i>a</i><i>x</i> + <i>b</i><i>y</i></span><span><i>c</i><i>x</i> + <i>d</i><i>y</i></span></span></p>
+<div class="box example"><div class="bt">Worked example</div><div class="bb"><p><span class="mx c2"><span>1</span><span>2</span><span>3</span><span>4</span></span> <span class="mx c1"><span>5</span><span>6</span></span> = <span class="mx c1"><span>1×5 + 2×6</span><span>3×5 + 4×6</span></span> = <span class="mx c1"><span>17</span><span>39</span></span></p></div></div>
+<div class="box idea"><div class="bt">What the columns mean</div><div class="bb"><p>The first column of a matrix is where the vector <span class="mx c1"><span>1</span><span>0</span></span> (the x axis) goes; the second column is where <span class="mx c1"><span>0</span><span>1</span></span> (the y axis) goes. To build a matrix that does what you want, ask: “where do the axes go?” and write the answers as columns. Lesson 4 uses this to build the rotation matrix.</p></div></div>
+<h4>3.2 Matrix times matrix: two transformations in a row</h4>
+<p>The product <i>A</i> <i>B</i> is the matrix that does <i>B</i> first, then <i>A</i>. Same rule: the element in row <i>i</i>, column <i>j</i> of the result is row <i>i</i> of <i>A</i> “times” column <i>j</i> of <i>B</i>.</p>
+<p class="eq"><span class="mx c2"><span>1</span><span>2</span><span>3</span><span>4</span></span> <span class="mx c2"><span>0</span><span>1</span><span>1</span><span>0</span></span> = <span class="mx c2"><span>1×0 + 2×1</span><span>1×1 + 2×0</span><span>3×0 + 4×1</span><span>3×1 + 4×0</span></span> = <span class="mx c2"><span>2</span><span>1</span><span>4</span><span>3</span></span></p>
+<div class="box warn"><div class="bt">The order matters</div><div class="bb"><p>In general <i>A</i> <i>B</i> ≠ <i>B</i> <i>A</i>. With the same two matrices in the other order: <span class="mx c2"><span>0</span><span>1</span><span>1</span><span>0</span></span> <span class="mx c2"><span>1</span><span>2</span><span>3</span><span>4</span></span> = <span class="mx c2"><span>3</span><span>4</span><span>1</span><span>2</span></span>. It is normal: “turn then move forward” does not lead to the same place as “move forward then turn”.</p></div></div>
+<h4>3.3 Four words to know</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Word</th><th class="left">What it is</th><th class="left">For a 2×2 matrix</th><th class="left">Use in robotics</th></tr><tr><td class="left"><strong>Identity</strong> <i>I</i></td><td class="left">The matrix that changes nothing: <i>I</i> <strong>v</strong> = <strong>v</strong>.</td><td class="left"><span class="mx c2"><span>1</span><span>0</span><span>0</span><span>1</span></span></td><td class="left">“No rotation, no move”.</td></tr><tr><td class="left"><strong>Transpose</strong> <i>A</i><sup>T</sup></td><td class="left">Rows become columns.</td><td class="left"><span class="mx c2"><span><i>a</i></span><span><i>b</i></span><span><i>c</i></span><span><i>d</i></span></span><sup>T</sup> = <span class="mx c2"><span><i>a</i></span><span><i>c</i></span><span><i>b</i></span><span><i>d</i></span></span></td><td class="left">The inverse of a rotation; forces from torques (<i>J</i><sup>T</sup>).</td></tr><tr><td class="left"><strong>Determinant</strong> det <i>A</i></td><td class="left">One number: how much the matrix scales areas.</td><td class="left"><i>a</i><i>d</i> − <i>b</i><i>c</i></td><td class="left">det = 0: the matrix flattens space. For a Jacobian it is a <strong>singularity</strong>.</td></tr><tr><td class="left"><strong>Inverse</strong> <i>A</i><sup>−1</sup></td><td class="left">The matrix that undoes <i>A</i>: <i>A</i><sup>−1</sup> <i>A</i> = <i>I</i>. It exists only if det <i>A</i> ≠ 0.</td><td class="left"><sup>1</sup>⁄<sub><i>ad</i>−<i>bc</i></sub> <span class="mx c2"><span><i>d</i></span><span>−<i>b</i></span><span>−<i>c</i></span><span><i>a</i></span></span></td><td class="left">Go back from the tool to the joints.</td></tr></table></div>
+<div class="box example"><div class="bt">Worked example: determinant and inverse</div><div class="bb"><p><i>A</i> = <span class="mx c2"><span>2</span><span>1</span><span>1</span><span>1</span></span>: det <i>A</i> = 2×1 − 1×1 = <strong>1</strong>, so <i>A</i><sup>−1</sup> = <span class="mx c2"><span>1</span><span>−1</span><span>−1</span><span>2</span></span>. Check: <i>A</i><sup>−1</sup> <i>A</i> = <span class="mx c2"><span>1×2 − 1×1</span><span>1×1 − 1×1</span><span>−1×2 + 2×1</span><span>−1×1 + 2×1</span></span> = <span class="mx c2"><span>1</span><span>0</span><span>0</span><span>1</span></span>.</p></div></div>
+<p>You will almost never invert a big matrix by hand: a computer does it. What you must know is <strong>what the inverse means</strong> and <strong>when it does not exist</strong>.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>matrix</li><li>identity</li><li>transpose</li><li>determinant</li><li>inverse</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Matrix × vector: row times column. The columns of a matrix say where the axes go.</li><li>A B does B first, then A. In general A B ≠ B A.</li><li>det = 0 means no inverse. For a 2×2 matrix: det = ad − bc.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-3"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-3-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Multiply the matrix with rows (2, 0) and (1, 3) by the vector (4, 1). First component of the result?</p><div class="numin" data-ans="8" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>First row times the column: 2×4 + 0×1 = <b>8</b>. (The second component is 1×4 + 3×1 = 7.)</p></details>
+</div>
+<div class="ex" data-id="mk-3-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Determinant of the matrix with rows (3, 2) and (1, 4)?</p><div class="numin" data-ans="10" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>ad − bc = 3×4 − 2×1 = <b>10</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-3-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">The matrix with rows (2, 4) and (1, 2): can it be inverted?</p><ol class="opts" type="A"><li data-ok="1">No: its determinant is 0</li><li>Yes</li><li>Only if we transpose it first</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>det = 2×2 − 4×1 = <b>0</b>. Its two columns point in the same direction, so it flattens the plane onto a line: no inverse. For a robot Jacobian, this is a singularity.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What do the columns of a matrix tell you?</p><p class="a">Where the axes go: column 1 is the image of (1, 0), column 2 the image of (0, 1).</p></li><li><p class="q">In the product A B applied to a vector, which matrix acts first?</p><p class="a">B, the one closest to the vector. Then A.</p></li><li><p class="q">A matrix has a determinant of 0. Can you invert it?</p><p class="a">No. It flattens space onto a line or a point, and this cannot be undone.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l4" data-id="mk-4">
+          <header class="lesson-head"><span class="num">4</span><h2>Rotation matrices</h2><span class="time">12 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to build the matrix that turns a vector by an angle, its properties, and the three rotations of 3D space.</p></div>
+<h4>4.1 Build it from its columns</h4>
+<p>We want the matrix that turns every vector by an angle <i>θ</i> (counter-clockwise). Use the idea of lesson 3: <strong>where do the axes go?</strong></p>
+<figure class="figure"><svg viewBox="-40 0 380 200" class="fig" role="img" aria-hidden="true"><defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+      <line class="ax" x1="40" y1="165" x2="310" y2="165"/><line class="ax" x1="150" y1="190" x2="150" y2="15"/>
+      <text x="316" y="169">x</text><text x="146" y="12" text-anchor="end">y</text>
+      <line x1="150.0" y1="165.0" x2="253.9" y2="105.0" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="150.0" y1="165.0" x2="90.0" y2="61.1" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="258.6" y="104.0" fill="#ff6b6b">x'</text><text x="81.0" y="56.4" fill="#4ed17f">y'</text>
+      <path class="arc" d="M200,165 A50,50 0 0 0 193.3,140"/><text x="206" y="152">θ</text>
+      <line class="dash" x1="253.9" y1="105" x2="253.9" y2="165"/><line class="dash" x1="90" y1="61.1" x2="150" y2="61.1"/>
+      <text x="160" y="92" fill="#ff6b6b">(cos θ, sin θ)</text><text x="72" y="42" text-anchor="end" fill="#4ed17f">(−sin θ, cos θ)</text></svg></figure>
+<ul><li>The x axis <span class="mx c1"><span>1</span><span>0</span></span> turns to <span class="mx c1"><span>cos <i>θ</i></span><span>sin <i>θ</i></span></span> (lesson 1). This is the first column.</li><li>The y axis <span class="mx c1"><span>0</span><span>1</span></span> turns to <span class="mx c1"><span>−sin <i>θ</i></span><span>cos <i>θ</i></span></span>. This is the second column.</li></ul>
+<div class="box keep"><div class="bt">The rotation matrix in the plane</div><div class="bb"><p class="eq"><i>R</i>(<i>θ</i>) = <span class="mx c2"><span>cos <i>θ</i></span><span>−sin <i>θ</i></span><span>sin <i>θ</i></span><span>cos <i>θ</i></span></span></p></div></div>
+<div class="box example"><div class="bt">Worked example</div><div class="bb"><p>Turn the vector <span class="mx c1"><span>2</span><span>1</span></span> by 30° (cos = 0.866, sin = 0.5): <span class="mx c2"><span>0.866</span><span>−0.5</span><span>0.5</span><span>0.866</span></span> <span class="mx c1"><span>2</span><span>1</span></span> = <span class="mx c1"><span>0.866×2 − 0.5×1</span><span>0.5×2 + 0.866×1</span></span> = <span class="mx c1"><span><strong>1.232</strong></span><span><strong>1.866</strong></span></span>. The length did not change: √(2² + 1²) = √(1.232² + 1.866²) = 2.236.</p></div></div>
+<h4>4.2 Four properties to remember</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Property</th><th class="left">Why</th><th class="left">What it gives you</th></tr><tr><td class="left">The columns have length 1 and are perpendicular.</td><td class="left">They are the axes of a frame.</td><td class="left">A quick check of any rotation matrix.</td></tr><tr><td class="left">det <i>R</i> = 1</td><td class="left">cos² <i>θ</i> + sin² <i>θ</i> = 1: a rotation does not change sizes.</td><td class="left">A rotation can always be undone.</td></tr><tr><td class="left"><i>R</i><sup>−1</sup> = <i>R</i><sup>T</sup> = <i>R</i>(−<i>θ</i>)</td><td class="left">To undo a rotation, turn back by the same angle.</td><td class="left">The inverse costs nothing: swap rows and columns.</td></tr><tr><td class="left"><i>R</i>(<i>a</i>) <i>R</i>(<i>b</i>) = <i>R</i>(<i>a</i> + <i>b</i>)</td><td class="left">Turning by <i>b</i> then by <i>a</i> is turning by <i>a</i> + <i>b</i>.</td><td class="left">In a planar arm the angles add: <i>θ</i><sub>1</sub> + <i>θ</i><sub>2</sub>.</td></tr></table></div>
+<h4>4.3 Rotations in space</h4>
+<p>In 3D a rotation turns <strong>around an axis</strong>. The positive direction is given by the right hand: thumb along the axis, the fingers show the positive rotation. The three basic rotations keep one axis fixed (its row and column are 0, 0, 1):</p>
+<p class="eq"><i>R</i><sub>z</sub>(<i>θ</i>) = <span class="mx c3"><span>c</span><span>−s</span><span>0</span><span>s</span><span>c</span><span>0</span><span>0</span><span>0</span><span>1</span></span>    <i>R</i><sub>y</sub>(<i>θ</i>) = <span class="mx c3"><span>c</span><span>0</span><span>s</span><span>0</span><span>1</span><span>0</span><span>−s</span><span>0</span><span>c</span></span>    <i>R</i><sub>x</sub>(<i>θ</i>) = <span class="mx c3"><span>1</span><span>0</span><span>0</span><span>0</span><span>c</span><span>−s</span><span>0</span><span>s</span><span>c</span></span></p>
+<p>with c = cos <i>θ</i> and s = sin <i>θ</i>. <i>R</i><sub>z</sub> is the plane rotation of 4.1 with a third axis that does not move: it is the rotation of a revolute joint around its own z axis, the one you will meet in every DH table.</p>
+<div class="box warn"><div class="bt">In 3D the order of rotations matters</div><div class="bb"><p>Take the x axis (1, 0, 0). Turn it by 90° around x (nothing happens), then by 90° around z: it becomes (0, 1, 0). In the other order, 90° around z gives (0, 1, 0), then 90° around x gives <strong>(0, 0, 1)</strong>. Two different results. In the plane the order did not matter; in space it does. Try it with a book in your hands.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>rotation matrix</li><li>right-hand rule</li><li>orthogonal matrix</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>R(θ) has the columns (cos θ, sin θ) and (−sin θ, cos θ): where the axes go.</li><li>A rotation keeps lengths; its inverse is its transpose.</li><li>In the plane the angles add; in 3D the order of rotations matters.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-4"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-4-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Turn the vector (1, 0) by 90°. y of the result?</p><div class="numin" data-ans="1" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The first column of R(90°) is (cos 90°, sin 90°) = (0, 1): y = <b>1</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-4-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Turn the vector (2, 0) by 60°. x of the result?</p><div class="numin" data-ans="1" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>x = cos 60° × 2 − sin 60° × 0 = 0.5 × 2 = <b>1</b> (and y = 0.866 × 2 = 1.73).</p></details>
+</div>
+<div class="ex" data-id="mk-4-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A planar arm turns by 30° at joint 1 and by −50° at joint 2. Orientation of the tool (degrees)?</p><div class="numin" data-ans="-20" data-tol="0.1" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>R(30°) R(−50°) = R(30 − 50) = R(<b>−20°</b>): in the plane, the angles add.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the first column of R(θ)?</p><p class="a">(cos θ, sin θ): where the x axis goes.</p></li><li><p class="q">How do you invert a rotation matrix?</p><p class="a">Take its transpose: R⁻¹ = Rᵀ.</p></li><li><p class="q">Does the order of two rotations matter?</p><p class="a">Not in the plane (the angles add). In 3D yes, when the axes differ.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l5" data-id="mk-5">
+          <header class="lesson-head"><span class="num">5</span><h2>Frames and transformations</h2><span class="time">14 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to go from one frame to another with a rotation and a translation, and to pack both in one homogeneous matrix that you can chain.</p></div>
+<h4>5.1 The same point, seen from two frames</h4>
+<p>A <strong>frame</strong> is an origin and axes: a place from which you measure. A robot has many: one on the floor, one on each link, one on the tool, one on the camera. The same point has <strong>different coordinates in each frame</strong>.</p>
+<figure class="figure"><svg viewBox="0 0 340 200" class="fig" role="img" aria-hidden="true"><defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+      <line x1="50.0" y1="175.0" x2="200.0" y2="175.0" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="50.0" y1="175.0" x2="50.0" y2="25.0" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="206.0" y="179.0" fill="#ff6b6b">x<tspan dy="4" font-size="9">A</tspan></text><text x="46.0" y="19.0" fill="#4ed17f">y<tspan dy="4" font-size="9">A</tspan></text>
+      <line x1="170.0" y1="135.0" x2="170.0" y2="65.0" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="170.0" y1="135.0" x2="100.0" y2="135.0" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="166.0" y="59.0" fill="#ff6b6b">x<tspan dy="4" font-size="9">B</tspan></text><text x="86.0" y="139.0" fill="#4ed17f">y<tspan dy="4" font-size="9">B</tspan></text>
+      <line class="dash" x1="50" y1="175" x2="170" y2="135"/><text x="176" y="160">t = (3, 1)</text>
+      <line class="dash" x1="170" y1="55" x2="130" y2="55"/><line class="dash" x1="130" y1="135" x2="130" y2="55"/>
+      <circle class="pt" cx="130" cy="55" r="5"/><text x="122" y="48" text-anchor="end" class="c-pt">P</text>
+      <text x="200" y="100">in B: (2, 1)</text><text x="200" y="120">in A: (2, 3)</text></svg></figure>
+<p>Frame B sits at <strong>t</strong> = (3, 1) in frame A, and is turned by 90°. The point P is at (2, 1) for B. Where is it for A? Two steps: <strong>turn</strong> the coordinates with the rotation of B, then <strong>add</strong> the position of B.</p>
+<div class="box keep"><div class="bt">Change of frame</div><div class="bb"><p class="eq"><strong>p</strong><sub>A</sub> = <i>R</i> <strong>p</strong><sub>B</sub> + <strong>t</strong></p>
+<p><i>R</i> = the orientation of B seen from A (its columns are the axes of B, written in A). <strong>t</strong> = the origin of B, written in A.</p></div></div>
+<div class="box example"><div class="bt">Worked example</div><div class="bb"><p><i>R</i>(90°) = <span class="mx c2"><span>0</span><span>−1</span><span>1</span><span>0</span></span>. <strong>p</strong><sub>A</sub> = <span class="mx c2"><span>0</span><span>−1</span><span>1</span><span>0</span></span> <span class="mx c1"><span>2</span><span>1</span></span> + <span class="mx c1"><span>3</span><span>1</span></span> = <span class="mx c1"><span>−1</span><span>2</span></span> + <span class="mx c1"><span>3</span><span>1</span></span> = <span class="mx c1"><span><strong>2</strong></span><span><strong>3</strong></span></span>. Check on the picture: from B, go 2 along x<sub>B</sub> (up) and 1 along y<sub>B</sub> (left).</p></div></div>
+<h4>5.2 One matrix for both: the homogeneous matrix</h4>
+<p>“Multiply, then add” is not practical to chain ten frames. The trick: add a <strong>1</strong> under every point, and put <i>R</i> and <strong>t</strong> in one bigger matrix. One product now does the rotation and the translation:</p>
+<p class="eq"><span class="mx c1"><span><strong>p</strong><sub>A</sub></span><span>1</span></span> = <span class="mx c2"><span><i>R</i></span><span><strong>t</strong></span><span>0</span><span>1</span></span> <span class="mx c1"><span><strong>p</strong><sub>B</sub></span><span>1</span></span>        <sup>A</sup><i>T</i><sub>B</sub> = <span class="mx c2"><span><i>R</i></span><span><strong>t</strong></span><span>0</span><span>1</span></span></p>
+<p>In the plane it is a 3×3 matrix; in space a <strong>4×4</strong> matrix (<i>R</i> is 3×3, <strong>t</strong> has 3 numbers, the last row is always 0 0 0 1). With our example: <span class="mx c3"><span>0</span><span>−1</span><span>3</span><span>1</span><span>0</span><span>1</span><span>0</span><span>0</span><span>1</span></span> <span class="mx c1"><span>2</span><span>1</span><span>1</span></span> = <span class="mx c1"><span>0×2 − 1×1 + 3×1</span><span>1×2 + 0×1 + 1×1</span><span>1</span></span> = <span class="mx c1"><span>2</span><span>3</span><span>1</span></span>.</p>
+<div class="box idea"><div class="bt">How to read a homogeneous matrix</div><div class="bb"><ul><li>The <strong>last column</strong> is the position of the frame: where it is.</li><li>The <strong>other columns</strong> are its axes: how it is turned.</li><li>A <strong>point</strong> ends with 1 (the translation applies); a <strong>direction</strong> ends with 0 (it is only turned).</li></ul></div></div>
+<h4>5.3 Chaining frames: this is forward kinematics</h4>
+<p class="eq"><sup>0</sup><i>T</i><sub>2</sub> = <sup>0</sup><i>T</i><sub>1</sub> <sup>1</sup><i>T</i><sub>2</sub></p>
+<p>To go from frame 2 to frame 0, go through frame 1: multiply the matrices. Reading trick: the indices that touch “cancel” (the 1 below and the 1 above). For a robot with <i>n</i> joints: <sup>0</sup><i>T</i><sub>n</sub> = <sup>0</sup><i>T</i><sub>1</sub> <sup>1</sup><i>T</i><sub>2</sub> … <sup>n−1</sup><i>T</i><sub>n</sub>, and the last column of the result is the position of the tool.</p>
+<div class="box example"><div class="bt">Worked example: a 2-axis arm</div><div class="bb"><p><i>L</i><sub>1</sub> = 0.5 m, <i>L</i><sub>2</sub> = 0.4 m, <i>θ</i><sub>1</sub> = 30°, <i>θ</i><sub>2</sub> = 45°. Each matrix says “turn by <i>θ</i>, then move forward by <i>L</i> along the new x”: its last column is (<i>L</i> cos <i>θ</i>, <i>L</i> sin <i>θ</i>).</p>
+<p class="eq"><sup>0</sup><i>T</i><sub>1</sub> = <span class="mx c3"><span>0.866</span><span>−0.5</span><span>0.433</span><span>0.5</span><span>0.866</span><span>0.25</span><span>0</span><span>0</span><span>1</span></span>   <sup>1</sup><i>T</i><sub>2</sub> = <span class="mx c3"><span>0.707</span><span>−0.707</span><span>0.283</span><span>0.707</span><span>0.707</span><span>0.283</span><span>0</span><span>0</span><span>1</span></span>   <sup>0</sup><i>T</i><sub>2</sub> = <span class="mx c3"><span>0.259</span><span>−0.966</span><span><strong>0.537</strong></span><span>0.966</span><span>0.259</span><span><strong>0.636</strong></span><span>0</span><span>0</span><span>1</span></span></p>
+<p>The tool is at <i>x</i> = 0.537 m, <i>y</i> = 0.636 m. The same as the sum of arrows of lesson 2: 0.5 cos 30° + 0.4 cos 75° = 0.537 and 0.5 sin 30° + 0.4 sin 75° = 0.636. And the top-left block is a rotation of 75° = 30° + 45°: the orientation of the tool.</p></div></div>
+<h4>5.4 Going back: the inverse</h4>
+<p class="eq">(<sup>A</sup><i>T</i><sub>B</sub>)<sup>−1</sup> = <sup>B</sup><i>T</i><sub>A</sub> = <span class="mx c2"><span><i>R</i><sup>T</sup></span><span>−<i>R</i><sup>T</sup> <strong>t</strong></span><span>0</span><span>1</span></span></p>
+<p>No heavy computation: transpose the rotation, and turn the translation back. It answers the opposite question: “where is A, seen from B?”</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>frame</li><li>translation</li><li>homogeneous matrix</li><li>homogeneous coordinates</li><li>chain of transformations</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Change of frame: p_A = R p_B + t (turn, then add the position of the frame).</li><li>A homogeneous matrix holds R and t; its last column is the position.</li><li>Chain the frames by multiplying: ⁰T₂ = ⁰T₁ ¹T₂.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-5"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-5-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Frame B is at (2, 1) in A, not turned. A point is at (0.5, 0.3) in B. x of the point in A?</p><div class="numin" data-ans="2.5" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>No rotation: just add. (0.5 + 2, 0.3 + 1) = (2.5, 1.3). x = <b>2.5</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-5-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Frame B is at (1, 2) in A and turned by 90°. A point is at (3, 0) in B. y of the point in A?</p><div class="numin" data-ans="5" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Turn (3, 0) by 90° first.</p></details><details class="sol"><summary>Solution</summary><p>R(90°)(3, 0) = (0, 3). Add t: (0 + 1, 3 + 2) = (1, 5). y = <b>5</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-5-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A 2-axis arm: L1 = 1 m, L2 = 1 m, θ1 = 90°, θ2 = −90°. x of the tool (m)?</p><div class="numin" data-ans="1" data-tol="0.01" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Link 1 points up: (0, 1). Link 2 is at 90 − 90 = 0°: (1, 0). Tool: (0 + 1, 1 + 0) = (1, 1). x = <b>1 m</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In a homogeneous matrix, where do you read the position of the frame?</p><p class="a">In the last column (above the final 1).</p></li><li><p class="q">Why do we add a 1 under the coordinates of a point?</p><p class="a">So that one matrix product does both the rotation and the translation, and transformations can be chained by multiplying.</p></li><li><p class="q">How do you get the transformation from frame 3 to frame 0?</p><p class="a">Multiply in order: ⁰T₃ = ⁰T₁ ¹T₂ ²T₃.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l6" data-id="mk-6">
+          <header class="lesson-head"><span class="num">6</span><h2>The Denavit–Hartenberg method (standard DH)</h2><span class="time">15 min</span></header>
+          <div class="goal"><b>You will learn</b><p>where the standard DH convention puts the frames, its four parameters, its matrix, and how to write the DH table of a robot step by step.</p></div>
+<h4>6.1 The problem: too much freedom</h4>
+<p>Lesson 5 showed that a robot is a chain of frames, one per link, and that we multiply their matrices. But <strong>where exactly</strong> do we put each frame on its link? If everybody chooses freely, a frame needs <strong>6 numbers</strong> (3 for the position, 3 for the orientation), and nobody gets the same equations.</p>
+<p>In 1955 Jacques Denavit and Richard Hartenberg proposed a <strong>rule to place the frames</strong>. With this rule, going from one frame to the next needs only <strong>4 numbers</strong>. A whole robot becomes a small table: one row per joint, four numbers per row.</p>
+<h4>6.2 Where the frames go</h4>
+<p>Number the links from 0 (the base) to <i>n</i> (the tool), and the joints from 1 to <i>n</i>: joint <i>i</i> connects link <i>i</i>−1 to link <i>i</i>. In <strong>standard DH</strong>, frame <i>i</i> is fixed to link <i>i</i>, <strong>at its far end</strong>, on the axis of the <em>next</em> joint:</p>
+<div class="box method"><div class="bt">Standard DH: placing frame i</div><div class="bb"><ol><li><strong><i>z</i><sub>i</sub></strong> is along the axis of joint <i>i</i>+1 (so <i>z</i><sub>0</sub> is the axis of joint 1, <i>z</i><sub>1</sub> the axis of joint 2…).</li><li><strong><i>x</i><sub>i</sub></strong> is along the <strong>common perpendicular</strong>: the shortest segment from the axis <i>z</i><sub>i−1</sub> to the axis <i>z</i><sub>i</sub>. It must cross <i>z</i><sub>i−1</sub> at a right angle.</li><li>The <strong>origin</strong> is where <i>x</i><sub>i</sub> meets <i>z</i><sub>i</sub>.</li><li><strong><i>y</i><sub>i</sub></strong> completes the frame (right-hand rule: <strong>y</strong> = <strong>z</strong> × <strong>x</strong>). You never need to draw it.</li></ol></div></div>
+<figure class="figure"><svg viewBox="0 0 440 220" class="fig" role="img" aria-hidden="true"><defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+    <line x1="110" y1="205" x2="110" y2="22" stroke="#5aa9ff" stroke-width="2.5" marker-end="url(#mkax)"/><text x="104" y="18" text-anchor="end" fill="#5aa9ff">z<tspan dy="4" font-size="9">i−1</tspan><tspan dy="-4"> </tspan></text><text x="110" y="218" text-anchor="middle" class="sm">axis of joint i</text>
+    <line x1="282" y1="205" x2="322" y2="22" stroke="#5aa9ff" stroke-width="2.5" marker-end="url(#mkax)"/><text x="332" y="20" fill="#5aa9ff">z<tspan dy="4" font-size="9">i</tspan><tspan dy="-4"> </tspan></text><text x="300" y="218" text-anchor="middle" class="sm">axis of joint i+1</text>
+    <line x1="110" y1="125" x2="352" y2="125" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><text x="360" y="129" fill="#ff6b6b" text-anchor="start">x<tspan dy="4" font-size="9">i</tspan><tspan dy="-4"> </tspan></text>
+    <text x="205" y="117" text-anchor="middle" class="c-x">a<tspan dy="4" font-size="9">i</tspan><tspan dy="-4"> </tspan></text>
+    <line class="dash" x1="299.5" y1="125" x2="299.5" y2="50"/><path class="arc" d="M299.5,75 A50,50 0 0 1 310.3,76.2"/><text x="296" y="64" text-anchor="end" class="c-x">α<tspan dy="4" font-size="9">i</tspan><tspan dy="-4"> </tspan></text>
+    <circle class="jt" cx="110" cy="180" r="4"/><line class="dim" x1="96" y1="180" x2="96" y2="125"/><text x="90" y="157" text-anchor="end" class="c-y">d<tspan dy="4" font-size="9">i</tspan><tspan dy="-4"> </tspan></text>
+    <path class="arc" d="M136,186 A26,9 0 0 1 84,186" style="stroke:#4ed17f"/><text x="142" y="198" class="c-y">θ<tspan dy="4" font-size="9">i</tspan><tspan dy="-4"> </tspan></text></svg></figure>
+<h4>6.3 The four parameters</h4>
+<p>To go from frame <i>i</i>−1 to frame <i>i</i>, do four simple moves <strong>in this order</strong>: two along the old axis <i>z</i><sub>i−1</sub>, then two along the new axis <i>x</i><sub>i</sub>.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Order</th><th class="left">Parameter</th><th class="left">Move</th><th class="left">In plain words</th></tr><tr><td class="left">1</td><td class="left"><strong><i>θ</i><sub>i</sub></strong></td><td class="left">turn around <i>z</i><sub>i−1</sub></td><td class="left">the <strong>joint angle</strong>: the variable of a revolute joint</td></tr><tr><td class="left">2</td><td class="left"><strong><i>d</i><sub>i</sub></strong></td><td class="left">slide along <i>z</i><sub>i−1</sub></td><td class="left">the <strong>offset</strong> along the joint axis: the variable of a prismatic joint</td></tr><tr><td class="left">3</td><td class="left"><strong><i>a</i><sub>i</sub></strong></td><td class="left">slide along <i>x</i><sub>i</sub></td><td class="left">the <strong>link length</strong>: the distance between the two joint axes</td></tr><tr><td class="left">4</td><td class="left"><strong><i>α</i><sub>i</sub></strong></td><td class="left">turn around <i>x</i><sub>i</sub></td><td class="left">the <strong>twist</strong>: the angle between the two joint axes (0 if parallel, ±90° if perpendicular)</td></tr></table></div>
+<div class="box keep"><div class="bt">What moves, what is fixed</div><div class="bb"><ul><li><i>a</i><sub>i</sub> and <i>α</i><sub>i</sub> never change: they are the <strong>shape of link <i>i</i></strong>.</li><li>Revolute joint: <i>θ</i><sub>i</sub> is the variable, <i>d</i><sub>i</sub> is fixed. Prismatic joint: <i>d</i><sub>i</sub> is the variable, <i>θ</i><sub>i</sub> is fixed.</li></ul></div></div>
+<h4>6.4 The matrix of one row</h4>
+<p>Each move is a homogeneous matrix (lesson 5). Multiply the four, in the order of the table:</p>
+<p class="eq"><sup>i−1</sup><i>T</i><sub>i</sub> = Rot(<i>z</i>, <i>θ</i><sub>i</sub>) · Trans(<i>z</i>, <i>d</i><sub>i</sub>) · Trans(<i>x</i>, <i>a</i><sub>i</sub>) · Rot(<i>x</i>, <i>α</i><sub>i</sub>)</p>
+<p class="eq"><sup>i−1</sup><i>T</i><sub>i</sub> = <span class="mx c4"><span>cθ</span><span>−sθ cα</span><span>sθ sα</span><span><i>a</i> cθ</span><span>sθ</span><span>cθ cα</span><span>−cθ sα</span><span><i>a</i> sθ</span><span>0</span><span>sα</span><span>cα</span><span><i>d</i></span><span>0</span><span>0</span><span>0</span><span>1</span></span></p>
+<p>with cθ = cos <i>θ</i><sub>i</sub>, sα = sin <i>α</i><sub>i</sub>… You do not need to learn it by heart: know <strong>where it comes from</strong>, and let a program fill it.</p>
+<h4>6.5 Example 1: the 2-axis arm</h4>
+<figure class="figure"><svg viewBox="0 -40 340 240" class="fig" role="img" aria-hidden="true"><defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+    <line class="dash" x1="20" y1="172" x2="320" y2="172"/>
+    <line class="link1" x1="60" y1="172" x2="172.6" y2="107"/><line class="link2" x1="172.6" y1="107" x2="206.8" y2="13"/>
+    <line x1="60.0" y1="172.0" x2="104.0" y2="172.0" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="60.0" y1="172.0" x2="60.0" y2="128.0" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="110.0" y="176.0" fill="#ff6b6b">x<tspan dy="4" font-size="9">0</tspan><tspan dy="-4"> </tspan></text><line x1="172.6" y1="107.0" x2="210.7" y2="85.0" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="172.6" y1="107.0" x2="150.6" y2="68.9" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="215.4" y="84.0" fill="#ff6b6b">x<tspan dy="4" font-size="9">1</tspan><tspan dy="-4"> </tspan></text><line x1="206.8" y1="13.0" x2="221.8" y2="-28.3" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="206.8" y1="13.0" x2="165.5" y2="-2.0" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="221.3" y="-33.7" fill="#ff6b6b">x<tspan dy="4" font-size="9">2</tspan><tspan dy="-4"> </tspan></text>
+    <circle class="jt" cx="60" cy="172" r="5"/><circle class="jt" cx="172.6" cy="107" r="5"/><circle class="pt" cx="206.8" cy="13" r="5"/>
+    <text x="105" y="128" text-anchor="end" class="c-l">L₁</text><text x="178" y="62" text-anchor="end" class="c-l2">L₂</text></svg></figure>
+<p>The two joint axes point out of the page, so they are parallel: every <i>α</i><sub>i</sub> = 0 and every <i>d</i><sub>i</sub> = 0. Frame 1 is at the end of link 1, frame 2 at the end of link 2 (the tool).</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"><i>i</i></th><th class="left"><i>θ</i><sub>i</sub></th><th class="left"><i>d</i><sub>i</sub></th><th class="left"><i>a</i><sub>i</sub></th><th class="left"><i>α</i><sub>i</sub></th></tr><tr><td class="left">1</td><td class="left"><i>θ</i><sub>1</sub></td><td class="left">0</td><td class="left"><i>L</i><sub>1</sub></td><td class="left">0</td></tr><tr><td class="left">2</td><td class="left"><i>θ</i><sub>2</sub></td><td class="left">0</td><td class="left"><i>L</i><sub>2</sub></td><td class="left">0</td></tr></table></div>
+<p>With α = 0 and <i>d</i> = 0 the matrix becomes “turn by <i>θ</i>, then move forward by <i>a</i>”: exactly the matrices of lesson 5. With <i>L</i><sub>1</sub> = 0.5, <i>L</i><sub>2</sub> = 0.4, <i>θ</i><sub>1</sub> = 30°, <i>θ</i><sub>2</sub> = 45° the product gives the tool at <strong>(0.537, 0.636)</strong>, as before.</p>
+<h4>6.6 Example 2: a 3-axis arm in space</h4>
+<p>The arm of the “Build your first robot” workshop: joint 1 turns around the vertical; joints 2 and 3 (shoulder, elbow) turn around a horizontal axis. Shoulder height 0.40 m, links of 0.45 m and 0.38 m.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"><i>i</i></th><th class="left"><i>θ</i><sub>i</sub></th><th class="left"><i>d</i><sub>i</sub></th><th class="left"><i>a</i><sub>i</sub></th><th class="left"><i>α</i><sub>i</sub></th><th class="left">Why</th></tr><tr><td class="left">1</td><td class="left"><i>θ</i><sub>1</sub></td><td class="left">0.40</td><td class="left">0</td><td class="left">90°</td><td class="left">axis 1 is vertical, axis 2 horizontal: they cross (<i>a</i> = 0) at a right angle (α = 90°), 0.40 m above the base (<i>d</i>)</td></tr><tr><td class="left">2</td><td class="left"><i>θ</i><sub>2</sub></td><td class="left">0</td><td class="left">0.45</td><td class="left">0</td><td class="left">axes 2 and 3 are parallel, 0.45 m apart</td></tr><tr><td class="left">3</td><td class="left"><i>θ</i><sub>3</sub></td><td class="left">0</td><td class="left">0.38</td><td class="left">0</td><td class="left">from the elbow to the tool: 0.38 m</td></tr></table></div>
+<div class="box example"><div class="bt">Check with numbers</div><div class="bb"><p><i>θ</i><sub>1</sub> = 25°, <i>θ</i><sub>2</sub> = 70°, <i>θ</i><sub>3</sub> = −80°. Multiplying the three matrices gives the tool at <strong>(0.479, 0.223, 0.757) m</strong>. By hand: <i>r</i> = 0.45 cos 70° + 0.38 cos(−10°) = 0.528; <i>x</i> = <i>r</i> cos 25° = 0.479; <i>y</i> = <i>r</i> sin 25° = 0.223; <i>z</i> = 0.40 + 0.45 sin 70° + 0.38 sin(−10°) = 0.757. The table and the drawing agree. Set these angles in the workshop: it shows the same position.</p></div></div>
+<div class="box warn"><div class="bt">Three special cases</div><div class="bb"><ul><li><strong>Parallel axes</strong>: there are many common perpendiculars. Choose the one that makes <i>d</i> = 0.</li><li><strong>Axes that cross</strong>: <i>a</i> = 0, and <strong>x</strong> is perpendicular to both axes (two possible directions: choose one, it sets the sign of α).</li><li><strong>Zero position</strong>: the arm drawn with all <i>θ</i> = 0 may not be the “home” pose of the real robot. A fixed offset is then added in the table, written <i>θ</i> + 90° for example.</li></ul></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>DH convention</li><li>common perpendicular</li><li>joint angle θ</li><li>offset d</li><li>link length a</li><li>twist α</li><li>DH table</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Standard DH: frame i is at the far end of link i; z_i is the axis of joint i+1.</li><li>One row = θ, d (along z), then a, α (along x).</li><li>Revolute joint: θ moves. Prismatic joint: d moves. a and α are the shape of the link.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-6"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-6-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">How many numbers describe one joint in a DH table?</p><div class="numin" data-ans="4" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p><b>4</b>: θ, d, a, α (instead of 6 for a free frame).</p></details>
+</div>
+<div class="ex" data-id="mk-6-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">2-axis arm, standard DH: a₁ = 0.6, a₂ = 0.3, θ₁ = 0°, θ₂ = 90°. y of the tool (m)?</p><div class="numin" data-ans="0.3" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Link 1 along x: (0.6, 0). Link 2 at 0 + 90 = 90°: (0, 0.3). Tool: (0.6, <b>0.3</b>).</p></details>
+</div>
+<div class="ex" data-id="mk-6-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">3-axis arm of the lesson (d₁ = 0.40, a₂ = 0.45, a₃ = 0.38) with θ₁ = 0°, θ₂ = 90°, θ₃ = −90°. z of the tool (m)?</p><div class="numin" data-ans="0.85" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>z = d₁ + a₂ sin θ₂ + a₃ sin(θ₂ + θ₃).</p></details><details class="sol"><summary>Solution</summary><p>z = 0.40 + 0.45 sin 90° + 0.38 sin 0° = 0.40 + 0.45 + 0 = <b>0.85 m</b>. The upper arm is vertical and the forearm horizontal.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In standard DH, on which axis is z of frame i?</p><p class="a">On the axis of joint i+1 (the next joint).</p></li><li><p class="q">In which order are the four moves of a standard DH row applied?</p><p class="a">θ (turn around z), d (slide along z), a (slide along x), α (turn around x).</p></li><li><p class="q">Two consecutive joint axes are parallel. What is α?</p><p class="a">0: there is no twist between them.</p></li></ol></details>
+          <p class="try"><a href="arm.html">See a DH table on a live 3D arm →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l7" data-id="mk-7">
+          <header class="lesson-head"><span class="num">7</span><h2>The modified DH method (DHM)</h2><span class="time">14 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what changes in the modified convention, where its frames go, its four parameters, its matrix, and the DHM tables of the same two robots.</p></div>
+<h4>7.1 One idea changes: the frame sits on its own joint</h4>
+<p>In standard DH, frame <i>i</i> is at the far end of link <i>i</i>, on the axis of joint <i>i</i>+1. Many people find this confusing: the frame of link 2 is on joint 3. The <strong>modified</strong> convention (Khalil and Kleinfinger, 1986; also used in the book of J. Craig) moves each frame to the <strong>start</strong> of its link:</p>
+<div class="box keep"><div class="bt">The rule of DHM</div><div class="bb"><p><strong>Frame <i>j</i> is fixed to link <i>j</i> and sits on the axis of joint <i>j</i></strong>: the joint that moves this link. Joint 1 → frame 1, joint 2 → frame 2. Same number everywhere.</p></div></div>
+<div class="box method"><div class="bt">Modified DH: placing frame j</div><div class="bb"><ol><li><strong><i>z</i><sub>j</sub></strong> is along the axis of joint <i>j</i>.</li><li><strong><i>x</i><sub>j</sub></strong> is along the common perpendicular from <i>z</i><sub>j</sub> to the next axis <i>z</i><sub>j+1</sub>.</li><li>The <strong>origin</strong> is where <i>x</i><sub>j</sub> meets <i>z</i><sub>j</sub>.</li><li><strong><i>y</i><sub>j</sub></strong> completes the frame.</li></ol></div></div>
+<figure class="figure"><svg viewBox="0 0 440 220" class="fig" role="img" aria-hidden="true"><defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+    <line x1="110" y1="205" x2="110" y2="22" stroke="#5aa9ff" stroke-width="2.5" marker-end="url(#mkax)"/><text x="104" y="18" text-anchor="end" fill="#5aa9ff">z<tspan dy="4" font-size="9">j−1</tspan><tspan dy="-4"> </tspan></text><text x="110" y="218" text-anchor="middle" class="sm">axis of joint j−1</text>
+    <line x1="282" y1="205" x2="322" y2="22" stroke="#5aa9ff" stroke-width="2.5" marker-end="url(#mkax)"/><text x="332" y="20" fill="#5aa9ff">z<tspan dy="4" font-size="9">j</tspan><tspan dy="-4"> </tspan></text><text x="300" y="218" text-anchor="middle" class="sm">axis of joint j</text>
+    <line x1="110" y1="125" x2="299.5" y2="125" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><text x="205" y="142" fill="#ff6b6b" text-anchor="middle">x<tspan dy="4" font-size="9">j−1</tspan><tspan dy="-4"> </tspan></text>
+    <text x="205" y="117" text-anchor="middle" class="c-x">a<tspan dy="4" font-size="9">j−1</tspan><tspan dy="-4"> </tspan></text>
+    <line class="dash" x1="299.5" y1="125" x2="299.5" y2="50"/><path class="arc" d="M299.5,75 A50,50 0 0 1 310.3,76.2"/><text x="296" y="64" text-anchor="end" class="c-x">α<tspan dy="4" font-size="9">j−1</tspan><tspan dy="-4"> </tspan></text>
+    <circle class="jt" cx="287.5" cy="180" r="4"/><line class="dim" x1="273.5" y1="180" x2="285.5" y2="125"/><text x="267.5" y="157" text-anchor="end" class="c-y">d<tspan dy="4" font-size="9">j</tspan><tspan dy="-4"> </tspan></text>
+    <path class="arc" d="M313.5,186 A26,9 0 0 1 261.5,186" style="stroke:#4ed17f"/><text x="319.5" y="198" class="c-y">θ<tspan dy="4" font-size="9">j</tspan><tspan dy="-4"> </tspan></text></svg></figure>
+<h4>7.2 The four parameters, in a new order</h4>
+<p>To go from frame <i>j</i>−1 to frame <i>j</i>: first the <strong>shape of the previous link</strong> (two moves along <i>x</i><sub>j−1</sub>), then the <strong>motion of joint <i>j</i></strong> (two moves along <i>z</i><sub>j</sub>).</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Order</th><th class="left">Parameter</th><th class="left">Move</th><th class="left">In plain words</th></tr><tr><td class="left">1</td><td class="left"><strong><i>α</i><sub>j−1</sub></strong></td><td class="left">turn around <i>x</i><sub>j−1</sub></td><td class="left">the <strong>twist</strong> between the axes <i>z</i><sub>j−1</sub> and <i>z</i><sub>j</sub></td></tr><tr><td class="left">2</td><td class="left"><strong><i>a</i><sub>j−1</sub></strong></td><td class="left">slide along <i>x</i><sub>j−1</sub></td><td class="left">the <strong>distance</strong> between these two axes</td></tr><tr><td class="left">3</td><td class="left"><strong><i>θ</i><sub>j</sub></strong></td><td class="left">turn around <i>z</i><sub>j</sub></td><td class="left">the <strong>joint angle</strong>: the variable of a revolute joint</td></tr><tr><td class="left">4</td><td class="left"><strong><i>d</i><sub>j</sub></strong></td><td class="left">slide along <i>z</i><sub>j</sub></td><td class="left">the <strong>offset</strong> along the joint axis: the variable of a prismatic joint</td></tr></table></div>
+<p>The meaning of the four numbers is the same as in standard DH: a twist, a distance, a joint angle, an offset. What changes is <strong>the order</strong> and <strong>the indices</strong>: the twist and the distance of row <i>j</i> belong to the link <em>before</em> joint <i>j</i>.</p>
+<h4>7.3 The matrix of one row</h4>
+<p class="eq"><sup>j−1</sup><i>T</i><sub>j</sub> = Rot(<i>x</i>, <i>α</i><sub>j−1</sub>) · Trans(<i>x</i>, <i>a</i><sub>j−1</sub>) · Rot(<i>z</i>, <i>θ</i><sub>j</sub>) · Trans(<i>z</i>, <i>d</i><sub>j</sub>)</p>
+<p class="eq"><sup>j−1</sup><i>T</i><sub>j</sub> = <span class="mx c4"><span>cθ</span><span>−sθ</span><span>0</span><span><i>a</i></span><span>sθ cα</span><span>cθ cα</span><span>−sα</span><span>−<i>d</i> sα</span><span>sθ sα</span><span>cθ sα</span><span>cα</span><span><i>d</i> cα</span><span>0</span><span>0</span><span>0</span><span>1</span></span></p>
+<p>When the axes are parallel (α = 0) it is very simple: <span class="mx c4"><span>cθ</span><span>−sθ</span><span>0</span><span><i>a</i></span><span>sθ</span><span>cθ</span><span>0</span><span>0</span><span>0</span><span>0</span><span>1</span><span><i>d</i></span><span>0</span><span>0</span><span>0</span><span>1</span></span>: “move forward by <i>a</i>, then turn by <i>θ</i>”.</p>
+<h4>7.4 Example 1: the 2-axis arm</h4>
+<figure class="figure"><svg viewBox="0 -40 340 240" class="fig" role="img" aria-hidden="true"><defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+    <line class="dash" x1="20" y1="172" x2="320" y2="172"/>
+    <line class="link1" x1="60" y1="172" x2="172.6" y2="107"/><line class="link2" x1="172.6" y1="107" x2="206.8" y2="13"/>
+    <line x1="60.0" y1="172.0" x2="98.1" y2="150.0" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="60.0" y1="172.0" x2="38.0" y2="133.9" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="102.8" y="149.0" fill="#ff6b6b">x<tspan dy="4" font-size="9">1</tspan><tspan dy="-4"> </tspan></text><line x1="172.6" y1="107.0" x2="187.6" y2="65.7" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="172.6" y1="107.0" x2="131.3" y2="92.0" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="187.1" y="60.3" fill="#ff6b6b">x<tspan dy="4" font-size="9">2</tspan><tspan dy="-4"> </tspan></text><line x1="206.8" y1="13.0" x2="221.8" y2="-28.3" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="206.8" y1="13.0" x2="165.5" y2="-2.0" stroke="#4ed17f" stroke-width="2.5" marker-end="url(#mkax)"/><text x="221.3" y="-33.7" fill="#ff6b6b">x<tspan dy="4" font-size="9">T</tspan><tspan dy="-4"> </tspan></text>
+    <circle class="jt" cx="60" cy="172" r="5"/><circle class="jt" cx="172.6" cy="107" r="5"/><circle class="pt" cx="206.8" cy="13" r="5"/>
+    <text x="105" y="128" text-anchor="end" class="c-l">L₁</text><text x="178" y="62" text-anchor="end" class="c-l2">L₂</text></svg></figure>
+<p>Frame 1 is now <strong>on joint 1</strong> (at the base, it turns with link 1) and frame 2 <strong>on joint 2</strong>. No frame is on the tool yet: we add one last <strong>fixed row</strong> (no variable) to reach it.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"><i>j</i></th><th class="left"><i>α</i><sub>j−1</sub></th><th class="left"><i>a</i><sub>j−1</sub></th><th class="left"><i>θ</i><sub>j</sub></th><th class="left"><i>d</i><sub>j</sub></th><th class="left">Why</th></tr><tr><td class="left">1</td><td class="left">0</td><td class="left">0</td><td class="left"><i>θ</i><sub>1</sub></td><td class="left">0</td><td class="left">joint 1 is at the origin</td></tr><tr><td class="left">2</td><td class="left">0</td><td class="left"><i>L</i><sub>1</sub></td><td class="left"><i>θ</i><sub>2</sub></td><td class="left">0</td><td class="left">joint 2 is at the end of link 1</td></tr><tr><td class="left">tool</td><td class="left">0</td><td class="left"><i>L</i><sub>2</sub></td><td class="left">0</td><td class="left">0</td><td class="left">the tool is at the end of link 2 (fixed)</td></tr></table></div>
+<p>With the same numbers (<i>L</i><sub>1</sub> = 0.5, <i>L</i><sub>2</sub> = 0.4, 30° and 45°) the product of the three matrices gives the tool at <strong>(0.537, 0.636)</strong>: the same point as the standard table.</p>
+<h4>7.5 Example 2: the 3-axis arm</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"><i>j</i></th><th class="left"><i>α</i><sub>j−1</sub></th><th class="left"><i>a</i><sub>j−1</sub></th><th class="left"><i>θ</i><sub>j</sub></th><th class="left"><i>d</i><sub>j</sub></th><th class="left">Why</th></tr><tr><td class="left">1</td><td class="left">0</td><td class="left">0</td><td class="left"><i>θ</i><sub>1</sub></td><td class="left">0.40</td><td class="left">joint 1 is vertical; frame 1 is placed at the height of the shoulder</td></tr><tr><td class="left">2</td><td class="left">90°</td><td class="left">0</td><td class="left"><i>θ</i><sub>2</sub></td><td class="left">0</td><td class="left">axis 2 is perpendicular to axis 1 and crosses it</td></tr><tr><td class="left">3</td><td class="left">0</td><td class="left">0.45</td><td class="left"><i>θ</i><sub>3</sub></td><td class="left">0</td><td class="left">axis 3 is parallel to axis 2, 0.45 m further</td></tr><tr><td class="left">tool</td><td class="left">0</td><td class="left">0.38</td><td class="left">0</td><td class="left">0</td><td class="left">the tool, 0.38 m after the elbow (fixed)</td></tr></table></div>
+<p>With 25°, 70° and −80° the product gives <strong>(0.479, 0.223, 0.757) m</strong>: again the same tool position as lesson 6. Compare the two tables: the numbers 0.40, 90°, 0.45, 0.38 are all there, but the 90° and the lengths have moved <strong>one row down</strong>.</p>
+<div class="box warn"><div class="bt">Two notations for the same DHM</div><div class="bb"><p>Books do not use the same letters. This lesson and the robot pages write the row (<i>α</i><sub>j−1</sub>, <i>a</i><sub>j−1</sub>, <i>θ</i><sub>j</sub>, <i>d</i><sub>j</sub>), like J. Craig. Khalil and Kleinfinger, and the course “Robot modelling” of this site, write (<i>α</i><sub>j</sub>, <i>d</i><sub>j</sub>, <i>θ</i><sub>j</sub>, <i>r</i><sub>j</sub>): their <strong><i>d</i><sub>j</sub> is our distance <i>a</i><sub>j−1</sub></strong>, and their <strong><i>r</i><sub>j</sub> is our offset <i>d</i><sub>j</sub></strong>. The frames and the matrices are identical: only the letters change.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>modified DH (DHM)</li><li>Khalil–Kleinfinger</li><li>fixed row</li><li>twist α</li><li>offset d</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Modified DH: frame j is on the axis of joint j, at the start of link j.</li><li>One row = α, a (along x, shape of the previous link), then θ, d (along z, motion of joint j).</li><li>A fixed last row often brings the frame to the tool.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-7"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-7-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">In the DHM table of the 2-axis arm, in which row is the length L₁?</p><div class="numin" data-ans="2" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Row <b>2</b>: it is a₁, the distance <em>before</em> joint 2.</p></details>
+</div>
+<div class="ex" data-id="mk-7-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">DHM, parallel axes (α = 0): a = 0.5, θ = 90°, d = 0. Where is the origin of the new frame, seen from the old one? Give x.</p><div class="numin" data-ans="0.5" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>In DHM we move forward by a <em>first</em>, then turn: the origin is at (<b>0.5</b>, 0). The rotation only turns the axes of the new frame.</p></details>
+</div>
+<div class="ex" data-id="mk-7-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A book gives a row (α_j, d_j, θ_j, r_j) = (0, 0.45, θ, 0). In the notation of this lesson, what is a_{j−1}?</p><div class="numin" data-ans="0.45" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>It is the Khalil–Kleinfinger notation: their d_j is our distance a_{j−1} = <b>0.45</b>, and their r_j is our offset d_j = 0.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In modified DH, on which axis is z of frame j?</p><p class="a">On the axis of joint j itself.</p></li><li><p class="q">In which order are the four moves of a DHM row applied?</p><p class="a">α (turn around x), a (slide along x), θ (turn around z), d (slide along z).</p></li><li><p class="q">Why does a DHM table often have one more row than the number of joints?</p><p class="a">The last frame sits on the last joint, not on the tool: a fixed row brings it to the tool.</p></li></ol></details>
+          <p class="try"><a href="learn-model.html#l4">The full DHM lesson, with a SCARA and 6-axis robots →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="7"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l8" data-id="mk-8">
+          <header class="lesson-head"><span class="num">8</span><h2>DH and DHM side by side</h2><span class="time">10 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to tell the two conventions apart at a glance, to avoid mixing them, and to check any table.</p></div>
+<h4>8.1 The differences in one table</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"></th><th class="left">Standard DH</th><th class="left">Modified DH (DHM)</th></tr><tr><td class="left"><strong>Where is frame <i>i</i>?</strong></td><td class="left">at the <strong>far end</strong> of link <i>i</i></td><td class="left">at the <strong>start</strong> of link <i>i</i></td></tr><tr><td class="left"><strong><i>z</i><sub>i</sub> is the axis of…</strong></td><td class="left">joint <i>i</i>+1</td><td class="left">joint <i>i</i></td></tr><tr><td class="left"><strong>Order of the moves</strong></td><td class="left">θ, <i>d</i> (along z), then <i>a</i>, α (along x)</td><td class="left">α, <i>a</i> (along x), then θ, <i>d</i> (along z)</td></tr><tr><td class="left"><strong>Indices in row <i>i</i></strong></td><td class="left"><i>θ</i><sub>i</sub>, <i>d</i><sub>i</sub>, <i>a</i><sub>i</sub>, <i>α</i><sub>i</sub></td><td class="left"><i>α</i><sub>i−1</sub>, <i>a</i><sub>i−1</sub>, <i>θ</i><sub>i</sub>, <i>d</i><sub>i</sub></td></tr><tr><td class="left"><strong>Rows for <i>n</i> joints</strong></td><td class="left"><i>n</i>: the last frame is on the tool</td><td class="left"><i>n</i>, plus often one fixed row for the tool</td></tr><tr><td class="left"><strong>Found in</strong></td><td class="left">Spong; Siciliano; many manufacturer data sheets</td><td class="left">Craig; Khalil and Dombre; dynamics and robots with branches</td></tr></table></div>
+<div class="box keep"><div class="bt">Same robot, same result</div><div class="bb"><p>The two conventions describe <strong>the same robot</strong>. The frames in the middle of the chain are placed differently, so the intermediate matrices differ, but the final matrix from the base to the tool is the same. Lessons 6 and 7 showed it twice: (0.537, 0.636) and (0.479, 0.223, 0.757).</p></div></div>
+<h4>8.2 The same arm, both tables</h4>
+<p>The 3-axis arm of lessons 6 and 7:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Standard</th><th class="left">θ</th><th class="left"><i>d</i></th><th class="left"><i>a</i></th><th class="left">α</th><th class="left"></th><th class="left">Modified</th><th class="left">α</th><th class="left"><i>a</i></th><th class="left">θ</th><th class="left"><i>d</i></th></tr><tr><td class="left">1</td><td class="left"><i>θ</i><sub>1</sub></td><td class="left">0.40</td><td class="left">0</td><td class="left"><strong>90°</strong></td><td class="left"></td><td class="left">1</td><td class="left">0</td><td class="left">0</td><td class="left"><i>θ</i><sub>1</sub></td><td class="left">0.40</td></tr><tr><td class="left">2</td><td class="left"><i>θ</i><sub>2</sub></td><td class="left">0</td><td class="left">0.45</td><td class="left">0</td><td class="left"></td><td class="left">2</td><td class="left"><strong>90°</strong></td><td class="left">0</td><td class="left"><i>θ</i><sub>2</sub></td><td class="left">0</td></tr><tr><td class="left">3</td><td class="left"><i>θ</i><sub>3</sub></td><td class="left">0</td><td class="left">0.38</td><td class="left">0</td><td class="left"></td><td class="left">3</td><td class="left">0</td><td class="left">0.45</td><td class="left"><i>θ</i><sub>3</sub></td><td class="left">0</td></tr><tr><td class="left"></td><td class="left"></td><td class="left"></td><td class="left"></td><td class="left"></td><td class="left"></td><td class="left">tool</td><td class="left">0</td><td class="left">0.38</td><td class="left">0</td><td class="left">0</td></tr></table></div>
+<p>Read it like this: in the standard table the 90° is in <strong>row 1</strong> (the twist of link 1); in the modified table it is in <strong>row 2</strong> (the twist <em>before</em> joint 2). The lengths 0.45 and 0.38 also move one row down.</p>
+<h4>8.3 The mistake that costs hours: mixing them</h4>
+<div class="box warn"><div class="bt">A standard table in a modified matrix gives another robot</div><div class="bb"><p>Take the standard table of the 2-axis arm (<i>a</i> = 0.5 and 0.4, 30° and 45°) and feed it to the <em>modified</em> matrix by mistake. Each row now means “move forward, <em>then</em> turn” instead of “turn, then move forward”. The tool lands at (0.5 + 0.4 cos 30°, 0.4 sin 30°) = <strong>(0.846, 0.200)</strong> instead of (0.537, 0.636). No error message: just a robot that goes to the wrong place.</p></div></div>
+<h4>8.4 How to recognise the convention of a table</h4>
+<ul><li>The columns start with <strong>θ, <i>d</i></strong> and end with <strong><i>a</i>, α</strong> → standard. They start with <strong>α, <i>a</i></strong> → modified.</li><li>The indices <i>a</i><sub>i−1</sub>, <i>α</i><sub>i−1</sub> appear → modified.</li><li>The letters are α, <i>d</i>, θ, <i>r</i> → modified, in the Khalil–Kleinfinger notation.</li><li>In a software library, look for an option such as “standard” / “modified” (often written <code>mdh</code>).</li></ul>
+<h4>8.5 Checklist: is my table right?</h4>
+<ol><li><strong>Zero pose</strong>: set every variable to 0, compute the tool position, and compare with the drawing of the robot in that pose.</li><li><strong>One joint at a time</strong>: turn joint 1 by 90° only. Does the tool go where you expect? Then joint 2, and so on.</li><li><strong>Parallel axes have α = 0</strong>; perpendicular axes have α = ±90°. Count them on the robot.</li><li><strong>Lengths</strong>: every non-zero <i>a</i> or <i>d</i> must be a real distance you can measure on the robot.</li></ol>
+<div class="box idea"><div class="bt">Which one should you use?</div><div class="bb"><p>The one of your course, your book or your software, and <strong>only that one</strong> inside a project. Two people can also write two different correct tables in the <em>same</em> convention (the direction of an axis is a free choice): what counts is that the final matrix is right. On the robot pages of this site you can switch between the DH and DHM tables of the same robot and watch the frames move.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>standard DH</li><li>modified DH</li><li>zero pose</li><li>convention</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Standard: frame at the far end of the link, row θ, d, a, α. Modified: frame on its own joint, row α, a, θ, d.</li><li>Both give the same tool position, if each table is used with its own matrix.</li><li>Always check a table with the zero pose.</li></ul></div></div>
+          
+          <section class="exs" data-for="mk-8"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="mk-8-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A table has the columns θ, d, a, α. Which convention?</p><ol class="opts" type="A"><li data-ok="1">Standard DH</li><li>Modified DH</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The moves along z (θ, d) come first: <b>standard DH</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-8-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">The 3-axis arm has 3 joints. How many rows in its DHM table of the lesson, with the tool?</p><div class="numin" data-ans="4" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>3 rows for the joints + 1 fixed row for the tool = <b>4</b>.</p></details>
+</div>
+<div class="ex" data-id="mk-8-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Zero pose of the 3-axis arm (all θ = 0, standard table of the lesson). x of the tool (m)?</p><div class="numin" data-ans="0.83" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>With all the angles at 0 the two links are stretched along x: 0.45 + 0.38 = <b>0.83 m</b>, at the height z = 0.40 m. If your program gives something else, the table or the matrix is wrong.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">The columns of a table are α, a, θ, d. Which convention?</p><p class="a">Modified DH: the moves along x (α, a) come first.</p></li><li><p class="q">Do the two conventions give the same position of the tool?</p><p class="a">Yes, if each table is used with its own matrix. Only the intermediate frames differ.</p></li><li><p class="q">What is the first check of a new DH table?</p><p class="a">The zero pose: set all the variables to 0 and compare the computed tool position with the robot.</p></li></ol></details>
+          <p class="try"><a href="arm.html">Switch between DH and DHM on the 3D arm →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="8"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+        <section class="gloss">
+          <h2>Glossary</h2>
+          <p>All the words of the course in one place.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Radian</td><td class="left">Unit of angle: a full turn is 2π radians.</td></tr><tr><td class="left">atan2(y, x)</td><td class="left">The angle of the point (x, y), right in all four quadrants.</td></tr><tr><td class="left">Vector</td><td class="left">An arrow: a direction and a length, written as a column of numbers.</td></tr><tr><td class="left">Dot product</td><td class="left">A number that says how much two vectors point the same way; zero if perpendicular.</td></tr><tr><td class="left">Cross product</td><td class="left">A vector perpendicular to two others (right-hand rule).</td></tr><tr><td class="left">Matrix</td><td class="left">A table of numbers that transforms a vector.</td></tr><tr><td class="left">Determinant</td><td class="left">One number of a square matrix; zero means it cannot be inverted.</td></tr><tr><td class="left">Rotation matrix</td><td class="left">A matrix that turns vectors; its columns are the axes of the turned frame; its inverse is its transpose.</td></tr><tr><td class="left">Frame</td><td class="left">An origin and axes from which positions are measured.</td></tr><tr><td class="left">Homogeneous matrix</td><td class="left">A 4×4 matrix that holds a rotation and a translation.</td></tr><tr><td class="left">Common perpendicular</td><td class="left">The shortest segment between two joint axes; it carries the x axis of a DH frame.</td></tr><tr><td class="left">Standard DH</td><td class="left">Frame i at the far end of link i; row: θ, d, a, α.</td></tr><tr><td class="left">Modified DH (DHM)</td><td class="left">Frame j on the axis of joint j; row: α, a, θ, d.</td></tr><tr><td class="left">Twist α</td><td class="left">The angle between two consecutive joint axes.</td></tr></table></div>
+        </section>
+
+        <section class="finish">
+          <h2>You have the whole toolbox!</h2>
+          <p>Now use it: the next course builds a 2-axis arm step by step, with its direct and inverse models and its motion laws.</p>
+          <p class="cta"><a class="btn" href="learn-maths.html">Go to “Maths and motion” →</a> <a class="btn ghost" href="index.html#road">Home page</a></p>
+        </section>
+      </div>
+    </div>
+    <script src="learn-more-widgets.js" defer></script>
+    <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+  var PREFIX = 'mk-', KEY = 'mk';
+  var lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el, i) { return '<li><a href="#l' + (i + 1) + '" data-i="' + (i + 1) + '"><span class="n">' + (i + 1) + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  function paint() {
+    var done = 0;
+    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
+    document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
+    document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
+    var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total; for (var i = 1; i <= t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+  }
+  document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
+  window.addEventListener('ra-progress', paint); paint();
+  function spy() { var m = window.scrollY + window.innerHeight * 0.3, cur = 1; lessons.forEach(function (el, i) { if (el.offsetTop <= m) cur = i + 1; }); [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i + 1 === cur); }); }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+});
+    </script>
+  </body>
+</html>

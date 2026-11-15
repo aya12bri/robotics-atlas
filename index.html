@@ -271,6 +271,7 @@ $('signSocial').innerHTML = (window.RA_SOCIAL || []).map(([name, url, icon]) => 
 // ---------- the roadmap: nodes with a checkbox, saved in the browser ----------
 const RM = {
   learn: { href: 'learn.html', tag: ['Basics', 'Bases'], min: 45, lv: 1, t: ['Learn the basics', 'Apprendre les bases'], d: ['Joints, degrees of freedom, frames and the DH table.', 'Liaisons, degrés de liberté, repères et tableau DH.'] },
+  mk: { href: 'learn-mathkit.html', tag: ['Course', 'Cours'], min: 100, lv: 1, t: ['The maths of robotics', 'Les maths de la robotique'], d: ['One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH alone and DHM alone.', 'Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH seul et DHM seul.'] },
   maths: { href: 'learn-maths.html', tag: ['Course', 'Cours'], min: 90, lv: 1, t: ['Maths and motion', 'Maths et mouvement'], d: ['A 2-axis arm from zero: angles, DH and motion laws.', 'Un bras à 2 axes depuis zéro : angles, DH et lois de mouvement.'] },
   arm: { href: 'arm.html', tag: ['R-R-R', 'R-R-R'], min: 30, lv: 1, t: ['3-DOF arm', 'Bras 3 axes'], d: ['Your first kinematic diagram and DH table.', 'Votre premier schéma cinématique et tableau DH.'] },
   gantry: { href: 'gantry.html', tag: ['P-P-P', 'P-P-P'], min: 15, lv: 1, t: ['Cartesian gantry', 'Robot cartésien'], d: ['Sliding joints: the simplest kinematics.', 'Liaisons glissières : la cinématique la plus simple.'] },
@@ -290,11 +291,11 @@ const RM = {
   anatomy: { href: 'anatomy.html', tag: ['3D', '3D'], min: 20, lv: 1, t: ['Anatomy of a robot', 'Anatomie d\'un robot'], d: ['Every component of a robot cell, layer by layer, in 3D.', 'Tous les composants d\'une cellule robotisée, couche par couche, en 3D.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'build', 'anatomy', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'ctrl', 'ros', 'ai', 'world', 'mobile', 'wheels', 'wmr'];
+const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'ctrl', 'ros', 'ai', 'world', 'mobile', 'wheels', 'wmr'];
 // five levels; each row has a main page (c) and optional side pages (l, r)
 const RM_LEVELS = [
   { t: ['Discover robotics', 'Découvrir la robotique'], d: ['What a robot is, its components, the robot types, the joints.', 'Ce qu\'est un robot, ses composants, les types de robots, les articulations.'], lv: 1, rows: [{ c: 'learn', l: 'build', r: 'anatomy' }] },
-  { t: ['Mathematics for robotics', 'Mathématiques pour la robotique'], d: ['Vectors, matrices, trigonometry, transformations.', 'Vecteurs, matrices, trigonométrie, transformations.'], lv: 1, rows: [{ c: 'maths' }] },
+  { t: ['Mathematics for robotics', 'Mathématiques pour la robotique'], d: ['Vectors, matrices, trigonometry, transformations.', 'Vecteurs, matrices, trigonométrie, transformations.'], lv: 1, rows: [{ c: 'mk', r: 'maths' }] },
   { t: ['Robot kinematics', 'Cinématique des robots'], d: ['Frames, DH tables, forward and inverse models (MGD, MGI), the Jacobian.', 'Repères, tableaux DH, modèles direct et inverse (MGD, MGI), la jacobienne.'], lv: 2, rows: [{ c: 'arm', l: 'gantry', r: 'scara' }, { c: 'articulated', l: 'cobot', r: 'delta' }, { c: 'model', r: 'sing' }] },
   { t: ['Dynamics and control', 'Dynamique et commande'], d: ['Motors, dynamic models, PID, trajectories.', 'Moteurs, modèles dynamiques, PID, trajectoires.'], lv: 3, rows: [{ c: 'ctrl' }] },
   { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'mobile', l: 'wheels', r: 'wmr' }] }
