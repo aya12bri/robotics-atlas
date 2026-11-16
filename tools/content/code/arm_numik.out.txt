@@ -1,0 +1,4 @@
+converged in 4 iterations: q = [ 24.965  69.974 -79.944] deg
+reached position: [0.479 0.223 0.757]  error (mm): 0.003
+random targets reached within 1 mm, one start     : 12 / 20
+random targets reached within 1 mm, up to 6 starts: 20 / 20

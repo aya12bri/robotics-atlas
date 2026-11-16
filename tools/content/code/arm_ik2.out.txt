@@ -1,0 +1,8 @@
+target (0.537, 0.636)
+   elbow up  : theta = (  69.69,  -45.00) deg   check FK -> (0.537, 0.636)
+   elbow down: theta = (  29.96,   45.00) deg   check FK -> (0.537, 0.636)
+target (0.6, 0.2)
+   elbow up  : theta = (  57.65,  -91.43) deg   check FK -> (0.600, 0.200)
+   elbow down: theta = ( -20.78,   91.43) deg   check FK -> (0.600, 0.200)
+target (1.0, 0.0)
+   out of reach (max reach 0.9 m)

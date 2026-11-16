@@ -1,0 +1,4 @@
+tool position, standard DH : [0.479 0.223 0.757]
+tool position, modified DH : [0.479 0.223 0.757]
+same pose (position and orientation): True
+zero pose (all angles 0)   : [0.83 0.   0.4 ]
