@@ -25,6 +25,7 @@ lesson(PRE, 1, {
     P('For a robot with <i>n</i> joints the same idea gives the <strong>dynamic model</strong>, found with the Lagrange method (energies) or the Newton–Euler method (forces, link by link):',
       'Pour un robot à <i>n</i> articulations la même idée donne le <strong>modèle dynamique</strong>, obtenu par la méthode de Lagrange (énergies) ou de Newton–Euler (forces, corps par corps) :'),
     EQ('<i>M</i>(<i>q</i>) <i>q̈</i> + <i>C</i>(<i>q</i>, <i>q̇</i>) <i>q̇</i> + <i>g</i>(<i>q</i>) + <i>f</i>(<i>q̇</i>) = <i>τ</i>'),
+    P('Lesson 10 derives this equation step by step for the two-joint arm, from its energies.', 'La leçon 10 calcule cette équation pas à pas pour le bras à deux articulations, à partir de ses énergies.'),
     TABLE([['Term', 'Terme'], ['Name', 'Nom'], ['Meaning', 'Sens']], [
       ['M(q) q̈', ['Inertia', 'Inertie'], ['Torque to accelerate. M depends on the pose: an arm stretched out is much harder to turn than a folded one.', 'Couple pour accélérer. M dépend de la pose : un bras tendu est bien plus dur à tourner qu\'un bras replié.']],
       ['C(q, q̇) q̇', ['Coriolis and centrifugal', 'Coriolis et centrifuge'], ['Torques caused by the velocities of the <em>other</em> joints. Small at low speed, large when fast.', 'Couples causés par les vitesses des <em>autres</em> articulations. Petits à basse vitesse, grands quand ça va vite.']],
