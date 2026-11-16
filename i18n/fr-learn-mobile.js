@@ -1671,7 +1671,7 @@ RA.add({
  "13cbqq7bn4m": "Les fondations",
  "2brd6hnxyjx": "12 leçons courtes : les idées derrière tous les robots",
  "krnn329t6d": "Les maths de la robotique",
- "b2n34e4m24": "Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH seul et DHM seul",
+ "1bn375bnsvf": "Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH, DHM, dérivées, probabilités",
  "140x0i4zc1j": "Maths et mouvement, pas à pas",
  "jyda0zrm9d": "De zéro : angles, bras à 2 axes, repères, DH et lois de mouvement",
  "2ey8f1m5fk5": "Modélisation d'un robot, cours complet",
