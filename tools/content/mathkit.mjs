@@ -4,13 +4,14 @@ import { partA } from './mk-a.mjs';
 import { partB } from './mk-b.mjs';
 import { partC } from './mk-c.mjs';
 import { partD } from './mk-d.mjs';
+import { partE } from './mk-e.mjs';
 
 export const meta = { script: 'learn-mobile-widgets.js' };
 export function build() {
   const head = {
     title: tx('The maths of robotics, one tool per lesson', 'Les maths de la robotique, un outil par leçon'),
-    lead: tx('Every maths tool a robot needs, each in its own short lesson, from zero: angles and trigonometry, vectors, matrices, rotations, frames and transformations, then the Denavit–Hartenberg method explained twice: the standard DH alone, the modified DH (DHM) alone, and the two side by side, and finally derivatives (towards the Jacobian) and probability (towards the Kalman filter). Each lesson has worked examples, exercises and a quiz.',
-      'Tous les outils de maths dont un robot a besoin, chacun dans sa propre leçon courte, depuis zéro : angles et trigonométrie, vecteurs, matrices, rotations, repères et transformations, puis la méthode de Denavit–Hartenberg expliquée deux fois : le DH standard seul, le DH modifié (DHM) seul, et les deux côte à côte, et enfin les dérivées (vers la jacobienne) et les probabilités (vers le filtre de Kalman). Chaque leçon a des exemples résolus, des exercices et un quiz.'),
+    lead: tx('Every maths tool a robot needs, each in its own short lesson, from zero: angles and trigonometry, vectors, matrices, rotations, frames and transformations, then the Denavit–Hartenberg method explained twice: the standard DH alone, the modified DH (DHM) alone, and the two side by side, and finally derivatives (towards the Jacobian), probability (towards the Kalman filter) and the 3D orientations (Euler angles, axis-angle, quaternions). Each lesson has worked examples, exercises and a quiz.',
+      'Tous les outils de maths dont un robot a besoin, chacun dans sa propre leçon courte, depuis zéro : angles et trigonométrie, vecteurs, matrices, rotations, repères et transformations, puis la méthode de Denavit–Hartenberg expliquée deux fois : le DH standard seul, le DH modifié (DHM) seul, et les deux côte à côte, et enfin les dérivées (vers la jacobienne), les probabilités (vers le filtre de Kalman) et les orientations en 3D (angles d\'Euler, axe-angle, quaternions). Chaque leçon a des exemples résolus, des exercices et un quiz.'),
     intro: BOX('idea', ['The path of this course', 'Le chemin de ce cours'],
       P('Each lesson uses the one before. <strong>Trigonometry</strong> finds the end of one arm. <strong>Vectors</strong> add the arms. <strong>Matrices</strong> transform vectors. <strong>Rotation matrices</strong> turn them. <strong>Homogeneous matrices</strong> turn and move at once, and can be chained from the base to the tool. <strong>DH and DHM</strong> are two rules to write this chain as a small table. <strong>Derivatives</strong> turn positions into speeds, and <strong>probability</strong> handles the noise of the sensors.',
         'Chaque leçon utilise la précédente. La <strong>trigonométrie</strong> trouve le bout d\'un bras. Les <strong>vecteurs</strong> additionnent les bras. Les <strong>matrices</strong> transforment les vecteurs. Les <strong>matrices de rotation</strong> les font tourner. Les <strong>matrices homogènes</strong> tournent et déplacent à la fois, et s\'enchaînent de la base à l\'outil. <strong>DH et DHM</strong> sont deux règles pour écrire cette chaîne sous forme d\'un petit tableau. Les <strong>dérivées</strong> transforment les positions en vitesses, et les <strong>probabilités</strong> gèrent le bruit des capteurs.'),
@@ -37,6 +38,8 @@ export function build() {
       [['Jacobian J', 'Jacobienne J'], ['The table of the partial derivatives of the tool coordinates; it turns joint speeds into tool speeds.', 'Le tableau des dérivées partielles des coordonnées de l\'outil ; il transforme les vitesses des liaisons en vitesse de l\'outil.']],
       [['Standard deviation σ', 'Écart-type σ'], ['The typical error of a measurement.', 'L\'erreur typique d\'une mesure.']],
       [['Normal law', 'Loi normale'], ['The bell curve: 68 % of the values within ±σ, 95 % within ±2σ.', 'La courbe en cloche : 68 % des valeurs dans ±σ, 95 % dans ±2σ.']],
+      [['Quaternion', 'Quaternion'], ['Four numbers (w, x, y, z) of length 1 that describe an orientation without gimbal lock.', 'Quatre nombres (w, x, y, z) de longueur 1 qui décrivent une orientation sans blocage de cardan.']],
+      [['Axis-angle', 'Axe-angle'], ['An orientation written as one rotation by an angle θ around one axis u.', 'Une orientation écrite comme une seule rotation d\'un angle θ autour d\'un axe u.']],
       [['Twist α', 'Torsion α'], ['The angle between two consecutive joint axes.', 'L\'angle entre deux axes de liaisons consécutifs.']]
     ]),
     finish: {
@@ -46,5 +49,5 @@ export function build() {
       back: tx('Home page', 'Page d\'accueil')
     }
   };
-  return { head, lessons: [...partA(), ...partB(), ...partC(), ...partD()] };
+  return { head, lessons: [...partA(), ...partB(), ...partC(), ...partD(), ...partE()] };
 }

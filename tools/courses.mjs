@@ -3,7 +3,7 @@ import { tx } from './lib.mjs';
 
 export const CARDS = [
   { page: 'learn.html', key: 'learn', prefix: 'lesson-', total: 12, t: ['Foundations', 'Les fondations'], d: ['12 short lessons: the ideas behind every robot', '12 leçons courtes : les idées derrière tous les robots'] },
-  { page: 'learn-mathkit.html', key: 'mk', prefix: 'mk-', total: 10, t: ['The maths of robotics', 'Les maths de la robotique'], d: ['One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability', 'Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH, DHM, dérivées, probabilités'] },
+  { page: 'learn-mathkit.html', key: 'mk', prefix: 'mk-', total: 11, t: ['The maths of robotics', 'Les maths de la robotique'], d: ['One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability, quaternions', 'Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH, DHM, dérivées, probabilités, quaternions'] },
   { page: 'learn-maths.html', key: 'maths', prefix: 'maths-', total: 8, t: ['Maths and motion, step by step', 'Maths et mouvement, pas à pas'], d: ['From zero: angles, a 2-axis arm, frames, DH and motion laws', 'De zéro : angles, bras à 2 axes, repères, DH et lois de mouvement'] },
   { page: 'learn-model.html', key: 'model', prefix: 'model-', total: 11, t: ['Robot modelling, full course', "Modélisation d'un robot, cours complet"], d: ['Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics', 'Niveau Master : rotations, DHm, MGD, MGI, jacobienne, dynamique'] },
   { page: 'learn-singularities.html', key: 'sing', prefix: 'sing-', total: 8, t: ['Singularities and the Jacobian', 'Singularités et jacobienne'], d: ['Speeds, forces, lost directions, gimbal lock, redundancy', 'Vitesses, forces, directions perdues, blocage de cardan, redondance'] },
@@ -18,7 +18,7 @@ export const courseCards = (current) =>
   `<nav class="courses" aria-label="Courses">${CARDS.map((c) => `<a class="course${c.page === current ? ' current' : ''}" href="${c.page}" data-prefix="${c.prefix}" data-total="${c.total}" data-key="${c.key}"><b>${tx(...c.t)}</b><span>${tx(...c.d)}</span><em class="cnt"></em></a>`).join('')}</nav>`;
 
 export const COURSES = [];
-for (const [file, page, key, prefix, total] of [['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 10], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 9], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 20]]) {
+for (const [file, page, key, prefix, total] of [['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 11], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 9], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 20]]) {
   let mod; try { mod = await import(`./content/${file}.mjs`); } catch (e) { if (e.code === 'ERR_MODULE_NOT_FOUND') continue; throw e; }
   COURSES.push({ page, key, prefix, total, ...mod.meta, build: mod.build });
 }
