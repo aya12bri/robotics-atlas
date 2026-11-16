@@ -4,6 +4,7 @@ import { partA } from './ctrl-a.mjs';
 import { partB } from './ctrl-b.mjs';
 import { partC } from './ctrl-c.mjs';
 import { partD } from './ctrl-d.mjs';
+import { partE } from './ctrl-e.mjs';
 
 export const meta = {};
 export function build() {
@@ -19,7 +20,7 @@ export function build() {
         ['<strong>Compute</strong>: the control law turns the error into a torque request (lessons 4, 5, 6) using the dynamic model (lesson 1).', '<strong>Calculer</strong> : la loi de commande transforme l\'erreur en demande de couple (leçons 4, 5, 6) à l\'aide du modèle dynamique (leçon 1).'],
         ['<strong>Act</strong>: the drive sends current to the motor, the gearbox multiplies the torque (lesson 2).', '<strong>Agir</strong> : le variateur envoie du courant au moteur, le réducteur multiplie le couple (leçon 2).']
       ]),
-      P('Lessons 8 and 9 show how all this is organised in a real controller and what the real world adds. Lesson 10 derives the dynamic model step by step, with the Lagrange method.', 'Les leçons 8 et 9 montrent comment tout cela est organisé dans un vrai contrôleur et ce que le monde réel ajoute. La leçon 10 calcule le modèle dynamique pas à pas, avec la méthode de Lagrange.')),
+      P('Lessons 8 and 9 show how all this is organised in a real controller and what the real world adds. Lesson 10 derives the dynamic model step by step, with the Lagrange method; lessons 11 and 12 give the basics of control theory (transfer functions, stability, frequency response, digital control).', 'Les leçons 8 et 9 montrent comment tout cela est organisé dans un vrai contrôleur et ce que le monde réel ajoute. La leçon 10 calcule le modèle dynamique pas à pas, avec la méthode de Lagrange ; les leçons 11 et 12 donnent les bases de l\'automatique (fonctions de transfert, stabilité, réponse en fréquence, commande numérique).')),
     glossTitle: tx('Glossary', 'Glossaire'),
     glossIntro: tx('All the words of the course in one place.', 'Tous les mots du cours au même endroit.'),
     gloss: glossary(),
@@ -30,7 +31,7 @@ export function build() {
       back: tx('Back to the roadmap', 'Retour au parcours')
     }
   };
-  return { head, lessons: [...partA(), ...partB(), ...partC(), ...partD()] };
+  return { head, lessons: [...partA(), ...partB(), ...partC(), ...partD(), ...partE()] };
 }
 
 function glossary() {

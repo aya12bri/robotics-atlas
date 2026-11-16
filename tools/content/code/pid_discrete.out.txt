@@ -1,0 +1,12 @@
+P only
+  t = 0.05 s   speed =   6.43 rad/s   voltage =   6.82 V
+  t = 0.10 s   speed =   8.70 rad/s   voltage =   5.66 V
+  t = 0.20 s   speed =   9.83 rad/s   voltage =   5.09 V
+  t = 0.40 s   speed =  10.00 rad/s   voltage =   5.00 V
+  t = 0.60 s   speed =  10.00 rad/s   voltage =   5.00 V
+PI
+  t = 0.05 s   speed =   8.02 rad/s   voltage =  10.00 V
+  t = 0.10 s   speed =  12.75 rad/s   voltage =  10.00 V
+  t = 0.20 s   speed =  17.35 rad/s   voltage =  10.00 V
+  t = 0.40 s   speed =  19.64 rad/s   voltage =  10.00 V
+  t = 0.60 s   speed =  19.95 rad/s   voltage =  10.00 V
