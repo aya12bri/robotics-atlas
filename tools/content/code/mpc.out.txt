@@ -1,0 +1,9 @@
+t = 0.0 s   position =  0.000 rad   speed =  0.000 rad/s   u =  1.000 rad/s^2
+t = 0.5 s   position =  0.125 rad   speed =  0.500 rad/s   u =  1.000 rad/s^2
+t = 1.0 s   position =  0.496 rad   speed =  0.926 rad/s   u = -0.554 rad/s^2
+t = 1.5 s   position =  0.854 rad   speed =  0.471 rad/s   u = -1.000 rad/s^2
+t = 2.0 s   position =  0.984 rad   speed =  0.103 rad/s   u = -0.341 rad/s^2
+t = 2.5 s   position =  1.004 rad   speed =  0.005 rad/s   u = -0.052 rad/s^2
+t = 3.0 s   position =  1.003 rad   speed = -0.005 rad/s   u =  0.004 rad/s^2
+t = 3.5 s   position =  1.001 rad   speed = -0.002 rad/s   u =  0.005 rad/s^2
+t = 4.0 s   position =  1.000 rad   speed = -0.001 rad/s   u =  0.002 rad/s^2
