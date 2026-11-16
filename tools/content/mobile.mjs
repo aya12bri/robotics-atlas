@@ -17,36 +17,48 @@ import { partF } from './m-f.mjs';
 import { partG } from './m-g.mjs';
 
 export const meta = { script: 'learn-mobile-widgets.js' };
+// only the parts a page needs are built, so each page's French dictionary holds only its own texts
+const num = (h) => +/data-id="wmr-(\d+)"/.exec(h)[1];
+const sorted = (list) => list.sort((x, y) => num(x) - num(y));
+export const lessonsPart1 = () => sorted([...partZero(), ...partA(), ...partB(), ...partDrives(), ...partC()]).filter((h) => num(h) <= 10);
+export const lessonsPart2 = () => sorted([...partC(), ...partD(), ...partE(), ...partF(), ...partG()]).filter((h) => num(h) > 10);
+
+const exercisesHow = () => P(`<strong>How the exercises work.</strong> Each lesson ends with exercises of three levels (beginner, intermediate, professional). For most of them you type a number and the page checks it (with a small tolerance); the others are multiple choice. The hint and the solution are hidden until you open them: always try first. Your progress is saved in this browser. <strong>Be honest with yourself:</strong> reading is not enough, you become a professional by solving, building and measuring, so do the labs of lesson 20.`,
+  `<strong>Comment marchent les exercices.</strong> Chaque leçon se termine par des exercices de trois niveaux (débutant, intermédiaire, professionnel). Pour la plupart, vous tapez un nombre et la page le vérifie (avec une petite tolérance) ; les autres sont des QCM. L'indice et la solution sont cachés tant que vous ne les ouvrez pas : essayez toujours d'abord. Votre progression est enregistrée dans ce navigateur. <strong>Soyez honnête avec vous-même :</strong> lire ne suffit pas, on devient professionnel en résolvant, en construisant et en mesurant, donc faites les TP de la leçon 20.`);
+
+// the two parts of the course, as shown in the intro table of both pages
+export const partsTable = () => TABLE([[`Part`, `Partie`], [`Lessons`, `Leçons`], [`You will be able to…`, `Vous saurez…`]], [
+  [[`<strong>Part 1 · A. Foundations</strong> (beginner)`, `<strong>Partie 1 · A. Fondations</strong> (débutant)`], `1 – 4`, [`do the maths of the course, describe the pose of a robot, and write the constraints of any wheel`, `faire les maths du cours, décrire la pose d'un robot, et écrire les contraintes de n'importe quelle roue`]],
+  [[`<strong>Part 1 · B. Kinematics of every drive</strong> (intermediate)`, `<strong>Partie 1 · B. Cinématique de chaque motorisation</strong> (intermédiaire)`], `5 – 10`, [`compute the wheel speeds and the motion of differential, car, omni, Mecanum and swerve robots, and count their degrees of freedom`, `calculer les vitesses de roues et le mouvement des robots différentiels, voiture, omni, Mecanum et swerve, et compter leurs degrés de liberté`]],
+  [[`<strong>Part 2 · C. Control and planning</strong> (advanced)`, `<strong>Partie 2 · C. Commande et planification</strong> (avancé)`], `11 – 13`, [`drive a robot to a pose, make it follow a path, and plan feasible paths and speed profiles`, `conduire un robot vers une pose, lui faire suivre un chemin, et planifier des chemins réalisables et des profils de vitesse`]],
+  [[`<strong>Part 2 · D. Professional engineering</strong>`, `<strong>Partie 2 · D. Ingénierie professionnelle</strong>`], `14 – 20`, [`calibrate, filter, size, program, secure and test a real robot, design one from a specification, and pass the final certification`, `étalonner, filtrer, dimensionner, programmer, sécuriser et tester un vrai robot, en concevoir un à partir d'un cahier des charges, et réussir la certification finale`]]
+]);
+
 export function build() {
   const head = {
-    title: tx(`Wheeled mobile robots: kinematics and motion control`, `Robots mobiles à roues : cinématique et commande du mouvement`),
-    lead: tx(`A complete course, from zero to professional level, in 20 lessons: the maths you need (from scratch), how every wheel and drive works (differential, tricycle, car, omni, Mecanum, swerve, tracked), the constraints, the ICR, mobility and maneuverability, holonomy, motion control, path tracking and planning, then the professional part: odometry and calibration, Kalman filtering, dynamics and motor/battery sizing, software and ROS 2, safety and testing, a capstone project, and a final certification. Every lesson has worked examples, graded exercises with hints and solutions (many are checked automatically), and the course ends with a written exam, practical challenges and labs.`,
-      `Un cours complet, de zéro au niveau professionnel, en 20 leçons : les maths nécessaires (depuis le début), le fonctionnement de chaque roue et motorisation (différentiel, tricycle, voiture, omni, Mecanum, swerve, chenilles), les contraintes, le CIR, la mobilité et la manœuvrabilité, l'holonomie, la commande du mouvement, le suivi et la planification de chemins, puis la partie professionnelle : odométrie et étalonnage, filtre de Kalman, dynamique et dimensionnement des moteurs et de la batterie, logiciel et ROS 2, sécurité et essais, un projet de synthèse et une certification finale. Chaque leçon a des exemples résolus, des exercices gradués avec indices et solutions (beaucoup sont corrigés automatiquement), et le cours se termine par un examen écrit, des défis pratiques et des travaux pratiques.`),
+    title: tx(`Wheeled mobile robots, part 1: how a robot rolls`, `Robots mobiles à roues, partie 1 : comment un robot roule`),
+    lead: tx(`Part 1 of the course, in 10 lessons, from zero: the maths you need (from scratch), how every wheel and drive works (differential, tricycle, car, omni, Mecanum, swerve, tracked), the constraints, the ICR, mobility and maneuverability, and holonomy. Every lesson has worked examples and graded exercises with hints and solutions, many checked automatically. Part 2 then takes you to the professional level: control, planning, calibration, Kalman filter, sizing, ROS 2, safety, exam and labs.`,
+      `Partie 1 du cours, en 10 leçons, depuis zéro : les maths nécessaires (depuis le début), le fonctionnement de chaque roue et motorisation (différentiel, tricycle, voiture, omni, Mecanum, swerve, chenilles), les contraintes, le CIR, la mobilité et la manœuvrabilité, et l'holonomie. Chaque leçon a des exemples résolus et des exercices gradués avec indices et solutions, beaucoup corrigés automatiquement. La partie 2 vous amène ensuite au niveau professionnel : commande, planification, étalonnage, filtre de Kalman, dimensionnement, ROS 2, sécurité, examen et TP.`),
     intro: BOX(`idea`, [`How to follow this course`, `Comment suivre ce cours`],
-      P(`The course has four parts. You can start at any part if you already know the earlier ones, but take the exercises of the lesson first: if you solve them, move on.`,
-        `Le cours a quatre parties. Vous pouvez commencer à n'importe quelle partie si vous connaissez déjà les précédentes, mais faites d'abord les exercices de la leçon : si vous les résolvez, passez à la suite.`),
-      TABLE([[`Part`, `Partie`], [`Lessons`, `Leçons`], [`You will be able to…`, `Vous saurez…`]], [
-        [[`<strong>A. Foundations</strong> (beginner)`, `<strong>A. Fondations</strong> (débutant)`], `1 – 4`, [`do the maths of the course, describe the pose of a robot, and write the constraints of any wheel`, `faire les maths du cours, décrire la pose d'un robot, et écrire les contraintes de n'importe quelle roue`]],
-        [[`<strong>B. Kinematics of every drive</strong> (intermediate)`, `<strong>B. Cinématique de chaque motorisation</strong> (intermédiaire)`], `5 – 10`, [`compute the wheel speeds and the motion of differential, car, omni, Mecanum and swerve robots, and count their degrees of freedom`, `calculer les vitesses de roues et le mouvement des robots différentiels, voiture, omni, Mecanum et swerve, et compter leurs degrés de liberté`]],
-        [[`<strong>C. Control and planning</strong> (advanced)`, `<strong>C. Commande et planification</strong> (avancé)`], `11 – 13`, [`drive a robot to a pose, make it follow a path, and plan feasible paths and speed profiles`, `conduire un robot vers une pose, lui faire suivre un chemin, et planifier des chemins réalisables et des profils de vitesse`]],
-        [[`<strong>D. Professional engineering</strong>`, `<strong>D. Ingénierie professionnelle</strong>`], `14 – 20`, [`calibrate, filter, size, program, secure and test a real robot, design one from a specification, and pass the final certification`, `étalonner, filtrer, dimensionner, programmer, sécuriser et tester un vrai robot, en concevoir un à partir d'un cahier des charges, et réussir la certification finale`]]
-      ]),
-      P(`<strong>How the exercises work.</strong> Each lesson ends with exercises of three levels (beginner, intermediate, professional). For most of them you type a number and the page checks it (with a small tolerance); the others are multiple choice. The hint and the solution are hidden until you open them: always try first. Your progress is saved in this browser. <strong>Be honest with yourself:</strong> reading is not enough, you become a professional by solving, building and measuring, so do the labs of lesson 20.`,
-        `<strong>Comment marchent les exercices.</strong> Chaque leçon se termine par des exercices de trois niveaux (débutant, intermédiaire, professionnel). Pour la plupart, vous tapez un nombre et la page le vérifie (avec une petite tolérance) ; les autres sont des QCM. L'indice et la solution sont cachés tant que vous ne les ouvrez pas : essayez toujours d'abord. Votre progression est enregistrée dans ce navigateur. <strong>Soyez honnête avec vous-même :</strong> lire ne suffit pas, on devient professionnel en résolvant, en construisant et en mesurant, donc faites les TP de la leçon 20.`)),
+      P(`The course has two parts (two pages) and four blocks. This page is part 1. You can skip a block if you already know it, but take the exercises of the lesson first: if you solve them, move on.`,
+        `Le cours a deux parties (deux pages) et quatre blocs. Cette page est la partie 1. Vous pouvez sauter un bloc si vous le connaissez déjà, mais faites d'abord les exercices de la leçon : si vous les résolvez, passez à la suite.`),
+      partsTable(),
+      P(`<a href="learn-mobile-pro.html">Go straight to part 2 (lessons 11 to 20) →</a>`, `<a href="learn-mobile-pro.html">Aller directement à la partie 2 (leçons 11 à 20) →</a>`),
+      exercisesHow()),
     glossTitle: tx(`Glossary`, `Glossaire`),
     glossIntro: tx(`All the words of the course in one place.`, `Tous les mots du cours au même endroit.`),
     gloss: glossary(),
     finish: {
-      h: tx(`From zero to professional: you can model, size, control and test a wheeled robot!`, `De zéro au niveau professionnel : vous savez modéliser, dimensionner, commander et tester un robot à roues !`),
-      p: tx(`Pass the final exam, the challenges and the labs of lesson 20 to complete the course. Then go further with the dynamics and control of arms, perception and AI, and the real world.`, `Réussissez l'examen final, les défis et les TP de la leçon 20 pour terminer le cours. Puis allez plus loin avec la dynamique et la commande des bras, la perception et l'IA, et le monde réel.`),
-      next: [`learn-control.html`, tx(`Go to dynamics and control →`, `Aller à la dynamique et la commande →`)],
+      h: tx(`Part 1 done: you know how every wheeled robot moves!`, `Partie 1 terminée : vous savez comment bouge chaque robot à roues !`),
+      p: tx(`You can model any drive, compute its wheel speeds and count its degrees of freedom. Part 2 teaches you to control it, plan its paths, calibrate, filter, size, program, secure and test it, up to the final exam and the labs.`, `Vous savez modéliser n'importe quelle motorisation, calculer ses vitesses de roues et compter ses degrés de liberté. La partie 2 vous apprend à la commander, planifier ses chemins, étalonner, filtrer, dimensionner, programmer, sécuriser et tester, jusqu'à l'examen final et aux TP.`),
+      next: [`learn-mobile-pro.html`, tx(`Go to part 2: professional level →`, `Aller à la partie 2 : niveau professionnel →`)],
       back: tx(`Back to the roadmap`, `Retour au parcours`)
     }
   };
-  return { head, lessons: [...partZero(), ...partA(), ...partB(), ...partDrives(), ...partC(), ...partD(), ...partE(), ...partF(), ...partG()] };
+  return { head, lessons: lessonsPart1() };
 }
 
-function glossary() {
+export function glossary() {
   return TABLE([[`Term`, `Terme`], [`Meaning`, `Sens`]], [
     [[`Pose / posture`, `Pose / posture`], [`The position and orientation of the robot: (x, y, θ).`, `La position et l'orientation du robot : (x, y, θ).`]],
     [[`Rotation matrix R(θ)`, `Matrice de rotation R(θ)`], [`Converts a vector from the global frame to the robot frame.`, `Convertit un vecteur du repère global au repère robot.`]],

@@ -95,8 +95,8 @@ lesson(PRE, 20, {
     P(`Each challenge is a widget of a lesson with a target to reach. When you reach it, the widget shows a green “Done!” and the result is saved here.`,
       `Chaque défi est un widget d'une leçon avec un objectif à atteindre. Quand vous l'atteignez, le widget affiche un « Réussi ! » vert et le résultat est enregistré ici.`),
     `<ul class="chalist">
-<li data-chal="diff"><span>${tx(`Differential drive: a circle of radius 1.0 m at v ≥ 0.3 m/s`, `Robot différentiel : un cercle de rayon 1,0 m à v ≥ 0,3 m/s`)}</span> — <a href="#l5">${tx(`go to lesson 5`, `aller à la leçon 5`)}</a></li>
-<li data-chal="car"><span>${tx(`Car: a circle of radius 6 m at v ≥ 3 m/s`, `Voiture : un cercle de rayon 6 m à v ≥ 3 m/s`)}</span> — <a href="#l6">${tx(`go to lesson 6`, `aller à la leçon 6`)}</a></li>
+<li data-chal="diff"><span>${tx(`Differential drive: a circle of radius 1.0 m at v ≥ 0.3 m/s`, `Robot différentiel : un cercle de rayon 1,0 m à v ≥ 0,3 m/s`)}</span> — <a href="learn-mobile.html#l5">${tx(`go to lesson 5`, `aller à la leçon 5`)}</a></li>
+<li data-chal="car"><span>${tx(`Car: a circle of radius 6 m at v ≥ 3 m/s`, `Voiture : un cercle de rayon 6 m à v ≥ 3 m/s`)}</span> — <a href="learn-mobile.html#l6">${tx(`go to lesson 6`, `aller à la leçon 6`)}</a></li>
 <li data-chal="goto"><span>${tx(`Go-to-goal controller: arrive in under 4 s with a heading error below 2°`, `Contrôleur vers un but : arriver en moins de 4 s avec une erreur de cap inférieure à 2°`)}</span> — <a href="#l11">${tx(`go to lesson 11`, `aller à la leçon 11`)}</a></li>
 <li data-chal="pursuit"><span>${tx(`Pure pursuit: keep the error below 0.15 m with a 0.4 s lag at 1 m/s`, `Poursuite pure : garder l'erreur sous 0,15 m avec un retard de 0,4 s à 1 m/s`)}</span> — <a href="#l12">${tx(`go to lesson 12`, `aller à la leçon 12`)}</a></li>
 <li data-chal="drift"><span>${tx(`Calibration: bring both square-test centres within 5 cm of the start`, `Étalonnage : amener les deux centres du test du carré à moins de 5 cm du départ`)}</span> — <a href="#l14">${tx(`go to lesson 14`, `aller à la leçon 14`)}</a></li>

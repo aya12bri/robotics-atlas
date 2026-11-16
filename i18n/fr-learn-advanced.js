@@ -336,8 +336,10 @@ RA.add({
  "1x7dzl3fu0t": "Robots parallèles, LQR, MPC, robots à pattes et aériens, vision en pratique, apprentissage par renforcement",
  "2c51142iegu": "ROS 2 depuis zéro",
  "1qxojzpfhtj": "Nœuds, topics, Python, fichiers de lancement, tf2, URDF, simulation, Nav2, MoveIt 2 et un premier projet",
- "ngcr2dzsin": "Robots mobiles à roues",
- "3p25qdc1d5": "De zéro au niveau professionnel : toutes les motorisations, commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
+ "22hmzt58fjs": "Robots mobiles à roues, partie 1",
+ "rlkui6xok5": "Comment un robot roule : maths depuis zéro, chaque roue et motorisation, contraintes, CIR, manœuvrabilité, holonomie",
+ "28can399dzj": "Robots mobiles à roues, partie 2",
+ "172gtkfcq6": "Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
  "odws3x5cci": "centre de masse 2 cm devant le pied",
  "sqy4ebkyvl": "temps (s)",
  "1nu4pa81zk5": "x − p (m)"
