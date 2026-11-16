@@ -1,0 +1,2 @@
+// French texts of 404.html
+RA.add({"17cw2c7re2x":"Page introuvable · Robotics Atlas","r5r2g0eily":"Cette page n'existe pas","1rb8yvebh3v":"Le lien est peut-être ancien ou mal tapé. Voici quatre bons endroits où aller à la place.","1nnai5p090e":"Accueil de Robotics Atlas","8lokevpjjr":"Le parcours d'apprentissage","o8xv2e03s8":"Construisez votre premier robot","fcdddkklcm":"Regarder dans les robots (3D)"});

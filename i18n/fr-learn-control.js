@@ -811,7 +811,7 @@ RA.add({
  "krnn329t6d": "Les maths de la robotique",
  "htkqk4e9ee": "Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH, DHM, dérivées, probabilités, quaternions",
  "140x0i4zc1j": "Maths et mouvement, pas à pas",
- "jyda0zrm9d": "De zéro : angles, bras à 2 axes, repères, DH et lois de mouvement",
+ "147sk6ngzb5": "Appliqué : le bras à 2 axes de A à Z, ses modèles direct et inverse, ses lois de mouvement",
  "2ey8f1m5fk5": "Modélisation d'un robot, cours complet",
  "1uzyztsax61": "Niveau Master : rotations, DHm, MGD, MGI, jacobienne, dynamique",
  "btcb600bq5": "Singularités et jacobienne",

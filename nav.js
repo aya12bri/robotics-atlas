@@ -58,7 +58,7 @@
   root.lang = lang;
   const ui = UI[lang];
   const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const pageName = here.replace(/\.html$/, '');
+  const pageName = document.documentElement.dataset.page || here.replace(/\.html$/, '');   // data-page: pages served under another URL (the 404 page)
 
   // ---------------------------------------------------------------- translation engine
   const DICT = Object.create(null), RULES = [];
