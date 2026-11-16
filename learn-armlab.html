@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Code a robot arm in Python</title>
+    <!-- seo -->
+    <meta name="description" content="Code a robot arm in Python: forward kinematics, a DH engine, exact and numerical inverse kinematics, trajectories, a real 3-servo arm with an Arduino, an exam and five labs." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/learn-armlab" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Code a robot arm in Python" />
+    <meta property="og:description" content="Code a robot arm in Python: forward kinematics, a DH engine, exact and numerical inverse kinematics, trajectories, a real 3-servo arm with an Arduino, an exam and five labs." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/learn-armlab" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+  <script src="nav.js" defer></script></head>
+  <body class="learn">
+    <h1>Code a robot arm in Python</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn.html" style="color:#ff9f43">The basics</a></p>
+    <p class="lead">The hands-on course for robot arms: write the forward kinematics, a DH engine for any robot, the exact and the numerical inverse kinematics, smooth trajectories, then drive a real 3-servo arm with an Arduino. Every program is given in full and was run to produce the outputs shown. It ends with a written exam and five labs.</p>
+    <nav class="courses" aria-label="Courses"><a class="course" href="learn.html" data-prefix="lesson-" data-total="12" data-key="learn"><b>Foundations</b><span>12 short lessons: the ideas behind every robot</span><em class="cnt"></em></a><a class="course" href="learn-mathkit.html" data-prefix="mk-" data-total="11" data-key="mk"><b>The maths of robotics</b><span>One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability, quaternions</span><em class="cnt"></em></a><a class="course" href="learn-maths.html" data-prefix="maths-" data-total="8" data-key="maths"><b>Maths and motion, step by step</b><span>From zero: angles, a 2-axis arm, frames, DH and motion laws</span><em class="cnt"></em></a><a class="course" href="learn-model.html" data-prefix="model-" data-total="11" data-key="model"><b>Robot modelling, full course</b><span>Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics</span><em class="cnt"></em></a><a class="course" href="learn-singularities.html" data-prefix="sing-" data-total="8" data-key="sing"><b>Singularities and the Jacobian</b><span>Speeds, forces, lost directions, gimbal lock, redundancy</span><em class="cnt"></em></a><a class="course" href="learn-control.html" data-prefix="ctrl-" data-total="12" data-key="ctrl"><b>Dynamics, actuators and control</b><span>Motors, sensors, PID, computed torque, force control, trajectories</span><em class="cnt"></em></a><a class="course" href="learn-intelligence.html" data-prefix="ai-" data-total="9" data-key="ai"><b>Perception, planning and AI</b><span>Vision, Kalman, SLAM, A*, RRT, learning, multi-robot</span><em class="cnt"></em></a><a class="course" href="learn-world.html" data-prefix="world-" data-total="9" data-key="world"><b>Robots in the real world</b><span>Every robot family, grippers, electronics, ROS, safety, careers</span><em class="cnt"></em></a><a class="course current" href="learn-armlab.html" data-prefix="lab-" data-total="6" data-key="armlab"><b>Code a robot arm in Python</b><span>FK, a DH engine, exact and numerical IK, trajectories, a real servo arm, exam and labs</span><em class="cnt"></em></a><a class="course" href="learn-ros.html" data-prefix="ros-" data-total="9" data-key="ros"><b>ROS 2 from zero</b><span>Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project</span><em class="cnt"></em></a><a class="course" href="learn-mobile.html" data-prefix="wmr-" data-total="20" data-key="wmr"><b>Wheeled mobile robots</b><span>From zero to professional: every drive, control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs</span><em class="cnt"></em></a></nav>
+    <section class="intro">
+<div class="box idea"><div class="bt">Before you start</div><div class="bb"><p>You need basic Python (variables, functions, loops) and the ideas of the maths course: trigonometry, matrices, frames, DH. Each lesson gives a complete file: type it (do not only copy it), run it, compare with the output shown, then change something and predict the result before running again.</p>
+<ol><li>Lessons 1 to 4: software only, on any computer.</li><li>Lesson 5: a real arm, about 40 € of parts (3 servos, an Arduino, a power supply).</li><li>Lesson 6: the exam and the labs that prove you can do it.</li></ol></div></div>
+    </section>
+
+    <div class="learn-layout">
+      <aside class="lesson-nav" id="lessonNav" aria-label="Checklist"></aside>
+      <div class="lessons">
+
+        <article class="lesson" id="l1" data-id="lab-1">
+          <header class="lesson-head"><span class="num">1</span><h2>Your workbench and a first arm in code</h2><span class="time">15 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to set up Python and NumPy, and to write the forward kinematics of a 2-axis arm as a function you can test.</p></div>
+<h4>1.1 Why code it yourself</h4>
+<p>The other courses explained the formulas. Here you <strong>make them run</strong>. Writing the code forces you to understand every sign and every angle, and the computer tells you at once if you are wrong. At the end of this course you will have a small library that moves a real arm.</p>
+<h4>1.2 Install</h4>
+<ul><li><strong>Python 3</strong> (python.org, or already on Linux and macOS) and the library <strong>NumPy</strong>: <code>pip install numpy</code>. Optional: <code>matplotlib</code> to draw the arm.</li><li>An editor: VS Code, Thonny (very simple for beginners) or any other. Or nothing to install: a Jupyter notebook online such as Google Colab.</li><li>Put every file of this course in the same folder: the later lessons import the earlier ones.</li></ul>
+<h4>1.3 Three NumPy habits</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">To…</th><th class="left">Write</th><th class="left">Remember</th></tr><tr><td class="left">make a vector</td><td class="left"><code>np.array([0.5, 0.2])</code></td><td class="left">vectors add and scale element by element</td></tr><tr><td class="left">convert angles</td><td class="left"><code>np.radians(30)</code>, <code>np.degrees(q)</code></td><td class="left">NumPy works in radians, like all formulas</td></tr><tr><td class="left">multiply matrices</td><td class="left"><code>A @ B</code></td><td class="left"><code>A * B</code> multiplies element by element: not a matrix product</td></tr></table></div>
+<h4>1.4 Forward kinematics of the 2-axis arm</h4>
+<p>File <code>arm_fk2.py</code>. The formulas are those of the maths course: the tool is the sum of the arrows of the two links.</p>
+<pre class="code"><code>"""Forward kinematics of a planar 2-axis arm: from the joint angles to the tool."""
+import numpy as np
+
+L1, L2 = 0.5, 0.4                      # link lengths (m)
+
+
+def fk(theta1, theta2):
+    """Joint angles (rad) -&gt; positions of the elbow and of the tool (m)."""
+    elbow = np.array([L1 * np.cos(theta1), L1 * np.sin(theta1)])
+    tool = elbow + np.array([L2 * np.cos(theta1 + theta2), L2 * np.sin(theta1 + theta2)])
+    return elbow, tool
+
+
+if __name__ == '__main__':
+    for deg in [(0, 0), (30, 45), (90, -90), (120, 60)]:
+        q = np.radians(deg)
+        elbow, tool = fk(*q)
+        print(f'theta = {deg} deg  -&gt;  elbow ({elbow[0]:6.3f}, {elbow[1]:6.3f})  '
+              f'tool ({tool[0]:6.3f}, {tool[1]:6.3f})  reach {np.linalg.norm(tool):.3f} m')</code></pre>
+<p>Run it (<code>python arm_fk2.py</code>). Output:</p>
+<pre class="out"><code>theta = (0, 0) deg  -&gt;  elbow ( 0.500,  0.000)  tool ( 0.900,  0.000)  reach 0.900 m
+theta = (30, 45) deg  -&gt;  elbow ( 0.433,  0.250)  tool ( 0.537,  0.636)  reach 0.832 m
+theta = (90, -90) deg  -&gt;  elbow ( 0.000,  0.500)  tool ( 0.400,  0.500)  reach 0.640 m
+theta = (120, 60) deg  -&gt;  elbow (-0.250,  0.433)  tool (-0.650,  0.433)  reach 0.781 m</code></pre>
+<div class="box keep"><div class="bt">Always test with poses you can check by eye</div><div class="bb"><ul><li>(0°, 0°): the arm is stretched along x, the tool must be at <i>L</i><sub>1</sub> + <i>L</i><sub>2</sub> = 0.9 m.</li><li>(90°, −90°): link 1 points up, link 2 points right: tool at (0.4, 0.5).</li><li>(30°, 45°): the value computed by hand in the maths course, (0.537, 0.636).</li></ul></div></div>
+<p>If one of these is wrong, the bug is in the code, not in the robot. This habit of “known poses” will save you hours on a real arm.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>NumPy</li><li>function</li><li>radians</li><li>matrix product @</li><li>test pose</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>NumPy works in radians: np.radians() and np.degrees() convert. A @ B is a matrix product.</li><li>The tool of a 2-axis arm is the sum of the arrows of the two links.</li><li>Test the code with poses you can check by eye before anything else.</li></ul></div></div>
+          
+          <section class="exs" data-for="lab-1"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="lab-1-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">np.radians(180) gives?</p><div class="numin" data-ans="3.141592653589793" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>π ≈ <b>3.1416</b>.</p></details>
+</div>
+<div class="ex" data-id="lab-1-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">fk(θ1 = 90°, θ2 = 90°) with L1 = 0.5, L2 = 0.4. x of the tool (m)?</p><div class="numin" data-ans="-0.4" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Link 1 up to (0, 0.5), link 2 at 180°: (−0.4, 0). Tool (<b>−0.4</b>, 0.5).</p></details>
+</div>
+<div class="ex" data-id="lab-1-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Your fk returns (0.9, 0) for (90°, 0°). Most likely bug?</p><ol class="opts" type="A"><li>The angles were not converted to radians</li><li data-ok="1">cos and sin are swapped, or the angle is ignored</li><li>L1 and L2 are swapped</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The right answer is (0, 0.9). Getting (0.9, 0) means the code behaves as if θ1 = 0: <b>cos and sin swapped, or the angle not used</b>. (In degrees by mistake, cos(90 rad) would give an odd value, not exactly 0.9.)</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In NumPy, which operator multiplies two matrices?</p><p class="a">@ (A @ B). The * operator multiplies element by element.</p></li><li><p class="q">Why test the pose (0°, 0°) first?</p><p class="a">The answer is obvious (the arm is stretched, reach L1 + L2): any other result shows a bug at once.</p></li><li><p class="q">Does np.cos(90) give 0?</p><p class="a">No: 90 is read as radians. Write np.cos(np.radians(90)).</p></li></ol></details>
+          <p class="try"><a href="learn-mathkit.html#l1">Review trigonometry and vectors →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l2" data-id="lab-2">
+          <header class="lesson-head"><span class="num">2</span><h2>Any robot from its DH table</h2><span class="time">16 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to write one function that computes the pose of the tool of any serial arm from its DH table, in both conventions, and to check that they agree.</p></div>
+<p>Drawing and adding arrows works for 2 joints, not for 6. The DH table (maths course, lessons 6 to 8) turns every robot into a list of rows; the code only needs the matrix of one row and a loop that multiplies them.</p>
+<pre class="code"><code>"""Forward kinematics of ANY serial arm from its DH table (standard or modified)."""
+import numpy as np
+
+
+def dh_std(theta, d, a, alpha):
+    """Standard DH: Rot(z, theta) Trans(z, d) Trans(x, a) Rot(x, alpha)."""
+    ct, st, ca, sa = np.cos(theta), np.sin(theta), np.cos(alpha), np.sin(alpha)
+    return np.array([[ct, -st * ca,  st * sa, a * ct],
+                     [st,  ct * ca, -ct * sa, a * st],
+                     [0,       sa,       ca,      d],
+                     [0,        0,        0,      1]])
+
+
+def dh_mod(alpha, a, theta, d):
+    """Modified DH (DHM): Rot(x, alpha) Trans(x, a) Rot(z, theta) Trans(z, d)."""
+    ct, st, ca, sa = np.cos(theta), np.sin(theta), np.cos(alpha), np.sin(alpha)
+    return np.array([[ct,      -st,   0,       a],
+                     [st * ca, ct * ca, -sa, -d * sa],
+                     [st * sa, ct * sa,  ca,  d * ca],
+                     [0,        0,       0,       1]])
+
+
+def fk(rows, joint, q):
+    """rows: the DH table; joint(row, qi) -&gt; the matrix of one row. Returns the 4x4 pose of the tool."""
+    T = np.eye(4)
+    for row, qi in zip(rows, q):
+        T = T @ joint(row, qi)
+    return T
+
+
+# the 3-axis arm of the course: shoulder height 0.40 m, links 0.45 m and 0.38 m
+STD = [(0.40, 0.00, np.pi / 2), (0.0, 0.45, 0.0), (0.0, 0.38, 0.0)]          # (d, a, alpha), theta = q
+MOD = [(0.0, 0.00, 0.40), (np.pi / 2, 0.00, 0.0), (0.0, 0.45, 0.0), (0.0, 0.38, 0.0)]   # (alpha, a, d), theta = q (0 for the tool)
+
+std_joint = lambda row, qi: dh_std(qi, row[0], row[1], row[2])
+mod_joint = lambda row, qi: dh_mod(row[0], row[1], qi, row[2])
+
+if __name__ == '__main__':
+    q = np.radians([25, 70, -80])
+    T_std = fk(STD, std_joint, q)
+    T_mod = fk(MOD, mod_joint, list(q) + [0.0])        # the fixed tool row has theta = 0
+    np.set_printoptions(precision=3, suppress=True)
+    print('tool position, standard DH :', T_std[:3, 3])
+    print('tool position, modified DH :', T_mod[:3, 3])
+    print('same pose (position and orientation):', np.allclose(T_std, T_mod))
+    print('zero pose (all angles 0)   :', fk(STD, std_joint, [0, 0, 0])[:3, 3])</code></pre>
+<pre class="out"><code>tool position, standard DH : [0.479 0.223 0.757]
+tool position, modified DH : [0.479 0.223 0.757]
+same pose (position and orientation): True
+zero pose (all angles 0)   : [0.83 0.   0.4 ]</code></pre>
+<h4>2.1 Read the code</h4>
+<ul><li><code>dh_std</code> and <code>dh_mod</code> are the two matrices of the maths course, written cell by cell. The order of their arguments follows the order of the columns of each table.</li><li><code>fk</code> starts from the identity and multiplies the rows from the base to the tool: <i>T</i> = <i>T</i><sub>1</sub> <i>T</i><sub>2</sub> … <i>T</i><sub>n</sub>.</li><li>The last column of <i>T</i> (<code>T[:3, 3]</code>) is the position of the tool; the top-left 3×3 block is its orientation.</li><li>The robot is only data: to study another robot, change the table, not the code.</li></ul>
+<div class="box example"><div class="bt">What the output proves</div><div class="bb"><p>The standard and the modified tables of the same arm give the same tool position (0.479, 0.223, 0.757) — the value found by hand in the maths course — and <code>np.allclose</code> confirms that even the orientation is identical. The zero pose gives (0.83, 0, 0.40): the arm stretched along x at the height of the shoulder.</p></div></div>
+<div class="box warn"><div class="bt">The two classic bugs</div><div class="bb"><ul><li>Feeding a standard table to the modified matrix (or the reverse): no error, just a wrong robot. Keep the convention in the name of the function.</li><li>Degrees instead of radians in α: write <code>np.pi / 2</code> or <code>np.radians(90)</code>, never <code>90</code>.</li></ul></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>DH table</li><li>homogeneous matrix</li><li>loop</li><li>np.allclose</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>One function per row (dh_std or dh_mod), one loop that multiplies the rows.</li><li>The robot is data: change the table, not the code.</li><li>Check: both conventions give the same pose; the zero pose matches the drawing.</li></ul></div></div>
+          
+          <section class="exs" data-for="lab-2"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="lab-2-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A 6-axis robot in standard DH: how many rows in the table?</p><div class="numin" data-ans="6" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>One per joint: <b>6</b>.</p></details>
+</div>
+<div class="ex" data-id="lab-2-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">dh_std(θ = 0, d = 0.2, a = 0.3, α = 0): x of the translation (last column)?</p><div class="numin" data-ans="0.3" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>a cos θ = 0.3 × 1 = <b>0.3</b> (and z = d = 0.2).</p></details>
+</div>
+<div class="ex" data-id="lab-2-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">3-axis arm of the lesson, θ = (0°, 90°, 0°). z of the tool (m)?</p><div class="numin" data-ans="1.23" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Both links point straight up: 0.40 + 0.45 + 0.38 = <b>1.23 m</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Where do you read the position of the tool in the 4×4 matrix T?</p><p class="a">In the last column, first three rows: T[:3, 3].</p></li><li><p class="q">To study a SCARA instead of the 3-axis arm, what do you change?</p><p class="a">Only the DH table (the data); the functions stay the same.</p></li><li><p class="q">Why does the modified table have one more row?</p><p class="a">Its last frame sits on the last joint; a fixed row (θ = 0) brings it to the tool.</p></li></ol></details>
+          <p class="try"><a href="learn-mathkit.html#l8">Review DH and DHM side by side →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l3" data-id="lab-3">
+          <header class="lesson-head"><span class="num">3</span><h2>Inverse kinematics in closed form</h2><span class="time">16 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to code the exact inverse kinematics of the 2-axis arm with its two elbow solutions, to detect unreachable points, and to test it with the round trip FK(IK(x)) = x.</p></div>
+<h4>3.1 The formulas</h4>
+<p>The distance from the base to the target fixes the angle of the elbow (law of cosines); then the direction of the target fixes the shoulder:</p>
+<p class="eq">cos <i>θ</i><sub>2</sub> = (<i>x</i>² + <i>y</i>² − <i>L</i><sub>1</sub>² − <i>L</i><sub>2</sub>²) / (2 <i>L</i><sub>1</sub> <i>L</i><sub>2</sub>) &emsp;&emsp; <i>θ</i><sub>1</sub> = atan2(<i>y</i>, <i>x</i>) − atan2(<i>L</i><sub>2</sub> sin <i>θ</i><sub>2</sub>, <i>L</i><sub>1</sub> + <i>L</i><sub>2</sub> cos <i>θ</i><sub>2</sub>)</p>
+<ul><li>If |cos <i>θ</i><sub>2</sub>| > 1 the point is <strong>out of reach</strong>: return “no solution” instead of crashing.</li><li>sin <i>θ</i><sub>2</sub> = ±√(1 − cos² <i>θ</i><sub>2</sub>): the two signs are the <strong>two elbows</strong> (up and down).</li><li>Use <strong>atan2</strong>, never arccos alone or arctan of a ratio: they lose the quadrant.</li></ul>
+<pre class="code"><code>"""Closed-form inverse kinematics of the planar 2-axis arm, with both elbow solutions."""
+import numpy as np
+from arm_fk2 import fk, L1, L2
+
+
+def ik(x, y, elbow_up=True):
+    """Tool position (m) -&gt; joint angles (rad), or None if the point is out of reach."""
+    c2 = (x * x + y * y - L1 * L1 - L2 * L2) / (2 * L1 * L2)    # law of cosines
+    if abs(c2) &gt; 1:
+        return None                                              # too far or too close
+    s2 = np.sqrt(1 - c2 * c2) * (-1 if elbow_up else 1)          # the two signs = the two elbows
+    theta2 = np.arctan2(s2, c2)
+    theta1 = np.arctan2(y, x) - np.arctan2(L2 * s2, L1 + L2 * c2)
+    return theta1, theta2
+
+
+if __name__ == '__main__':
+    for target in [(0.537, 0.636), (0.6, 0.2), (1.0, 0.0)]:
+        print('target', target)
+        for up in (True, False):
+            sol = ik(*target, elbow_up=up)
+            if sol is None:
+                print('   out of reach (max reach 0.9 m)')
+                break
+            _, tool = fk(*sol)                                   # round trip: FK(IK(x)) must give x back
+            print(f'   elbow {"up  " if up else "down"}: theta = ({np.degrees(sol[0]):7.2f}, {np.degrees(sol[1]):7.2f}) deg'
+                  f'   check FK -&gt; ({tool[0]:.3f}, {tool[1]:.3f})')</code></pre>
+<pre class="out"><code>target (0.537, 0.636)
+   elbow up  : theta = (  69.69,  -45.00) deg   check FK -&gt; (0.537, 0.636)
+   elbow down: theta = (  29.96,   45.00) deg   check FK -&gt; (0.537, 0.636)
+target (0.6, 0.2)
+   elbow up  : theta = (  57.65,  -91.43) deg   check FK -&gt; (0.600, 0.200)
+   elbow down: theta = ( -20.78,   91.43) deg   check FK -&gt; (0.600, 0.200)
+target (1.0, 0.0)
+   out of reach (max reach 0.9 m)</code></pre>
+<h4>3.2 The round trip test</h4>
+<p>The best test of an inverse model needs no answer key: <strong>compute the forward kinematics of the solution</strong> and compare with the target. Here both elbows give back (0.537, 0.636) exactly, and the elbow-down solution (29.96°, 45°) is, with rounding, the pose (30°, 45°) of lesson 1. The point at 1.0 m is correctly refused: the reach is 0.9 m.</p>
+<div class="box keep"><div class="bt">Which elbow to choose?</div><div class="bb"><p>A real controller keeps the solution <strong>closest to the current pose</strong> (smallest joint motion), and checks the joint limits and the obstacles. Switching elbow in the middle of a motion makes the arm flip: never do it while moving.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>inverse kinematics</li><li>closed form</li><li>law of cosines</li><li>elbow up / down</li><li>round trip test</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>cos θ2 from the law of cosines; |cos θ2| > 1 means out of reach.</li><li>Two solutions: sin θ2 = ±√(1 − cos² θ2), elbow up or down. Always use atan2.</li><li>Round trip test: fk(ik(x)) must give x back.</li></ul></div></div>
+          
+          <section class="exs" data-for="lab-3"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="lab-3-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Target (0.9, 0) for L1 = 0.5, L2 = 0.4. cos θ2?</p><div class="numin" data-ans="1" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>(0.81 − 0.25 − 0.16) / 0.4 = 0.4 / 0.4 = <b>1</b>: θ2 = 0, the arm is stretched (one solution only).</p></details>
+</div>
+<div class="ex" data-id="lab-3-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Smallest distance from the base that the tool can reach (m)?</p><div class="numin" data-ans="0.1" data-tol="0.001" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Folded arm: |L1 − L2| = 0.5 − 0.4 = <b>0.1 m</b>. The workspace is a ring from 0.1 m to 0.9 m.</p></details>
+</div>
+<div class="ex" data-id="lab-3-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Target (0, 0.64). Compute |θ2| in degrees.</p><div class="numin" data-ans="90.05729578906238" data-tol="0.1" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>cos θ2 = (0.4096 − 0.25 − 0.16) / 0.4 = −0.001, so |θ2| = <b>90.06°</b>: almost a right angle, like the pose (90°, −90°) of lesson 1.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does |cos θ₂| > 1 mean?</p><p class="a">The target is out of reach (too far or too close): there is no solution.</p></li><li><p class="q">How do you test an inverse model without knowing the right angles?</p><p class="a">Apply the forward model to the solution and check that it gives back the target.</p></li><li><p class="q">Where do the two solutions of the 2-axis arm come from?</p><p class="a">From the sign of sin θ₂ = ±√(1 − cos² θ₂): elbow up or elbow down.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l4" data-id="lab-4">
+          <header class="lesson-head"><span class="num">4</span><h2>The Jacobian and numerical inverse kinematics</h2><span class="time">18 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to compute the Jacobian of any arm with finite differences, and to solve the inverse kinematics of any arm step by step, safely near singularities.</p></div>
+<p>A closed-form inverse model exists only for simple robots. For any other one, the computer <strong>searches</strong>: from a guess, it moves the joints a little in the direction that brings the tool closer, again and again. It is exactly what the “Build your first robot” workshop does when you press “Send the tool to the ball”.</p>
+<h4>4.1 The Jacobian by finite differences</h4>
+<p>Column <i>i</i> of the Jacobian is “how the tool moves when joint <i>i</i> turns a little” (maths course, lesson 9). No need to derive anything: turn joint <i>i</i> by a tiny <i>h</i>, measure how much the tool moved, divide by <i>h</i>. It works for any robot that has a forward model.</p>
+<h4>4.2 The search: damped least squares</h4>
+<p>At each step: error <i>e</i> = target − position; correction Δ<i>q</i> = <i>J</i><sup>T</sup> (<i>J J</i><sup>T</sup> + <i>λ</i>² <i>I</i>)<sup>−1</sup> <i>e</i>; new <i>q</i> = <i>q</i> + Δ<i>q</i>, kept inside the joint limits. The small <i>λ</i> (the damping) keeps the step small near a singularity, where <i>J J</i><sup>T</sup> can no longer be inverted (singularities course, lesson 8).</p>
+<pre class="code"><code>"""Numerical inverse kinematics for any arm: Jacobian by finite differences + damped least squares."""
+import numpy as np
+from arm_dh import fk, STD, std_joint
+
+LIMITS = np.radians([[-170, 170], [-10, 170], [-150, 150]])
+
+
+def position(q):
+    return fk(STD, std_joint, q)[:3, 3]
+
+
+def jacobian(q, h=1e-6):
+    """3 x n matrix: column i = how the tool moves when joint i turns a little."""
+    p0 = position(q)
+    J = np.zeros((3, len(q)))
+    for i in range(len(q)):
+        dq = np.array(q, dtype=float)
+        dq[i] += h
+        J[:, i] = (position(dq) - p0) / h
+    return J
+
+
+def ik(target, q0, damping=0.01, tol=1e-4, max_iter=100):
+    q = np.array(q0, dtype=float)
+    for it in range(max_iter):
+        error = target - position(q)
+        if np.linalg.norm(error) &lt; tol:
+            return q, it
+        J = jacobian(q)
+        # damped least squares: dq = J^T (J J^T + lambda^2 I)^-1 error  (safe near singularities)
+        dq = J.T @ np.linalg.solve(J @ J.T + damping ** 2 * np.eye(3), error)
+        q = np.clip(q + dq, LIMITS[:, 0], LIMITS[:, 1])
+    return q, max_iter
+
+
+if __name__ == '__main__':
+    np.set_printoptions(precision=3, suppress=True)
+    target = np.array([0.479, 0.223, 0.757])           # the tool position of the DH lesson
+    q, n = ik(target, q0=np.radians([0, 45, -45]))
+    print(f'converged in {n} iterations: q = {np.degrees(q)} deg')
+    print('reached position:', position(q), ' error (mm):', round(1000 * np.linalg.norm(position(q) - target), 3))
+    # 20 random reachable targets: pick random joint angles, compute the position, then solve back
+    rng = np.random.default_rng(1)
+    targets = [position(rng.uniform(LIMITS[:, 0] * 0.8, LIMITS[:, 1] * 0.8)) for _ in range(20)]
+    ok1 = ok2 = 0
+    for p in targets:
+        q_sol, _ = ik(p, q0=np.radians([0, 45, -45]))                 # always the same start
+        ok1 += np.linalg.norm(position(q_sol) - p) &lt; 1e-3
+        for start in [np.radians([0, 45, -45])] + [rng.uniform(LIMITS[:, 0], LIMITS[:, 1]) for _ in range(5)]:
+            q_sol, _ = ik(p, q0=start)                                # retry from other starts if needed
+            if np.linalg.norm(position(q_sol) - p) &lt; 1e-3:
+                ok2 += 1
+                break
+    print(f'random targets reached within 1 mm, one start     : {ok1} / 20')
+    print(f'random targets reached within 1 mm, up to 6 starts: {ok2} / 20')</code></pre>
+<pre class="out"><code>converged in 4 iterations: q = [ 24.965  69.974 -79.944] deg
+reached position: [0.479 0.223 0.757]  error (mm): 0.003
+random targets reached within 1 mm, one start     : 12 / 20
+random targets reached within 1 mm, up to 6 starts: 20 / 20</code></pre>
+<h4>4.3 What the output teaches</h4>
+<ul><li>For the target of lesson 2 the search finds (25°, 70°, −80°) in <strong>4 iterations</strong>, with an error of 0.003 mm: the angles that created this point.</li><li>From one fixed start it reaches only <strong>12 targets out of 20</strong>: a local search can get stuck against a joint limit, or go towards the other elbow and stop.</li><li>With up to 6 starts it reaches <strong>20 out of 20</strong>. Real solvers do the same: they restart from other guesses, and start from the current pose of the robot, which is usually close to the answer.</li></ul>
+<div class="box keep"><div class="bt">Always check the result</div><div class="bb"><p>A numerical solver can return angles that do not reach the target. Never send its answer to the motors without checking the error with the forward model, as the code does with <code>np.linalg.norm(position(q_sol) - p)</code>.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>Jacobian</li><li>finite difference</li><li>damped least squares</li><li>local minimum</li><li>restart</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Jacobian by finite differences: turn joint i by h, measure the motion of the tool, divide by h.</li><li>Damped least squares: Δq = Jᵀ (J Jᵀ + λ² I)⁻¹ e, repeated until the error is small.</li><li>A local search can fail: restart from other guesses and always check the error.</li></ul></div></div>
+          
+          <section class="exs" data-for="lab-4"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="lab-4-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A 3-axis arm with a 3D tool position: size of its Jacobian (number of entries)?</p><div class="numin" data-ans="9" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>3 rows (x, y, z) × 3 columns (joints) = <b>9</b>.</p></details>
+</div>
+<div class="ex" data-id="lab-4-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">h = 10⁻⁶ rad moves the tool by 4.5 × 10⁻⁷ m in z. Entry ∂z/∂q (m/rad)?</p><div class="numin" data-ans="0.45" data-tol="0.002" data-unit="m/rad"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>4.5 × 10⁻⁷ / 10⁻⁶ = <b>0.45 m/rad</b>: the length of the link that this joint lifts.</p></details>
+</div>
+<div class="ex" data-id="lab-4-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">12 of 20 targets reached from one start, 20 of 20 with up to 6 starts. Share of the targets saved by the restarts (%)?</p><div class="numin" data-ans="40" data-tol="0.1" data-unit="%"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>8 / 20 = <b>40 %</b>. Never trust a single start.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">How is column i of the Jacobian computed numerically?</p><p class="a">Turn joint i by a tiny h, measure how the tool moves, divide by h.</p></li><li><p class="q">What is the damping λ for?</p><p class="a">To keep the steps small and finite near a singularity, where J Jᵀ cannot be inverted.</p></li><li><p class="q">The solver reaches only 12 targets out of 20 from one start. What do you do?</p><p class="a">Restart from other guesses (and from the current pose), and keep the solution whose error is below the tolerance.</p></li></ol></details>
+          <p class="try"><a href="build.html">Watch numerical IK in the “Build your first robot” workshop →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l5" data-id="lab-5">
+          <header class="lesson-head"><span class="num">5</span><h2>From the code to a real arm: trajectories and servos</h2><span class="time">22 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to generate a smooth motion, to turn angles into servo pulses, and to build and drive a small 3-servo arm with an Arduino.</p></div>
+<h4>5.1 A smooth motion: the degree-5 polynomial</h4>
+<p>Jumping from one angle to another shakes the arm. The <strong>quintic</strong> law (modelling course, lesson 9) goes from <i>q</i><sub>0</sub> to <i>q</i><sub>1</sub> in a time <i>T</i> with zero speed and zero acceleration at both ends. Its peak speed, at mid-time, is 1.875 times the average speed: use it to check that the servos are fast enough.</p>
+<pre class="code"><code>"""A smooth joint trajectory (degree-5 polynomial) and the servo pulses that follow it."""
+import numpy as np
+
+
+def quintic(q0, q1, T, t):
+    """Position at time t of a motion from q0 to q1 in T seconds, with zero speed and acceleration at both ends."""
+    s = np.clip(t / T, 0.0, 1.0)
+    return q0 + (q1 - q0) * (10 * s**3 - 15 * s**4 + 6 * s**5)
+
+
+def to_pulse_us(angle_deg, offset_deg=0.0, us_min=500, us_max=2500):
+    """Hobby servo: 0..180 deg -&gt; 500..2500 microseconds; offset_deg = calibration of the zero."""
+    a = np.clip(angle_deg + offset_deg, 0, 180)
+    return int(round(us_min + (us_max - us_min) * a / 180))
+
+
+if __name__ == '__main__':
+    q_start = np.array([90.0, 45.0, 120.0])     # servo angles (deg)
+    q_goal = np.array([30.0, 100.0, 60.0])
+    T = 2.0                                      # duration (s)
+    offsets = [0.0, -3.0, 2.0]                   # measured once, servo by servo
+    for t in np.arange(0.0, T + 1e-9, 0.5):
+        q = quintic(q_start, q_goal, T, t)
+        pulses = [to_pulse_us(a, o) for a, o in zip(q, offsets)]
+        print(f't = {t:.1f} s   angles = {np.round(q, 1)} deg   pulses = {pulses} us')
+    mid_speed = (quintic(q_start, q_goal, T, 1.001) - quintic(q_start, q_goal, T, 0.999)) / 0.002
+    print('peak speed at mid-time (deg/s):', np.round(mid_speed, 1), ' = 1.875 x average speed')</code></pre>
+<pre class="out"><code>t = 0.0 s   angles = [ 90.  45. 120.] deg   pulses = [1500, 967, 1856] us
+t = 0.5 s   angles = [ 83.8  50.7 113.8] deg   pulses = [1431, 1030, 1787] us
+t = 1.0 s   angles = [60.  72.5 90. ] deg   pulses = [1167, 1272, 1522] us
+t = 1.5 s   angles = [36.2 94.3 66.2] deg   pulses = [902, 1515, 1258] us
+t = 2.0 s   angles = [ 30. 100.  60.] deg   pulses = [833, 1578, 1189] us
+peak speed at mid-time (deg/s): [-56.2  51.6 -56.2]  = 1.875 x average speed</code></pre>
+<h4>5.2 Servos: angle → pulse</h4>
+<ul><li>A hobby servo receives a pulse every 20 ms; its <strong>width</strong> sets the angle: typically 500 µs → 0°, 1500 µs → 90°, 2500 µs → 180° (check the data sheet: many use 1000 to 2000 µs).</li><li>The servo contains its own motor, gearbox, potentiometer and P controller: you only send the target angle.</li><li>Each servo is mounted a little off: measure its <strong>offset</strong> once (send 90°, measure the real angle) and add it in software.</li><li>Joint angle and servo angle differ: usually servo = 90° + <i>θ</i> (or 90° − <i>θ</i> if it is mounted the other way). Write this mapping in one function, and test it joint by joint.</li></ul>
+<h4>5.3 Build the arm</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Part</th><th class="left">Example</th><th class="left">Note</th></tr><tr><td class="left">3 servos</td><td class="left">MG996R (metal gears) for the base and the shoulder; SG90 for a very small arm</td><td class="left">the shoulder carries the most torque (control course, lesson 1)</td></tr><tr><td class="left">Microcontroller</td><td class="left">Arduino Uno or Nano</td><td class="left">or a PCA9685 board to drive up to 16 servos</td></tr><tr><td class="left">Power supply</td><td class="left">5 to 6 V, at least 3 A</td><td class="left"><strong>never</strong> power the servos from the 5 V pin of the Arduino; connect the grounds together</td></tr><tr><td class="left">Links</td><td class="left">3D-printed, laser-cut, or thick cardboard and servo horns</td><td class="left">measure <i>L</i><sub>1</sub>, <i>L</i><sub>2</sub> between the servo axes and put them in the code</td></tr><tr><td class="left">Tool</td><td class="left">a pen holder</td><td class="left">drawing makes the errors visible</td></tr></table></div>
+<h4>5.4 The code on both sides</h4>
+<p>The Arduino only receives three angles per line and moves the servos. All the maths (trajectory, inverse kinematics, offsets) stays in Python on the computer, where it is easy to debug.</p>
+<pre class="code"><code>// Arduino sketch: receives "a1 a2 a3" (servo angles in degrees, one line per command) and moves 3 servos.
+#include &lt;Servo.h&gt;
+
+Servo s[3];
+const int PINS[3] = {9, 10, 11};
+
+void setup() {
+  Serial.begin(115200);
+  for (int i = 0; i &lt; 3; i++) {
+    s[i].attach(PINS[i], 500, 2500);     // pulse range in microseconds (check your servo's data sheet)
+    s[i].write(90);                       // start in the middle
+  }
+}
+
+void loop() {
+  if (Serial.available()) {
+    for (int i = 0; i &lt; 3; i++) {
+      int a = Serial.parseInt();          // reads the next integer of the line
+      s[i].write(constrain(a, 0, 180));   // never send a servo beyond its range
+    }
+    while (Serial.available() &amp;&amp; Serial.read() != '\n') {}   // drop the end of the line
+  }
+}</code></pre>
+<pre class="code"><code>"""Send a smooth trajectory to the 3-servo arm over USB (pip install pyserial numpy)."""
+import time
+import numpy as np
+import serial                                   # pyserial
+from arm_traj import quintic
+
+PORT = '/dev/ttyACM0'                           # Windows: 'COM3'; macOS: '/dev/cu.usbmodem...'
+OFFSETS = np.array([0.0, -3.0, 2.0])            # calibration of each servo (deg)
+
+with serial.Serial(PORT, 115200, timeout=1) as link:
+    time.sleep(2)                               # the Arduino restarts when the port opens
+    q_start, q_goal, T, dt = np.array([90, 45, 120.0]), np.array([30, 100, 60.0]), 2.0, 0.02
+    t0 = time.time()
+    while (t := time.time() - t0) &lt;= T:
+        q = np.clip(quintic(q_start, q_goal, T, t) + OFFSETS, 0, 180)
+        link.write(('%d %d %d\n' % tuple(np.round(q))).encode())
+        time.sleep(dt)                          # 50 commands per second</code></pre>
+<div class="box warn"><div class="bt">Before powering the arm</div><div class="bb"><ul><li>These two programs were written for this course but could not be tested on hardware here. Read the error messages, and test step by step: one servo, then the three, then a slow trajectory.</li><li>Servos jump to their position at power-up: keep your fingers away and start with the arm in its middle pose.</li><li>Keep a hand on the power switch: it is your emergency stop.</li></ul></div></div>
+<div class="box lab"><div class="bt">Draw a square</div><div class="bb"><ol><li>Choose 4 corners of a 6 cm square in front of the robot, on the paper.</li><li>Cut each side into 20 points; compute the inverse kinematics of each point (lesson 3 or 4).</li><li>Send the angles at a steady rhythm. Measure the drawn square: the error shows your offsets and link lengths. Correct them and draw again.</li></ol></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>quintic trajectory</li><li>servo</li><li>pulse width</li><li>offset calibration</li><li>serial link</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Quintic law: zero speed and acceleration at both ends; peak speed = 1.875 × average.</li><li>Servo: the pulse width sets the angle (about 500–2500 µs for 0–180°); measure each offset once.</li><li>Separate power for the servos, common ground, maths in Python, the Arduino only moves the servos.</li></ul></div></div>
+          
+          <section class="exs" data-for="lab-5"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="lab-5-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Pulse for 90° on a 500–2500 µs servo (µs)?</p><div class="numin" data-ans="1500" data-tol="1" data-unit="µs"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>500 + 2000 × 90/180 = <b>1500 µs</b>: the middle.</p></details>
+</div>
+<div class="ex" data-id="lab-5-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">A servo turns at 300 °/s at most. A quintic motion of 90°: shortest duration T (s)?</p><div class="numin" data-ans="0.5625" data-tol="0.01" data-unit="s"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Peak speed = 1.875 × 90 / T ≤ 300.</p></details><details class="sol"><summary>Solution</summary><p>T ≥ 1.875 × 90 / 300 = <b>0.5625 s</b>.</p></details>
+</div>
+<div class="ex" data-id="lab-5-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Three servos draw up to 1.2 A each at 6 V. Minimum power of the supply (W)?</p><div class="numin" data-ans="21.6" data-tol="0.05" data-unit="W"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>3 × 1.2 = 3.6 A; 3.6 × 6 = <b>21.6 W</b>. Take a margin: 5 A or more.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why is a servo arm moved along a quintic trajectory instead of jumping to the target?</p><p class="a">It starts and stops with zero speed and acceleration: no shock, no shaking.</p></li><li><p class="q">Why must the servos have their own power supply?</p><p class="a">They draw peaks of several amperes; the Arduino 5 V pin cannot give them and the board would reset or break.</p></li><li><p class="q">Why keep the maths in Python and not in the Arduino?</p><p class="a">It is easier to write, test and debug on the computer; the Arduino only needs to move the servos.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l6" data-id="lab-6">
+          <header class="lesson-head"><span class="num">6</span><h2>Final exam and labs: prove it</h2><span class="time">60 min</span></header>
+          <div class="goal"><b>You will learn</b><p>to check that you can compute, code and build: a written exam and five labs.</p></div>
+<p>The course is complete when you pass the written exam (70 % or more) and do at least 4 of the 5 labs. Your progress is kept in this browser.</p>
+<div id="examSum" data-pass="70" data-chals="" data-labs="arm1,arm2,arm3,arm4,arm5" data-labmin="4" data-win-en="Course complete: you can model, code and drive a robot arm, from its DH table to a real servo arm." data-win-fr="Cours terminé : vous savez modéliser, coder et piloter un bras robot, de son tableau DH à un vrai bras à servos."></div>
+<section class="exs exam" data-for="lab-6"><h3>Written exam</h3><p class="exnote">Each question is checked once: your first answer counts. The solution appears below it to learn from your mistakes.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="lab-6-1" data-lv="1" data-exam="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">2-axis arm, L1 = 0.5 m, L2 = 0.4 m, θ = (90°, 0°). y of the tool (m)?</p><div class="numin" data-ans="0.9" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Both links point up: y = 0.5 + 0.4 = <b>0.9 m</b>.</p></details>
+</div>
+<div class="ex" data-id="lab-6-2" data-lv="1" data-exam="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">2</span></div>
+<p class="q">Same arm, θ = (0°, 90°). y of the tool (m)?</p><div class="numin" data-ans="0.4" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Link 1 along x, link 2 up: tool at (0.5, <b>0.4</b>).</p></details>
+</div>
+<div class="ex" data-id="lab-6-3" data-lv="1" data-exam="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">3</span></div>
+<p class="q">How many inverse kinematics solutions does the 2-axis arm have for a point strictly inside its workspace?</p><div class="numin" data-ans="2" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p><b>2</b>: elbow up and elbow down (one only on the boundary, when the arm is stretched or folded).</p></details>
+</div>
+<div class="ex" data-id="lab-6-4" data-lv="1" data-exam="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">4</span></div>
+<p class="q">A table has the columns α, a, θ, d. Which convention?</p><ol class="opts" type="A"><li data-ok="1">Modified DH (DHM)</li><li>Standard DH</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The moves along x come first: <b>modified DH</b>.</p></details>
+</div>
+<div class="ex" data-id="lab-6-5" data-lv="1" data-exam="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">5</span></div>
+<p class="q">The 3-axis arm of the course (d1 = 0.40, a2 = 0.45, a3 = 0.38), all angles at 0. x of the tool (m)?</p><div class="numin" data-ans="0.83" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Stretched along x: 0.45 + 0.38 = <b>0.83 m</b> (at the height 0.40 m).</p></details>
+</div>
+<div class="ex" data-id="lab-6-6" data-lv="2" data-exam="1">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">6</span></div>
+<p class="q">2-axis arm (0.5 m, 0.4 m), target (0.6, 0.2). |θ2| in degrees?</p><div class="numin" data-ans="91.4325437375665" data-tol="0.1" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>cos θ2 = (x² + y² − L1² − L2²) / (2 L1 L2).</p></details><details class="sol"><summary>Solution</summary><p>cos θ2 = (0.36 + 0.04 − 0.25 − 0.16) / 0.4 = −0.025, so |θ2| = <b>91.43°</b> (the output of lesson 3).</p></details>
+</div>
+<div class="ex" data-id="lab-6-7" data-lv="2" data-exam="1">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">7</span></div>
+<p class="q">Is the point (0.7, 0.6) reachable by the 2-axis arm (0.5 m, 0.4 m)?</p><ol class="opts" type="A"><li data-ok="1">No: it is 0.92 m away, the reach is 0.9 m</li><li>Yes, with the elbow up</li><li>Yes, with the elbow down</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>√(0.49 + 0.36) = 0.922 m > 0.9 m: <b>out of reach</b>; cos θ2 would be greater than 1.</p></details>
+</div>
+<div class="ex" data-id="lab-6-8" data-lv="2" data-exam="1">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">8</span></div>
+<p class="q">det J of the 2-axis arm is L1 L2 sin θ2. Value at θ2 = 30° (m²)?</p><div class="numin" data-ans="0.1" data-tol="0.002" data-unit="m²"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>0.5 × 0.4 × 0.5 = <b>0.1 m²</b>. It is 0 at θ2 = 0: the stretched arm is singular.</p></details>
+</div>
+<div class="ex" data-id="lab-6-9" data-lv="2" data-exam="1">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">9</span></div>
+<p class="q">Turning joint 2 by 0.001 rad moves the tool by 0.25 mm. Value of this entry of the Jacobian (m/rad)?</p><div class="numin" data-ans="0.25" data-tol="0.003" data-unit="m/rad"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>0.00025 m / 0.001 rad = <b>0.25 m/rad</b>: the finite difference of lesson 4.</p></details>
+</div>
+<div class="ex" data-id="lab-6-10" data-lv="2" data-exam="1">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">10</span></div>
+<p class="q">Why add a damping λ in the numerical inverse kinematics?</p><ol class="opts" type="A"><li data-ok="1">To avoid huge steps near a singularity</li><li>To go faster far from singularities</li><li>To respect the joint limits</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Near a singularity J Jᵀ is almost not invertible: without λ the correction explodes. The limits are handled by the clipping.</p></details>
+</div>
+<div class="ex" data-id="lab-6-11" data-lv="3" data-exam="1">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">11</span></div>
+<p class="q">A quintic motion of 60° in 2 s. Peak speed (°/s)?</p><div class="numin" data-ans="56.25" data-tol="0.3" data-unit="°/s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Average 30 °/s × 1.875 = <b>56.25 °/s</b>, reached at mid-time.</p></details>
+</div>
+<div class="ex" data-id="lab-6-12" data-lv="3" data-exam="1">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">12</span></div>
+<p class="q">A servo maps 0–180° to 500–2500 µs. Pulse for 45° (µs)?</p><div class="numin" data-ans="1000" data-tol="1" data-unit="µs"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>500 + 2000 × 45 / 180 = 500 + 500 = <b>1000 µs</b>.</p></details>
+</div>
+</section>
+<h4>The five labs</h4>
+<div class="box lab"><div class="bt">Lab 1 — Forward kinematics</div><div class="bb"><p>Run <code>arm_fk2.py</code> and reproduce its output. Change <i>L</i><sub>2</sub> to 0.3 m and predict, then check, the new reach at (0°, 0°). <strong>Pass</strong>: your prediction matches the program.</p>
+<label class="labchk"><input type="checkbox" data-lab="arm1"><span>I did this lab and met the pass criteria</span></label></div></div>
+<div class="box lab"><div class="bt">Lab 2 — A DH table of your own</div><div class="bb"><p>Write the standard and the modified DH tables of the SCARA of the workshop (two horizontal links of 0.42 m and 0.32 m, a vertical slider). Put them in <code>arm_dh.py</code>. <strong>Pass</strong>: both tables give the same tool pose for 3 different poses.</p>
+<label class="labchk"><input type="checkbox" data-lab="arm2"><span>I did this lab and met the pass criteria</span></label></div></div>
+<div class="box lab"><div class="bt">Lab 3 — The round trip</div><div class="bb"><p>Draw 100 random points in a square of 2 m around the base. For each, compute <code>ik</code> then <code>fk</code>. <strong>Pass</strong>: every reachable point comes back within 10⁻⁹ m, and you can explain how many were refused and why.</p>
+<label class="labchk"><input type="checkbox" data-lab="arm3"><span>I did this lab and met the pass criteria</span></label></div></div>
+<div class="box lab"><div class="bt">Lab 4 — Numerical IK</div><div class="bb"><p>Reproduce the 20 / 20 of lesson 4, then remove the damping (λ = 0) and try targets close to the stretched arm. <strong>Pass</strong>: you can show and explain what goes wrong without damping.</p>
+<label class="labchk"><input type="checkbox" data-lab="arm4"><span>I did this lab and met the pass criteria</span></label></div></div>
+<div class="box lab"><div class="bt">Lab 5 — The real arm</div><div class="bb"><p>Build the 3-servo arm of lesson 5, calibrate the offsets, and draw a 6 cm square. <strong>Pass</strong>: every side is 6 cm ± 5 mm.</p>
+<label class="labchk"><input type="checkbox" data-lab="arm5"><span>I did this lab and met the pass criteria</span></label></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>exam</li><li>lab</li><li>pass criterion</li></ul>
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What do you need to complete the course?</p><p class="a">At least 70 % at the written exam and at least 4 of the 5 labs.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+        <section class="gloss">
+          <h2>Glossary</h2>
+          <p>All the words of the course in one place.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Forward kinematics (FK, MGD)</td><td class="left">From the joint angles to the pose of the tool.</td></tr><tr><td class="left">Inverse kinematics (IK, MGI)</td><td class="left">From the wanted pose of the tool to the joint angles.</td></tr><tr><td class="left">Round trip test</td><td class="left">Checking an inverse model by applying the forward model to its answer.</td></tr><tr><td class="left">Finite difference</td><td class="left">A derivative estimated as (change of output) / (small change of input).</td></tr><tr><td class="left">Damped least squares</td><td class="left">A numerical IK step that stays small near singularities.</td></tr><tr><td class="left">Quintic trajectory</td><td class="left">A degree-5 polynomial motion with zero speed and acceleration at both ends.</td></tr><tr><td class="left">Servo offset</td><td class="left">The angle error of a mounted servo, measured once and corrected in software.</td></tr></table></div>
+        </section>
+
+        <section class="finish">
+          <h2>You can now code and drive a robot arm!</h2>
+          <p>Next: add a camera to find objects (perception course), or move to ROS 2 and MoveIt 2 to control a full-size arm.</p>
+          <p class="cta"><a class="btn" href="learn-ros.html">Go to the ROS 2 course →</a> <a class="btn ghost" href="index.html#road">Back to the roadmap</a></p>
+        </section>
+      </div>
+    </div>
+    <script src="learn-more-widgets.js" defer></script>
+    <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+  var PREFIX = 'lab-', KEY = 'armlab';
+  var lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el, i) { return '<li><a href="#l' + (i + 1) + '" data-i="' + (i + 1) + '"><span class="n">' + (i + 1) + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  function paint() {
+    var done = 0;
+    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
+    document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
+    document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
+    var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total; for (var i = 1; i <= t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+  }
+  document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
+  window.addEventListener('ra-progress', paint); paint();
+  function spy() { var m = window.scrollY + window.innerHeight * 0.3, cur = 1; lessons.forEach(function (el, i) { if (el.offsetTop <= m) cur = i + 1; }); [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i + 1 === cur); }); }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+});
+    </script>
+  </body>
+</html>

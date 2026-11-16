@@ -1230,3 +1230,4 @@ svg#schema, svg#zoom, svg#arena, svg#sim { background: var(--fpanel) !important;
 @media (max-width: 700px) { .rm-level { grid-template-columns: 1fr; gap: 0.4rem; } .rm-ln { justify-self: start; } }
 svg.fig text.sm { font-size: 10.5px; }
 .figure svg.fig[viewBox^="0 0 720"] { max-width: 700px; }
+pre.out code { font-family: inherit; background: none; padding: 0; border: 0; color: inherit; font-size: inherit; }

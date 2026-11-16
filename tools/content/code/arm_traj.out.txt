@@ -1,0 +1,6 @@
+t = 0.0 s   angles = [ 90.  45. 120.] deg   pulses = [1500, 967, 1856] us
+t = 0.5 s   angles = [ 83.8  50.7 113.8] deg   pulses = [1431, 1030, 1787] us
+t = 1.0 s   angles = [60.  72.5 90. ] deg   pulses = [1167, 1272, 1522] us
+t = 1.5 s   angles = [36.2 94.3 66.2] deg   pulses = [902, 1515, 1258] us
+t = 2.0 s   angles = [ 30. 100.  60.] deg   pulses = [833, 1578, 1189] us
+peak speed at mid-time (deg/s): [-56.2  51.6 -56.2]  = 1.875 x average speed
