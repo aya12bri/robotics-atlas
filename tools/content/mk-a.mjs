@@ -14,7 +14,7 @@ lesson(PRE, 1, {
     H4('1.1 Degrees and radians', '1.1 Degrés et radians'),
     P('A robot joint turns by an <strong>angle</strong>. We know degrees: a full turn is 360°. Computers and formulas use <strong>radians</strong>: a full turn is 2π ≈ 6.28 rad. So:',
       'Une articulation de robot tourne d\'un <strong>angle</strong>. On connaît les degrés : un tour complet fait 360°. Les ordinateurs et les formules utilisent les <strong>radians</strong> : un tour complet fait 2π ≈ 6,28 rad. Donc :'),
-    EQ('radians = degrees × π / 180        degrees = radians × 180 / π', 'radians = degrés × π / 180        degrés = radians × 180 / π'),
+    EQ('radians = degrees × π / 180 &emsp;&emsp; degrees = radians × 180 / π', 'radians = degrés × π / 180 &emsp;&emsp; degrés = radians × 180 / π'),
     TABLE([['Degrees', 'Degrés'], '0°', '30°', '45°', '90°', '180°', '360°'], [[['Radians', 'Radians'], '0', n('π/6 ≈ 0.52'), n('π/4 ≈ 0.79'), n('π/2 ≈ 1.57'), n('π ≈ 3.14'), n('2π ≈ 6.28')]]),
     BOX('idea', ['Why radians?', 'Pourquoi les radians ?'],
       P('With radians, the length of an arc is simply <strong>radius × angle</strong>. A wheel of radius 0.1 m that turns by 2 rad rolls 0.1 × 2 = 0.2 m. No factor to remember.',
@@ -22,7 +22,7 @@ lesson(PRE, 1, {
     H4('1.2 Sine and cosine: where is the end of the arm?', '1.2 Sinus et cosinus : où est le bout du bras ?'),
     P('Take an arm of length <i>L</i>, fixed at the origin, tilted by an angle <i>θ</i> from the x axis. Its end is at:',
       'Prenez un bras de longueur <i>L</i>, fixé à l\'origine, incliné d\'un angle <i>θ</i> par rapport à l\'axe x. Son extrémité est en :'),
-    EQ('<i>x</i> = <i>L</i> cos <i>θ</i>        <i>y</i> = <i>L</i> sin <i>θ</i>'),
+    EQ('<i>x</i> = <i>L</i> cos <i>θ</i> &emsp;&emsp; <i>y</i> = <i>L</i> sin <i>θ</i>'),
     FIG('0 0 340 190', `
       <line class="ax" x1="40" y1="160" x2="300" y2="160"/><line class="ax" x1="80" y1="180" x2="80" y2="20"/>
       <text x="308" y="164">x</text><text x="76" y="14" text-anchor="end">y</text>
@@ -99,7 +99,7 @@ lesson(PRE, 2, {
     H4('2.5 The cross product: a vector perpendicular to two others', '2.5 Le produit vectoriel : un vecteur perpendiculaire à deux autres'),
     P('In 3D, <strong>a</strong> × <strong>b</strong> is a new <strong>vector</strong>, perpendicular to both <strong>a</strong> and <strong>b</strong>. Its direction is given by the right hand: index along <strong>a</strong>, middle finger along <strong>b</strong>, the thumb shows <strong>a</strong> × <strong>b</strong>.',
       'En 3D, <strong>a</strong> × <strong>b</strong> est un nouveau <strong>vecteur</strong>, perpendiculaire à la fois à <strong>a</strong> et à <strong>b</strong>. Son sens est donné par la main droite : index selon <strong>a</strong>, majeur selon <strong>b</strong>, le pouce montre <strong>a</strong> × <strong>b</strong>.'),
-    EQ('<strong>x</strong> × <strong>y</strong> = <strong>z</strong>        <strong>y</strong> × <strong>z</strong> = <strong>x</strong>        <strong>z</strong> × <strong>x</strong> = <strong>y</strong>'),
+    EQ('<strong>x</strong> × <strong>y</strong> = <strong>z</strong> &emsp;&emsp; <strong>y</strong> × <strong>z</strong> = <strong>x</strong> &emsp;&emsp; <strong>z</strong> × <strong>x</strong> = <strong>y</strong>'),
     UL([
       ['It builds the third axis of a frame from the two others (lessons 5 and 6).', 'Il construit le troisième axe d\'un repère à partir des deux autres (leçons 5 et 6).'],
       ['It gives the speed of a point that turns: <strong>v</strong> = <strong>ω</strong> × <strong>r</strong>, and the torque of a force: <strong>τ</strong> = <strong>r</strong> × <strong>F</strong>.', 'Il donne la vitesse d\'un point qui tourne : <strong>v</strong> = <strong>ω</strong> × <strong>r</strong>, et le couple d\'une force : <strong>τ</strong> = <strong>r</strong> × <strong>F</strong>.']
