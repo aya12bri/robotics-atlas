@@ -87,7 +87,7 @@
       if (i > 0) { var p = el('a', 'prev', '← ' + L('Previous lesson', 'Leçon précédente')); p.href = '#' + lessons[i - 1].id; nav.append(p); }
       else nav.append(el('span'));
       var n = el('a', 'next');
-      if (i < lessons.length - 1) { n.href = '#' + lessons[i + 1].id; n.innerHTML = '<small>' + L('Next lesson', 'Leçon suivante') + ' →</small><b><span>' + (i + 2) + '.</span> <span>' + lessons[i + 1].querySelector('h2').innerHTML + '</span></b>'; }
+      if (i < lessons.length - 1) { n.href = '#' + lessons[i + 1].id; n.innerHTML = '<small>' + L('Next lesson', 'Leçon suivante') + ' →</small><b><span>' + lessons[i + 1].querySelector('.num').textContent + '.</span> <span>' + lessons[i + 1].querySelector('h2').innerHTML + '</span></b>'; }
       else if (next) { n.href = next.getAttribute('href'); n.innerHTML = '<small>' + L('Last lesson done? Next course', 'Dernière leçon finie ? Cours suivant') + ' →</small><b><span>' + next.querySelector('b').innerHTML + '</span></b>'; }
       else { n.href = 'index.html#road'; n.innerHTML = '<small>' + L('All lessons done?', 'Toutes les leçons finies ?') + '</small><b>' + L('Back to the roadmap', 'Retour au parcours') + ' →</b>'; }
       nav.append(n);

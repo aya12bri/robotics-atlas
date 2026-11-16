@@ -47,16 +47,16 @@ ${c.script ? `    <script src="${c.script}" defer></script>\n` : ''}    <script 
 document.addEventListener('DOMContentLoaded', function () {
   var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
   var PREFIX = '${c.prefix}', KEY = '${c.key}';
-  var lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var no = function (el) { return +el.id.slice(1); }, lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
   var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
-  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el, i) { return '<li><a href="#l' + (i + 1) + '" data-i="' + (i + 1) + '"><span class="n">' + (i + 1) + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el) { var k = no(el); return '<li><a href="#l' + k + '" data-i="' + k + '"><span class="n">' + k + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
   function paint() {
     var done = 0;
-    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
+    lessons.forEach(function (el) { var k = no(el), ok = P().get(PREFIX + k); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + k + '"]').parentNode.classList.toggle('done', ok); });
     document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
     document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
     var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
-    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total; for (var i = 1; i <= t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total, s = +(a.dataset.start || 1); for (var i = s; i < s + t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
   }
   document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
   window.addEventListener('ra-progress', paint); paint();
