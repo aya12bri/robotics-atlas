@@ -1,0 +1,4 @@
+p = (0, 0, -0.6): angles = [31.6843 31.6843 31.6843] deg   forearm lengths = [0.6 0.6 0.6] m
+p = (0.1, 0, -0.6): angles = [19.5999 39.6792 39.6792] deg   forearm lengths = [0.6 0.6 0.6] m
+p = (0.05, 0.08, -0.55): angles = [18.688  19.5434 38.7396] deg   forearm lengths = [0.6 0.6 0.6] m
+p = (0.6, 0, -0.6): out of reach

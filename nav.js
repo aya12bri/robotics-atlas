@@ -58,7 +58,7 @@
   root.lang = lang;
   const ui = UI[lang];
   const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const pageName = here.replace(/\.html$/, '');
+  const pageName = document.documentElement.dataset.page || here.replace(/\.html$/, '');   // data-page: pages served under another URL (the 404 page)
 
   // ---------------------------------------------------------------- translation engine
   const DICT = Object.create(null), RULES = [];
@@ -202,7 +202,7 @@
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<nav class="nav-l" aria-label="Main">' +
-      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>` + '</nav>' +
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
       '<div class="nav-r">' +
       (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
       ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there

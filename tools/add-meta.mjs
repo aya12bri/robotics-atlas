@@ -17,6 +17,7 @@ const DESC = {
   'learn-mobile.html': 'A complete course on wheeled mobile robots, from zero to professional: kinematics of every drive, control, path tracking, odometry calibration, Kalman filter, motor sizing, ROS 2, safety, exercises, exam and labs.',
   'learn-mathkit.html': 'The maths of robotics, one tool per lesson: trigonometry, vectors, matrices, rotations, homogeneous transformations, standard DH and modified DH (DHM), derivatives, probability and quaternions, with worked examples, exercises and quizzes.',
   'learn-armlab.html': 'Code a robot arm in Python: forward kinematics, a DH engine, exact and numerical inverse kinematics, trajectories, a real 3-servo arm with an Arduino, an exam and five labs.',
+  'learn-advanced.html': 'Advanced robotics at Master level: parallel robots (Delta, Stewart), LQR, model predictive control, legged robots and the ZMP, quadrotors, vision in practice and reinforcement learning.',
   'learn-ros.html': 'ROS 2 from zero: nodes, topics, your first Python nodes, services, actions, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first complete project.',
   'build.html': 'A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',

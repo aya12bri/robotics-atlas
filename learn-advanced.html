@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Advanced robotics (Master level)</title>
+    <!-- seo -->
+    <meta name="description" content="Advanced robotics at Master level: parallel robots (Delta, Stewart), LQR, model predictive control, legged robots and the ZMP, quadrotors, vision in practice and reinforcement learning." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/learn-advanced" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Advanced robotics (Master level)" />
+    <meta property="og:description" content="Advanced robotics at Master level: parallel robots (Delta, Stewart), LQR, model predictive control, legged robots and the ZMP, quadrotors, vision in practice and reinforcement learning." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/learn-advanced" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+  <script src="nav.js" defer></script></head>
+  <body class="learn">
+    <h1>Advanced robotics (Master level)</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn.html" style="color:#ff9f43">The basics</a></p>
+    <p class="lead">Seven topics that turn a good robotics student into a specialist: parallel robots (Delta, Stewart), optimal control (LQR), model predictive control (MPC), legged robots and balance, aerial robots, vision in practice (calibration, markers, hand-eye, point clouds) and reinforcement learning. Each lesson gives the method, worked numbers and, where useful, a program that was run.</p>
+    <nav class="courses" aria-label="Courses"><a class="course" href="learn.html" data-prefix="lesson-" data-total="12" data-key="learn"><b>Foundations</b><span>12 short lessons: the ideas behind every robot</span><em class="cnt"></em></a><a class="course" href="learn-mathkit.html" data-prefix="mk-" data-total="11" data-key="mk"><b>The maths of robotics</b><span>One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability, quaternions</span><em class="cnt"></em></a><a class="course" href="learn-maths.html" data-prefix="maths-" data-total="8" data-key="maths"><b>Maths and motion, step by step</b><span>Applied: the 2-axis arm from A to Z, its direct and inverse models, its motion laws</span><em class="cnt"></em></a><a class="course" href="learn-model.html" data-prefix="model-" data-total="11" data-key="model"><b>Robot modelling, full course</b><span>Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics</span><em class="cnt"></em></a><a class="course" href="learn-singularities.html" data-prefix="sing-" data-total="8" data-key="sing"><b>Singularities and the Jacobian</b><span>Speeds, forces, lost directions, gimbal lock, redundancy</span><em class="cnt"></em></a><a class="course" href="learn-control.html" data-prefix="ctrl-" data-total="12" data-key="ctrl"><b>Dynamics, actuators and control</b><span>Motors, sensors, PID, computed torque, force control, trajectories</span><em class="cnt"></em></a><a class="course" href="learn-intelligence.html" data-prefix="ai-" data-total="9" data-key="ai"><b>Perception, planning and AI</b><span>Vision, Kalman, SLAM, A*, RRT, learning, multi-robot</span><em class="cnt"></em></a><a class="course" href="learn-world.html" data-prefix="world-" data-total="9" data-key="world"><b>Robots in the real world</b><span>Every robot family, grippers, electronics, ROS, safety, careers</span><em class="cnt"></em></a><a class="course" href="learn-armlab.html" data-prefix="lab-" data-total="6" data-key="armlab"><b>Code a robot arm in Python</b><span>FK, a DH engine, exact and numerical IK, trajectories, a real servo arm, exam and labs</span><em class="cnt"></em></a><a class="course current" href="learn-advanced.html" data-prefix="adv-" data-total="7" data-key="adv"><b>Advanced robotics (Master)</b><span>Parallel robots, LQR, MPC, legged and aerial robots, vision in practice, reinforcement learning</span><em class="cnt"></em></a><a class="course" href="learn-ros.html" data-prefix="ros-" data-total="9" data-key="ros"><b>ROS 2 from zero</b><span>Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project</span><em class="cnt"></em></a><a class="course" href="learn-mobile.html" data-prefix="wmr-" data-total="20" data-key="wmr"><b>Wheeled mobile robots</b><span>From zero to professional: every drive, control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs</span><em class="cnt"></em></a></nav>
+    <section class="intro">
+<div class="box idea"><div class="bt">Prerequisites</div><div class="bb"><p>This course assumes the maths course (matrices, frames, derivatives, probability, quaternions), the modelling course (DH, MGD, MGI, Jacobian) and the control course (dynamics, transfer functions, state space, PID). Each lesson says which earlier lesson to review. The lessons are independent: take them in any order.</p></div></div>
+    </section>
+
+    <div class="learn-layout">
+      <aside class="lesson-nav" id="lessonNav" aria-label="Checklist"></aside>
+      <div class="lessons">
+
+        <article class="lesson" id="l1" data-id="adv-1">
+          <header class="lesson-head"><span class="num">1</span><h2>Parallel robots: the Delta and the Stewart platform</h2><span class="time">20 min</span></header>
+          <div class="goal"><b>You will learn</b><p>why closed chains change everything, how to compute the inverse kinematics of a Delta and of a Stewart platform, why their forward kinematics is hard, and their two kinds of singularities.</p></div>
+<h4>1.1 Serial and parallel: the world turned upside down</h4>
+<p>In a <strong>serial</strong> robot the links form one chain from the base to the tool. In a <strong>parallel</strong> robot the tool (the moving platform) is held by <strong>several chains at once</strong>, each with its own motor near the base. The motors do not carry each other: the moving parts are light, so the robot is very fast (Delta: up to 300 picks per minute) and very stiff (Stewart: flight simulators, machine tools).</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"></th><th class="left">Serial robot</th><th class="left">Parallel robot</th></tr><tr><td class="left">Forward kinematics</td><td class="left"><strong>easy</strong>: multiply the matrices</td><td class="left"><strong>hard</strong>: a system of equations with several solutions</td></tr><tr><td class="left">Inverse kinematics</td><td class="left"><strong>hard</strong>: several solutions, often numerical</td><td class="left"><strong>easy</strong>: one independent formula per chain</td></tr><tr><td class="left">Workspace</td><td class="left">large</td><td class="left">small (the intersection of the chains)</td></tr><tr><td class="left">Stiffness, speed</td><td class="left">errors add along the chain</td><td class="left">the chains share the load: stiff and fast</td></tr></table></div>
+<h4>1.2 The Delta robot: inverse kinematics, arm by arm</h4>
+<p>Three motors on the base, at 120° from each other, at a radius <i>R</i>. Each turns an upper arm of length <i>L</i>; a parallelogram of length <i>l</i> links its end to the platform, at a radius <i>r</i> from its centre. The parallelograms keep the platform horizontal: it only translates (3 DOF: <i>x</i>, <i>y</i>, <i>z</i>).</p>
+<p>The key fact: <strong>each arm only sees the point where its forearm meets the platform</strong>. Given the platform position, this point is known, and the motor angle <i>θ</i> must place the elbow at distance <i>l</i> from it. In the plane of the arm (<i>x</i> along the arm, <i>z</i> up), with (<i>x</i><sub>q</sub>, <i>y</i><sub>q</sub>, <i>z</i><sub>q</sub>) the wrist joint seen from the motor axis:</p>
+<p class="eq"><i>k</i> = (<i>x</i><sub>q</sub>² + <i>y</i><sub>q</sub>² + <i>z</i><sub>q</sub>² + <i>L</i>² − <i>l</i>²) / (2<i>L</i>) &emsp;&emsp; <i>ρ</i> = √(<i>x</i><sub>q</sub>² + <i>z</i><sub>q</sub>²) &emsp;&emsp; <i>θ</i> = −atan2(<i>z</i><sub>q</sub>, <i>x</i><sub>q</sub>) − arccos(<i>k</i> / <i>ρ</i>)</p>
+<p>It comes from writing |elbow − wrist|² = <i>l</i>² and grouping the terms in cos <i>θ</i> and sin <i>θ</i>. If |<i>k</i>| > <i>ρ</i>, the point is out of reach. The second sign of arccos gives the elbow pointing inwards, which is never used.</p>
+<pre class="code"><code>"""Inverse kinematics of a Delta robot: one closed formula per arm, then a check of every constraint."""
+import numpy as np
+
+R, r = 0.20, 0.05          # radius of the motor circle (base) and of the joint circle (moving platform), m
+L, l = 0.30, 0.60          # upper arm (driven by the motor) and forearm (the parallelogram), m
+PHI = np.radians([0, 120, 240])   # directions of the three arms around the vertical axis
+
+
+def ik(p):
+    """Platform centre p = (x, y, z) -&gt; the three motor angles (rad, positive = arm going down), or None."""
+    angles = []
+    for phi in PHI:
+        c, s = np.cos(phi), np.sin(phi)
+        x, y, z = c * p[0] + s * p[1], -s * p[0] + c * p[1], p[2]   # p seen from the plane of this arm
+        xq, yq, zq = x + r - R, y, z                                  # wrist joint relative to the motor axis
+        k = (xq**2 + yq**2 + zq**2 + L**2 - l**2) / (2 * L)
+        rho = np.hypot(xq, zq)
+        if abs(k) &gt; rho:
+            return None                                              # out of the workspace
+        angles.append(-np.arctan2(zq, xq) - np.arccos(k / rho))      # the elbow pointing outwards
+    return np.array(angles)
+
+
+def check(p, th):
+    """Length of each forearm for the solution: must be exactly l."""
+    out = []
+    for phi, t in zip(PHI, th):
+        c, s = np.cos(phi), np.sin(phi)
+        elbow = np.array([R + L * np.cos(t), 0, -L * np.sin(t)])
+        wrist = np.array([c * p[0] + s * p[1] + r, -s * p[0] + c * p[1], p[2]])
+        out.append(np.linalg.norm(elbow - wrist))
+    return np.array(out)
+
+
+if __name__ == '__main__':
+    np.set_printoptions(precision=4, suppress=True)
+    for p in [(0, 0, -0.6), (0.1, 0, -0.6), (0.05, 0.08, -0.55), (0.6, 0, -0.6)]:
+        th = ik(np.array(p, dtype=float))
+        if th is None:
+            print(f'p = {p}: out of reach')
+        else:
+            print(f'p = {p}: angles = {np.degrees(th)} deg   forearm lengths = {check(np.array(p, float), th)} m')</code></pre>
+<pre class="out"><code>p = (0, 0, -0.6): angles = [31.6843 31.6843 31.6843] deg   forearm lengths = [0.6 0.6 0.6] m
+p = (0.1, 0, -0.6): angles = [19.5999 39.6792 39.6792] deg   forearm lengths = [0.6 0.6 0.6] m
+p = (0.05, 0.08, -0.55): angles = [18.688  19.5434 38.7396] deg   forearm lengths = [0.6 0.6 0.6] m
+p = (0.6, 0, -0.6): out of reach</code></pre>
+<div class="box example"><div class="bt">Read the output</div><div class="bb"><p>With <i>R</i> = 0.2 m, <i>r</i> = 0.05 m, <i>L</i> = 0.3 m, <i>l</i> = 0.6 m and the platform centred at 0.6 m below the base, the three motors are at <strong>31.7°</strong>: by symmetry they must be equal. Moving the platform 10 cm towards arm 1 lifts arm 1 (19.6°) and lowers the two others (39.7°). Every forearm is exactly 0.6 m: the solution respects all the constraints.</p></div></div>
+<h4>1.3 The Stewart platform: six legs, six lengths</h4>
+<p>Six linear actuators (legs) link the base to a platform that can move in all 6 directions. Its inverse kinematics is the simplest of all robots: for a wanted pose (position <strong>p</strong>, rotation <i>R</i>) of the platform, leg <i>i</i> joins the base point <strong>a</strong><sub>i</sub> to the platform point <strong>b</strong><sub>i</sub>, so its length is:</p>
+<p class="eq"><i>ℓ</i><sub>i</sub> = ‖ <strong>p</strong> + <i>R</i> <strong>b</strong><sub>i</sub> − <strong>a</strong><sub>i</sub> ‖</p>
+<p>Example: <strong>a</strong> = (0.5, 0, 0), <strong>b</strong> = (0.3, 0, 0), platform at <strong>p</strong> = (0, 0, 0.8) without rotation: <i>ℓ</i> = ‖(−0.2, 0, 0.8)‖ = <strong>0.825 m</strong>. Six such lines, and the controller knows the length to give each leg. The forward problem (six lengths → the pose) can have up to 40 solutions and is solved numerically, starting from the last known pose.</p>
+<h4>1.4 Two kinds of singularities</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Kind</th><th class="left">What happens</th><th class="left">Example</th></tr><tr><td class="left"><strong>Serial</strong> (type 1)</td><td class="left">a chain is stretched or folded: the platform <strong>loses</strong> a direction of motion, as in a serial arm</td><td class="left">the edge of the workspace</td></tr><tr><td class="left"><strong>Parallel</strong> (type 2)</td><td class="left">the platform <strong>gains</strong> a free motion even with the motors locked: it can no longer resist a force in that direction</td><td class="left">legs of a Stewart platform all lying in one plane</td></tr></table></div>
+<div class="box warn"><div class="bt">Type 2 is dangerous</div><div class="bb"><p>Near a parallel singularity the motor torques needed to hold a small load become huge, and the robot can collapse or break. Designers choose the dimensions so that these poses lie outside the useful workspace, and the controller checks the distance to them.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>parallel robot</li><li>closed chain</li><li>Delta robot</li><li>Stewart platform</li><li>parallel singularity</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Parallel robot: several chains hold the platform; the motors stay on the base: fast and stiff.</li><li>Inverse kinematics is easy (one formula per chain); forward kinematics is hard (several solutions).</li><li>Stewart: leg length ℓᵢ = ‖p + R bᵢ − aᵢ‖. Beware of parallel (type 2) singularities.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-1"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-1-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">How many degrees of freedom does the platform of a Delta robot have?</p><div class="numin" data-ans="3" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p><b>3</b>: x, y, z. The parallelograms keep it horizontal (a 4th motor in the centre often turns the tool).</p></details>
+</div>
+<div class="ex" data-id="adv-1-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Stewart leg: base point (0.5, 0, 0), platform point (0.3, 0, 0), platform at (0, 0, 1.0) without rotation. Leg length (m)?</p><div class="numin" data-ans="1.019803902718557" data-tol="0.002" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>p + b − a = (−0.2, 0, 1.0); length = √(0.04 + 1) = <b>1.020 m</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-1-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">The Delta of the lesson, platform centred at 0.6 m below the base. All three motors are at the same angle. Why?</p><ol class="opts" type="A"><li data-ok="1">By symmetry: the platform is on the axis, each arm sees the same geometry</li><li>Because the forward model has one solution</li><li>Because the robot is at a singularity</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The three arms are identical and placed at 120°: on the vertical axis each one solves the <b>same equation</b>, so the same angle (31.7°).</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">For a parallel robot, which model is easy: forward or inverse?</p><p class="a">The inverse model: one independent formula per chain. The forward model is a hard system with several solutions.</p></li><li><p class="q">Why can a Delta robot be so fast?</p><p class="a">The motors are fixed on the base; only light arms and a light platform move.</p></li><li><p class="q">What happens at a parallel (type 2) singularity?</p><p class="a">The platform can move even with the motors locked: it can no longer resist a force in that direction.</p></li></ol></details>
+          <p class="try"><a href="delta.html">See the Delta robot in 3D →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l2" data-id="adv-2">
+          <header class="lesson-head"><span class="num">2</span><h2>Optimal control: the LQR</h2><span class="time">18 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what “optimal” means for a controller, how the LQR finds the best gains from two weights, and how to choose them.</p></div>
+<h4>2.1 From tuning to a price</h4>
+<p>A PID is tuned by hand, gain by gain. With many states (positions and speeds of 6 joints, a drone, a balancing robot) this becomes impossible. The <strong>linear quadratic regulator</strong> (LQR) asks a different question: <em>what does an error cost, and what does a command cost?</em> Then it computes the gains that make the total cost as small as possible.</p>
+<p>For a system in state-space form <i>ẋ</i> = <i>A x</i> + <i>B u</i> (control course, lesson 11):</p>
+<p class="eq"><i>J</i> = ∫ ( <i>x</i><sup>T</sup> <i>Q</i> <i>x</i> + <i>u</i><sup>T</sup> <i>R</i> <i>u</i> ) d<i>t</i></p>
+<ul><li><i>Q</i> (a diagonal matrix) = the price of each error: a large <i>Q</i> on the position means “be accurate”.</li><li><i>R</i> = the price of the command: a large <i>R</i> means “save the motors, avoid big torques”.</li></ul>
+<div class="box keep"><div class="bt">The result</div><div class="bb"><p>The best controller is always a simple state feedback <strong><i>u</i> = −<i>K x</i></strong>, with <i>K</i> = <i>R</i><sup>−1</sup> <i>B</i><sup>T</sup> <i>P</i>, where <i>P</i> solves the <strong>Riccati equation</strong>:</p>
+<p class="eq"><i>A</i><sup>T</sup> <i>P</i> + <i>P A</i> − <i>P B R</i><sup>−1</sup> <i>B</i><sup>T</sup> <i>P</i> + <i>Q</i> = 0</p>
+<p>You never solve it by hand: every library has a function (<code>scipy.linalg.solve_continuous_are</code>, <code>lqr</code> in MATLAB). The closed loop is <strong>always stable</strong> when the system is controllable.</p></div></div>
+<h4>2.2 A joint, by LQR</h4>
+<p>A joint driven in acceleration is a double integrator: state = (position error, speed), <i>ẍ</i> = <i>u</i>. The code below integrates the Riccati equation until it stops changing, for three prices of the position error:</p>
+<pre class="code"><code>"""LQR for a joint seen as a double integrator: find the best gains K for u = -K x."""
+import numpy as np
+
+A = np.array([[0.0, 1.0], [0.0, 0.0]])     # x = (position error, speed), x' = A x + B u
+B = np.array([[0.0], [1.0]])               # u = acceleration
+R = np.array([[1.0]])                      # price of the command
+
+for q in [1.0, 100.0, 10000.0]:            # price of the position error
+    Q = np.diag([q, 0.0])
+    P = np.eye(2)
+    for _ in range(200000):                # integrate the Riccati equation until it stops changing
+        dP = A.T @ P + P @ A - P @ B @ np.linalg.inv(R) @ B.T @ P + Q
+        P += 1e-4 * dP
+        if np.abs(dP).max() &lt; 1e-9:
+            break
+    K = np.linalg.inv(R) @ B.T @ P
+    poles = np.linalg.eigvals(A - B @ K)
+    wn = abs(poles[0]); zeta = -poles[0].real / wn
+    print(f'q = {q:7.0f}:  K = [{K[0, 0]:7.3f} {K[0, 1]:6.3f}]   poles = {np.round(poles, 3)}   '
+          f'wn = {wn:5.2f} rad/s   damping = {zeta:.3f}')</code></pre>
+<pre class="out"><code>q =       1:  K = [  1.000  1.414]   poles = [-0.707+0.707j -0.707-0.707j]   wn =  1.00 rad/s   damping = 0.707
+q =     100:  K = [ 10.000  4.472]   poles = [-2.236+2.236j -2.236-2.236j]   wn =  3.16 rad/s   damping = 0.707
+q =   10000:  K = [100.000 14.142]   poles = [-7.071+7.071j -7.071-7.071j]   wn = 10.00 rad/s   damping = 0.707</code></pre>
+<div class="box example"><div class="bt">What it teaches</div><div class="bb"><ul><li>The LQR finds a <strong>PD controller</strong>: <i>K</i> = [<i>K</i><sub>p</sub>, <i>K</i><sub>d</sub>]. For this system, in theory <i>K</i><sub>p</sub> = √(<i>q</i>/<i>r</i>) and <i>K</i><sub>d</sub> = √(2 √(<i>q</i>/<i>r</i>)): 10 and 4.47 for <i>q</i> = 100, as computed.</li><li>Multiplying <i>q</i> by 100 makes the loop 10 times faster (<i>ω</i><sub>n</sub> = 1 → 10 rad/s) and asks for 100 times more gain.</li><li>The damping is always <strong>0.707</strong>: the LQR gives a well-damped loop by itself, with a good phase margin (at least 60° in theory).</li></ul></div></div>
+<h4>2.3 How to choose Q and R</h4>
+<ol><li><strong>Bryson's rule</strong>: put on the diagonal 1 / (largest acceptable value)². If 1 cm of error is the most you accept, <i>Q</i> = 1 / 0.01² = 10 000; if the motor gives at most 5 N·m, <i>R</i> = 1 / 25.</li><li>Simulate, look at the largest command; if it is too big, increase <i>R</i>; if the response is too slow, increase <i>Q</i>.</li><li>The LQR needs the full state: if only positions are measured, an observer (a Kalman filter) estimates the speeds. Together they are called <strong>LQG</strong>.</li></ol>
+<p>Where it is used: balancing robots and Segways, the attitude of drones and satellites, the stabilisation of legged robots around a pose, and as the inner loop of many industrial controllers.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>LQR</li><li>cost function</li><li>Riccati equation</li><li>state feedback</li><li>Bryson's rule</li><li>LQG</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>LQR: minimise ∫ (xᵀQx + uᵀRu) dt; Q = price of the errors, R = price of the commands.</li><li>The optimal controller is u = −K x, K = R⁻¹ Bᵀ P with P from the Riccati equation.</li><li>Bryson's rule: 1 / (largest acceptable value)² on the diagonal.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-2"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-2-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Double integrator, q/r = 400. LQR position gain Kp = √(q/r)?</p><div class="numin" data-ans="20" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>√400 = <b>20</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-2-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Same system: speed gain Kd = √(2 √(q/r))?</p><div class="numin" data-ans="6.324555320336759" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>√(2 × 20) = √40 = <b>6.32</b>. The closed loop has ωn = √20 = 4.47 rad/s and damping 0.707.</p></details>
+</div>
+<div class="ex" data-id="adv-2-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Bryson: the largest acceptable position error is 2 cm. Weight q on the position (in 1/m²)?</p><div class="numin" data-ans="2500" data-tol="1" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>q = 1 / 0.02² = <b>2500</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What do Q and R mean in the LQR cost?</p><p class="a">Q is the price of the errors (states), R the price of the commands.</p></li><li><p class="q">What is the form of the optimal controller?</p><p class="a">A state feedback u = −K x, with K computed from the Riccati equation.</p></li><li><p class="q">The response is too slow. What do you change?</p><p class="a">Increase Q (or decrease R): errors become more expensive than commands.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l3" data-id="adv-3">
+          <header class="lesson-head"><span class="num">3</span><h2>Model predictive control (MPC)</h2><span class="time">18 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how a controller can look into the future, optimise a whole sequence of commands, respect the limits of the motors, and why it has become the standard for legged robots, cars and drones.</p></div>
+<h4>3.1 Plan, act a little, plan again</h4>
+<p>A driver looks at the road ahead, plans how to take the next bend, turns the wheel a little, looks again, and corrects the plan. <strong>MPC</strong> does exactly this, many times per second:</p>
+<ol><li><strong>Predict</strong>: with the model <i>x</i><sub>k+1</sub> = <i>A x</i><sub>k</sub> + <i>B u</i><sub>k</sub>, compute where the robot will be over the next <i>N</i> steps (the <strong>horizon</strong>) for any sequence of commands.</li><li><strong>Optimise</strong>: choose the sequence <i>u</i><sub>0</sub> … <i>u</i><sub>N−1</sub> that minimises a cost (errors and commands, as in the LQR) <strong>while respecting the limits</strong> (torque, speed, obstacles).</li><li><strong>Apply only the first command</strong> <i>u</i><sub>0</sub>, measure the new state, and start again at the next sample.</li></ol>
+<div class="box idea"><div class="bt">The big advantage: constraints</div><div class="bb"><p>A PID or an LQR does not know the limits: when the motor saturates, the loop behaves badly (lesson 12 of the control course and its anti-windup). MPC <strong>plans with the limits</strong>: it knows that the motor cannot give more than 1 rad/s², so it starts braking at the right time.</p></div></div>
+<h4>3.2 A joint with a limited acceleration</h4>
+<p>The joint must go from 0 to 1 rad and stop, with |<i>u</i>| ≤ 1 rad/s², a sample time of 0.1 s and a horizon of 20 steps (2 s). The predictions are stacked into one big matrix equation; the optimisation is a <strong>quadratic programme</strong>, solved here with a simple projected gradient (descend, then clip to the limits):</p>
+<pre class="code"><code>"""Model predictive control of a joint (double integrator) with a limit on the acceleration."""
+import numpy as np
+
+dt, N = 0.1, 20                   # sample time (s) and horizon (steps): the controller looks 2 s ahead
+A = np.array([[1, dt], [0, 1]])   # state x = (position, speed)
+B = np.array([[0.5 * dt**2], [dt]])
+U_MAX = 1.0                       # |acceleration| &lt;= 1 rad/s^2 (the motor limit)
+Q, R_W = np.diag([10.0, 1.0]), 0.1
+
+
+def predict_matrices():
+    """Stack the predictions: X = F x0 + G U over the whole horizon."""
+    F = np.vstack([np.linalg.matrix_power(A, k + 1) for k in range(N)])
+    G = np.zeros((2 * N, N))
+    for k in range(N):
+        for j in range(k + 1):
+            G[2 * k:2 * k + 2, j:j + 1] = np.linalg.matrix_power(A, k - j) @ B
+    return F, G
+
+
+F, G = predict_matrices()
+Qbar = np.kron(np.eye(N), Q)
+H = G.T @ Qbar @ G + R_W * np.eye(N)          # cost = U^T H U + 2 U^T g  (a quadratic programme)
+
+
+def mpc_step(x0, target):
+    g = G.T @ Qbar @ (F @ x0 - np.tile(target, N))
+    U = np.zeros(N)
+    step = 1.0 / np.linalg.eigvalsh(H).max()
+    for _ in range(300):                       # projected gradient: descend, then clip to the limits
+        U = np.clip(U - step * (H @ U + g), -U_MAX, U_MAX)
+    return U[0]                                # apply only the first command, then do it all again
+
+
+if __name__ == '__main__':
+    x, target = np.array([0.0, 0.0]), np.array([1.0, 0.0])    # go from 0 to 1 rad and stop
+    for k in range(41):
+        u = mpc_step(x, target)
+        if k % 5 == 0:
+            print(f't = {k * dt:3.1f} s   position = {x[0]:6.3f} rad   speed = {x[1]:6.3f} rad/s   u = {u:6.3f} rad/s^2')
+        x = A @ x + B[:, 0] * u</code></pre>
+<pre class="out"><code>t = 0.0 s   position =  0.000 rad   speed =  0.000 rad/s   u =  1.000 rad/s^2
+t = 0.5 s   position =  0.125 rad   speed =  0.500 rad/s   u =  1.000 rad/s^2
+t = 1.0 s   position =  0.496 rad   speed =  0.926 rad/s   u = -0.554 rad/s^2
+t = 1.5 s   position =  0.854 rad   speed =  0.471 rad/s   u = -1.000 rad/s^2
+t = 2.0 s   position =  0.984 rad   speed =  0.103 rad/s   u = -0.341 rad/s^2
+t = 2.5 s   position =  1.004 rad   speed =  0.005 rad/s   u = -0.052 rad/s^2
+t = 3.0 s   position =  1.003 rad   speed = -0.005 rad/s   u =  0.004 rad/s^2
+t = 3.5 s   position =  1.001 rad   speed = -0.002 rad/s   u =  0.005 rad/s^2
+t = 4.0 s   position =  1.000 rad   speed = -0.001 rad/s   u =  0.002 rad/s^2</code></pre>
+<div class="box example"><div class="bt">Read the output</div><div class="bb"><p>The controller accelerates at the limit (+1) until about 0.8 s, then brakes, at the limit again (−1) around 1.5 s, and arrives at 1 rad with almost no overshoot (1.004) around 2.5 s. It never asks more than the motor can give: <strong>the constraint is part of the plan</strong>. An LQR with the same weights would ask for more than 1 rad/s² at the start and be clipped.</p></div></div>
+<h4>3.3 In practice</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Question</th><th class="left">Answer</th></tr><tr><td class="left">How long a horizon?</td><td class="left">Long enough to see the end of the manoeuvre (here 2 s to brake); longer costs more computation.</td></tr><tr><td class="left">Is it fast enough?</td><td class="left">Dedicated solvers (OSQP, acados, qpOASES) solve such problems in less than 1 ms: MPC runs at 100 Hz to 1 kHz on legged robots.</td></tr><tr><td class="left">Nonlinear robots?</td><td class="left">Nonlinear MPC uses the full model, or relinearises it at each step.</td></tr><tr><td class="left">What if the model is wrong?</td><td class="left">Replanning at every step corrects small errors; large ones need a better model or a robust MPC.</td></tr></table></div>
+<p>Where it is used: the walking of humanoids and quadrupeds (the next lesson), autonomous cars (lane keeping with steering limits), drones racing through gates, and the path following controller of Nav2 (MPPI).</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>model predictive control (MPC)</li><li>horizon</li><li>receding horizon</li><li>constraint</li><li>quadratic programme</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>MPC: predict over a horizon, optimise the commands under constraints, apply only the first, repeat.</li><li>Its main advantage: the limits of the motors are part of the plan.</li><li>Fast QP solvers run it at 100 Hz to 1 kHz on legged robots, cars and drones.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-3"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-3-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Sample time 0.05 s, horizon 40 steps. How far ahead does the controller look (s)?</p><div class="numin" data-ans="2" data-tol="0.001" data-unit="s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>40 × 0.05 = <b>2 s</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-3-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">|acceleration| ≤ 1 rad/s². Shortest time to go from rest to rest over 1 rad (bang-bang, s)?</p><div class="numin" data-ans="2" data-tol="0.01" data-unit="s"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Accelerate over half the distance, brake over the other half: 0.5 = ½ a t².</p></details><details class="sol"><summary>Solution</summary><p>Each half: t = √(2 × 0.5 / 1) = 1 s, so <b>2 s</b> in total. The MPC of the lesson arrives in about 2.5 s: close to this limit, without overshoot.</p></details>
+</div>
+<div class="ex" data-id="adv-3-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Why does MPC replan at every sample instead of executing its whole plan?</p><ol class="opts" type="A"><li data-ok="1">To correct model errors and disturbances with the newest measurement</li><li>Because the solver forgets the plan</li><li>To use less computation</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Replanning closes the loop: the plan always starts from the <b>measured</b> state.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why does MPC apply only the first command of its plan?</p><p class="a">Because it replans at the next sample with the new measurement: this corrects model errors and disturbances.</p></li><li><p class="q">What is the main advantage of MPC over an LQR?</p><p class="a">It takes the limits (constraints) into account in the plan.</p></li><li><p class="q">What does the horizon N set?</p><p class="a">How far ahead the controller looks: long enough to see the manoeuvre, but more computation.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l4" data-id="adv-4">
+          <header class="lesson-head"><span class="num">4</span><h2>Legged robots: balance, ZMP and the inverted pendulum</h2><span class="time">18 min</span></header>
+          <div class="goal"><b>You will learn</b><p>when a legged robot is stable, what the zero moment point is, how the linear inverted pendulum model explains walking, and where to put the foot to stop after a push.</p></div>
+<h4>4.1 Static balance: the support polygon</h4>
+<p>Standing still, a robot is stable if the vertical through its <strong>centre of mass</strong> falls inside the <strong>support polygon</strong>: the convex area drawn by the feet on the ground. A table with four legs has a large polygon; a biped on one foot has a polygon the size of its sole. Slow quadruped gaits keep three feet on the ground and move the body so that this condition always holds.</p>
+<h4>4.2 Dynamic balance: the ZMP</h4>
+<p>When the robot moves, inertia adds to gravity. The <strong>zero moment point</strong> (ZMP) is the point of the ground where the total of gravity and inertia forces has no tipping moment: it is where the ground reaction acts. The rule of all walking controllers since the 1970s: <strong>keep the ZMP inside the support polygon</strong>, and the feet stay flat on the ground.</p>
+<h4>4.3 The linear inverted pendulum</h4>
+<p>Model the robot as a point mass at a constant height <i>z</i><sub>c</sub> above the ground, on a massless leg whose foot is at the ZMP <i>p</i>. The horizontal motion of the centre of mass <i>x</i> becomes linear:</p>
+<p class="eq"><i>ẍ</i> = <i>ω</i>² ( <i>x</i> − <i>p</i> ) &emsp;&emsp; <i>ω</i> = √( <i>g</i> / <i>z</i><sub>c</sub> )</p>
+<p>If the centre of mass is ahead of the foot, it accelerates forward: the robot falls, exponentially, with the time constant 1/<i>ω</i>. For <i>z</i><sub>c</sub> = 0.8 m: <i>ω</i> = 3.50 rad/s, 1/<i>ω</i> = 0.29 s. Walking is a <strong>controlled fall</strong>: the robot falls forward and puts its next foot to catch itself, step after step.</p>
+<figure class="figure"><svg viewBox="0 0 640 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="300" fill="#1b1f25" rx="10"/><line x1="56" y1="24" x2="56" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0</text><line x1="169.2" y1="24" x2="169.2" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="169.2" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.2</text><line x1="282.4" y1="24" x2="282.4" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="282.4" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.4</text><line x1="395.6" y1="24" x2="395.6" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="395.6" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.6</text><line x1="508.8" y1="24" x2="508.8" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="508.8" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">0.8</text><line x1="622" y1="24" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="274" fill="#9fb0c3" font-size="12" text-anchor="middle">1</text><line x1="56" y1="256" x2="622" y2="256" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="260" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="209.6" x2="622" y2="209.6" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="213.6" fill="#9fb0c3" font-size="12" text-anchor="end">0.1</text><line x1="56" y1="163.2" x2="622" y2="163.2" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="167.2" fill="#9fb0c3" font-size="12" text-anchor="end">0.2</text><line x1="56" y1="116.8" x2="622" y2="116.8" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="120.8" fill="#9fb0c3" font-size="12" text-anchor="end">0.3</text><line x1="56" y1="70.4" x2="622" y2="70.4" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="74.4" fill="#9fb0c3" font-size="12" text-anchor="end">0.4</text><line x1="56" y1="24" x2="622" y2="24" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="28" fill="#9fb0c3" font-size="12" text-anchor="end">0.5</text><line x1="56" y1="256" x2="622" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="24" x2="56" y2="256" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,246.7L59.5,246.7L63.1,246.7L66.6,246.7L70.2,246.7L73.7,246.7L77.2,246.6L80.8,246.6L84.3,246.6L87.8,246.5L91.4,246.5L94.9,246.5L98.4,246.4L102,246.3L105.5,246.3L109.1,246.2L112.6,246.1L116.1,246.1L119.7,246L123.2,245.9L126.8,245.8L130.3,245.7L133.8,245.6L137.4,245.5L140.9,245.4L144.4,245.3L148,245.2L151.5,245.1L155.1,244.9L158.6,244.8L162.1,244.6L165.7,244.5L169.2,244.4L172.7,244.2L176.3,244L179.8,243.9L183.4,243.7L186.9,243.5L190.4,243.3L194,243.1L197.5,242.9L201,242.7L204.6,242.5L208.1,242.3L211.7,242.1L215.2,241.8L218.7,241.6L222.3,241.4L225.8,241.1L229.3,240.9L232.9,240.6L236.4,240.3L240,240L243.5,239.8L247,239.5L250.6,239.2L254.1,238.8L257.6,238.5L261.2,238.2L264.7,237.9L268.3,237.5L271.8,237.2L275.3,236.8L278.9,236.4L282.4,236L285.9,235.6L289.5,235.2L293,234.8L296.5,234.4L300.1,234L303.6,233.5L307.2,233.1L310.7,232.6L314.2,232.1L317.8,231.7L321.3,231.2L324.8,230.7L328.4,230.1L331.9,229.6L335.5,229.1L339,228.5L342.5,227.9L346.1,227.3L349.6,226.7L353.2,226.1L356.7,225.5L360.2,224.8L363.8,224.2L367.3,223.5L370.8,222.8L374.4,222.1L377.9,221.4L381.4,220.7L385,219.9L388.5,219.1L392.1,218.3L395.6,217.5L399.1,216.7L402.7,215.9L406.2,215L409.8,214.1L413.3,213.2L416.8,212.3L420.4,211.4L423.9,210.4L427.4,209.4L431,208.4L434.5,207.4L438.1,206.3L441.6,205.2L445.1,204.1L448.7,203L452.2,201.8L455.7,200.6L459.3,199.4L462.8,198.2L466.3,196.9L469.9,195.7L473.4,194.3L477,193L480.5,191.6L484,190.2L487.6,188.8L491.1,187.3L494.7,185.8L498.2,184.2L501.7,182.7L505.3,181.1L508.8,179.4L512.3,177.7L515.9,176L519.4,174.3L523,172.5L526.5,170.6L530,168.7L533.6,166.8L537.1,164.9L540.6,162.9L544.2,160.8L547.7,158.7L551.3,156.6L554.8,154.4L558.3,152.1L561.9,149.9L565.4,147.5L568.9,145.1L572.5,142.7L576,140.2L579.6,137.6L583.1,135L586.6,132.4L590.2,129.6L593.7,126.8L597.2,124L600.8,121.1L604.3,118.1L607.9,115.1L611.4,112L614.9,108.8L618.5,105.5L622,102.2" fill="none" stroke="#ff5c5c" stroke-width="3"/><rect x="66" y="32" width="14" height="4" fill="#ff5c5c"/><text x="86" y="38" fill="#ff5c5c" font-size="13" text-anchor="start">centre of mass 2 cm ahead of the foot</text><text x="622" y="294" fill="#9fb0c3" font-size="13" text-anchor="end">time (s)</text><text x="60" y="19" fill="#9fb0c3" font-size="12" text-anchor="start">x − p (m)</text></svg></figure>
+<h4>4.4 The capture point: where to step</h4>
+<p>Combine position and speed into one number, the <strong>capture point</strong> (or divergent component of motion):</p>
+<p class="eq"><i>ξ</i> = <i>x</i> + <i>ẋ</i> / <i>ω</i></p>
+<p>If the robot puts its foot exactly at <i>ξ</i>, it comes to a stop above it. Example: after a push the centre of mass, above the foot, moves at 0.5 m/s: <i>ξ</i> = 0.5 / 3.50 = <strong>0.14 m</strong>. A step of 14 cm stops the robot; a shorter step does not, and it must step again. This is the logic of push recovery in modern humanoids.</p>
+<h4>4.5 From the model to a walking robot</h4>
+<ol><li><strong>Footstep planner</strong>: where to put the feet (on a map, around obstacles).</li><li><strong>Centre of mass planner</strong>: an MPC on the inverted pendulum (lesson 3) keeps the ZMP in the feet while following the steps.</li><li><strong>Whole-body controller</strong>: turns the wanted motion of the centre of mass and of the feet into joint torques, with the full dynamic model (control course, lesson 10) and the contact forces.</li><li><strong>State estimation</strong>: IMU + joint encoders + contact detection give the pose of the body (a Kalman filter).</li></ol>
+<p>Quadrupeds use the same ideas with trotting gaits (two diagonal feet at once). Recent robots also learn their gaits in simulation with reinforcement learning (lesson 7), with the model-based layers as a safety net.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>support polygon</li><li>zero moment point (ZMP)</li><li>linear inverted pendulum</li><li>capture point</li><li>gait</li><li>whole-body control</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Static balance: the centre of mass above the support polygon. Dynamic balance: the ZMP inside it.</li><li>Linear inverted pendulum: ẍ = ω²(x − p), ω = √(g/z_c): walking is a controlled fall.</li><li>Capture point ξ = x + ẋ/ω: put the foot there to stop.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-4"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-4-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Centre of mass at 0.9 m. ω = √(g/z) in rad/s?</p><div class="numin" data-ans="3.3015148038438356" data-tol="0.01" data-unit="rad/s"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>√(9.81 / 0.9) = <b>3.30 rad/s</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-4-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Same robot, above its foot, pushed to 0.6 m/s. Capture point: how far to step (m)?</p><div class="numin" data-ans="0.1817347598446148" data-tol="0.003" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>ξ = 0.6 / 3.30 = <b>0.182 m</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-4-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A quadruped walks slowly with 3 feet always on the ground. Which kind of balance does it rely on?</p><ol class="opts" type="A"><li data-ok="1">Static: the centre of mass stays above the triangle of the 3 feet</li><li>Dynamic only: it must keep moving</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>A slow 3-legged gait is <b>statically stable</b>: it could stop at any moment. Trotting is dynamic.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">When is a robot standing still statically stable?</p><p class="a">When the vertical through its centre of mass falls inside the support polygon of its feet.</p></li><li><p class="q">Why is walking a “controlled fall”?</p><p class="a">The inverted pendulum is unstable: the robot falls forward and places its next foot to catch itself.</p></li><li><p class="q">What does the capture point tell you?</p><p class="a">Where to put the foot so that the robot comes to a stop above it: ξ = x + ẋ/ω.</p></li></ol></details>
+          <p class="try"><a href="anatomy-humanoid.html">See a humanoid walk in 3D →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l5" data-id="adv-5">
+          <header class="lesson-head"><span class="num">5</span><h2>Aerial robots: how a quadrotor flies and is controlled</h2><span class="time">16 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the forces on a quadrotor, why it is underactuated, how four motor speeds become thrust and torques, and the cascade of controllers that keeps it in the air.</p></div>
+<h4>5.1 Forces and the hover</h4>
+<p>Each propeller gives a thrust <i>f</i><sub>i</sub> = <i>k</i><sub>f</sub> <i>ω</i><sub>i</sub>² (proportional to the square of its speed) and a drag torque <i>k</i><sub>m</sub> <i>ω</i><sub>i</sub>². Two propellers turn clockwise and two anticlockwise, so their drag torques cancel. To hover, the total thrust equals the weight: <i>T</i> = <i>m g</i>. For a 1.2 kg drone: <i>T</i> = <strong>11.8 N</strong>, so <strong>2.94 N</strong> per motor.</p>
+<h4>5.2 Four motors, six degrees of freedom</h4>
+<p>A quadrotor moves in 6 directions (3 positions, 3 angles) with only 4 inputs: it is <strong>underactuated</strong>. It cannot push sideways; to move forward it must <strong>tilt</strong>, so that part of the thrust points forward. With a tilt <i>φ</i> at constant altitude, the horizontal acceleration is <i>a</i> = <i>g</i> tan <i>φ</i>: 10° gives <strong>1.73 m/s²</strong>.</p>
+<h4>5.3 The mixer</h4>
+<p>The flight controller asks for a total thrust <i>T</i> and three torques (roll <i>τ</i><sub>φ</sub>, pitch <i>τ</i><sub>θ</sub>, yaw <i>τ</i><sub>ψ</sub>). For an X frame of arm length <i>d</i>, the four thrusts follow from one 4×4 matrix, inverted once:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">To…</th><th class="left">Do</th></tr><tr><td class="left">climb</td><td class="left">all four motors faster</td></tr><tr><td class="left">roll right</td><td class="left">left motors faster, right motors slower</td></tr><tr><td class="left">pitch forward</td><td class="left">rear motors faster, front motors slower</td></tr><tr><td class="left">turn (yaw)</td><td class="left">the pair turning one way faster, the other pair slower: the drag torques no longer cancel</td></tr></table></div>
+<h4>5.4 The cascade of controllers</h4>
+<ol><li><strong>Position loop</strong> (10 to 50 Hz): position error → wanted acceleration → wanted tilt angles and thrust.</li><li><strong>Attitude loop</strong> (250 Hz to 1 kHz): angle error → wanted angular speeds.</li><li><strong>Rate loop</strong> (1 to 8 kHz): gyroscope → torques → mixer → motor speeds (through the ESCs).</li></ol>
+<div class="box keep"><div class="bt">Why a cascade</div><div class="bb"><p>Each inner loop is 5 to 10 times faster than the one around it (control course, lesson 8). The outer loop can then consider that its order is executed at once. The attitude is estimated by fusing the gyroscope (fast, drifts) and the accelerometer (slow, noisy) with a complementary or Kalman filter, as quaternions (maths course, lesson 11).</p></div></div>
+<p>Open-source autopilots (PX4, ArduPilot, Betaflight) implement exactly this structure and talk to ROS 2. Aggressive flight (racing, perching) replaces the outer loops by MPC on the full model.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>thrust</li><li>underactuated</li><li>mixer</li><li>attitude</li><li>cascade control</li><li>ESC</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Hover: total thrust = m g, shared by the 4 motors; thrust ∝ (speed of the propeller)².</li><li>Underactuated: to move, the drone tilts; a = g tan φ.</li><li>Cascade: position (slow) → attitude → angular rate (fast) → mixer → motors.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-5"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-5-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A 2 kg quadrotor hovers. Thrust per motor (N)?</p><div class="numin" data-ans="4.905" data-tol="0.01" data-unit="N"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>2 × 9.81 / 4 = <b>4.905 N</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-5-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Tilt of 20° at constant altitude. Horizontal acceleration (m/s²)?</p><div class="numin" data-ans="3.570547998151445" data-tol="0.01" data-unit="m/s²"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>9.81 × tan 20° = <b>3.57 m/s²</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-5-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Thrust ∝ ω². To double the thrust of a motor, by how much must its speed be multiplied?</p><div class="numin" data-ans="1.4142135623730951" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>ω² × 2 → ω × √2 ≈ <b>1.414</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why is a quadrotor called underactuated?</p><p class="a">It has 6 degrees of freedom but only 4 inputs: it cannot push sideways and must tilt to move.</p></li><li><p class="q">How does a quadrotor turn around its vertical axis?</p><p class="a">It speeds up the pair of propellers turning one way and slows the other pair: the drag torques no longer cancel.</p></li><li><p class="q">Which loop is the fastest in a flight controller?</p><p class="a">The rate loop (angular speeds from the gyroscope), at kilohertz rates.</p></li></ol></details>
+          <p class="try"><a href="anatomy-quadrotor.html">See a quadrotor fly in 3D →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l6" data-id="adv-6">
+          <header class="lesson-head"><span class="num">6</span><h2>Vision in practice: calibration, markers, hand-eye and point clouds</h2><span class="time">18 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the full chain that lets a robot grasp what a camera sees: intrinsic calibration, pose from markers, hand-eye calibration, and depth images turned into 3D points.</p></div>
+<h4>6.1 The camera matrix</h4>
+<p>A camera projects a point (<i>X</i>, <i>Y</i>, <i>Z</i>), expressed in the camera frame, to the pixel (<i>u</i>, <i>v</i>):</p>
+<p class="eq"><i>u</i> = <i>f</i><sub>x</sub> <i>X</i>/<i>Z</i> + <i>c</i><sub>x</sub> &emsp;&emsp; <i>v</i> = <i>f</i><sub>y</sub> <i>Y</i>/<i>Z</i> + <i>c</i><sub>y</sub> &emsp;&emsp; <i>K</i> = <span class="mx c3"><span><i>f</i><sub>x</sub></span><span>0</span><span><i>c</i><sub>x</sub></span><span>0</span><span><i>f</i><sub>y</sub></span><span><i>c</i><sub>y</sub></span><span>0</span><span>0</span><span>1</span></span></p>
+<p><i>f</i> (in pixels) and the image centre (<i>c</i><sub>x</sub>, <i>c</i><sub>y</sub>) are the <strong>intrinsic parameters</strong>, found once by <strong>calibration</strong>: film a printed checkerboard from 15 to 30 angles, and a library (OpenCV <code>calibrateCamera</code>) finds <i>K</i> and the lens distortion. A good calibration has a reprojection error below 0.5 pixel.</p>
+<h4>6.2 Pose from a marker</h4>
+<p>An <strong>ArUco</strong> or <strong>AprilTag</strong> marker is a black and white square with a known size and a code. The camera finds its four corners in the image; since their 3D positions on the marker are known, solving the <strong>PnP</strong> problem (Perspective-n-Point, OpenCV <code>solvePnP</code>) gives the full pose of the marker in the camera frame: <sup>C</sup><i>T</i><sub>marker</sub>. Markers are used to calibrate, to localise robots, and to find workpieces.</p>
+<h4>6.3 Hand-eye calibration</h4>
+<p>The camera sees the object; the robot must grasp it. We need the transform between the camera and the robot. Two set-ups:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Set-up</th><th class="left">Unknown</th><th class="left">Chain used to grasp</th></tr><tr><td class="left"><strong>Eye-in-hand</strong>: camera on the tool</td><td class="left"><sup>tool</sup><i>T</i><sub>camera</sub></td><td class="left"><sup>base</sup><i>T</i><sub>obj</sub> = <sup>base</sup><i>T</i><sub>tool</sub> · <sup>tool</sup><i>T</i><sub>cam</sub> · <sup>cam</sup><i>T</i><sub>obj</sub></td></tr><tr><td class="left"><strong>Eye-to-hand</strong>: fixed camera</td><td class="left"><sup>base</sup><i>T</i><sub>camera</sub></td><td class="left"><sup>base</sup><i>T</i><sub>obj</sub> = <sup>base</sup><i>T</i><sub>cam</sub> · <sup>cam</sup><i>T</i><sub>obj</sub></td></tr></table></div>
+<p>To find the unknown <i>X</i>, move the robot to 10 to 20 poses while the camera looks at a fixed marker. Between two poses, the motion of the tool <i>A</i> (from the robot) and the motion seen by the camera <i>B</i> satisfy <strong><i>A X</i> = <i>X B</i></strong>, which OpenCV (<code>calibrateHandEye</code>) solves. This is exactly the chain of homogeneous matrices of the maths course, lesson 5.</p>
+<h4>6.4 Depth images and point clouds</h4>
+<p>A depth camera (stereo, structured light, time of flight) gives a distance <i>Z</i> for every pixel. Invert the projection to get a 3D point per pixel: a <strong>point cloud</strong>.</p>
+<p class="eq"><i>X</i> = (<i>u</i> − <i>c</i><sub>x</sub>) <i>Z</i> / <i>f</i><sub>x</sub> &emsp;&emsp; <i>Y</i> = (<i>v</i> − <i>c</i><sub>y</sub>) <i>Z</i> / <i>f</i><sub>y</sub></p>
+<p>Example: <i>f</i> = 600 px, <i>c</i><sub>x</sub> = 320, a pixel at <i>u</i> = 420 with a depth of 0.5 m: <i>X</i> = 100 × 0.5 / 600 = <strong>8.3 cm</strong> to the right of the optical axis.</p>
+<div class="box method"><div class="bt">A typical bin-picking pipeline</div><div class="bb"><ol><li>Point cloud from the depth camera; keep only the points inside the bin (crop).</li><li>Remove the floor or the table: fit a plane with <strong>RANSAC</strong> (try random planes through 3 points, keep the one that fits the most points).</li><li>Split the rest into objects (clustering), or detect them in the colour image with a neural network.</li><li>Compute a grasp pose on the object (centre, surface normal for a suction cup), express it in the robot base with the hand-eye transform, check it with the inverse kinematics, and send it to MoveIt.</li></ol></div></div>
+<p>Libraries: OpenCV (images, calibration, markers), Open3D and PCL (point clouds), and in ROS 2 <code>image_pipeline</code>, <code>aruco_ros</code> and <code>easy_handeye2</code>.</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>intrinsic parameters</li><li>camera calibration</li><li>fiducial marker</li><li>PnP</li><li>hand-eye calibration</li><li>point cloud</li><li>RANSAC</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Intrinsic calibration (checkerboard) gives K: focal length and image centre, plus distortion.</li><li>A marker gives its pose by PnP; hand-eye calibration (A X = X B) links the camera to the robot.</li><li>Depth → point cloud: X = (u − cx) Z / f. RANSAC removes the table; then compute the grasp.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-6"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-6-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">f = 500 px, cx = 320, a pixel at u = 370 with depth 0.8 m. X (m)?</p><div class="numin" data-ans="0.08" data-tol="0.001" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>(370 − 320) × 0.8 / 500 = 50 × 0.8 / 500 = <b>0.08 m</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-6-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">A point at X = 0.1 m, Z = 0.5 m, with f = 600 px and cx = 320. Pixel u?</p><div class="numin" data-ans="440" data-tol="0.5" data-unit="px"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>u = 600 × 0.1 / 0.5 + 320 = 120 + 320 = <b>440</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-6-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">The camera is fixed above the table. Which hand-eye unknown do you calibrate?</p><ol class="opts" type="A"><li data-ok="1">ᵇᵃˢᵉT_camera (eye-to-hand)</li><li>ᵗᵒᵒˡT_camera (eye-in-hand)</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>A fixed camera: find its pose in the <b>robot base</b> (eye-to-hand).</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does the intrinsic calibration of a camera find?</p><p class="a">The focal length in pixels, the image centre and the lens distortion (the matrix K).</p></li><li><p class="q">Why is hand-eye calibration needed?</p><p class="a">To know the transform between the camera and the robot, so that what the camera sees can be expressed in the robot base.</p></li><li><p class="q">What does RANSAC do in a point cloud?</p><p class="a">It fits a model (for example a plane) robustly, by trying random candidates and keeping the one that most points agree with.</p></li></ol></details>
+          <p class="try"><a href="learn-intelligence.html">Review the basics of vision in the perception course →</a></p>
+          <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l7" data-id="adv-7">
+          <header class="lesson-head"><span class="num">7</span><h2>Reinforcement learning for robots</h2><span class="time">18 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the vocabulary of reinforcement learning, the Q-learning update and the policy-gradient idea, how rewards are designed, and how a policy learned in simulation is moved to a real robot.</p></div>
+<h4>7.1 The loop: agent and environment</h4>
+<p>At each step the robot (the <strong>agent</strong>) sees a <strong>state</strong> <i>s</i>, chooses an <strong>action</strong> <i>a</i> with its <strong>policy</strong> <i>π</i>(<i>a</i> | <i>s</i>), and receives a <strong>reward</strong> <i>r</i> and a new state. Its goal: maximise the sum of the future rewards, each discounted by <i>γ</i> per step (0 &lt; <i>γ</i> &lt; 1):</p>
+<p class="eq"><i>G</i> = <i>r</i><sub>0</sub> + <i>γ</i> <i>r</i><sub>1</sub> + <i>γ</i>² <i>r</i><sub>2</sub> + …</p>
+<p>No one tells the robot what the right action is: it learns from the consequences, by trial and error. This is the difference with supervised learning (perception course, lesson 8).</p>
+<h4>7.2 Values and Q-learning</h4>
+<p><i>Q</i>(<i>s</i>, <i>a</i>) is the expected return if the robot takes action <i>a</i> in state <i>s</i> and then acts well. If <i>Q</i> is known, the best action is simply the one with the largest <i>Q</i>. Q-learning improves its estimate after each step:</p>
+<p class="eq"><i>Q</i>(<i>s</i>, <i>a</i>) ← <i>Q</i>(<i>s</i>, <i>a</i>) + <i>α</i> [ <i>r</i> + <i>γ</i> max<sub><i>a</i>′</sub> <i>Q</i>(<i>s</i>′, <i>a</i>′) − <i>Q</i>(<i>s</i>, <i>a</i>) ]</p>
+<p>Example: <i>Q</i> = 2, reward 1, best value of the next state 5, <i>γ</i> = 0.9, learning rate <i>α</i> = 0.1: the target is 1 + 0.9 × 5 = 5.5, the error 3.5, and <i>Q</i> becomes 2 + 0.1 × 3.5 = <strong>2.35</strong>. Repeated millions of times, <i>Q</i> converges. With a neural network instead of a table, this is <strong>DQN</strong>.</p>
+<h4>7.3 Continuous actions: policy gradient</h4>
+<p>Robot joints need continuous actions (torques, target angles), where “max over all actions” is impractical. <strong>Policy-gradient</strong> methods train a neural network that outputs the action directly, and nudge its weights so that actions followed by high returns become more likely. <strong>PPO</strong> (the most used in robotics) and <strong>SAC</strong> are the standard algorithms.</p>
+<h4>7.4 Rewards: say what you want, not how</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Task</th><th class="left">Reward terms</th></tr><tr><td class="left">walk forward</td><td class="left">+ speed towards the target, − energy (Σ τ²), − falls, − jerky joints</td></tr><tr><td class="left">reach a point</td><td class="left">− distance of the tool to the target, + bonus when reached, − collisions</td></tr></table></div>
+<div class="box warn"><div class="bt">Reward hacking</div><div class="bb"><p>The agent maximises exactly what you wrote, not what you meant. Rewarding “speed of the body” only, a simulated robot may learn to throw itself forward or to vibrate in a strange way. Watch the videos of the learned behaviour, and add penalty terms.</p></div></div>
+<h4>7.5 From simulation to the real robot</h4>
+<p>Learning needs millions of trials: on a real robot that would take years and break it. Policies are trained in <strong>simulation</strong> (Isaac Lab, MuJoCo), thousands of robots in parallel on a GPU, in hours. The <strong>sim-to-real gap</strong> (friction, masses, delays, sensor noise differ) is closed by:</p>
+<ul><li><strong>Domain randomisation</strong>: change masses, friction, delays and noise randomly during training, so that the real robot is just one more variation.</li><li><strong>Good actuator models</strong>: learn or measure the real response of the motors and put it in the simulator.</li><li><strong>Safety layers</strong>: limits on torques and speeds, and a classical controller ready to take over.</li></ul>
+<p>This recipe is behind the agile quadrupeds and humanoids of recent years. For manipulation, <strong>imitation learning</strong> from human demonstrations, and foundation models, are often combined with it (perception course, lesson 8).</p>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>agent / environment</li><li>policy</li><li>reward</li><li>Q-learning</li><li>policy gradient (PPO)</li><li>reward hacking</li><li>sim-to-real</li><li>domain randomisation</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Agent, state, action, reward, policy; goal: maximise G = Σ γᵏ rₖ.</li><li>Q-learning: Q ← Q + α (r + γ max Q′ − Q). Continuous actions: policy gradient (PPO, SAC).</li><li>Train in simulation with domain randomisation, then transfer with safety layers.</li></ul></div></div>
+          
+          <section class="exs" data-for="adv-7"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="adv-7-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Rewards 1, 1, 1, 1 with γ = 0.5. Return G?</p><div class="numin" data-ans="1.875" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>1 + 0.5 + 0.25 + 0.125 = <b>1.875</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-7-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Q = 4, r = 0, max Q′ = 6, γ = 0.9, α = 0.5. New Q?</p><div class="numin" data-ans="4.7" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Target 0 + 0.9 × 6 = 5.4; error 1.4; Q = 4 + 0.5 × 1.4 = <b>4.7</b>.</p></details>
+</div>
+<div class="ex" data-id="adv-7-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">A simulated robot rewarded only for forward speed learns to dive forward. What happened?</p><ol class="opts" type="A"><li data-ok="1">Reward hacking: add penalties (falls, energy, posture)</li><li>The simulator has a bug</li><li>The learning rate is too small</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The agent maximised exactly the reward written: <b>reward hacking</b>. Add the terms you forgot.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the difference between reinforcement learning and supervised learning?</p><p class="a">In RL nobody gives the right answer: the agent learns from rewards, by trial and error.</p></li><li><p class="q">Why are robot policies trained in simulation?</p><p class="a">Learning needs millions of trials: in simulation they are fast, parallel and nothing breaks.</p></li><li><p class="q">What is domain randomisation for?</p><p class="a">To make the policy robust to the differences between simulation and reality, by training on many random variations.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="7"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+        <section class="gloss">
+          <h2>Glossary</h2>
+          <p>All the words of the course in one place.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Parallel robot</td><td class="left">A platform held by several chains, each with its motor near the base.</td></tr><tr><td class="left">LQR</td><td class="left">The state feedback u = −K x that minimises a cost on errors (Q) and commands (R).</td></tr><tr><td class="left">MPC</td><td class="left">A controller that optimises a sequence of commands over a horizon, with constraints, and applies the first one.</td></tr><tr><td class="left">ZMP</td><td class="left">The point of the ground where gravity and inertia have no tipping moment; it must stay in the support polygon.</td></tr><tr><td class="left">Capture point</td><td class="left">ξ = x + ẋ/ω: where to put the foot to come to a stop.</td></tr><tr><td class="left">Underactuated</td><td class="left">Fewer inputs than degrees of freedom (a quadrotor: 4 for 6).</td></tr><tr><td class="left">Hand-eye calibration</td><td class="left">Finding the transform between a camera and the robot by solving A X = X B.</td></tr><tr><td class="left">Point cloud</td><td class="left">The 3D points obtained from a depth image.</td></tr><tr><td class="left">Policy</td><td class="left">In reinforcement learning, the rule that chooses the action from the state.</td></tr><tr><td class="left">Sim-to-real</td><td class="left">Moving a policy learned in simulation to the real robot.</td></tr></table></div>
+        </section>
+
+        <section class="finish">
+          <h2>You have reached the frontier of robotics!</h2>
+          <p>From here, read research papers and the documentation of the tools (Pinocchio, OSQP, Isaac Lab, OpenCV), and build: a balancing robot, a small Delta, a vision-guided pick and place.</p>
+          <p class="cta"><a class="btn" href="index.html#road">Back to the roadmap →</a> <a class="btn ghost" href="index.html#road">Home page</a></p>
+        </section>
+      </div>
+    </div>
+    <script src="learn-more-widgets.js" defer></script>
+    <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+  var PREFIX = 'adv-', KEY = 'adv';
+  var lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el, i) { return '<li><a href="#l' + (i + 1) + '" data-i="' + (i + 1) + '"><span class="n">' + (i + 1) + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  function paint() {
+    var done = 0;
+    lessons.forEach(function (el, i) { var ok = P().get(PREFIX + (i + 1)); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + (i + 1) + '"]').parentNode.classList.toggle('done', ok); });
+    document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
+    document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
+    var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total; for (var i = 1; i <= t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+  }
+  document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
+  window.addEventListener('ra-progress', paint); paint();
+  function spy() { var m = window.scrollY + window.innerHeight * 0.3, cur = 1; lessons.forEach(function (el, i) { if (el.offsetTop <= m) cur = i + 1; }); [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i + 1 === cur); }); }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+});
+    </script>
+  </body>
+</html>
