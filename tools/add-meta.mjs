@@ -20,6 +20,7 @@ const DESC = {
   'learn-armlab.html': 'Code a robot arm in Python: forward kinematics, a DH engine, exact and numerical inverse kinematics, trajectories, a real 3-servo arm with an Arduino, an exam and five labs.',
   'learn-advanced.html': 'Advanced robotics at Master level: parallel robots (Delta, Stewart), LQR, model predictive control, legged robots and the ZMP, quadrotors, vision in practice and reinforcement learning.',
   'learn-ros.html': 'ROS 2 from zero: nodes, topics, your first Python nodes, services, actions, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first complete project.',
+  'certificate.html': 'Your Robotics Atlas certificates: finish a course and get a certificate with your name, to print or save as PDF. Save or restore your progress.',
   'build.html': 'A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',
   'gantry.html': 'Interactive 3D Cartesian gantry robot with three sliding axes: kinematics, workspace and pick and place.',

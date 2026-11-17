@@ -39,10 +39,10 @@
   ];
   window.RA_SOCIAL = SOCIAL;
   const UI = {
-    en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', anatomy: 'Anatomy in 3D', build: 'Build' },
-    fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', anatomy: 'Anatomie en 3D', build: 'Construire' }
+    en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', anatomy: 'Anatomy in 3D', build: 'Build' },
+    fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -95,9 +95,78 @@
     set(id, v) { const o = this.all(); if (v) o[id] = 1; else delete o[id]; store.set(PROG, JSON.stringify(o)); window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id, v: !!v } })); },
     clear(ids) { const o = this.all(); ids.forEach((i) => delete o[i]); store.set(PROG, JSON.stringify(o)); window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); }
   };
+  // save / restore everything the visitor did (progress, quiz answers, exercises, name for the certificates) as one file or one code
+  const KEEP = (k) => /^ra-/.test(k) && !/^ra-(lang|theme|cur:)/.test(k);
+  RA.backup = {
+    dump() {
+      const data = {};
+      try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (KEEP(k)) data[k] = localStorage.getItem(k); } } catch (e) { /* private mode */ }
+      return { app: 'robotics-atlas', v: 1, date: new Date().toISOString().slice(0, 10), data };
+    },
+    code() { return btoa(unescape(encodeURIComponent(JSON.stringify(this.dump())))); },
+    // merges a backup into this browser: finished items are added (never removed), the other keys are replaced
+    restore(input) {
+      let o = input;
+      if (typeof o === 'string') {
+        const t = o.trim();
+        try { o = JSON.parse(t.charAt(0) === '{' ? t : decodeURIComponent(escape(atob(t.replace(/\s+/g, ''))))); } catch (e) { return 0; }
+      }
+      if (!o || o.app !== 'robotics-atlas' || !o.data || typeof o.data !== 'object') return 0;
+      let n = 0;
+      Object.keys(o.data).forEach((k) => {
+        if (!KEEP(k) || typeof o.data[k] !== 'string') return;
+        let v = o.data[k];
+        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert') {
+          try { const cur = JSON.parse(store.get(k) || '{}') || {}, add = JSON.parse(v) || {}; v = JSON.stringify(Object.assign(cur, add)); } catch (e) { return; }
+        }
+        store.set(k, v); n++;
+      });
+      window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } }));
+      return n;
+    }
+  };
+  // the "save my progress" panel (home roadmap, certificate page)
+  RA.backupPanel = function (host) {
+    const fr = RA.lang === 'fr', L = (en, f) => (fr ? f : en);
+    const d = document.createElement('details');
+    d.className = 'backup ra-own';
+    d.innerHTML = `<summary>💾 ${L('Save or restore my progress', 'Sauvegarder ou restaurer ma progression')}</summary><div class="bk-body">` +
+      `<p>${L('Your progress (finished lessons and pages, quiz answers, exercises) is kept only in this browser. Save it to a file, or copy a code, to keep it or move it to another device.', 'Votre progression (leçons et pages terminées, réponses aux quiz, exercices) est gardée seulement dans ce navigateur. Sauvegardez-la dans un fichier, ou copiez un code, pour la garder ou la passer sur un autre appareil.')}</p>` +
+      `<div class="bk-row"><button type="button" class="btn" data-a="file">${L('Download my progress (file)', 'Télécharger ma progression (fichier)')}</button><label class="btn ghost" style="cursor:pointer">${L('Restore from a file', 'Restaurer depuis un fichier')}<input type="file" accept=".json,application/json" hidden></label></div>` +
+      `<div class="bk-row"><button type="button" class="btn ghost" data-a="copy">${L('Copy my progress code', 'Copier mon code de progression')}</button><button type="button" class="btn ghost" data-a="paste">${L('Restore from a code', 'Restaurer depuis un code')}</button></div>` +
+      `<textarea hidden spellcheck="false" aria-label="${L('Progress code', 'Code de progression')}"></textarea><p class="bk-msg" aria-live="polite"></p></div>`;
+    const ta = d.querySelector('textarea'), msg = d.querySelector('.bk-msg');
+    const say = (t, ok) => { msg.textContent = t; msg.className = 'bk-msg ' + (ok ? 'ok' : 'bad'); };
+    const count = () => Object.keys(RA.progress.all()).length;
+    const done = (n) => n ? say(L(`Progress restored: ${count()} items finished.`, `Progression restaurée : ${count()} éléments terminés.`), true) : say(L('This is not a Robotics Atlas progress file or code.', "Ce n'est pas un fichier ou un code de progression Robotics Atlas."), false);
+    d.addEventListener('click', (e) => {
+      const a = e.target.closest('button[data-a]'); if (!a) return;
+      if (a.dataset.a === 'file') {
+        const b = new Blob([JSON.stringify(RA.backup.dump(), null, 1)], { type: 'application/json' });
+        const u = URL.createObjectURL(b), l = document.createElement('a');
+        l.href = u; l.download = `robotics-atlas-progress-${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(l); l.click(); l.remove();
+        setTimeout(() => URL.revokeObjectURL(u), 1000);
+        say(L(`File saved (${count()} items finished).`, `Fichier enregistré (${count()} éléments terminés).`), true);
+      } else if (a.dataset.a === 'copy') {
+        ta.hidden = false; ta.value = RA.backup.code(); ta.select();
+        const ok = () => say(L('Code copied. Paste it on your other device, in "Restore from a code".', 'Code copié. Collez-le sur votre autre appareil, dans « Restaurer depuis un code ».'), true);
+        if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(ok, () => say(L('Select the code above and copy it.', 'Sélectionnez le code ci-dessus et copiez-le.'), true));
+        else { try { document.execCommand('copy'); ok(); } catch (er) { say(L('Select the code above and copy it.', 'Sélectionnez le code ci-dessus et copiez-le.'), true); } }
+      } else if (a.dataset.a === 'paste') {
+        if (ta.hidden || !ta.value.trim()) { ta.hidden = false; ta.value = ''; ta.placeholder = L('Paste your code here, then press the button again.', 'Collez votre code ici, puis appuyez de nouveau sur le bouton.'); ta.focus(); say('', true); return; }
+        done(RA.backup.restore(ta.value));
+      }
+    });
+    d.querySelector('input[type=file]').addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      const r = new FileReader(); r.onload = () => done(RA.backup.restore(String(r.result))); r.readAsText(f); e.target.value = '';
+    });
+    host.appendChild(d);
+    return d;
+  };
   window.addEventListener('storage', (e) => { if (e.key === PROG) window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); });
   const SKIP = /^(SCRIPT|STYLE|SVG|CANVAS|TEXTAREA|NOSCRIPT|PRE|CODE)$/i;
-  const mine = (el) => el.classList && (el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top'));
+  const mine = (el) => el.classList && (el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.classList.contains('ra-own'));   // ra-own: built in the right language by its own script
   const inSvg = (n) => { const e = n.nodeType === 1 ? n : n.parentNode; return !!(e && e.closest && e.closest('svg')); };
   const INLINE = /^(STRONG|EM|B|I|CODE|SUB|SUP|BR|SMALL|SPAN|A|KBD|MARK|ABBR|U)$/;
   // a block we can replace as a whole: only text and inline markup inside, no element that the page's JavaScript may hold on to
@@ -207,6 +276,7 @@
       (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
       ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
+      `<button class="icon-btn search-btn" type="button" aria-label="${ui.search}" title="${ui.search}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>` +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
       `<button class="icon-btn theme-btn" type="button" aria-label="${ui.theme}" title="${ui.theme}"></button>` +
       `<button class="icon-btn nav-toggle" type="button" aria-label="${ui.menu}" aria-expanded="false">☰</button></div></div>`;
@@ -231,6 +301,25 @@
       ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
       document.addEventListener('click', () => { dd.classList.remove('open'); ddBtn.setAttribute('aria-expanded', 'false'); });
     }
+    // the search: search.js is loaded the first time it is opened
+    const openSearch = (q) => {
+      if (RA.openSearch) return RA.openSearch(q);
+      const sc = document.createElement('script'); sc.src = 'search.js'; sc.onload = () => RA.openSearch && RA.openSearch(q); document.head.appendChild(sc);
+    };
+    nav.querySelector('.search-btn').addEventListener('click', () => { nav.classList.remove('open'); openSearch(); });
+    document.addEventListener('keydown', (e) => {
+      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || '')) || e.target.isContentEditable;
+      if (((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) || (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey)) { e.preventDefault(); openSearch(); }
+    });
+    const q0 = new URLSearchParams(location.search).get('q'); if (q0) openSearch(q0);
+    // course pages: a link to the certificate after the last lesson
+    const cta = document.querySelector('.finish .cta'), curCard = document.querySelector('.courses .course.current');
+    if (cta && curCard) {
+      const c = document.createElement('p');
+      c.className = 'cta cert-cta ra-own';
+      c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a>`;
+      cta.after(c);
+    }
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (dd) dd.classList.remove('open'); nav.classList.remove('open'); } });
 
     const foot = document.createElement('footer');
@@ -245,7 +334,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="certificate.html">${ui.certs}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {
