@@ -268,13 +268,20 @@
   // Every 3D scene calls RA.darkParts(scene). In dark mode, any black or very dark part of a robot (caps, tyres, forks,
   // frames, arrows) is shown light grey, so that it stands out on the night background; in light mode its own colour
   // comes back. Floors, grids, shadows and the colours the code changes on purpose (highlights) are left alone.
-  RA.darkParts = function (scene) {
+  RA.darkParts = function (scene, opts) {
     if (!scene || !scene.traverse) return;
+    let rim = null;                                                        // dark mode: a cool back light that draws the outline of the parts (black tyres too)
     const KEEP = new Set(['1d2638', '253047', '2a3550', '242f44', '27324a', '2b2e33', '262626', '0e1420', '4b5870', '3d4b66']);   // floors and pads
     const lum = (h) => { const v = [0, 2, 4].map((i) => parseInt(h.substr(i, 2), 16) / 255); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
     const dark = () => (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const apply = () => {
-      const D = dark();
+      const D = dark(); let changed = false;
+      if (!rim) {                                                            // made from the key light of the scene (no need to import three.js here)
+        let key = null; scene.traverse((o) => { if (!key && o.isDirectionalLight && !o.userData.raRim) key = o; });
+        // low and behind the scene: it grazes the edges of the parts, not the floor
+        if (key) { rim = key.clone(); rim.userData.raRim = true; rim.castShadow = false; rim.color.set('#a9c4ff'); rim.position.set(-key.position.x, Math.abs(key.position.y) * 0.1 + 0.1, -key.position.z); rim.userData.k = key; scene.add(rim); }
+      }
+      if (rim) rim.intensity = D ? Math.min(0.9, rim.userData.k.intensity * 0.5) : 0;
       scene.traverse((o) => {
         if (!o.material || o.isGridHelper || o.userData.raKeep) return;
         const g = o.geometry && o.geometry.type; if (g === 'PlaneGeometry' || g === 'PlaneBufferGeometry') return;
@@ -286,9 +293,10 @@
           if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.06 ? '6f7a8a' : '8a94a3'; }   // graphite: visible, but still darker than the light links
           if (!u.raLight) return;
           const cur = col.getHexString();
-          if (D && cur === u.raDark) col.set('#' + u.raLight); else if (!D && cur === u.raLight) col.set('#' + u.raDark);
+          if (D && cur === u.raDark) { col.set('#' + u.raLight); changed = true; } else if (!D && cur === u.raLight) { col.set('#' + u.raDark); changed = true; }
         });
       });
+      if (changed && opts && opts.onChange) opts.onChange();                 // scenes that recompute their colours from a base (home gallery)
     };
     apply();
     new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
