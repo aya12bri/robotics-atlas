@@ -1358,3 +1358,35 @@ html.rs-open { overflow: hidden; }
 .linkish:hover { color: var(--text); background: none; }
 @media (max-width: 900px) { .tool-row { grid-template-columns: 1fr 1fr; } .tool-row > :first-child { grid-column: 1 / -1; } .tool-row.two > :first-child { grid-column: auto; } }
 @media (max-width: 640px) { .tool-row, .tool-row.two { grid-template-columns: 1fr; } }
+
+/* ---- general glossary (glossary.html) ---- */
+.gl-page { padding-bottom: 3rem; }
+.gl-tools { position: sticky; top: 76px; z-index: 5; display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.4rem 0 0.8rem; padding: 0.6rem; border-radius: 14px; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(8px); border: 1px solid var(--border); }
+.gl-search { flex: 1 1 18rem; display: flex; align-items: center; gap: 0.5rem; padding: 0 0.8rem; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); }
+.gl-search svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+.gl-search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; color: var(--text); font: 500 1rem var(--font); padding: 0.62rem 0; }
+.gl-search:focus-within { border-color: var(--accent); }
+.gl-tools select { flex: 0 1 16rem; min-width: 0; font: 500 0.92rem var(--font); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.55rem 0.7rem; }
+.gl-az { display: flex; flex-wrap: wrap; gap: 0.2rem; margin: 0.4rem 0 0.2rem; font-family: var(--mono); font-size: 0.85rem; }
+.gl-az a, .gl-az span { width: 1.9rem; height: 1.9rem; display: grid; place-items: center; border-radius: 8px; }
+.gl-az a { color: var(--accent); text-decoration: none; background: color-mix(in srgb, var(--accent) 10%, transparent); font-weight: 600; }
+.gl-az a:hover { background: var(--btn); color: #fff; }
+.gl-az span { color: color-mix(in srgb, var(--muted) 55%, transparent); }
+.gl-count { color: var(--muted); font-size: 0.85rem; margin: 0.5rem 0 0; }
+.gl-letter { font: 800 2rem var(--display); color: var(--accent); margin: 1.8rem 0 0.7rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); scroll-margin-top: 150px; }
+.gl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0.8rem; margin-top: 0.8rem; }
+.gl-item { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.95rem 1.1rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); scroll-margin-top: 160px; }
+.gl-item.flash { animation: tc-flash 2s ease; }
+.gl-item h3 { margin: 0; font-size: 1.05rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.6rem; }
+.gl-anchor { color: var(--text); text-decoration: none; }
+.gl-anchor:hover { color: var(--accent); }
+.gl-other { font: 500 0.72rem var(--mono); color: var(--muted); }
+.gl-def { margin: 0; color: var(--text); font-size: 0.92rem; line-height: 1.55; max-width: none; }
+.gl-src { margin: auto 0 0; padding-top: 0.35rem; display: flex; flex-direction: column; gap: 0.3rem; max-width: none; }
+.gl-src a { display: flex; flex-direction: column; padding: 0.4rem 0.6rem; border-radius: 9px; text-decoration: none; background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); }
+.gl-src a:hover { border-color: var(--accent); }
+.gl-src b { font-size: 0.78rem; color: var(--accent); font-weight: 600; }
+.gl-src span { font-size: 0.8rem; color: var(--muted); }
+.gl-none { color: var(--muted); }
+.gloss .gl-link { margin: 0.4rem 0 0.8rem; }
+@media (max-width: 640px) { .gl-tools { position: static; padding: 0; border: 0; background: none; backdrop-filter: none; } .gl-tools select { flex: 1 1 100%; } .gl-grid { grid-template-columns: 1fr; } .gl-az a, .gl-az span { width: 1.7rem; height: 1.7rem; } }
