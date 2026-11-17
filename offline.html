@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html data-page="offline">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>You are offline · Robotics Atlas</title>
+    <!-- seo -->
+    <meta name="description" content="You are offline. The pages of Robotics Atlas you already opened, or downloaded, can still be read here." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/offline" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="You are offline · Robotics Atlas" />
+    <meta property="og:description" content="You are offline. The pages of Robotics Atlas you already opened, or downloaded, can still be read here." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/offline" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/nav.js" defer></script>
+  </head>
+  <body>
+    <main id="off" class="off-page ra-own">
+      <h1>You are offline</h1>
+      <p class="lead">This page has not been saved on this device yet. The pages you already opened can still be read.</p>
+    </main>
+    <script src="/search-index.js" defer></script>
+    <script>
+      // the pages stored on this device, with their titles in the visitor's language
+      document.addEventListener('DOMContentLoaded', async function () {
+        var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+        var main = document.getElementById('off');
+        document.title = L('You are offline', 'Vous êtes hors ligne') + ' · Robotics Atlas';
+        var titles = {};
+        (window.RA_SEARCH || []).forEach(function (e) { if (e.u.indexOf('#') < 0) titles['/' + e.u + '.html'] = e.p[FR ? 1 : 0] === 'Robotics Atlas' ? e.t[FR ? 1 : 0] : e.p[FR ? 1 : 0]; });
+        var pages = [];
+        try {
+          var cache = await caches.open('ra-site');
+          pages = (await cache.keys()).map(function (r) { return new URL(r.url).pathname; })
+            .filter(function (k) { return k.endsWith('.html') && k !== '/offline.html' && k !== '/404.html'; }).sort();
+        } catch (e) { /* no cache storage */ }
+        var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+        main.innerHTML = '<h1>' + L('You are offline', 'Vous êtes hors ligne') + '</h1>' +
+          '<p class="lead">' + L('This page has not been saved on this device yet. Here are the pages you can read without a connection. When the connection comes back, reload the page.', 'Cette page n\'est pas encore enregistrée sur cet appareil. Voici les pages que vous pouvez lire sans connexion. Quand la connexion revient, rechargez la page.') + '</p>' +
+          '<p class="cta"><button type="button" class="btn" id="offReload">' + L('Try again', 'Réessayer') + '</button> <a class="btn ghost" href="/">' + L('Home', 'Accueil') + '</a></p>' +
+          (pages.length ? '<h2>' + L('Available offline', 'Disponible hors ligne') + ' (' + pages.length + ')</h2><ul class="off-list">' + pages.map(function (k) { return '<li><a href="' + k + '">' + esc(titles[k] || k.slice(1).replace('.html', '')) + '</a></li>'; }).join('') + '</ul>' : '') +
+          '<p class="off-tip">' + L('Tip: once back online, open the home page, then "Offline mode" under the roadmap, to download the whole site on this device.', 'Astuce : une fois en ligne, ouvrez la page d\'accueil, puis « Mode hors ligne » sous le parcours, pour télécharger tout le site sur cet appareil.') + '</p>';
+        document.getElementById('offReload').addEventListener('click', function () { location.reload(); });
+      });
+    </script>
+  </body>
+</html>

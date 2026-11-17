@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -125,44 +125,142 @@
       return n;
     }
   };
-  // the "save my progress" panel (home roadmap, certificate page)
+  // ---------------------------------------------------------------- the "tool cards" (home roadmap, certificate page)
+  const ICON = {
+    cert: '<path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="m8.5 14 -1.5 7 5-2.5 5 2.5-1.5-7"/>',
+    save: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
+    off: '<path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12a10 10 0 0 1 13 0"/><path d="M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/>'
+  };
+  // one card: an icon, a small label, a title, a text, a line of status, and the actions
+  RA.toolCard = function (host, kind, tag, title, text) {
+    const c = document.createElement('article');
+    c.className = 'tool-card ra-own'; c.dataset.kind = kind;
+    c.innerHTML = `<div class="tc-top"><span class="tc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[kind]}</svg></span><span class="rm-tag">${tag}</span></div>` +
+      `<h3>${title}</h3><p class="tc-text">${text}</p><div class="tc-status"></div><div class="tc-act"></div><div class="tc-more"></div>`;
+    host.appendChild(c);
+    return c;
+  };
+  // the status is bottom-aligned in its box: its first (inline) part goes in one line block
+  const tcStatus = (c, html, cls) => {
+    const s = c.querySelector('.tc-status');
+    s.innerHTML = html.replace(/^([\s\S]*?)(?=<span class="tc-sub"|<div class="tc-bar"|$)/, '<div class="tc-line">$1</div>');
+    s.className = 'tc-status' + (cls ? ' ' + cls : '');
+  };
+  RA.toolStatus = tcStatus;
+  const bar = (pct, cls) => `<div class="tc-bar${cls ? ' ' + cls : ''}"><i style="width:${Math.max(0, Math.min(100, pct))}%"></i></div>`;
+
+  // save / restore the progress
   RA.backupPanel = function (host) {
     const fr = RA.lang === 'fr', L = (en, f) => (fr ? f : en);
-    const d = document.createElement('details');
-    d.className = 'backup ra-own';
-    d.innerHTML = `<summary>💾 ${L('Save or restore my progress', 'Sauvegarder ou restaurer ma progression')}</summary><div class="bk-body">` +
-      `<p>${L('Your progress (finished lessons and pages, quiz answers, exercises) is kept only in this browser. Save it to a file, or copy a code, to keep it or move it to another device.', 'Votre progression (leçons et pages terminées, réponses aux quiz, exercices) est gardée seulement dans ce navigateur. Sauvegardez-la dans un fichier, ou copiez un code, pour la garder ou la passer sur un autre appareil.')}</p>` +
-      `<div class="bk-row"><button type="button" class="btn" data-a="file">${L('Download my progress (file)', 'Télécharger ma progression (fichier)')}</button><label class="btn ghost" style="cursor:pointer">${L('Restore from a file', 'Restaurer depuis un fichier')}<input type="file" accept=".json,application/json" hidden></label></div>` +
-      `<div class="bk-row"><button type="button" class="btn ghost" data-a="copy">${L('Copy my progress code', 'Copier mon code de progression')}</button><button type="button" class="btn ghost" data-a="paste">${L('Restore from a code', 'Restaurer depuis un code')}</button></div>` +
-      `<textarea hidden spellcheck="false" aria-label="${L('Progress code', 'Code de progression')}"></textarea><p class="bk-msg" aria-live="polite"></p></div>`;
-    const ta = d.querySelector('textarea'), msg = d.querySelector('.bk-msg');
-    const say = (t, ok) => { msg.textContent = t; msg.className = 'bk-msg ' + (ok ? 'ok' : 'bad'); };
+    const c = RA.toolCard(host, 'save', L('Progress', 'Progression'), L('Save my progress', 'Sauvegarder ma progression'),
+      L('Your progress is kept only in this browser. Save it to keep it, or to continue on another device.', 'Votre progression est gardée seulement dans ce navigateur. Sauvegardez-la pour la garder, ou pour continuer sur un autre appareil.'));
+    c.id = 'backup';
+    c.querySelector('.tc-act').innerHTML = `<button type="button" class="btn sm" data-a="file">${L('Download', 'Télécharger')}</button>` +
+      `<label class="btn sm ghost">${L('Restore', 'Restaurer')}<input type="file" accept=".json,application/json" hidden></label>`;
+    const more = c.querySelector('.tc-more');
+    more.innerHTML = `<p class="tc-links">${L('By code:', 'Par code :')} <button type="button" class="linkish" data-a="copy">${L('copy my code', 'copier mon code')}</button> · <button type="button" class="linkish" data-a="paste">${L('paste a code', 'coller un code')}</button></p>` +
+      `<div class="tc-code" hidden><textarea spellcheck="false" aria-label="${L('Progress code', 'Code de progression')}"></textarea><button type="button" class="btn sm" data-a="apply" hidden>${L('Restore this code', 'Restaurer ce code')}</button></div>`;
+    const box = more.querySelector('.tc-code'), ta = box.querySelector('textarea'), apply = box.querySelector('[data-a=apply]');
     const count = () => Object.keys(RA.progress.all()).length;
-    const done = (n) => n ? say(L(`Progress restored: ${count()} items finished.`, `Progression restaurée : ${count()} éléments terminés.`), true) : say(L('This is not a Robotics Atlas progress file or code.', "Ce n'est pas un fichier ou un code de progression Robotics Atlas."), false);
-    d.addEventListener('click', (e) => {
+    const idle = () => tcStatus(c, `<b>${count()}</b> ${L(count() > 1 ? 'pages and lessons finished' : 'page or lesson finished', count() > 1 ? 'pages et leçons terminées' : 'page ou leçon terminée')}`);
+    const say = (t, ok) => tcStatus(c, t, ok ? 'ok' : 'bad');
+    const done = (n) => n ? say('✓ ' + L(`Progress restored: ${count()} finished.`, `Progression restaurée : ${count()} terminées.`), true) : say(L('This is not a Robotics Atlas progress file or code.', "Ce n'est pas un fichier ou un code de progression Robotics Atlas."), false);
+    c.addEventListener('click', (e) => {
       const a = e.target.closest('button[data-a]'); if (!a) return;
       if (a.dataset.a === 'file') {
         const b = new Blob([JSON.stringify(RA.backup.dump(), null, 1)], { type: 'application/json' });
         const u = URL.createObjectURL(b), l = document.createElement('a');
         l.href = u; l.download = `robotics-atlas-progress-${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(l); l.click(); l.remove();
         setTimeout(() => URL.revokeObjectURL(u), 1000);
-        say(L(`File saved (${count()} items finished).`, `Fichier enregistré (${count()} éléments terminés).`), true);
+        say('✓ ' + L('File saved. Open it with "Restore" on your other device.', 'Fichier enregistré. Ouvrez-le avec « Restaurer » sur votre autre appareil.'), true);
       } else if (a.dataset.a === 'copy') {
-        ta.hidden = false; ta.value = RA.backup.code(); ta.select();
-        const ok = () => say(L('Code copied. Paste it on your other device, in "Restore from a code".', 'Code copié. Collez-le sur votre autre appareil, dans « Restaurer depuis un code ».'), true);
-        if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(ok, () => say(L('Select the code above and copy it.', 'Sélectionnez le code ci-dessus et copiez-le.'), true));
-        else { try { document.execCommand('copy'); ok(); } catch (er) { say(L('Select the code above and copy it.', 'Sélectionnez le code ci-dessus et copiez-le.'), true); } }
+        box.hidden = false; apply.hidden = true; ta.value = RA.backup.code(); ta.readOnly = true; ta.select();
+        const ok = () => say('✓ ' + L('Code copied. Paste it on your other device.', 'Code copié. Collez-le sur votre autre appareil.'), true);
+        if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(ok, () => say(L('Select the code and copy it.', 'Sélectionnez le code et copiez-le.'), true));
+        else ok();
       } else if (a.dataset.a === 'paste') {
-        if (ta.hidden || !ta.value.trim()) { ta.hidden = false; ta.value = ''; ta.placeholder = L('Paste your code here, then press the button again.', 'Collez votre code ici, puis appuyez de nouveau sur le bouton.'); ta.focus(); say('', true); return; }
-        done(RA.backup.restore(ta.value));
+        box.hidden = false; apply.hidden = false; ta.readOnly = false; ta.value = ''; ta.placeholder = L('Paste your code here', 'Collez votre code ici'); ta.focus(); idle();
+      } else if (a.dataset.a === 'apply') {
+        done(RA.backup.restore(ta.value)); if (count()) { box.hidden = true; }
       }
     });
-    d.querySelector('input[type=file]').addEventListener('change', (e) => {
+    c.querySelector('input[type=file]').addEventListener('change', (e) => {
       const f = e.target.files && e.target.files[0]; if (!f) return;
       const r = new FileReader(); r.onload = () => done(RA.backup.restore(String(r.result))); r.readAsText(f); e.target.value = '';
     });
-    host.appendChild(d);
-    return d;
+    window.addEventListener('ra-progress', () => { if (!c.querySelector('.tc-status.ok, .tc-status.bad')) idle(); });
+    idle();
+    return c;
+  };
+  // ---------------------------------------------------------------- offline mode (sw.js) and installation as an app
+  const swOK = 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+  let installEvt = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; window.dispatchEvent(new Event('ra-offline')); });
+  window.addEventListener('appinstalled', () => { installEvt = null; window.dispatchEvent(new Event('ra-offline')); });
+  if (swOK) window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => { /* offline mode not available */ }); });
+  const standalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  // asks the service worker; answers come back as messages
+  const swAsk = (msg, onMsg) => {
+    if (!swOK) return Promise.resolve(false);
+    return navigator.serviceWorker.ready.then((reg) => {
+      const sw = reg.active; if (!sw) return false;
+      const ch = (e) => { if (onMsg(e.data) === 'stop') navigator.serviceWorker.removeEventListener('message', ch); };
+      navigator.serviceWorker.addEventListener('message', ch);
+      sw.postMessage(msg); return true;
+    });
+  };
+  RA.offlinePanel = function (host) {
+    const fr = RA.lang === 'fr', L = (en, f) => (fr ? f : en);
+    const mb = (b) => (b / 1048576).toFixed(1).replace('.', fr ? ',' : '.') + (fr ? ' Mo' : ' MB');
+    const c = RA.toolCard(host, 'off', L('Offline', 'Hors ligne'), L('Use it without internet', 'Utiliser sans internet'),
+      L('The pages you open stay on this device. Download the whole site for the train or a place without a connection, or install it as an app.', "Les pages que vous ouvrez restent sur cet appareil. Téléchargez tout le site pour le train ou un endroit sans connexion, ou installez-le comme une application."));
+    c.id = 'offline';
+    const act = c.querySelector('.tc-act'), more = c.querySelector('.tc-more');
+    act.innerHTML = `<button type="button" class="btn sm" data-o="all">${L('Download all', 'Tout télécharger')}</button><button type="button" class="btn sm ghost" data-o="install" hidden>${L('Install the app', "Installer l'app")}</button>`;
+    more.innerHTML = `<p class="tc-links tc-ios" hidden>${L('iPhone / iPad: Share, then "Add to Home Screen".', "iPhone / iPad : Partager, puis « Sur l'écran d'accueil ».")}</p><p class="tc-links"><button type="button" class="linkish" data-o="clear">${L('Remove the downloaded files', 'Supprimer les fichiers téléchargés')}</button></p>`;
+    const all = act.querySelector('[data-o=all]'), inst = act.querySelector('[data-o=install]'), clr = more.querySelector('[data-o=clear]');
+    if (!swOK) { tcStatus(c, L('Not available in this browser.', 'Pas disponible dans ce navigateur.'), 'bad'); all.hidden = true; clr.parentNode.hidden = true; return c; }
+    let busy = false;
+    const paint = () => {
+      inst.hidden = !installEvt;
+      more.querySelector('.tc-ios').hidden = !(/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone());
+      if (busy) return;
+      swAsk({ type: 'status' }, (m) => {
+        if (!m || m.type !== 'status') return;
+        const pct = 100 * m.bytes / m.size;
+        tcStatus(c, (m.full ? '✓ ' + L('The whole site is on this device', 'Tout le site est sur cet appareil') : `<b>${m.pages}</b> / ${m.totalPages} ${L('pages on this device', 'pages sur cet appareil')}`) +
+          `<span class="tc-sub">${mb(m.bytes)} / ${mb(m.size)}${standalone() ? ' · ' + L('app installed', 'application installée') : ''}</span>` + bar(pct, m.full ? 'full' : ''), m.full ? 'ok' : '');
+        all.hidden = m.full; all.textContent = L(`Download all · ${mb(m.size)}`, `Tout télécharger · ${mb(m.size)}`);
+        clr.parentNode.hidden = !(m.pages > 2 || m.full);
+        return 'stop';
+      }).then((ok) => { if (!ok) tcStatus(c, L('Getting ready…', 'Préparation…')); });
+    };
+    all.addEventListener('click', () => {
+      if (busy) return; busy = true; all.disabled = true;
+      tcStatus(c, L('Downloading…', 'Téléchargement…') + bar(0));
+      swAsk({ type: 'download-all' }, (m) => {
+        if (m.type === 'progress') tcStatus(c, L('Downloading… ', 'Téléchargement… ') + `<b>${m.done}</b> / ${m.total}` + bar(100 * m.done / m.total));
+        else if (m.type === 'done') {
+          busy = false; all.disabled = false;
+          if (m.failed) tcStatus(c, L(`${m.failed} files could not be downloaded: check the connection and try again.`, `${m.failed} fichiers n'ont pas pu être téléchargés : vérifiez la connexion et réessayez.`), 'bad');
+          else paint();
+          return 'stop';
+        }
+      });
+    });
+    inst.addEventListener('click', () => { if (!installEvt) return; installEvt.prompt(); installEvt.userChoice.finally(() => { installEvt = null; paint(); }); });
+    clr.addEventListener('click', () => {
+      if (!confirm(L('Remove the downloaded files from this device? (Your progress is kept.)', 'Supprimer les fichiers téléchargés de cet appareil ? (Votre progression est gardée.)'))) return;
+      swAsk({ type: 'clear' }, (m) => { if (m.type === 'cleared') { paint(); return 'stop'; } });
+    });
+    // "Offline mode" links (footer) bring the card into view
+    const flash = () => { c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); };
+    if (location.hash === '#offline') setTimeout(() => { c.scrollIntoView({ block: 'center' }); flash(); }, 700);
+    window.addEventListener('hashchange', () => { if (location.hash === '#offline') flash(); });
+    document.addEventListener('click', (e) => { const a = e.target.closest && e.target.closest('a[href$="#offline"]'); if (a) setTimeout(flash, 300); }, true);
+    window.addEventListener('ra-offline', paint);
+    paint();
+    return c;
   };
   window.addEventListener('storage', (e) => { if (e.key === PROG) window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); });
   const SKIP = /^(SCRIPT|STYLE|SVG|CANVAS|TEXTAREA|NOSCRIPT|PRE|CODE)$/i;
@@ -282,6 +380,13 @@
       `<button class="icon-btn nav-toggle" type="button" aria-label="${ui.menu}" aria-expanded="false">☰</button></div></div>`;
     document.body.insertBefore(nav, document.body.firstChild);
 
+    // a small badge while the connection is lost
+    const badge = document.createElement('span');
+    badge.className = 'off-badge'; badge.textContent = lang === 'fr' ? 'Hors ligne' : 'Offline';
+    badge.title = lang === 'fr' ? 'Pas de connexion : vous lisez la copie enregistrée sur cet appareil.' : 'No connection: you are reading the copy stored on this device.';
+    nav.querySelector('.nav-tools').prepend(badge);
+    const net = () => { badge.hidden = navigator.onLine !== false; };
+    window.addEventListener('online', net); window.addEventListener('offline', net); net();
     const themeBtn = nav.querySelector('.theme-btn');
     const paintTheme = () => { themeBtn.innerHTML = effective() === 'dark' ? SUN : MOON; };
     paintTheme();
@@ -334,7 +439,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="certificate.html">${ui.certs}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {
