@@ -10,7 +10,7 @@
   --bg: #0e1420;  --bg-2: #0a0f18;  --surface: #172030;  --surface-2: #1f2a3d;  --border: #2f3c54;
   --text: #eef2f8;  --muted: #a6b1c3;
   --accent: #7ea6ff;                   /* electric blue: links, buttons, active items */
-  --btn: #3570ff;  --btn-hover: #5487ff;  --btn-ink: #ffffff;
+  --btn: #2f62e8;  --btn-hover: #2556d6;  --btn-ink: #ffffff;   /* white text ≥ 4.5:1 (WCAG AA) */
   --hl: #ffa04d;
   --ax: #ff6b6b;  --ay: #4ed17f;  --az: #5aa9ff;
   --good: #4ade80;  --bad: #fb7185;
@@ -28,11 +28,11 @@
 :root[data-theme='light'] {
   --bg: #e4e4e4;  --bg-2: #d8d8d8;  --surface: #efefef;  --surface-2: #dcdcdc;  --border: #bdbdbd;
   --text: #171717;  --muted: #595959;
-  --accent: #1f55e0;
+  --accent: #1b4fd1;
   --btn: #1f55e0;  --btn-hover: #1744b8;  --btn-ink: #ffffff;
   --hl: #c2570a;
-  --ax: #d63a3a;  --ay: #1f9a4f;  --az: #1f6fe0;
-  --good: #15803d;  --bad: #be123c;
+  --ax: #b91c1c;  --ay: #166534;  --az: #1858c4;
+  --good: #166534;  --bad: #be123c;
   --line: rgba(0, 0, 0, 0.18);
   --fpanel: #fafbfc;  --dk-thumb: #1b1b1b;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
   --f-base: #c9ced6;  --f-mute: #6b7686;  --f-gray: #8a8a8a;  --f-joint: #ffffff;  --f-pn: rgba(0, 0, 0, 0.03);
@@ -43,11 +43,11 @@
   :root:not([data-theme='dark']) {
     --bg: #e4e4e4;  --bg-2: #d8d8d8;  --surface: #efefef;  --surface-2: #dcdcdc;  --border: #bdbdbd;
     --text: #171717;  --muted: #595959;
-    --accent: #1f55e0;
+    --accent: #1b4fd1;
     --btn: #1f55e0;  --btn-hover: #1744b8;  --btn-ink: #ffffff;
     --hl: #c2570a;
-    --ax: #d63a3a;  --ay: #1f9a4f;  --az: #1f6fe0;
-    --good: #15803d;  --bad: #be123c;
+    --ax: #b91c1c;  --ay: #166534;  --az: #1858c4;
+    --good: #166534;  --bad: #be123c;
     --line: rgba(0, 0, 0, 0.18);
     --fpanel: #fafbfc;  --dk-thumb: #1b1b1b;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
     --f-base: #c9ced6;  --f-mute: #6b7686;  --f-gray: #8a8a8a;  --f-joint: #ffffff;  --f-pn: rgba(0, 0, 0, 0.03);
@@ -590,11 +590,11 @@ details.quiz .q { margin: 0.7rem 0 0.3rem; font-weight: 600; } details.quiz .a {
 .box { margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; background: color-mix(in srgb, var(--bg) 55%, transparent); }
 .box .bt { padding: 0.4rem 1rem; font-weight: 700; font-size: 0.92rem; color: #fff; background: var(--btn); }
 .box .bb { padding: 0.8rem 1rem 0.5rem; } .box .bb > p:last-child, .box .bb > ul:last-child, .box .bb > ol:last-child { margin-bottom: 0.4rem; }
-.box.idea { border-color: #d98a2b; } .box.idea .bt { background: #d98a2b; }
+.box.idea { border-color: #d98a2b; } .box.idea .bt { background: #a85d00; }
 .box.warn, .box.pitfall { border-color: #c0392b; } .box.warn .bt, .box.pitfall .bt { background: #c0392b; }
 .box.method, .box.word { border-color: #2e7d32; } .box.method .bt, .box.word .bt { background: #2e7d32; }
-.box.example { border-color: #8a8a8a; } .box.example .bt { background: #7a7a7a; }
-.box.exercise { border-color: #d98a2b; background: color-mix(in srgb, #d98a2b 7%, transparent); } .box.exercise .bt { background: #d98a2b; }
+.box.example { border-color: #8a8a8a; } .box.example .bt { background: #646464; }
+.box.exercise { border-color: #d98a2b; background: color-mix(in srgb, #d98a2b 7%, transparent); } .box.exercise .bt { background: #a85d00; }
 .eq { margin: 0.8rem 0; padding: 0.7rem 1rem; text-align: center; overflow-x: auto; font-family: 'IBM Plex Serif', 'Cambria Math', Georgia, 'Times New Roman', serif; font-size: 1.05rem; line-height: 2.1; background: color-mix(in srgb, var(--text) 5%, transparent); border-radius: 10px; max-width: none; }
 .lesson i { font-family: 'IBM Plex Serif', 'Cambria Math', Georgia, 'Times New Roman', serif; }
 .mx { display: inline-grid; vertical-align: middle; gap: 0.1rem 0.9rem; padding: 0.15rem 0.6rem; margin: 0 0.2rem; line-height: 1.5; border-left: 2px solid currentColor; border-right: 2px solid currentColor; border-radius: 8px; text-align: center; }
@@ -725,7 +725,7 @@ html, body { overflow-x: clip; }
 .opts li.right { border-color: #2e9e5b; background: color-mix(in srgb, #2e9e5b 14%, transparent); } .opts li.wrong { border-color: #c0392b; background: color-mix(in srgb, #c0392b 12%, transparent); }
 .fb { min-height: 1.2rem; margin: 0.2rem 0; font-size: 0.92rem; } .fb.ok { color: #2e9e5b; } .fb.bad { color: #c0392b; }
 details.hint, details.sol { margin: 0.35rem 0; border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.8rem; } details.hint summary, details.sol summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); } details.sol[open] summary, details.hint[open] summary { color: var(--accent); }
-.box.lab { border-color: #2e9e5b; } .box.lab .bt { background: #2e9e5b; } .labchk { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0; font-size: 0.92rem; cursor: pointer; } .labchk input { width: 1.1rem; height: 1.1rem; }
+.box.lab { border-color: #2e9e5b; } .box.lab .bt { background: #23824b; } .labchk { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0 0; font-size: 0.92rem; cursor: pointer; } .labchk input { width: 1.1rem; height: 1.1rem; }
 pre.code { margin: 0.6rem 0; padding: 0.8rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); background: var(--code-bg, #1c2128); color: var(--code-ink, #d6deeb); font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; } pre.code code { font-family: inherit; background: none; padding: 0; border: 0; color: inherit; font-size: inherit; }
 pre.out { margin: 0.4rem 0 0.8rem; padding: 0.6rem 1rem; overflow-x: auto; border-radius: 10px; border: 1px dashed var(--border); font-family: var(--mono); font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
 #examSum { margin: 1rem 0; padding: 0.8rem 1.1rem; border: 2px solid var(--accent); border-radius: 12px; } #examSum ul { list-style: none; padding: 0; margin: 0 0 0.5rem; } #examSum li { margin: 0.3rem 0; } #examSum li.good { color: #2e9e5b; } #examSum .verdict { font-weight: 600; }
@@ -1016,7 +1016,7 @@ table.dh.ops td:first-child { white-space: nowrap; }
 .sysdemo.sys-how-on .sys-flow { width: min(560px, calc(100% - 440px)); }
 @media (max-width: 1000px) { .sysdemo.sys-how-on .sys-flow { width: calc(100% - 20px); } }
 /* practice blocks in the courses: essentials, figure, worked exercises */
-.box.key { border-color: #30a46c; } .box.key .bt { background: #2e9e5b; }
+.box.key { border-color: #30a46c; } .box.key .bt { background: #23824b; }
 .box.key .bt::before { content: '✔ '; }
 .pfig { margin: 1rem 0; } .pfig svg { width: 100%; height: auto; max-width: 680px; display: block; margin: 0 auto; border-radius: 10px; }
 .pfig figcaption { text-align: center; color: var(--muted); font-size: 0.86rem; margin-top: 0.35rem; }
@@ -1504,3 +1504,19 @@ html.rs-open { overflow: hidden; }
 .ex-score { font-size: 1.6rem; margin: 0 0 0.3rem; font-family: var(--mono); }
 .ex-result.ok .ex-score b { color: var(--good); } .ex-result.bad .ex-score b { color: var(--bad); }
 .ex-act { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0 0; }
+
+/* ---- contrast fixes (WCAG AA, checked with axe-core) ---- */
+.lv.l1 { color: #4ade80; } .lv.l2 { color: #f5a54a; } .lv.l3 { color: #fb7185; }
+.opfit.f3 { color: #4ade80; } .opfit.f2 { color: #fbbf24; }
+.lesson-pager a.next small { color: #fff; opacity: 1; }
+:root[data-theme='light'] .lv.l1, :root[data-theme='light'] .opfit.f3 { color: #166534; }
+:root[data-theme='light'] .lv.l2, :root[data-theme='light'] .opfit.f2 { color: #8a4600; }
+:root[data-theme='light'] .lv.l3 { color: #b03224; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) .lv.l1, :root:not([data-theme='dark']) .opfit.f3 { color: #166534; }
+  :root:not([data-theme='dark']) .lv.l2, :root:not([data-theme='dark']) .opfit.f2 { color: #8a4600; }
+  :root:not([data-theme='dark']) .lv.l3 { color: #b03224; }
+}
+/* anatomy joint chips: dark text on the light colours, a darker blue / violet behind white text */
+.ancard[style*="#2e9e5b"] .ann, .ancard[style*="#ff9f43"] .ann, .ancard[style*="#ff5a5f"] .ann, .ancard[style*="#1fb5c9"] .ann { color: #0b1220; }
+.ancard[style*="#2f6bff"] .ann, .ancard[style*="#8a5cf6"] .ann { background: color-mix(in srgb, var(--c) 85%, #000); }

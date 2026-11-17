@@ -624,6 +624,8 @@
 
   function init() {
     build();
+    // code blocks that scroll sideways can be reached and scrolled with the keyboard
+    document.querySelectorAll('pre').forEach((pre) => { if (!pre.hasAttribute('tabindex')) pre.tabIndex = 0; });
     watch3d();
     robotPage();
     wireScroll();

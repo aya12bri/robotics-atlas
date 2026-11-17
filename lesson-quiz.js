@@ -48,12 +48,12 @@
         var lis = [].slice.call(opts.children);
         var show = function (picked) {
           opts.classList.add('locked'); ans.hidden = false;
-          lis.forEach(function (o) { o.classList.toggle('right', o.hasAttribute('data-ok')); o.classList.toggle('wrong', o === picked && !o.hasAttribute('data-ok')); });
+          lis.forEach(function (o) { o.classList.toggle('right', o.hasAttribute('data-ok')); o.classList.toggle('wrong', o === picked && !o.hasAttribute('data-ok')); o.setAttribute('aria-checked', String(o === picked)); });
           var good = ST[id] === 1; fb.className = 'fb ' + (good ? 'ok' : 'bad'); fb.textContent = good ? '✓ ' + L('Correct!', 'Correct !') : '✗ ' + L('Not this one: the right answer is in green.', 'Pas celle-ci : la bonne réponse est en vert.');
         };
         ans.hidden = true;
         lis.forEach(function (o) {
-          o.tabIndex = 0; o.setAttribute('role', 'button');
+          o.tabIndex = 0; o.setAttribute('role', 'radio'); o.setAttribute('aria-checked', 'false'); opts.setAttribute('role', 'radiogroup');
           var pick = function () { if (opts.classList.contains('locked')) return; set(id, o.hasAttribute('data-ok') ? 1 : 0); show(o); };
           o.addEventListener('click', pick); o.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
         });
