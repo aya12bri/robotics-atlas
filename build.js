@@ -78,14 +78,14 @@ const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.0
 const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
 stage.prepend(renderer.domElement);
 const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.enablePan = false; orbit.minDistance = 0.9; orbit.maxDistance = 6; orbit.maxPolarAngle = Math.PI * 0.495;
-scene.add(new THREE.HemisphereLight('#ffffff', '#555a60', 1.15));
+scene.add(new THREE.HemisphereLight('#ffffff', '#66748c', 1.3));
 const sun = new THREE.DirectionalLight('#ffffff', 2.0); sun.position.set(2, 4, 3); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -2, right: 2, top: 2, bottom: -2, near: 0.1, far: 12 }); scene.add(sun);
 const fill = new THREE.DirectionalLight('#cfe0ff', 0.7); fill.position.set(-3, 1.5, -2); scene.add(fill);
 const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.55, metalness: 0.15, ...o });
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2).rotateX(-Math.PI / 2), mat('#7d8691', { roughness: 1 })); floor.receiveShadow = true; scene.add(floor);
 const grid = new THREE.GridHelper(3.2, 16, '#c3cad3', '#a3acb7'); grid.position.y = 0.001; grid.material.transparent = true; scene.add(grid);
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
-const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#262626'); floor.material.color.set(Lt ? '#7d8691' : '#2b2e33'); grid.material.opacity = Lt ? 1 : 0.35; host.classList.toggle('light', Lt); };
+const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#1d2638'); floor.material.color.set(Lt ? '#7d8691' : '#253047'); grid.material.opacity = Lt ? 1 : 0.5; host.classList.toggle('light', Lt); };
 paint(); new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); matchMedia('(prefers-color-scheme: light)').addEventListener('change', paint);
 // the frame of the robot (x red, y green, z blue, z up) drawn at the foot of the robot
 { const o = V(-1.25, 0.004, 1.25), mk = (d, c) => scene.add(new THREE.ArrowHelper(d, o, 0.32, c, 0.08, 0.05)); mk(V(1, 0, 0), '#ff6b6b'); mk(V(0, 0, -1), '#3fbf6f'); mk(V(0, 1, 0), '#5aa9ff'); }

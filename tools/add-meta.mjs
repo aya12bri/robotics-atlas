@@ -23,6 +23,7 @@ const DESC = {
   'certificate.html': 'Your Robotics Atlas certificates: finish a course and get a certificate with your name, to print or save as PDF. Save or restore your progress.',
   'offline.html': 'You are offline. The pages of Robotics Atlas you already opened, or downloaded, can still be read here.',
   'glossary.html': 'The robotics glossary: every word of every course in one place, with its meaning in English and French and the lesson that explains it.',
+  'revision.html': 'Printable revision sheets of every robotics course: the essentials of each lesson, the main formulas and the key terms, to print or save as PDF.',
   'build.html': 'A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',
   'gantry.html': 'Interactive 3D Cartesian gantry robot with three sliding axes: kinematics, workspace and pick and place.',

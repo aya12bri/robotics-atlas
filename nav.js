@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -128,6 +128,7 @@
   // ---------------------------------------------------------------- the "tool cards" (home roadmap, certificate page)
   const ICON = {
     cert: '<path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="m8.5 14 -1.5 7 5-2.5 5 2.5-1.5-7"/>',
+    rev: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>',
     save: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
     off: '<path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12a10 10 0 0 1 13 0"/><path d="M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/>'
   };
@@ -152,8 +153,8 @@
   // save / restore the progress
   RA.backupPanel = function (host) {
     const fr = RA.lang === 'fr', L = (en, f) => (fr ? f : en);
-    const c = RA.toolCard(host, 'save', L('Progress', 'Progression'), L('Save my progress', 'Sauvegarder ma progression'),
-      L('Your progress is kept only in this browser. Save it to keep it, or to continue on another device.', 'Votre progression est gardée seulement dans ce navigateur. Sauvegardez-la pour la garder, ou pour continuer sur un autre appareil.'));
+    const c = RA.toolCard(host, 'save', L('Progress', 'Progression'), L('Save my progress', 'Sauvegarder'),
+      L('It is kept only in this browser: save it so you do not lose it, or to continue on another device.', "Elle n'est gardée que dans ce navigateur : sauvegardez-la pour ne pas la perdre, ou pour continuer ailleurs."));
     c.id = 'backup';
     c.querySelector('.tc-act').innerHTML = `<button type="button" class="btn sm" data-a="file">${L('Download', 'Télécharger')}</button>` +
       `<label class="btn sm ghost">${L('Restore', 'Restaurer')}<input type="file" accept=".json,application/json" hidden></label>`;
@@ -213,12 +214,13 @@
     const fr = RA.lang === 'fr', L = (en, f) => (fr ? f : en);
     const mb = (b) => (b / 1048576).toFixed(1).replace('.', fr ? ',' : '.') + (fr ? ' Mo' : ' MB');
     const c = RA.toolCard(host, 'off', L('Offline', 'Hors ligne'), L('Use it without internet', 'Utiliser sans internet'),
-      L('The pages you open stay on this device. Download the whole site for the train or a place without a connection, or install it as an app.', "Les pages que vous ouvrez restent sur cet appareil. Téléchargez tout le site pour le train ou un endroit sans connexion, ou installez-le comme une application."));
+      L('The pages you open stay on this device. Download the whole site, or install it as an app.', "Les pages ouvertes restent sur cet appareil. Téléchargez tout le site, ou installez-le comme une application."));
     c.id = 'offline';
     const act = c.querySelector('.tc-act'), more = c.querySelector('.tc-more');
     act.innerHTML = `<button type="button" class="btn sm" data-o="all">${L('Download all', 'Tout télécharger')}</button><button type="button" class="btn sm ghost" data-o="install" hidden>${L('Install the app', "Installer l'app")}</button>`;
     more.innerHTML = `<p class="tc-links tc-ios" hidden>${L('iPhone / iPad: Share, then "Add to Home Screen".', "iPhone / iPad : Partager, puis « Sur l'écran d'accueil ».")}</p><p class="tc-links"><button type="button" class="linkish" data-o="clear">${L('Remove the downloaded files', 'Supprimer les fichiers téléchargés')}</button></p>`;
     const all = act.querySelector('[data-o=all]'), inst = act.querySelector('[data-o=install]'), clr = more.querySelector('[data-o=clear]');
+    clr.parentNode.hidden = true;                                       // shown once the service worker says there is something to remove
     if (!swOK) { tcStatus(c, L('Not available in this browser.', 'Pas disponible dans ce navigateur.'), 'bad'); all.hidden = true; clr.parentNode.hidden = true; return c; }
     let busy = false;
     const paint = () => {
@@ -422,7 +424,7 @@
     if (cta && curCard) {
       const c = document.createElement('p');
       c.className = 'cta cert-cta ra-own';
-      c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a>`;
+      c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a> <a class="btn ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? '🖨 Fiche de révision du cours' : '🖨 Revision sheet of the course'}</a>`;
       cta.after(c);
     }
     // course glossaries: a link to the general glossary, filtered on this course
@@ -430,7 +432,7 @@
     if (gl) {
       const g = document.createElement('p');
       g.className = 'gl-link ra-own';
-      g.innerHTML = `<a class="btn sm ghost" href="glossary.html?course=${here.replace(/\.html$/, '')}">${lang === 'fr' ? 'Ouvrir le glossaire général de tous les cours →' : 'Open the general glossary of every course →'}</a>`;
+      g.innerHTML = `<a class="btn sm ghost" href="glossary.html?course=${here.replace(/\.html$/, '')}">${lang === 'fr' ? 'Ouvrir le glossaire général de tous les cours →' : 'Open the general glossary of every course →'}</a> <a class="btn sm ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? 'Fiche de révision imprimable →' : 'Printable revision sheet →'}</a>`;
       gl.after(g);
     }
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (dd) dd.classList.remove('open'); nav.classList.remove('open'); } });
@@ -447,7 +449,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="revision.html">${ui.rev}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {

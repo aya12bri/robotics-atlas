@@ -436,7 +436,7 @@ function mount(host) {
   const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
   const gc = grid.geometry.attributes.color, g0 = gc.array.slice();
   function paint() {
-    const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#262626'); pad.material.color.set(Lt ? '#7d8691' : '#2b2e33');
+    const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#1d2638'); pad.material.color.set(Lt ? '#7d8691' : '#253047'); hemi.groundColor.set(Lt ? '#c9d0d8' : '#5d6b85'); hemi.intensity = Lt ? 1.1 : 1.6;
     hemi.groundColor.set(Lt ? '#c9d0d8' : '#3a3a3a');
     const a = new THREE.Color(Lt ? '#c3cad3' : '#7a7a7a'), b = new THREE.Color(Lt ? '#a3acb7' : '#3d4148'), mid = (new THREE.Color('#7a7a7a').r + new THREE.Color('#3a3a3a').r) / 2;
     for (let i = 0; i < g0.length; i += 3) { const c = g0[i] > mid ? a : b; gc.array[i] = c.r; gc.array[i + 1] = c.g; gc.array[i + 2] = c.b; } gc.needsUpdate = true;

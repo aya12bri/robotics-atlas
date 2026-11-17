@@ -6,6 +6,7 @@ import './m-ex1.mjs';
 import './m-ex2.mjs';
 import './m-ex3.mjs';
 import './m-ex4.mjs';
+import { ESS } from './m-ess.mjs';
 import { partZero } from './m-0.mjs';
 import { partA } from './m-a.mjs';
 import { partDrives } from './m-8.mjs';
@@ -20,8 +21,11 @@ export const meta = { script: 'learn-mobile-widgets.js' };
 // only the parts a page needs are built, so each page's French dictionary holds only its own texts
 const num = (h) => +/data-id="wmr-(\d+)"/.exec(h)[1];
 const sorted = (list) => list.sort((x, y) => num(x) - num(y));
-export const lessonsPart1 = () => sorted([...partZero(), ...partA(), ...partB(), ...partDrives(), ...partC()]).filter((h) => num(h) <= 10);
-export const lessonsPart2 = () => sorted([...partC(), ...partD(), ...partE(), ...partF(), ...partG()]).filter((h) => num(h) > 10);
+// "The essentials" box of each lesson, just before its key terms (as in the other courses)
+const withEss = (h) => { const e = ESS[num(h)]; if (!e) return h; const box = '          ' + BOX('key', ['The essentials', 'L\'essentiel'], UL(e)) + '\n';
+  const i = h.indexOf('<h3>Key terms</h3>'); return i < 0 ? h : h.slice(0, h.lastIndexOf('\n', i) + 1) + box + h.slice(h.lastIndexOf('\n', i) + 1); };
+export const lessonsPart1 = () => sorted([...partZero(), ...partA(), ...partB(), ...partDrives(), ...partC()]).filter((h) => num(h) <= 10).map(withEss);
+export const lessonsPart2 = () => sorted([...partC(), ...partD(), ...partE(), ...partF(), ...partG()]).filter((h) => num(h) > 10).map(withEss);
 
 const exercisesHow = () => P(`<strong>How the exercises work.</strong> Each lesson ends with exercises of three levels (beginner, intermediate, professional). For most of them you type a number and the page checks it (with a small tolerance); the others are multiple choice. The hint and the solution are hidden until you open them: always try first. Your progress is saved in this browser. <strong>Be honest with yourself:</strong> reading is not enough, you become a professional by solving, building and measuring, so do the labs of lesson 20.`,
   `<strong>Comment marchent les exercices.</strong> Chaque leçon se termine par des exercices de trois niveaux (débutant, intermédiaire, professionnel). Pour la plupart, vous tapez un nombre et la page le vérifie (avec une petite tolérance) ; les autres sont des QCM. L'indice et la solution sont cachés tant que vous ne les ouvrez pas : essayez toujours d'abord. Votre progression est enregistrée dans ce navigateur. <strong>Soyez honnête avec vous-même :</strong> lire ne suffit pas, on devient professionnel en résolvant, en construisant et en mesurant, donc faites les TP de la leçon 20.`);

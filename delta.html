@@ -304,7 +304,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color('#262626');
+      scene.background = new THREE.Color('#1d2638');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(1.25, 0.95, 1.35);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -323,8 +323,9 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       floor.position.y = -0.003; scene.add(floor);                      // dark grey pad exactly under the grid; everything else stays light grey
       { const gc = grid.geometry.attributes.color, g0 = gc.array.slice(), mid = (new THREE.Color('#7a7a7a').r + new THREE.Color('#3a3a3a').r) / 2;
         RB.onTheme((L) => {
-          scene.background.set(L ? '#d9dde3' : '#262626'); floor.visible = L; hemi.groundColor.set(L ? '#c9d0d8' : '#3a3a3a');
-          const a = new THREE.Color(L ? '#c3cad3' : '#7a7a7a'), b = new THREE.Color(L ? '#a3acb7' : '#3a3a3a');
+          scene.background.set(L ? '#d9dde3' : '#1d2638'); floor.visible = true; floor.material.color.set(L ? '#7d8691' : '#253047'); hemi.groundColor.set(L ? '#c9d0d8' : '#5d6b85');
+          hemi.intensity = L ? 1.2 : 1.75; sun.intensity = L ? 1.5 : 2.1;                       // dark: a brighter studio, so dark parts stay readable
+          const a = new THREE.Color(L ? '#c3cad3' : '#8391a8'), b = new THREE.Color(L ? '#a3acb7' : '#3b4861');
           for (let i = 0; i < g0.length; i += 3) { const c = g0[i] > mid ? a : b; gc.array[i] = c.r; gc.array[i + 1] = c.g; gc.array[i + 2] = c.b; }
           gc.needsUpdate = true;
           box.classList.toggle('light3d', L);

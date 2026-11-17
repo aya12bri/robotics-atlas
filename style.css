@@ -1,23 +1,24 @@
 /* =====================================================================
    Robotics Atlas — design system "atelier"
-   Light mode = light grey. Dark mode = dark grey. One accent: electric blue (--accent).
+   Light mode = light grey. Dark mode = deep blue night. One accent: electric blue (--accent).
    The robots themselves stay orange (--hl) inside the drawings and 3D models,
    because the page texts talk about "the orange line".
    Course figures, graphs and widgets follow the theme (--fpanel, --f-* tokens); robot thumbnails keep the dark panel.
    ===================================================================== */
 :root {
-  --bg: #1f1f1f;  --bg-2: #181818;  --surface: #292929;  --surface-2: #333333;  --border: #444444;
-  --text: #ececec;  --muted: #9b9b9b;
-  --accent: #6b97ff;                   /* electric blue: links, buttons, active items */
-  --btn: #2f6bff;  --btn-hover: #4f84ff;  --btn-ink: #ffffff;
-  --hl: #ff9f43;
+  /* dark mode: deep blue night, high contrast; the 3D views are a lighter "studio" (#1d2638) so the robots stand out */
+  --bg: #0e1420;  --bg-2: #0a0f18;  --surface: #172030;  --surface-2: #1f2a3d;  --border: #2f3c54;
+  --text: #eef2f8;  --muted: #a6b1c3;
+  --accent: #7ea6ff;                   /* electric blue: links, buttons, active items */
+  --btn: #3570ff;  --btn-hover: #5487ff;  --btn-ink: #ffffff;
+  --hl: #ffa04d;
   --ax: #ff6b6b;  --ay: #4ed17f;  --az: #5aa9ff;
   --good: #4ade80;  --bad: #fb7185;
-  --panel: #262626;
-  --fpanel: #262626;  --f-ink: #cfd8e3;  --f-ink2: #e8eef5;  --f-axis: #9aa7b6;  --f-axis2: #6f7b8c;  --f-dim: #7a8696;  --f-grid: #3a4552;  --f-box: #262c35;
-  --f-base: #3a3a3a;  --f-mute: #7f8ea3;  --f-gray: #8a8a8a;  --f-joint: #262626;  --f-pn: rgba(255, 255, 255, 0.04);
-  --f-o: #ff9f43;  --f-b: #5aa9ff;  --f-b2: #5b8fd6;  --f-g: #4ed17f;  --f-r: #ff6b6b;  --f-y: #ffd60a;  --f-p: #b07cff;   /* figures and graphs of the courses */
-  --line: rgba(255, 255, 255, 0.16);
+  --panel: #1d2638;
+  --fpanel: #141c2b;  --f-ink: #d6dfeb;  --f-ink2: #eef3f9;  --f-axis: #a3b0c2;  --f-axis2: #75849a;  --f-dim: #8392a7;  --f-grid: #2c3a50;  --f-box: #1c2638;
+  --f-base: #3b4862;  --f-mute: #8a99ae;  --f-gray: #929cab;  --f-joint: #141c2b;  --f-pn: rgba(255, 255, 255, 0.04);
+  --f-o: #ffa04d;  --f-b: #5aa9ff;  --f-b2: #6b9be6;  --f-g: #4ed17f;  --f-r: #ff6b6b;  --f-y: #ffd60a;  --f-p: #b88cff;   /* figures and graphs of the courses */
+  --line: rgba(255, 255, 255, 0.14);
   --radius: 4px;  --pad: 2rem;  --maxw: 1180px;
   --display: 'Archivo', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
   --font: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -1328,7 +1329,7 @@ html.rs-open { overflow: hidden; }
 .off-tip { color: var(--muted); font-size: 0.9rem; }
 
 /* ---- tool cards: certificates, save the progress, offline (home roadmap, certificate page) ---- */
-.tool-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; margin: 2.4rem 0 1.4rem; }
+.tool-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 2.4rem 0 1.4rem; }
 .tool-row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1.6rem; }
 .tool-row[hidden] { display: none; }
 .tool-card { display: flex; flex-direction: column; gap: 0.55rem; padding: 1.15rem 1.25rem 1.1rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.6); min-width: 0; }
@@ -1356,7 +1357,7 @@ html.rs-open { overflow: hidden; }
 .tc-code textarea { width: 100%; min-height: 4rem; font: 0.72rem var(--mono); background: var(--bg-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; box-sizing: border-box; resize: vertical; }
 .linkish { background: none; border: 0; padding: 0; min-height: 0; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; font: inherit; cursor: pointer; }
 .linkish:hover { color: var(--text); background: none; }
-@media (max-width: 900px) { .tool-row { grid-template-columns: 1fr 1fr; } .tool-row > :first-child { grid-column: 1 / -1; } .tool-row.two > :first-child { grid-column: auto; } }
+@media (max-width: 1100px) { .tool-row { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .tool-row, .tool-row.two { grid-template-columns: 1fr; } }
 
 /* ---- general glossary (glossary.html) ---- */
@@ -1390,3 +1391,49 @@ html.rs-open { overflow: hidden; }
 .gl-none { color: var(--muted); }
 .gloss .gl-link { margin: 0.4rem 0 0.8rem; }
 @media (max-width: 640px) { .gl-tools { position: static; padding: 0; border: 0; background: none; backdrop-filter: none; } .gl-tools select { flex: 1 1 100%; } .gl-grid { grid-template-columns: 1fr; } .gl-az a, .gl-az span { width: 1.7rem; height: 1.7rem; } }
+
+/* ---- revision sheets (revision.html) ---- */
+.rev-page { padding-bottom: 3rem; }
+.rev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.9rem; margin: 1.4rem 0; }
+.rev-card { display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 1.1rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); color: var(--text); text-decoration: none; transition: border-color 0.15s, transform 0.15s; }
+.rev-card:hover { border-color: var(--accent); transform: translateY(-2px); text-decoration: none; }
+.rev-card .rev-ic { width: 2.3rem; height: 2.3rem; border-radius: 10px; display: grid; place-items: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); margin-bottom: 0.2rem; }
+.rev-card .rev-ic svg { width: 20px; height: 20px; }
+.rev-card b { font-size: 1.02rem; }
+.rev-card span { color: var(--muted); font-size: 0.85rem; }
+.rev-card em { margin-top: auto; padding-top: 0.4rem; font-style: normal; font-weight: 600; font-size: 0.88rem; color: var(--accent); }
+.rev-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem; margin: 1rem 0; }
+.rev-opts { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; color: var(--muted); font-size: 0.9rem; margin-left: auto; }
+.rev-opts label { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+/* the sheet itself: paper, always light */
+.rev-sheet { --ink: #14213d; --mut: #4a5568; --acc: #1f55e0; background: #fff; color: var(--ink); border-radius: 6px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); padding: 2.2rem 2.4rem 1.6rem; max-width: 1000px; margin: 0 auto; font-size: 0.86rem; line-height: 1.45; }
+.rs-head { border-bottom: 2px solid var(--acc); padding-bottom: 0.7rem; margin-bottom: 1rem; }
+.rs-brand { display: flex; align-items: center; gap: 0.5rem; font: 800 0.95rem var(--display); }
+.rs-brand em { margin-left: auto; font: 600 0.7rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--acc); font-style: normal; }
+.rs-head h2 { margin: 0.5rem 0 0.1rem; font: 800 1.7rem var(--display); color: var(--ink); }
+.rs-head p { margin: 0; color: var(--mut); font-size: 0.82rem; max-width: none; }
+.rs-cols { columns: 2 320px; column-gap: 1.8rem; }
+.rs-l { break-inside: avoid; margin: 0 0 0.95rem; }
+.rs-l h3 { display: flex; gap: 0.45rem; align-items: baseline; margin: 0 0 0.3rem; font-size: 0.95rem; color: var(--ink); line-height: 1.3; }
+.rs-l h3 span { flex: none; min-width: 1.45rem; height: 1.45rem; border-radius: 50%; display: inline-grid; place-items: center; background: var(--acc); color: #fff; font: 700 0.72rem var(--mono); transform: translateY(-1px); }
+.rs-l ul { margin: 0 0 0.3rem; padding-left: 1.1rem; }
+.rs-l li { margin: 0.12rem 0; }
+.rs-l li::marker { color: var(--acc); }
+.rs-eq { margin: 0.3rem 0; padding: 0.35rem 0.6rem; border-left: 3px solid var(--acc); background: #f1f5ff; border-radius: 0 6px 6px 0; }
+.rs-eq p { margin: 0.12rem 0; font-family: 'Cambria Math', 'STIX Two Math', Georgia, serif; font-size: 0.86rem; max-width: none; }
+.rs-keep { margin: 0.3rem 0; padding: 0.3rem 0.6rem; background: #fff8eb; border-left: 3px solid #d9730d; border-radius: 0 6px 6px 0; color: var(--ink); }
+.rs-keep p, .rs-keep ul { margin: 0.1rem 0; max-width: none; }
+.rs-kt { margin: 0.25rem 0 0; color: var(--mut); font-size: 0.78rem; max-width: none; }
+.rs-kt b { color: var(--ink); }
+.rs-foot { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #d5dbe5; margin-top: 0.6rem; padding-top: 0.5rem; color: var(--mut); font: 0.72rem var(--mono); }
+.rev-sheet a { color: var(--acc); }
+@media (max-width: 640px) { .rev-sheet { padding: 1.2rem 1rem; } .rev-opts { margin-left: 0; } }
+@media print {
+  @page { size: A4 portrait; margin: 11mm 12mm; }
+  body.rev-view > :not(#rev), body.rev-view #rev > :not(.rev-sheet) { display: none !important; }
+  body.rev-view { background: #fff !important; margin: 0; padding: 0; }
+  body.rev-view::before, body.rev-view::after { display: none !important; }
+  body.rev-view #rev { max-width: none; margin: 0; padding: 0; }
+  body.rev-view .rev-sheet { box-shadow: none; border-radius: 0; padding: 0; max-width: none; font-size: 9pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.rev-view .rs-cols { columns: 2; column-gap: 7mm; }
+}
