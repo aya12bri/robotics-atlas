@@ -40,7 +40,7 @@ const q = CFG.home.slice();
 
 const box = document.getElementById('anatView');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#23262b');
+scene.background = new THREE.Color('#1d2638');
 const camera = new THREE.PerspectiveCamera(42, box.clientWidth / box.clientHeight, 0.1, 50);
 camera.position.set(...CFG.cam);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -85,12 +85,12 @@ const MOVING = ['drives', 'humanoid', 'mobile'].includes(KIND) || (CFG.grid || 4
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
 function paintGround() {
   const light = isLight(), g = grid.geometry.attributes.color;
-  scene.background.set(light ? '#dfe3e8' : '#23262b'); pad.visible = light;
-  floor.material.color.set(light ? '#cfd4db' : '#25282d'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
-  const c1 = new THREE.Color(light ? '#c3cad3' : '#5a5f68'), c2 = new THREE.Color(light ? '#a3acb7' : '#383c43'), n = g.count;
+  scene.background.set(light ? '#dfe3e8' : '#1d2638'); pad.visible = light;
+  floor.material.color.set(light ? '#cfd4db' : '#242f44'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
+  const c1 = new THREE.Color(light ? '#c3cad3' : '#73819a'), c2 = new THREE.Color(light ? '#a3acb7' : '#36435b'), n = g.count;
   for (let i = 0; i < n; i += 4) { const c = (i / 4) === Math.floor(n / 8) ? c1 : c2; for (let k = 0; k < 4 && i + k < n; k++) g.setXYZ(i + k, c.r, c.g, c.b); }   // GridHelper: 4 vertices per line, the centre lines get colour 1
   g.needsUpdate = true; grid.material.opacity = light ? 0.9 : 0.5;
-  hemi.groundColor.set(light ? '#b9c0ca' : '#3a3d44'); hemi.intensity = light ? 0.45 : 0.25;
+  hemi.groundColor.set(light ? '#b9c0ca' : '#56637b'); hemi.intensity = light ? 0.45 : 0.55; renderer.toneMappingExposure = light ? 1.0 : 1.18;
   box.classList.toggle('light', light);
 }
 paintGround();

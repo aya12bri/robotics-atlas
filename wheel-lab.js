@@ -21,7 +21,7 @@ const canvas = $('wlCanvas'), box = $('wlView');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0x262626);
-const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x262626, 7, 18);
+const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x1d2638, 7, 18);
 const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 60); camera.position.set(2.5, 1.7, 3.5);
 const orbit = new OrbitControls(camera, canvas); orbit.target.set(0, 0.7, 0); orbit.enableDamping = true; orbit.minDistance = 1.6; orbit.maxDistance = 7; orbit.maxPolarAngle = Math.PI * 0.49; orbit.enablePan = false;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 1.1));
@@ -30,13 +30,13 @@ Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near:
 
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
 const gc = document.createElement('canvas'); gc.width = gc.height = 128;
-function drawGround(L) { const g = gc.getContext('2d'); g.fillStyle = L ? '#9aa3ae' : '#303030'; g.fillRect(0, 0, 128, 128); g.strokeStyle = L ? '#7d8794' : '#4a4a4a'; g.lineWidth = 2; g.strokeRect(1, 1, 126, 126); g.strokeStyle = L ? '#8c96a2' : '#3c3c3c'; g.lineWidth = 1; g.beginPath(); g.moveTo(64, 0); g.lineTo(64, 128); g.moveTo(0, 64); g.lineTo(128, 64); g.stroke(); g.fillStyle = '#6b97ff'; g.fillRect(62, 62, 4, 4); }
+function drawGround(L) { const g = gc.getContext('2d'); g.fillStyle = L ? '#9aa3ae' : '#27324a'; g.fillRect(0, 0, 128, 128); g.strokeStyle = L ? '#7d8794' : '#3d4b66'; g.lineWidth = 2; g.strokeRect(1, 1, 126, 126); g.strokeStyle = L ? '#8c96a2' : '#3c3c3c'; g.lineWidth = 1; g.beginPath(); g.moveTo(64, 0); g.lineTo(64, 128); g.moveTo(0, 64); g.lineTo(128, 64); g.stroke(); g.fillStyle = '#6b97ff'; g.fillRect(62, 62, 4, 4); }
 drawGround(isLight());
 const gtex = new THREE.CanvasTexture(gc); gtex.wrapS = gtex.wrapT = THREE.RepeatWrapping; gtex.repeat.set(40, 40); gtex.anisotropy = 4; gtex.colorSpace = THREE.SRGBColorSpace;
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: gtex, roughness: 0.95 })); ground.receiveShadow = true; scene.add(ground);
 // light / dark ground following the site theme
 const hemiL = scene.children.find((o) => o.isHemisphereLight);
-function paintGround() { const L = isLight(); drawGround(L); gtex.needsUpdate = true; const bg = L ? 0xcfd5dc : 0x262626; renderer.setClearColor(bg); scene.fog.color.set(bg); if (hemiL) hemiL.groundColor.set(L ? 0xc9d0d8 : 0x555555); }
+function paintGround() { const L = isLight(); drawGround(L); gtex.needsUpdate = true; const bg = L ? 0xcfd5dc : 0x1d2638; renderer.setClearColor(bg); scene.fog.color.set(bg); if (hemiL) hemiL.groundColor.set(L ? 0xc9d0d8 : 0x5d6b85); }
 paintGround(); new MutationObserver(paintGround).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); matchMedia('(prefers-color-scheme: light)').addEventListener('change', paintGround);
 
 // ------------------------------------------------------------------ materials and parts

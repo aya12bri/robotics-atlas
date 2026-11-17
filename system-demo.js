@@ -376,7 +376,7 @@ function mount(host) {
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.prepend(renderer.domElement);
   const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.maxPolarAngle = Math.PI * 0.47; orbit.minDistance = 0.4; orbit.maxDistance = 14;
-  scene.add(new THREE.HemisphereLight('#ffffff', '#5b6068', 1.15));
+  scene.add(new THREE.HemisphereLight('#ffffff', '#66748c', 1.3));
   const sun = new THREE.DirectionalLight('#ffffff', 1.9); sun.position.set(1.5, 4, 2.5); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 0.5, far: 12 }); sun.shadow.bias = -0.0004; scene.add(sun);
   // the workbench: dark grey grid area on a light floor
   const bench = new THREE.Mesh(new THREE.BoxGeometry(4.9, 0.05, 3.3), M('#7d8691', { roughness: 0.95 })); bench.position.set(0.05, -0.025, 0.3); bench.receiveShadow = true; scene.add(bench);
@@ -384,7 +384,7 @@ function mount(host) {
   // category zones painted on the bench
   const zone = (x, z, w, d, col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.12, depthWrite: false })); m.position.set(x, 0.002, z); scene.add(m); };
   const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
-  const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#24272c'); bench.material.color.set(Lt ? '#7d8691' : '#33383f'); host.classList.toggle('light', Lt); };
+  const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#1d2638'); bench.material.color.set(Lt ? '#7d8691' : '#2a3550'); host.classList.toggle('light', Lt); };
   paint(); new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   // place the parts

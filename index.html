@@ -335,6 +335,10 @@ if (window.RA && RA.toolCard) {
     if (C.length) RA.toolStatus(cc, `<b>${n}</b> / ${C.length} ${L('courses finished', 'cours terminés')}<div class="tc-bar"><i style="width:${Math.round(100 * n / C.length)}%"></i></div>`);
   };
   addEventListener('ra-progress', paintCert); addEventListener('load', paintCert); paintCert();
+  const rc = RA.toolCard($('rmBackup'), 'rev', L('Revise', 'Réviser'), L('Revision sheets', 'Fiches de révision'),
+    L('One printable page per course: the essentials of each lesson, the formulas and the key terms.', "Une page imprimable par cours : l'essentiel de chaque leçon, les formules et les mots clés."));
+  rc.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="revision.html">${L('Open the sheets', 'Ouvrir les fiches')}</a>`;
+  RA.toolStatus(rc, `<b>${(window.RA_COURSES || []).length || 13}</b> ${L('sheets, to print or save as PDF', 'fiches, à imprimer ou en PDF')}`);
   RA.backupPanel($('rmBackup'));
   RA.offlinePanel($('rmBackup'));
 }
@@ -426,7 +430,7 @@ if (renderer) {
   const halo = new THREE.Mesh(new THREE.SphereGeometry(0.075, 20, 14), new THREE.MeshBasicMaterial({ color: ACC, transparent: true, opacity: 0.22, depthWrite: false }));
   target.add(core, halo); target.visible = false; scene.add(target);
   const PAD_A = { x: 0.60, y: -0.30 }, PAD_B = { x: 0.60, y: 0.30 }, CUBE = 0.06, ZG = 0.03, ZU = 0.30;
-  const padMat = new THREE.MeshStandardMaterial({ color: '#3b3b3b', roughness: 0.8 }), place = new THREE.Group(); scene.add(place);
+  const padMat = new THREE.MeshStandardMaterial({ color: '#2a3550', roughness: 0.8 }), place = new THREE.Group(); scene.add(place);
   for (const p of [PAD_A, PAD_B]) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.006, 0.16), padMat); m.position.set(p.x, 0.003, -p.y); m.receiveShadow = true; place.add(m); }
   const cube = new THREE.Mesh(new THREE.BoxGeometry(CUBE, CUBE, CUBE), new THREE.MeshStandardMaterial({ color: ACC, roughness: 0.35 })); cube.castShadow = true; scene.add(cube);
   const resetCube = () => { scene.attach(cube); cube.rotation.set(0, 0, 0); cube.position.set(PAD_A.x, CUBE / 2, -PAD_A.y); };
@@ -529,7 +533,7 @@ if (renderer) {
     content.scale.setScalar(s); content.position.y = galY - s * Math.max(bb.min.y, 0); g.userData.fit = content;
   });
   // every pedestal gets its own materials so that the neighbours can turn grey and dark
-  const pedMats = gal.children.map((g) => { const list = []; g.traverse((o) => { if (o.isMesh && o.material && !Array.isArray(o.material)) { const link = galLinks.includes(o.material); o.material = o.material.clone(); o.material.userData.base = o.material.color.clone(); o.material.userData.link = link; list.push(o.material); } }); return list; });
+  const pedMats = gal.children.map((g) => { const list = []; g.traverse((o) => { if (o.isMesh && o.material && !Array.isArray(o.material)) { const link = galLinks.includes(o.material), dk = o.material === mDark; o.material = o.material.clone(); o.material.userData.base = o.material.color.clone(); o.material.userData.link = link; o.material.userData.dark = dk; list.push(o.material); } }); return list; });
   const grey = new THREE.Color(), setGrey = (i, f) => pedMats[i].forEach((m) => { const b = m.userData.base, y = b.r * 0.3 + b.g * 0.59 + b.b * 0.11; m.color.copy(b); grey.setRGB(y, y, y); m.color.lerp(grey, f * 0.88).multiplyScalar(1 - 0.5 * f); });
   let gpos = 0, greyDirty = true;
 
@@ -579,7 +583,7 @@ if (renderer) {
   const thCells = STD.map((_, i) => $('th' + i));
   const themeCols = () => { const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const bg = getComputedStyle(root).getPropertyValue('--bg').trim() || '#1f1f1f'; scene.fog.color.set(bg);
-    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); galLinks.forEach((m) => m.color.set(dark ? '#d8d8d8' : '#303030')); pedMats.forEach((l) => l.forEach((m) => { if (m.userData.link) m.userData.base.set(dark ? '#d8d8d8' : '#303030'); })); greyDirty = true; padMat.color.set(dark ? '#3b3b3b' : '#c4c4c4');
+    arm.materials.link.color.set(dark ? '#d8d8d8' : '#303030'); galLinks.forEach((m) => m.color.set(dark ? '#d8d8d8' : '#303030')); pedMats.forEach((l) => l.forEach((m) => { if (m.userData.link) m.userData.base.set(dark ? '#d8d8d8' : '#303030'); })); greyDirty = true; padMat.color.set(dark ? '#2a3550' : '#c4c4c4'); pedMats.forEach((l) => l.forEach((m) => { if (m.userData.dark) m.userData.base.set(dark ? '#4b5870' : '#3a3a3a'); }));   // pedestals and frames: lighter on the night background
     dustMat.color.set(dark ? 0x6b97ff : 0x1f55e0); smokeMats.forEach((m) => m.color.set(dark ? 0xbcd0ff : 0x6f7f9f)); ringMat.color.set(dark ? 0x2f6bff : 0x1f55e0); grid.material.color.set(dark ? 0x808080 : 0x7a7a7a); grid.material.opacity = dark ? 0.3 : 0.45; floor.material.opacity = dark ? 0.35 : 0.22; };
   themeCols(); new MutationObserver(themeCols).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', themeCols);

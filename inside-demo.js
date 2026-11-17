@@ -442,13 +442,13 @@ function mount(host) {
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.prepend(renderer.domElement);
   const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.enablePan = false;
-  scene.add(new THREE.HemisphereLight('#ffffff', '#555a60', 1.15));
+  scene.add(new THREE.HemisphereLight('#ffffff', '#66748c', 1.3));
   const sun = new THREE.DirectionalLight('#ffffff', 2.0); sun.position.set(2, 4, 3); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.6, near: 0.1, far: 12 }); scene.add(sun);
   const fill = new THREE.DirectionalLight('#cfe0ff', 0.7); fill.position.set(-3, 1.5, -2); scene.add(fill);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6).rotateX(-Math.PI / 2), M('#7d8691', { roughness: 1 })); floor.receiveShadow = true; scene.add(floor);
   const grid = new THREE.GridHelper(2.6, 13, '#c3cad3', '#a3acb7'); grid.position.y = 0.001; scene.add(grid);
   const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
-  const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#262626'); floor.material.color.set(Lt ? '#7d8691' : '#2b2e33'); grid.material.opacity = Lt ? 1 : 0.35; grid.material.transparent = true; host.classList.toggle('light', Lt); };
+  const paint = () => { const Lt = isLight(); scene.background = new THREE.Color(Lt ? '#d9dde3' : '#1d2638'); floor.material.color.set(Lt ? '#7d8691' : '#253047'); grid.material.opacity = Lt ? 1 : 0.5; grid.material.transparent = true; host.classList.toggle('light', Lt); };
   paint(); new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   // robot (own materials so they can fade without touching the other demos)
