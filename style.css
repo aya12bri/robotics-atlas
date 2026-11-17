@@ -1437,3 +1437,4 @@ html.rs-open { overflow: hidden; }
   body.rev-view .rev-sheet { box-shadow: none; border-radius: 0; padding: 0; max-width: none; font-size: 9pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body.rev-view .rs-cols { columns: 2; column-gap: 7mm; }
 }
+.figure svg.fig[viewBox^="0 0 660"] { max-width: 640px; }

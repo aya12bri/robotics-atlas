@@ -958,7 +958,7 @@ RA.add({
  "r1vxgt0476": "Coder un bras robot en Python",
  "cp9xk3o54a": "MGD, moteur DH, MGI exact et numérique, trajectoires, un vrai bras à servos, examen et TP",
  "1mkoxvsdrnm": "Robotique avancée (Master)",
- "1x7dzl3fu0t": "Robots parallèles, LQR, MPC, robots à pattes et aériens, vision en pratique, apprentissage par renforcement",
+ "grlm2a7z2a": "Robots parallèles, LQR, MPC, robots à pattes et aériens, vision en pratique, apprentissage par renforcement, préhension en pratique",
  "2c51142iegu": "ROS 2 depuis zéro",
  "1qxojzpfhtj": "Nœuds, topics, Python, fichiers de lancement, tf2, URDF, simulation, Nav2, MoveIt 2 et un premier projet",
  "22hmzt58fjs": "Robots mobiles à roues, partie 1",

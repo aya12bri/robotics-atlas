@@ -134,7 +134,9 @@ lesson(PRE, 3, {
         ['The gripper is often the real limit of a robot project: choose it first, with the part, not last.', 'La pince est souvent la vraie limite d\'un projet de robot : la choisir en premier, avec la pièce, pas en dernier.'],
         ['Test grasps with the real parts, at the real speed and acceleration.', 'Testez les prises avec les vraies pièces, à la vraie vitesse et accélération.'],
         ['Release is as important as grasp: pushing air to release a part, or a spring to open on power loss, avoids dropping or sticking.', 'Le relâchement est aussi important que la saisie : souffler de l\'air pour lâcher une pièce, ou un ressort pour ouvrir en cas de coupure, évite chute ou collage.']
-      ]))
+      ])),
+    P('<strong>Go further.</strong> To choose and size a gripper or a vacuum system like an engineer (accelerations, V-jaws, number of cups, wrist moment, friction cones, tests), read <a href="learn-advanced.html#l8">Advanced robotics, lesson 8: grasping in practice</a>.',
+      '<strong>Pour aller plus loin.</strong> Pour choisir et dimensionner une pince ou un système de vide comme un ingénieur (accélérations, mors en V, nombre de ventouses, moment au poignet, cônes de frottement, essais), lisez <a href="learn-advanced.html#l8">Robotique avancée, leçon 8 : la préhension en pratique</a>.')
   ],
   terms: [['end effector', 'effecteur'], ['gripper', 'pince'], ['vacuum cup', 'ventouse'], ['friction grip', 'prise par frottement'], ['form closure', 'fermeture de forme'], ['TCP', 'TCP'], ['flange', 'bride'], ['tool changer', 'changeur d\'outil']],
   quiz: [
