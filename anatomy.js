@@ -40,6 +40,7 @@ const q = CFG.home.slice();
 
 const box = document.getElementById('anatView');
 const scene = new THREE.Scene();
+if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
 scene.background = new THREE.Color('#1d2638');
 const camera = new THREE.PerspectiveCamera(42, box.clientWidth / box.clientHeight, 0.1, 50);
 camera.position.set(...CFG.cam);

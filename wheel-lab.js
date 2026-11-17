@@ -22,6 +22,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0x262626);
 const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x1d2638, 7, 18);
+if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
 const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 60); camera.position.set(2.5, 1.7, 3.5);
 const orbit = new OrbitControls(camera, canvas); orbit.target.set(0, 0.7, 0); orbit.enableDamping = true; orbit.minDistance = 1.6; orbit.maxDistance = 7; orbit.maxPolarAngle = Math.PI * 0.49; orbit.enablePan = false;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 1.1));

@@ -199,6 +199,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
+      if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
       scene.background = new THREE.Color('#1d2638');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(0.0, 3.0, 3.1);

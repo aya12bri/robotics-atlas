@@ -264,6 +264,37 @@
     paint();
     return c;
   };
+  // ---------------------------------------------------------------- 3D views: dark parts become light grey in dark mode
+  // Every 3D scene calls RA.darkParts(scene). In dark mode, any black or very dark part of a robot (caps, tyres, forks,
+  // frames, arrows) is shown light grey, so that it stands out on the night background; in light mode its own colour
+  // comes back. Floors, grids, shadows and the colours the code changes on purpose (highlights) are left alone.
+  RA.darkParts = function (scene) {
+    if (!scene || !scene.traverse) return;
+    const KEEP = new Set(['1d2638', '253047', '2a3550', '242f44', '27324a', '2b2e33', '262626', '0e1420', '4b5870', '3d4b66']);   // floors and pads
+    const lum = (h) => { const v = [0, 2, 4].map((i) => parseInt(h.substr(i, 2), 16) / 255); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+    const dark = () => (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
+    const apply = () => {
+      const D = dark();
+      scene.traverse((o) => {
+        if (!o.material || o.isGridHelper || o.userData.raKeep) return;
+        const g = o.geometry && o.geometry.type; if (g === 'PlaneGeometry' || g === 'PlaneBufferGeometry') return;
+        (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
+          if (!m || m.vertexColors || m.map || (m.transparent && m.opacity < 0.6)) return;
+          const col = m.userData.base && m.userData.base.isColor ? m.userData.base : m.color;     // some scenes recompute the colour from a base
+          if (!col || !col.getHexString) return;
+          const u = m.userData;
+          if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.12 ? 'c3cad6' : 'a6b0be'; }
+          if (!u.raLight) return;
+          const cur = col.getHexString();
+          if (D && cur === u.raDark) col.set('#' + u.raLight); else if (!D && cur === u.raLight) col.set('#' + u.raDark);
+        });
+      });
+    };
+    apply();
+    new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+    matchMedia('(prefers-color-scheme: light)').addEventListener('change', apply);
+    setInterval(() => { if (!document.hidden) apply(); }, 1000);                 // parts added later (assembly, demos)
+  };
   window.addEventListener('storage', (e) => { if (e.key === PROG) window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); });
   const SKIP = /^(SCRIPT|STYLE|SVG|CANVAS|TEXTAREA|NOSCRIPT|PRE|CODE)$/i;
   const mine = (el) => el.classList && (el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.classList.contains('ra-own'));   // ra-own: built in the right language by its own script

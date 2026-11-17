@@ -439,6 +439,7 @@ function mount(host) {
   const card = host.querySelector('.insd-card'), partsEl = host.querySelector('.insd-parts'), detail = host.querySelector('.insd-detail');
 
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 0.005, 40);
+  if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.prepend(renderer.domElement);
   const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.enablePan = false;

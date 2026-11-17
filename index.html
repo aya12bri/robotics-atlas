@@ -384,6 +384,7 @@ if (renderer) {
   const LITE = innerWidth < 900;                                  // phones and small screens: cheaper rendering
   renderer.setClearColor(0x000000, 0); renderer.shadowMap.enabled = false;                    // no real-time shadows: a soft blob under the robot is enough and much cheaper
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.1, 80);
+  if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
   scene.fog = new THREE.Fog(0x1f1f1f, 5, 12);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.05));
   const sun = new THREE.DirectionalLight(0xffffff, 2.0); sun.position.set(3.2, 5.5, 2.4); sun.castShadow = false;
