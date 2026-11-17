@@ -14,6 +14,9 @@
     <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/" />
     <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <meta name="description" content="An illustrated atlas of robot types: tasks, kinematic diagrams, DH tables and interactive 3D models." />
     <link rel="stylesheet" href="style.css" />
@@ -323,6 +326,7 @@ addEventListener('ra-progress', paintRoad); paintRoad();
 $('rmBackup').className = 'rm-extra ra-own';
 $('rmBackup').innerHTML = `<p class="rm-cert"><a class="btn ghost" href="certificate.html">🎓 ${L('My certificates', 'Mes certificats')}</a> <span>${L('Finish a course to get a certificate with your name, to print or save as PDF.', 'Terminez un cours pour obtenir un certificat à votre nom, à imprimer ou enregistrer en PDF.')}</span></p>`;
 if (window.RA && RA.backupPanel) RA.backupPanel($('rmBackup'));
+if (window.RA && RA.offlinePanel) { const op = RA.offlinePanel($('rmBackup')); if (location.hash === '#offline') setTimeout(() => op.scrollIntoView({ block: 'center' }), 600); }
 // ---------- smooth hand-over between the screens: each one fades and drifts as it leaves or arrives ----------
 const FADE = [[secHero, [...secHero.querySelectorAll('.hero-front, .hero-title, .ticker')]], [secTour, [secTour.querySelector('.wrap')]], [secGal, [secGal.querySelector('.wrap')]]];
 let fadeRaf = 0;

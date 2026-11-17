@@ -1,0 +1,20 @@
+{
+  "name": "Robotics Atlas",
+  "short_name": "Robotics Atlas",
+  "description": "Learn robotics from zero to Master level: courses, 3D robots, exercises and quizzes. Works offline.",
+  "lang": "en",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1f1f1f",
+  "theme_color": "#2f6bff",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Learning roadmap", "url": "/#road" },
+    { "name": "My certificates", "url": "/certificate" }
+  ]
+}

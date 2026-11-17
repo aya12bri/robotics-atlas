@@ -21,6 +21,7 @@ const DESC = {
   'learn-advanced.html': 'Advanced robotics at Master level: parallel robots (Delta, Stewart), LQR, model predictive control, legged robots and the ZMP, quadrotors, vision in practice and reinforcement learning.',
   'learn-ros.html': 'ROS 2 from zero: nodes, topics, your first Python nodes, services, actions, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first complete project.',
   'certificate.html': 'Your Robotics Atlas certificates: finish a course and get a certificate with your name, to print or save as PDF. Save or restore your progress.',
+  'offline.html': 'You are offline. The pages of Robotics Atlas you already opened, or downloaded, can still be read here.',
   'build.html': 'A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',
   'gantry.html': 'Interactive 3D Cartesian gantry robot with three sliding axes: kinematics, workspace and pick and place.',
@@ -57,12 +58,14 @@ for (const f of pages) {
     `<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="${NAME}" />`,
     `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(desc)}" />`,
     `<meta property="og:url" content="${url(f)}" />`, `<meta property="og:image" content="${IMG}" />`,
-    `<meta name="twitter:card" content="summary_large_image" />`
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    // offline mode: the site can be installed as an app (manifest, service worker in nav.js)
+    '<link rel="manifest" href="/manifest.webmanifest" />', '<meta name="theme-color" content="#2f6bff" />', '<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />'
   ].filter(Boolean);
   h = h.replace(/(<title>[^<]*<\/title>\n)/, `$1    <!-- seo -->\n${tags.map((t) => '    ' + t + '\n').join('')}    <!-- /seo -->\n`);
   fs.writeFileSync(file, h);
 }
-const urls = pages.map((f) => `  <url><loc>${url(f)}</loc></url>`).join('\n');
+const urls = pages.filter((f) => f !== 'offline.html').map((f) => `  <url><loc>${url(f)}</loc></url>`).join('\n');
 fs.writeFileSync(path.join(root, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
 fs.writeFileSync(path.join(root, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log('pages', pages.length);

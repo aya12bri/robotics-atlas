@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -164,6 +164,82 @@
     host.appendChild(d);
     return d;
   };
+  // ---------------------------------------------------------------- offline mode (sw.js) and installation as an app
+  const swOK = 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+  let installEvt = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; window.dispatchEvent(new Event('ra-offline')); });
+  window.addEventListener('appinstalled', () => { installEvt = null; window.dispatchEvent(new Event('ra-offline')); });
+  if (swOK) window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => { /* offline mode not available */ }); });
+  const standalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  // asks the service worker; answers come back as messages
+  const swAsk = (msg, onMsg) => {
+    if (!swOK) return Promise.resolve(false);
+    return navigator.serviceWorker.ready.then((reg) => {
+      const sw = reg.active; if (!sw) return false;
+      const ch = (e) => { if (onMsg(e.data) === 'stop') navigator.serviceWorker.removeEventListener('message', ch); };
+      navigator.serviceWorker.addEventListener('message', ch);
+      sw.postMessage(msg); return true;
+    });
+  };
+  RA.offlinePanel = function (host) {
+    const fr = RA.lang === 'fr', L = (en, f) => (fr ? f : en);
+    const mb = (b) => (b / 1048576).toFixed(1).replace('.', fr ? ',' : '.') + (fr ? ' Mo' : ' MB');
+    const d = document.createElement('details');
+    d.className = 'backup offline ra-own'; d.id = 'offline';
+    d.innerHTML = `<summary>📶 ${L('Offline mode and app', 'Mode hors ligne et application')}</summary><div class="bk-body">` +
+      `<p>${L('Every page you open is kept on this device and works without internet next time. You can also download the whole site now (lessons, 3D robots, quizzes), for the train or a place without a connection.', 'Chaque page que vous ouvrez est gardée sur cet appareil et marche sans internet la fois suivante. Vous pouvez aussi télécharger tout le site maintenant (leçons, robots 3D, quiz), pour le train ou un endroit sans connexion.')}</p>` +
+      `<p class="off-st bk-msg"></p><div class="cc-bar off-bar" hidden><i></i></div>` +
+      `<div class="bk-row"><button type="button" class="btn" data-o="all">${L('Download the whole site', 'Télécharger tout le site')}</button><button type="button" class="btn ghost" data-o="install" hidden>${L('Install the app', "Installer l'application")}</button></div>` +
+      `<p class="off-ios" hidden>${L('On iPhone or iPad: tap Share, then "Add to Home Screen".', "Sur iPhone ou iPad : touchez Partager, puis « Sur l'écran d'accueil ».")}</p>` +
+      `<p><button type="button" class="linkish" data-o="clear">${L('Remove the downloaded files', 'Supprimer les fichiers téléchargés')}</button></p></div>`;
+    host.appendChild(d);
+    const st = d.querySelector('.off-st'), bar = d.querySelector('.off-bar'), all = d.querySelector('[data-o=all]'), inst = d.querySelector('[data-o=install]'), clr = d.querySelector('[data-o=clear]');
+    if (!swOK) {
+      st.textContent = L('The offline mode is not available in this browser.', "Le mode hors ligne n'est pas disponible dans ce navigateur."); st.className = 'off-st bk-msg bad';
+      all.hidden = true; clr.hidden = true; return d;
+    }
+    let busy = false;
+    const paint = () => {
+      inst.hidden = !installEvt;
+      d.querySelector('.off-ios').hidden = !(/iphone|ipad|ipod/i.test(navigator.userAgent) && !standalone());
+      if (busy) return;
+      swAsk({ type: 'status' }, (m) => {
+        if (!m || m.type !== 'status') return;
+        st.className = 'off-st bk-msg' + (m.full ? ' ok' : '');
+        st.textContent = (m.full ? '✓ ' + L('The whole site is available offline', 'Tout le site est disponible hors ligne') : L(`Available offline: ${m.pages} of ${m.totalPages} pages`, `Disponible hors ligne : ${m.pages} pages sur ${m.totalPages}`)) +
+          ` (${mb(m.bytes)} / ${mb(m.size)})` + (standalone() ? ' · ' + L('app installed', 'application installée') : '');
+        all.hidden = m.full; all.textContent = L(`Download the whole site (${mb(m.size)})`, `Télécharger tout le site (${mb(m.size)})`);
+        return 'stop';
+      }).then((ok) => { if (!ok) st.textContent = L('Preparing the offline mode…', 'Préparation du mode hors ligne…'); });
+    };
+    all.addEventListener('click', () => {
+      if (busy) return; busy = true; all.disabled = true; bar.hidden = false;
+      st.className = 'off-st bk-msg'; st.textContent = L('Downloading…', 'Téléchargement…');
+      swAsk({ type: 'download-all' }, (m) => {
+        if (m.type === 'progress') { bar.querySelector('i').style.width = Math.round(100 * m.done / m.total) + '%'; st.textContent = L('Downloading… ', 'Téléchargement… ') + m.done + ' / ' + m.total; }
+        else if (m.type === 'done') {
+          busy = false; all.disabled = false; setTimeout(() => { bar.hidden = true; }, 800);
+          if (m.failed) { st.className = 'off-st bk-msg bad'; st.textContent = L(`${m.failed} files could not be downloaded: check the connection and try again.`, `${m.failed} fichiers n'ont pas pu être téléchargés : vérifiez la connexion et réessayez.`); }
+          else paint();
+          return 'stop';
+        }
+      });
+    });
+    inst.addEventListener('click', () => { if (!installEvt) return; installEvt.prompt(); installEvt.userChoice.finally(() => { installEvt = null; paint(); }); });
+    clr.addEventListener('click', () => {
+      if (!confirm(L('Remove the downloaded files from this device? (Your progress is kept.)', 'Supprimer les fichiers téléchargés de cet appareil ? (Votre progression est gardée.)'))) return;
+      swAsk({ type: 'clear' }, (m) => { if (m.type === 'cleared') { paint(); return 'stop'; } });
+    });
+    d.addEventListener('toggle', () => { if (d.open) paint(); });
+    // "Offline mode" links (footer) open the panel
+    const openIt = () => { d.open = true; };
+    if (location.hash === '#offline') openIt();
+    window.addEventListener('hashchange', () => { if (location.hash === '#offline') openIt(); });
+    document.addEventListener('click', (e) => { const a = e.target.closest && e.target.closest('a[href$="#offline"]'); if (a) openIt(); }, true);
+    window.addEventListener('ra-offline', paint);
+    paint();
+    return d;
+  };
   window.addEventListener('storage', (e) => { if (e.key === PROG) window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); });
   const SKIP = /^(SCRIPT|STYLE|SVG|CANVAS|TEXTAREA|NOSCRIPT|PRE|CODE)$/i;
   const mine = (el) => el.classList && (el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.classList.contains('ra-own'));   // ra-own: built in the right language by its own script
@@ -282,6 +358,13 @@
       `<button class="icon-btn nav-toggle" type="button" aria-label="${ui.menu}" aria-expanded="false">☰</button></div></div>`;
     document.body.insertBefore(nav, document.body.firstChild);
 
+    // a small badge while the connection is lost
+    const badge = document.createElement('span');
+    badge.className = 'off-badge'; badge.textContent = lang === 'fr' ? 'Hors ligne' : 'Offline';
+    badge.title = lang === 'fr' ? 'Pas de connexion : vous lisez la copie enregistrée sur cet appareil.' : 'No connection: you are reading the copy stored on this device.';
+    nav.querySelector('.nav-tools').prepend(badge);
+    const net = () => { badge.hidden = navigator.onLine !== false; };
+    window.addEventListener('online', net); window.addEventListener('offline', net); net();
     const themeBtn = nav.querySelector('.theme-btn');
     const paintTheme = () => { themeBtn.innerHTML = effective() === 'dark' ? SUN : MOON; };
     paintTheme();
@@ -334,7 +417,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="certificate.html">${ui.certs}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {
