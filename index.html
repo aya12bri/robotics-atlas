@@ -328,7 +328,7 @@ addEventListener('ra-progress', paintRoad); paintRoad();
 $('rmBackup').className = 'tool-row';
 if (window.RA && RA.toolCard) {
   const cc = RA.toolCard($('rmBackup'), 'cert', L('Certificates', 'Certificats'), L('My certificates', 'Mes certificats'),
-    L('Finish a course to get a certificate with your name, to print or save as PDF.', 'Terminez un cours pour obtenir un certificat à votre nom, à imprimer ou enregistrer en PDF.'));
+    L('Finish a course and pass its final exam to get a certificate with your name.', 'Terminez un cours et réussissez son examen final pour obtenir un certificat à votre nom.'));
   cc.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="certificate.html">${L('See my certificates', 'Voir mes certificats')}</a>`;
   const paintCert = () => {
     const C = window.RA_COURSES || [], P = prog();

@@ -116,7 +116,7 @@
       Object.keys(o.data).forEach((k) => {
         if (!KEEP(k) || typeof o.data[k] !== 'string') return;
         let v = o.data[k];
-        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert') {
+        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert' || k === 'ra-exam') {
           try { const cur = JSON.parse(store.get(k) || '{}') || {}, add = JSON.parse(v) || {}; v = JSON.stringify(Object.assign(cur, add)); } catch (e) { return; }
         }
         store.set(k, v); n++;
@@ -463,7 +463,8 @@
     if (cta && curCard) {
       const c = document.createElement('p');
       c.className = 'cta cert-cta ra-own';
-      c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a> <a class="btn ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? '🖨 Fiche de révision du cours' : '🖨 Revision sheet of the course'}</a>`;
+      const noExam = ['armlab', 'wmrpro'].includes(curCard.dataset.key);   // these two have their exam in their last lesson
+      c.innerHTML = (noExam ? '' : `<a class="btn" href="exam.html#${curCard.dataset.key}">${lang === 'fr' ? '📝 Passer l\'examen final' : '📝 Take the final exam'}</a> `) + `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a> <a class="btn ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? '🖨 Fiche de révision du cours' : '🖨 Revision sheet of the course'}</a>`;
       cta.after(c);
     }
     // lessons about sensors: a link to the matching bench of the sensor test bench

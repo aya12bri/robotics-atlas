@@ -12,7 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 
 // pages in the order results of equal score are shown; the 404 page is not indexed
-const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'offline.html')
+const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'exam.html' && f !== 'offline.html')
   .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 function rank(f) { return f === 'index.html' ? 0 : f.startsWith('learn') ? 1 : f.startsWith('anatomy') ? 3 : 2; }
 
@@ -157,6 +157,7 @@ fs.writeFileSync(path.join(root, 'glossary-data.js'), '// glossary-data.js — g
   ['camera', ['Camera distortion and stereo depth error', 'Distorsion de caméra et erreur de profondeur stéréo'], ['pinhole, focal length, radial distortion k1, barrel, pincushion, calibration, stereo baseline, disparity, Z = f B / d', 'sténopé, focale, distorsion radiale k1, barillet, coussinet, étalonnage, base stéréo, disparité, Z = f B / d']],
   ['sonar', ['Ultrasonic range finder: cone, echo and temperature', 'Télémètre à ultrasons : cône, écho et température'], ['ultrasonic sensor, beam angle, specular reflection, time of flight, speed of sound, temperature, cross-talk', 'capteur à ultrasons, angle du faisceau, réflexion spéculaire, temps de vol, vitesse du son, température, diaphonie']]
 ].forEach(([id, t, x]) => out.push({ u: 'sensors' + (id ? '#' + id : ''), k: 'page', p: ['Sensor test bench', 'Banc d\'essai des capteurs'], n: '', t, x, m: 0 }));
+out.push({ u: 'exam', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Final exams', 'Examens finaux'], x: ['One final exam per course: 12 questions, multiple choice and calculations, corrected with explanations; 70 % to pass and get the certificate.', 'Un examen final par cours : 12 questions, QCM et calculs, corrigées avec explications ; 70 % pour réussir et obtenir le certificat.'], m: 0 });
 // the glossary entries are found by the search too
 for (const e of GLOSS) out.push({ u: 'glossary#' + e.id, k: 'gloss', p: [ 'Glossary', 'Glossaire' ], n: '', t: e.t, x: [plain(e.d[0]), plain(e.d[1])], m: 0 });
 out.push({ u: 'glossary', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Robotics glossary', 'Glossaire de la robotique'], x: [`Every word of robotics in one place: ${GLOSS.length} terms with their meaning, in English and French, and the lesson that explains them.`, `Tous les mots de la robotique au même endroit : ${GLOSS.length} termes avec leur sens, en anglais et en français, et la leçon qui les explique.`], m: 0 });
