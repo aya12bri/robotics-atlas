@@ -1,0 +1,415 @@
+// sensors.js — the sensor test bench (sensors.html): five live benches that show what real sensors measure,
+// with their resolution, noise, bias and blind spots: encoder, IMU (gyroscope + accelerometer), 2D lidar,
+// camera and stereo depth, ultrasonic range finder. Everything is simulated in the browser (no library).
+(function () {
+  function start() {
+    var RA = window.RA || {}, FR = RA.lang === 'fr';
+    var L = function (en, fr) { return FR ? fr : en; };
+    var main = document.getElementById('sens');
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var num = function (v, d) { var s = (+v).toFixed(d === undefined ? 2 : d); return FR ? s.replace('.', ',') : s; };
+    document.title = L('Sensor test bench', 'Banc d\'essai des capteurs') + ' — Robotics Atlas';
+
+    // ------------------------------------------------------------------ helpers: random numbers, colours, canvas
+    function rng(seed) { var a = seed >>> 0; return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function gauss(r) { var u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+    var C = {};
+    function colours() {
+      var cs = getComputedStyle(document.documentElement), g = function (n, d) { return (cs.getPropertyValue(n) || '').trim() || d; };
+      C = { bg: g('--fpanel', '#141c2b'), ink: g('--f-ink', '#d6dfeb'), axis: g('--f-axis', '#a3b0c2'), grid: g('--f-grid', '#2c3a50'), box: g('--f-box', '#1c2638'),
+        o: g('--f-o', '#ffa04d'), b: g('--f-b', '#5aa9ff'), g: g('--f-g', '#4ed17f'), r: g('--f-r', '#ff6b6b'), p: g('--f-p', '#b88cff'), y: g('--f-y', '#ffd60a'), mute: g('--f-mute', '#8a99ae') };
+    }
+    colours();
+    function canvas(host, ratio) {
+      var c = document.createElement('canvas'); c.className = 'sb-cv'; host.appendChild(c);
+      var o = { c: c, x: c.getContext('2d'), w: 0, h: 0, ratio: ratio };
+      o.fit = function () { var w = Math.max(240, c.clientWidth || host.clientWidth || 600), h = Math.round(w * ratio), d = window.devicePixelRatio || 1; c.width = Math.round(w * d); c.height = Math.round(h * d); c.style.height = h + 'px'; o.x.setTransform(d, 0, 0, d, 0, 0); o.w = w; o.h = h; };
+      o.fit(); return o;
+    }
+    function clear(cv) { var x = cv.x; x.fillStyle = C.bg; x.fillRect(0, 0, cv.w, cv.h); }
+    function text(cv, s, px, py, col, size, align, bold) { var x = cv.x; x.fillStyle = col || C.ink; x.font = (bold ? '600 ' : '') + (size || 12) + 'px "IBM Plex Mono", ui-monospace, monospace'; x.textAlign = align || 'left'; x.fillText(s, px, py); }
+    // a time chart: { x0, x1, y0, y1, series: [{ pts:[[x,y]], col, w, dash, label }], xl, yl, cursor }
+    function chart(cv, o, area) {
+      var x = cv.x, A = area || { l: 48, t: 14, r: cv.w - 12, b: cv.h - 30 };
+      var X = function (v) { return A.l + (v - o.x0) / (o.x1 - o.x0) * (A.r - A.l); }, Y = function (v) { return A.b - (v - o.y0) / (o.y1 - o.y0) * (A.b - A.t); };
+      x.lineWidth = 1; x.strokeStyle = C.grid; x.setLineDash([]);
+      for (var i = 0; i <= 5; i++) { var vx = o.x0 + (o.x1 - o.x0) * i / 5, vy = o.y0 + (o.y1 - o.y0) * i / 4;
+        x.beginPath(); x.moveTo(X(vx), A.t); x.lineTo(X(vx), A.b); x.stroke(); text(cv, num(vx, Math.abs(o.x1 - o.x0) < 5 ? 1 : 0), X(vx), A.b + 14, C.axis, 11, 'center');
+        if (i <= 4) { x.beginPath(); x.moveTo(A.l, Y(vy)); x.lineTo(A.r, Y(vy)); x.stroke(); text(cv, num(vy, Math.abs(o.y1 - o.y0) < 5 ? 1 : 0), A.l - 6, Y(vy) + 4, C.axis, 11, 'right'); } }
+      if (o.xl) text(cv, o.xl, A.r, A.b + 27, C.axis, 11, 'right');
+      if (o.yl) text(cv, o.yl, A.l + 4, A.t + 11, C.axis, 11, 'left');
+      x.save(); x.beginPath(); x.rect(A.l, A.t, A.r - A.l, A.b - A.t); x.clip();
+      o.series.forEach(function (s) {
+        x.strokeStyle = s.col; x.lineWidth = s.w || 2; x.setLineDash(s.dash || []); x.beginPath();
+        s.pts.forEach(function (p, k) { if (k) x.lineTo(X(p[0]), Y(p[1])); else x.moveTo(X(p[0]), Y(p[1])); });
+        x.stroke();
+      });
+      x.restore(); x.setLineDash([]);
+      // the legend, on a background box, under the axis title
+      var labs = o.series.filter(function (s) { return s.label; });
+      if (labs.length) {
+        x.font = '11px "IBM Plex Mono", ui-monospace, monospace';
+        var lw = Math.max.apply(null, labs.map(function (s) { return x.measureText(s.label).width; })) + 40, lh = labs.length * 15 + 8, lx = A.l + 8, ly0 = A.t + 18;
+        x.fillStyle = C.bg; x.globalAlpha = 0.85; x.fillRect(lx, ly0 - 2, lw, lh); x.globalAlpha = 1; x.strokeStyle = C.grid; x.strokeRect(lx, ly0 - 2, lw, lh);
+        labs.forEach(function (s, k) { var ly = ly0 + 12 + k * 15; x.fillStyle = s.col; x.fillRect(lx + 8, ly - 5, 14, 3); text(cv, s.label, lx + 28, ly, s.col, 11); });
+      }
+      if (o.cursor !== undefined) { x.strokeStyle = C.axis; x.setLineDash([3, 4]); x.beginPath(); x.moveTo(X(o.cursor), A.t); x.lineTo(X(o.cursor), A.b); x.stroke(); x.setLineDash([]); }
+      return { X: X, Y: Y, A: A };
+    }
+    // a slider with its value
+    function slider(host, o) {
+      var w = document.createElement('label'); w.className = 'sb-sl';
+      w.innerHTML = '<span>' + o.label + '</span><input type="range" min="' + o.min + '" max="' + o.max + '" step="' + (o.step || 1) + '" value="' + o.value + '"><b></b>';
+      host.appendChild(w);
+      var i = w.querySelector('input'), b = w.querySelector('b');
+      var val = function () { var v = +i.value; return o.map ? o.map(v) : v; };
+      var show = function () { b.textContent = o.fmt ? o.fmt(val()) : num(val(), o.dec || 0); };
+      i.addEventListener('input', function () { show(); o.on && o.on(); }); show();
+      return { get: val, input: i };
+    }
+    function check(host, label, on, cb) { var w = document.createElement('label'); w.className = 'sb-ck'; w.innerHTML = '<input type="checkbox"' + (on ? ' checked' : '') + '> ' + label; host.appendChild(w); var i = w.querySelector('input'); i.addEventListener('change', cb); return i; }
+    function readouts(host) { var d = document.createElement('div'); d.className = 'sb-read'; host.appendChild(d); return function (rows) { d.innerHTML = rows.map(function (r) { return '<div' + (r[2] ? ' class="' + r[2] + '"' : '') + '><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join(''); }; }
+
+    // ------------------------------------------------------------------ page
+    var BENCH = [
+      { id: 'encoder', t: L('Encoder', 'Encodeur'), d: L('How finely does a wheel or a joint know its angle and its speed?', 'À quel point une roue ou une articulation connaît-elle son angle et sa vitesse ?') },
+      { id: 'imu', t: L('IMU: gyro + accelerometer', 'Centrale inertielle (IMU)'), d: L('Why a gyroscope drifts, why an accelerometer is noisy, and how to combine them.', 'Pourquoi un gyroscope dérive, pourquoi un accéléromètre est bruité, et comment les combiner.') },
+      { id: 'lidar', t: L('2D lidar', 'Lidar 2D'), d: L('What a laser scanner sees in a room: noise, resolution, glass and black objects.', 'Ce qu\'un scanner laser voit dans une pièce : bruit, résolution, verre et objets noirs.') },
+      { id: 'camera', t: L('Camera and stereo', 'Caméra et stéréo'), d: L('Lens distortion, and why stereo depth gets worse with the square of the distance.', 'La distorsion de l\'objectif, et pourquoi la profondeur stéréo se dégrade avec le carré de la distance.') },
+      { id: 'sonar', t: L('Ultrasonic', 'Ultrasons'), d: L('A wide cone, walls that do not answer, and the temperature that changes the distance.', 'Un cône large, des murs qui ne répondent pas, et la température qui change la distance.') }
+    ];
+    main.innerHTML = '<h1>' + L('Sensor test bench', 'Banc d\'essai des capteurs') + '</h1>' +
+      '<p class="lead">' + L('Every sensor lies a little: it has a resolution, noise, a bias, and blind spots. Turn the knobs and watch what a robot really measures, then read the numbers that engineers use to choose a sensor.', 'Tout capteur ment un peu : il a une résolution, du bruit, un biais et des angles morts. Tournez les boutons et regardez ce qu\'un robot mesure vraiment, puis lisez les chiffres que les ingénieurs utilisent pour choisir un capteur.') + '</p>' +
+      '<nav class="sb-tabs" role="tablist">' + BENCH.map(function (b, k) { return '<button type="button" role="tab" data-b="' + b.id + '" aria-selected="' + (k === 0) + '"><b>' + esc(b.t) + '</b><span>' + esc(b.d) + '</span></button>'; }).join('') + '</nav>' +
+      BENCH.map(function (b) { return '<section class="sb-bench" id="' + b.id + '" hidden></section>'; }).join('');
+    var running = null;                                                    // the animation of the bench on screen
+    function show(id) {
+      if (!BENCH.some(function (b) { return b.id === id; })) id = 'encoder';
+      [].forEach.call(main.querySelectorAll('.sb-tabs button'), function (b) { b.setAttribute('aria-selected', String(b.dataset.b === id)); });
+      [].forEach.call(main.querySelectorAll('.sb-bench'), function (s) { s.hidden = s.id !== id; });
+      if (running && running.stop) running.stop();
+      var sec = document.getElementById(id);
+      if (!sec.dataset.ready) { sec.dataset.ready = '1'; sec._b = MAKERS[id](sec); }
+      running = sec._b; running.start && running.start();
+      if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+    }
+    main.querySelector('.sb-tabs').addEventListener('click', function (e) { var b = e.target.closest('button[data-b]'); if (b) show(b.dataset.b); });
+    function frame(sec, title, intro) {
+      sec.innerHTML = '<h2>' + title + '</h2><p class="sb-intro">' + intro + '</p><div class="sb-grid"><div class="sb-view"></div><div class="sb-side"><div class="sb-ctl"></div></div></div><div class="sb-notes"></div>';
+      return { view: sec.querySelector('.sb-view'), ctl: sec.querySelector('.sb-ctl'), side: sec.querySelector('.sb-side'), notes: sec.querySelector('.sb-notes') };
+    }
+    function notes(el, eqs, tips) {
+      el.innerHTML = '<div class="sb-eq">' + eqs.map(function (q) { return '<p>' + q + '</p>'; }).join('') + '</div><ul class="sb-tips">' + tips.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>';
+    }
+
+    var MAKERS = {};
+    // ================================================================== 1. encoder
+    MAKERS.encoder = function (sec) {
+      var F = frame(sec, L('Incremental encoder', 'Encodeur incrémental'), L('A disc with N lines turns in front of two optical sensors A and B, a quarter of a line apart. Each edge is one count; with both channels (quadrature) you get 4 counts per line and the direction. The speed is estimated by counting the edges during a sampling period T.', 'Un disque à N traits tourne devant deux capteurs optiques A et B, décalés d\'un quart de trait. Chaque front est une impulsion ; avec les deux voies (quadrature) on obtient 4 impulsions par trait et le sens. La vitesse est estimée en comptant les fronts pendant une période d\'échantillonnage T.'));
+      var top = canvas(F.view, 0.42), bot = canvas(F.view, 0.42);
+      var lines = slider(F.ctl, { label: L('Lines per turn N', 'Traits par tour N'), min: 2, max: 11, value: 6, map: function (v) { return Math.pow(2, v); }, fmt: function (v) { return v; }, on: redraw });
+      var q4 = check(F.ctl, L('Quadrature ×4 (A and B edges)', 'Quadrature ×4 (fronts de A et B)'), true, redraw);
+      var rpm = slider(F.ctl, { label: L('True speed (rpm)', 'Vitesse réelle (tr/min)'), min: 0, max: 100, value: 75, map: function (v) { return Math.round(Math.pow(10, v / 100 * 3.3)) / 1; }, fmt: function (v) { return v; }, on: redraw });
+      var per = slider(F.ctl, { label: L('Sampling period T (ms)', 'Période d\'échantillonnage T (ms)'), min: 1, max: 50, value: 10, on: redraw });
+      var out = readouts(F.side);
+      notes(F.notes, [
+        L('Angle resolution: Δθ = 360° / (4 N) &emsp; Speed resolution: Δω = 60 / (4 N · T) rpm', 'Résolution d\'angle : Δθ = 360° / (4 N) &emsp; Résolution de vitesse : Δω = 60 / (4 N · T) tr/min'),
+        L('Speed estimate: ω̂ = Δcounts / (4 N · T) turns per second', 'Vitesse estimée : ω̂ = Δimpulsions / (4 N · T) tours par seconde')],
+        [L('At low speed with a short period, the estimate jumps between 0 and one count: lengthen T, filter, or time the edges (T-method).', 'À basse vitesse avec une période courte, l\'estimation saute entre 0 et une impulsion : allongez T, filtrez, ou mesurez le temps entre fronts (méthode T).'),
+          L('More lines or quadrature divide the step by 4: it is free precision. A gearbox after the motor multiplies the resolution at the joint by its ratio.', 'Plus de traits ou la quadrature divisent le pas par 4 : c\'est de la précision gratuite. Un réducteur après le moteur multiplie la résolution à l\'articulation par son rapport.'),
+          L('An incremental encoder counts from where it started: it needs a homing at start-up (an absolute encoder does not).', 'Un encodeur incrémental compte depuis là où il a démarré : il lui faut une prise d\'origine au démarrage (un encodeur absolu non).')]);
+      var t0 = performance.now(), raf = 0;
+      function counts(theta) { var n = lines.get() * (q4.checked ? 4 : 1); return Math.floor(theta * n); }   // theta in turns
+      function speedAt(t) { return rpm.get() / 60 * (1 + 0.25 * Math.sin(2 * Math.PI * 0.8 * t)); }      // turns per second, varying a little
+      function thetaAt(t) { var w = rpm.get() / 60; return w * t - w * 0.25 / (2 * Math.PI * 0.8) * Math.cos(2 * Math.PI * 0.8 * t) + w * 0.25 / (2 * Math.PI * 0.8); }
+      function redraw() {
+        var N = lines.get(), n = N * (q4.checked ? 4 : 1), T = per.get() / 1000, W = 2;
+        // the speed chart over 2 s
+        var tru = [], est = [], err = 0, k = 0, maxv = 0;
+        for (var t = 0; t <= W; t += 0.004) { var v = speedAt(t) * 60; tru.push([t, v]); maxv = Math.max(maxv, v); }
+        for (var s = T; s <= W; s += T) { var c = counts(thetaAt(s)) - counts(thetaAt(s - T)), v2 = c / n / T * 60; est.push([s - T, v2], [s, v2]); err += Math.pow(v2 - speedAt(s - T / 2) * 60, 2); k++; }
+        var ymax = Math.max(1, maxv * 1.35, est.reduce(function (m, p) { return Math.max(m, p[1]); }, 0) * 1.05);
+        clear(bot); chart(bot, { x0: 0, x1: W, y0: 0, y1: ymax, xl: L('time (s)', 'temps (s)'), yl: L('speed (rpm)', 'vitesse (tr/min)'), series: [{ pts: tru, col: C.b, w: 2, label: L('true speed', 'vitesse réelle') }, { pts: est, col: C.o, w: 2, label: L('measured (counts / T)', 'mesurée (impulsions / T)') }] });
+        out([
+          [L('Counts per turn', 'Impulsions par tour'), n],
+          [L('Angle resolution', 'Résolution d\'angle'), num(360 / n, 3) + '°'],
+          [L('Speed resolution', 'Résolution de vitesse'), num(60 / (n * T), 1) + ' ' + L('rpm', 'tr/min')],
+          [L('RMS speed error', 'Erreur de vitesse RMS'), num(Math.sqrt(err / Math.max(1, k)), 1) + ' ' + L('rpm', 'tr/min'), Math.sqrt(err / Math.max(1, k)) > 0.2 * rpm.get() ? 'bad' : 'ok']
+        ]);
+      }
+      function draw(now) {
+        var t = (now - t0) / 1000, N = lines.get(), x = top.x; clear(top);
+        // the disc (at most 64 lines drawn), turning slowly for the eye
+        var cx = top.h * 0.5 + 8, cy = top.h / 2, R = top.h * 0.42, show = Math.min(N, 64), ang = 2 * Math.PI * ((rpm.get() / 60) * t % 1) * Math.min(1, 1.5 / Math.max(0.1, rpm.get() / 60));
+        x.fillStyle = C.box; x.beginPath(); x.arc(cx, cy, R, 0, 7); x.fill(); x.strokeStyle = C.axis; x.lineWidth = 1.5; x.stroke();
+        x.strokeStyle = C.ink; x.lineWidth = Math.max(1, 2 * Math.PI * R / show / 2.4);
+        for (var i = 0; i < show; i++) { var a = ang + i * 2 * Math.PI / show; x.beginPath(); x.moveTo(cx + R * 0.72 * Math.cos(a), cy + R * 0.72 * Math.sin(a)); x.lineTo(cx + R * 0.95 * Math.cos(a), cy + R * 0.95 * Math.sin(a)); x.stroke(); }
+        x.fillStyle = C.bg; x.beginPath(); x.arc(cx, cy, R * 0.18, 0, 7); x.fill();
+        x.fillStyle = C.o; x.fillRect(cx + R * 0.97, cy - 10, 10, 8); x.fillStyle = C.b; x.fillRect(cx + R * 0.97, cy + 2, 10, 8);
+        text(top, 'A', cx + R + 14, cy - 2, C.o, 11); text(top, 'B', cx + R + 14, cy + 10, C.b, 11);
+        // A and B square waves over a window of 4 lines
+        var gx = cx + R + 34, gw = top.w - gx - 12, n4 = 4, period = 1 / N, th = thetaAt(t);
+        var sq = function (phase, yb, col) { x.strokeStyle = col; x.lineWidth = 2; x.beginPath(); for (var k = 0; k <= gw; k++) { var u = th - (gw - k) / gw * n4 * period, v = ((u / period + phase) % 1 + 1) % 1 < 0.5 ? 1 : 0, yy = yb - v * 22; if (k) x.lineTo(gx + k, yy); else x.moveTo(gx + k, yy); } x.stroke(); };
+        sq(0, cy - 12, C.o); sq(0.25, cy + 34, C.b);
+        text(top, L('channel A', 'voie A'), gx, cy - 42, C.o, 11); text(top, L('channel B (90° later)', 'voie B (90° plus tard)'), gx, cy + 4, C.b, 11);
+        text(top, L('4 lines shown', '4 traits affichés'), top.w - 12, top.h - 8, C.axis, 11, 'right');
+        raf = requestAnimationFrame(draw);
+      }
+      redraw();
+      return { start: function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); }, stop: function () { cancelAnimationFrame(raf); }, redraw: function () { top.fit(); bot.fit(); redraw(); } };
+    };
+
+    // ================================================================== 2. IMU
+    MAKERS.imu = function (sec) {
+      var F = frame(sec, L('IMU: gyroscope and accelerometer', 'Centrale inertielle : gyroscope et accéléromètre'), L('A robot tilts back and forth for 60 s. The gyroscope measures the rotation speed: integrated, it gives a smooth angle that slowly drifts (its bias adds up). The accelerometer sees gravity: it gives the tilt without drift, but noisy and disturbed by the movements. A complementary filter takes the best of both.', 'Un robot s\'incline d\'avant en arrière pendant 60 s. Le gyroscope mesure la vitesse de rotation : intégrée, elle donne un angle lisse qui dérive lentement (son biais s\'accumule). L\'accéléromètre voit la gravité : il donne l\'inclinaison sans dérive, mais bruitée et perturbée par les mouvements. Un filtre complémentaire prend le meilleur des deux.'));
+      var cv = canvas(F.view, 0.62);
+      var bias = slider(F.ctl, { label: L('Gyro bias (°/s)', 'Biais du gyro (°/s)'), min: 0, max: 200, value: 40, map: function (v) { return v / 100; }, dec: 2, on: compute });
+      var gn = slider(F.ctl, { label: L('Gyro noise (°/s)', 'Bruit du gyro (°/s)'), min: 0, max: 100, value: 20, map: function (v) { return v / 100; }, dec: 2, on: compute });
+      var an = slider(F.ctl, { label: L('Accelerometer noise (°)', 'Bruit de l\'accéléromètre (°)'), min: 0, max: 100, value: 30, map: function (v) { return v / 10; }, dec: 1, on: compute });
+      var vib = slider(F.ctl, { label: L('Vibration / moves', 'Vibrations / mouvements'), min: 0, max: 100, value: 40, map: function (v) { return v / 100; }, dec: 2, on: compute });
+      var al = slider(F.ctl, { label: L('Filter: gyro weight α', 'Filtre : poids du gyro α'), min: 0, max: 100, value: 80, map: function (v) { return 0.9 + v / 100 * 0.099; }, dec: 3, on: compute });
+      var shown = { gyro: true, acc: true, fus: true };
+      var out = readouts(F.side);
+      notes(F.notes, [
+        L('Gyro only: θ<sub>g</sub>(t) = ∫ ω<sub>meas</sub> dt → error grows like b · t &emsp; Accelerometer: θ<sub>a</sub> = atan2(a<sub>x</sub>, a<sub>z</sub>)', 'Gyro seul : θ<sub>g</sub>(t) = ∫ ω<sub>mes</sub> dt → l\'erreur croît comme b · t &emsp; Accéléromètre : θ<sub>a</sub> = atan2(a<sub>x</sub>, a<sub>z</sub>)'),
+        L('Complementary filter: θ ← α (θ + ω<sub>meas</sub> Δt) + (1 − α) θ<sub>a</sub> &emsp; time constant τ = α Δt / (1 − α)', 'Filtre complémentaire : θ ← α (θ + ω<sub>mes</sub> Δt) + (1 − α) θ<sub>a</sub> &emsp; constante de temps τ = α Δt / (1 − α)')],
+        [L('A bias of only 0.4 °/s gives 24° of error after one minute: never trust an integrated gyro alone for long.', 'Un biais de seulement 0,4 °/s donne 24° d\'erreur après une minute : ne faites jamais confiance longtemps à un gyro intégré seul.'),
+          L('α close to 1 trusts the gyro (smooth, but the bias leaks in); a smaller α trusts the accelerometer (no drift, but noisy): choose τ of about a second.', 'α proche de 1 fait confiance au gyro (lisse, mais le biais passe) ; un α plus petit fait confiance à l\'accéléromètre (pas de dérive, mais bruité) : choisissez τ d\'environ une seconde.'),
+          L('The yaw (heading) has no gravity reference: a magnetometer, a camera or a lidar is needed to correct it. A Kalman filter does the same job with the noise levels as weights.', 'Le lacet (cap) n\'a pas de référence de gravité : il faut un magnétomètre, une caméra ou un lidar pour le corriger. Un filtre de Kalman fait le même travail avec les niveaux de bruit comme poids.')]);
+      var D = null, t0 = 0, raf = 0, dur = 60, dt = 0.01, play = 9;    // 60 s shown in 9 s
+      function compute() {
+        var r = rng(7), n = Math.round(dur / dt), th = 0, w = 0, tg = 0, tf = 0, P = { t: [], tru: [], gyr: [], acc: [], fus: [] };
+        var b = bias.get(), sg = gn.get(), sa = an.get(), vb = vib.get(), a = al.get();
+        // smooth random target angles every 4 s, followed by a second-order motion
+        var targets = []; for (var k = 0; k <= dur / 4 + 1; k++) targets.push((r() * 2 - 1) * 30);
+        for (var i = 0; i <= n; i++) {
+          var t = i * dt, tgt = targets[Math.floor(t / 4)], acc = 6 * (tgt - th) - 4 * w;     // °/s²
+          w += acc * dt; th += w * dt;
+          var wm = w + b + sg * gauss(r) / Math.sqrt(dt) * 0.1;
+          var am = th + sa * gauss(r) + vb * acc * 0.12 + vb * 1.5 * Math.sin(2 * Math.PI * 9 * t);
+          tg += wm * dt; tf = a * (tf + wm * dt) + (1 - a) * am;
+          if (i % 5 === 0) { P.t.push(t); P.tru.push(th); P.gyr.push(tg); P.acc.push(am); P.fus.push(tf); }
+        }
+        D = P; t0 = performance.now(); draw(performance.now());
+        var rms = function (arr) { var s = 0; for (var j = 0; j < arr.length; j++) s += Math.pow(arr[j] - P.tru[j], 2); return Math.sqrt(s / arr.length); };
+        var tau = a * dt / (1 - a);
+        out([
+          [L('Gyro only: error after 60 s', 'Gyro seul : erreur après 60 s'), num(P.gyr[P.gyr.length - 1] - P.tru[P.tru.length - 1], 1) + '°', Math.abs(P.gyr[P.gyr.length - 1] - P.tru[P.tru.length - 1]) > 5 ? 'bad' : ''],
+          [L('Accelerometer only: RMS error', 'Accéléromètre seul : erreur RMS'), num(rms(P.acc), 2) + '°'],
+          [L('Complementary filter: RMS error', 'Filtre complémentaire : erreur RMS'), num(rms(P.fus), 2) + '°', rms(P.fus) < Math.min(rms(P.acc), rms(P.gyr)) ? 'ok' : ''],
+          [L('Filter time constant τ', 'Constante de temps du filtre τ'), num(tau, 2) + ' s']
+        ]);
+      }
+      var leg = document.createElement('div'); leg.className = 'sb-leg'; F.side.insertBefore(leg, F.side.querySelector('.sb-read'));
+      [['gyro', L('gyro integrated', 'gyro intégré'), 'o'], ['acc', L('accelerometer', 'accéléromètre'), 'p'], ['fus', L('filter', 'filtre'), 'g']].forEach(function (s) {
+        check(leg, '<i style="background:var(--f-' + s[2] + ')"></i>' + s[1], true, function (e) { shown[s[0]] = e.target.checked; draw(performance.now()); });
+      });
+      function draw(now) {
+        if (!D) return;
+        var tt = Math.min(dur, (now - t0) / 1000 / play * dur), m = Math.max(1, Math.round(tt / dur * (D.t.length - 1)));
+        var pick = function (arr) { var o = []; for (var j = 0; j <= m && j < arr.length; j++) o.push([D.t[j], arr[j]]); return o; };
+        var all = D.tru.concat(D.gyr, D.acc), lo = Math.min.apply(null, all), hi = Math.max.apply(null, all), pad = (hi - lo) * 0.08 + 2;
+        var series = [];
+        if (shown.acc) series.push({ pts: pick(D.acc), col: C.p, w: 1 });
+        if (shown.gyro) series.push({ pts: pick(D.gyr), col: C.o, w: 2 });
+        if (shown.fus) series.push({ pts: pick(D.fus), col: C.g, w: 2 });
+        series.push({ pts: pick(D.tru), col: C.ink, w: 1.5, dash: [5, 4], label: L('true angle', 'angle réel') });
+        clear(cv); chart(cv, { x0: 0, x1: dur, y0: Math.floor(lo - pad), y1: Math.ceil(hi + pad), xl: L('time (s)', 'temps (s)'), yl: L('tilt angle (°)', 'angle d\'inclinaison (°)'), series: series, cursor: tt < dur ? tt : undefined });
+        if (tt < dur) raf = requestAnimationFrame(draw);
+      }
+      var replay = document.createElement('button'); replay.type = 'button'; replay.className = 'btn sm ghost'; replay.textContent = L('Replay the 60 s', 'Rejouer les 60 s');
+      replay.addEventListener('click', function () { t0 = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); }); F.ctl.appendChild(replay);
+      compute();
+      return { start: function () { t0 = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); }, stop: function () { cancelAnimationFrame(raf); }, redraw: function () { cv.fit(); draw(performance.now() + 1e9); } };
+    };
+
+    // ================================================================== 3. lidar
+    MAKERS.lidar = function (sec) {
+      var F = frame(sec, L('2D lidar in a room', 'Lidar 2D dans une pièce'), L('A laser turns and measures the distance in each direction. Drag the robot in the room (or tick “robot moving”) and watch the points: each one is a distance with some noise. Glass lets the laser through, a black matt object sends almost nothing back, and far walls get few points.', 'Un laser tourne et mesure la distance dans chaque direction. Faites glisser le robot dans la pièce (ou cochez « robot en mouvement ») et regardez les points : chacun est une distance avec un peu de bruit. Le verre laisse passer le laser, un objet noir mat ne renvoie presque rien, et les murs lointains reçoivent peu de points.'));
+      var cv = canvas(F.view, 0.62);
+      var res = slider(F.ctl, { label: L('Angular resolution (°)', 'Résolution angulaire (°)'), min: 1, max: 40, value: 8, map: function (v) { return v / 8; }, dec: 2, on: rescan });
+      var noise = slider(F.ctl, { label: L('Range noise σ (cm)', 'Bruit de distance σ (cm)'), min: 0, max: 20, value: 3, on: rescan });
+      var maxr = slider(F.ctl, { label: L('Maximum range (m)', 'Portée maximale (m)'), min: 2, max: 12, value: 8, on: rescan });
+      var rate = slider(F.ctl, { label: L('Scan rate (Hz)', 'Fréquence de balayage (Hz)'), min: 1, max: 20, value: 5, on: function () {} });
+      var moving = check(F.ctl, L('Robot moving (1 m/s)', 'Robot en mouvement (1 m/s)'), false, rescan);
+      var showRays = check(F.ctl, L('Show the laser rays', 'Afficher les rayons laser'), false, function () {});
+      var out = readouts(F.side);
+      notes(F.notes, [
+        L('Points per turn = 360° / Δθ &emsp; Spacing between points at distance d: s = d · Δθ (rad)', 'Points par tour = 360° / Δθ &emsp; Espacement entre points à la distance d : s = d · Δθ (rad)'),
+        L('Distortion when moving: the robot travels v / f during one turn (1 m/s at 5 Hz → 20 cm)', 'Distorsion en mouvement : le robot parcourt v / f pendant un tour (1 m/s à 5 Hz → 20 cm)')],
+        [L('Small or thin obstacles far away fall between two rays: check the spacing s at the distance where you must stop.', 'Les petits obstacles fins et lointains tombent entre deux rayons : vérifiez l\'espacement s à la distance où vous devez vous arrêter.'),
+          L('Glass doors, mirrors and black matt surfaces are classic lidar traps: add bumpers, ultrasonic or cameras.', 'Portes vitrées, miroirs et surfaces noires mates sont les pièges classiques du lidar : ajoutez des pare-chocs, des ultrasons ou des caméras.'),
+          L('Correct the motion distortion with the odometry (de-skewing) before building a map.', 'Corrigez la distorsion de mouvement avec l\'odométrie (« de-skewing ») avant de construire une carte.')]);
+      // the room (metres): walls, a box, a glass panel, a black object
+      var WALLS = [[0, 0, 10, 0], [10, 0, 10, 6], [10, 6, 0, 6], [0, 6, 0, 0], [6, 0, 6, 2.2], [3, 6, 3, 4.5]];
+      var BOX = [[1.4, 1.2, 2.4, 1.2], [2.4, 1.2, 2.4, 2], [2.4, 2, 1.4, 2], [1.4, 2, 1.4, 1.2]];
+      var GLASS = [[6, 3.4, 6, 6]];
+      var BLACK = [[7.6, 3.6, 8.6, 3.6], [8.6, 3.6, 8.6, 4.3], [8.6, 4.3, 7.6, 4.3], [7.6, 4.3, 7.6, 3.6]];
+      var robot = { x: 4.2, y: 3.0 }, pts = [], sweep = 0, raf = 0, last = 0;
+      function hit(ox, oy, dx, dy, seg) { var x1 = seg[0], y1 = seg[1], x2 = seg[2], y2 = seg[3], ex = x2 - x1, ey = y2 - y1, den = dx * ey - dy * ex; if (Math.abs(den) < 1e-9) return Infinity; var t = ((x1 - ox) * ey - (y1 - oy) * ex) / den, u = ((x1 - ox) * dy - (y1 - oy) * dx) / den; return t > 1e-6 && u >= 0 && u <= 1 ? t : Infinity; }
+      function cast(ox, oy, a) {
+        var dx = Math.cos(a), dy = Math.sin(a), best = Infinity, kind = 'wall';
+        WALLS.concat(BOX).forEach(function (s) { var t = hit(ox, oy, dx, dy, s); if (t < best) { best = t; kind = 'wall'; } });
+        BLACK.forEach(function (s) { var t = hit(ox, oy, dx, dy, s); if (t < best) { best = t; kind = 'black'; } });
+        GLASS.forEach(function (s) { var t = hit(ox, oy, dx, dy, s); if (t < best) { best = t; kind = 'glass'; } });
+        return { d: best, kind: kind };
+      }
+      var r = rng(3);
+      function rescan() {
+        pts = []; var step = res.get() * Math.PI / 180, sig = noise.get() / 100, R = maxr.get(), lost = 0, n = Math.round(2 * Math.PI / step), v = moving.checked ? 1 : 0, f = rate.get();
+        for (var i = 0; i < n; i++) {
+          var a = i * step, ox = robot.x - v / f * (1 - i / n), oy = robot.y;          // moving: the robot was behind at the start of the turn
+          var h = cast(ox, oy, a);
+          if (h.kind === 'glass') { h = (function () { var dx = Math.cos(a), dy = Math.sin(a), best = Infinity; WALLS.concat(BOX, BLACK).forEach(function (s) { var t = hit(ox, oy, dx, dy, s); if (t < best) best = t; }); return { d: best, kind: 'through' }; })(); }
+          if (h.d > R || (h.kind === 'black' && r() < 0.85) || r() < 0.01) { lost++; continue; }
+          var d = h.d + sig * gauss(r);
+          pts.push({ a: a, x: robot.x + d * Math.cos(a), y: robot.y + d * Math.sin(a), k: h.kind, d: d });   // drawn in the frame of the robot at the end of the turn
+        }
+        var far = 5;
+        out([
+          [L('Points per turn', 'Points par tour'), n],
+          [L('Points lost (range, black, glass)', 'Points perdus (portée, noir, verre)'), lost],
+          [L('Spacing at 5 m', 'Espacement à 5 m'), num(far * step * 100, 1) + ' cm'],
+          [L('Points per second', 'Points par seconde'), Math.round(n * rate.get())]
+        ]);
+      }
+      var S = 1, OX = 0, OY = 0;
+      function place() { S = Math.min((cv.w - 20) / 10, (cv.h - 20) / 6); OX = (cv.w - 10 * S) / 2; OY = (cv.h - 6 * S) / 2; }
+      var P = function (x, y) { return [OX + x * S, OY + (6 - y) * S]; };
+      function seg(s, col, w, dash) { var a = P(s[0], s[1]), b = P(s[2], s[3]), x = cv.x; x.strokeStyle = col; x.lineWidth = w; x.setLineDash(dash || []); x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b[0], b[1]); x.stroke(); x.setLineDash([]); }
+      function draw(now) {
+        var dt = last ? (now - last) / 1000 : 0; last = now; sweep = (sweep + dt * rate.get() * 2 * Math.PI) % (2 * Math.PI);
+        place(); clear(cv); var x = cv.x;
+        WALLS.concat(BOX).forEach(function (s) { seg(s, C.grid, 3); });
+        GLASS.forEach(function (s) { seg(s, C.b, 3, [6, 4]); }); BLACK.forEach(function (s) { seg(s, C.mute, 3); });
+        var g = P(6.1, 5.3); text(cv, L('glass', 'verre'), g[0] + 4, g[1], C.b, 11);
+        var bl = P(7.6, 4.55); text(cv, L('black object', 'objet noir'), bl[0], bl[1], C.mute, 11);
+        var rp = P(robot.x, robot.y);
+        if (showRays.checked) { x.strokeStyle = C.r; x.globalAlpha = 0.18; x.lineWidth = 1; pts.forEach(function (p) { var q = P(p.x, p.y); x.beginPath(); x.moveTo(rp[0], rp[1]); x.lineTo(q[0], q[1]); x.stroke(); }); x.globalAlpha = 1; }
+        // the points appear behind the rotating beam
+        pts.forEach(function (p) { var age = (sweep - p.a + 2 * Math.PI) % (2 * Math.PI); var q = P(p.x, p.y); x.globalAlpha = 1 - 0.65 * age / (2 * Math.PI); x.fillStyle = p.k === 'through' ? C.y : C.r; x.fillRect(q[0] - 1.6, q[1] - 1.6, 3.2, 3.2); });
+        x.globalAlpha = 1;
+        var bx = rp[0] + Math.cos(sweep) * maxr.get() * S, by = rp[1] - Math.sin(sweep) * maxr.get() * S;
+        var gr = x.createLinearGradient(rp[0], rp[1], bx, by); gr.addColorStop(0, C.r); gr.addColorStop(1, 'transparent'); x.strokeStyle = gr; x.lineWidth = 2; x.beginPath(); x.moveTo(rp[0], rp[1]); x.lineTo(bx, by); x.stroke();
+        x.fillStyle = C.o; x.beginPath(); x.arc(rp[0], rp[1], 9, 0, 7); x.fill(); x.fillStyle = C.bg; x.beginPath(); x.arc(rp[0], rp[1], 3.5, 0, 7); x.fill();
+        if (cv.w > 560) text(cv, L('drag the robot', 'faites glisser le robot'), cv.w - 10, cv.h - 8, C.axis, 11, 'right');   // (on a phone the legend takes the line)
+        text(cv, '● ' + L('lidar point', 'point lidar'), 12, cv.h - 26, C.r, 11); text(cv, '● ' + L('point seen through the glass', 'point vu à travers le verre'), 12, cv.h - 10, C.y, 11);
+        raf = requestAnimationFrame(draw);
+      }
+      var drag = false;
+      var toRoom = function (e) { var b = cv.c.getBoundingClientRect(); return { x: (e.clientX - b.left - OX) / S, y: 6 - (e.clientY - b.top - OY) / S }; };
+      cv.c.addEventListener('pointerdown', function (e) { var p = toRoom(e); if (Math.hypot(p.x - robot.x, p.y - robot.y) < 0.6) { drag = true; cv.c.setPointerCapture(e.pointerId); e.preventDefault(); } });
+      cv.c.addEventListener('pointermove', function (e) { var p = toRoom(e); cv.c.style.cursor = drag || Math.hypot(p.x - robot.x, p.y - robot.y) < 0.6 ? 'grab' : 'default'; if (!drag) return; robot.x = Math.max(0.3, Math.min(9.7, p.x)); robot.y = Math.max(0.3, Math.min(5.7, p.y)); rescan(); });
+      cv.c.addEventListener('pointerup', function () { drag = false; });
+      cv.c.style.touchAction = 'none';
+      rescan();
+      return { start: function () { last = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); }, stop: function () { cancelAnimationFrame(raf); }, redraw: function () { cv.fit(); } };
+    };
+
+    // ================================================================== 4. camera and stereo
+    MAKERS.camera = function (sec) {
+      var F = frame(sec, L('Camera and stereo depth', 'Caméra et profondeur stéréo'), L('Left: what a camera sees of a flat checkerboard. A real lens bends straight lines (radial distortion): calibration measures it and removes it. Right: a stereo camera finds the depth from the shift (disparity) of a point between its two images; the error grows with the square of the distance.', 'À gauche : ce qu\'une caméra voit d\'un damier plan. Un vrai objectif courbe les droites (distorsion radiale) : l\'étalonnage la mesure et la retire. À droite : une caméra stéréo trouve la profondeur à partir du décalage (disparité) d\'un point entre ses deux images ; l\'erreur croît avec le carré de la distance.'));
+      F.view.classList.add('sb-two');
+      var a = document.createElement('div'), b = document.createElement('div'); F.view.append(a, b);
+      var cam = canvas(a, 0.75), st = canvas(b, 0.75);
+      var k1 = slider(F.ctl, { label: L('Radial distortion k₁', 'Distorsion radiale k₁'), min: -40, max: 40, value: -18, map: function (v) { return v / 100; }, dec: 2, on: redraw });
+      var corr = check(F.ctl, L('Correct the distortion (calibrated)', 'Corriger la distorsion (étalonnée)'), false, redraw);
+      var f = slider(F.ctl, { label: L('Focal length f (pixels)', 'Focale f (pixels)'), min: 300, max: 1500, step: 10, value: 700, on: redraw });
+      var B = slider(F.ctl, { label: L('Stereo baseline B (cm)', 'Base stéréo B (cm)'), min: 3, max: 30, value: 12, on: redraw });
+      var sd = slider(F.ctl, { label: L('Disparity error σ_d (px)', 'Erreur de disparité σ_d (px)'), min: 5, max: 100, value: 25, map: function (v) { return v / 100; }, dec: 2, on: redraw });
+      var Z = slider(F.ctl, { label: L('Object distance Z (m)', 'Distance de l\'objet Z (m)'), min: 2, max: 100, value: 30, map: function (v) { return v / 10; }, dec: 1, on: redraw });
+      var out = readouts(F.side);
+      notes(F.notes, [
+        L('Pinhole: u = f · X / Z + c<sub>x</sub> &emsp; Distortion: r′ = r (1 + k₁ r²)', 'Sténopé : u = f · X / Z + c<sub>x</sub> &emsp; Distorsion : r′ = r (1 + k₁ r²)'),
+        L('Stereo: Z = f · B / d &emsp; Depth error: σ<sub>Z</sub> ≈ Z² · σ<sub>d</sub> / (f · B)', 'Stéréo : Z = f · B / d &emsp; Erreur de profondeur : σ<sub>Z</sub> ≈ Z² · σ<sub>d</sub> / (f · B)')],
+        [L('k₁ < 0 is barrel distortion (wide-angle lenses), k₁ > 0 pincushion. Without correction, measurements far from the image centre are wrong.', 'k₁ < 0 est la distorsion en barillet (objectifs grand-angle), k₁ > 0 en coussinet. Sans correction, les mesures loin du centre de l\'image sont fausses.'),
+          L('Double the distance and the stereo error is multiplied by 4: to see far, increase the baseline B or the focal length f.', 'Doublez la distance et l\'erreur stéréo est multipliée par 4 : pour voir loin, augmentez la base B ou la focale f.'),
+          L('Stereo needs texture: on a white wall there is nothing to match. Active cameras add a projected pattern or measure the time of flight.', 'La stéréo a besoin de texture : sur un mur blanc, il n\'y a rien à apparier. Les caméras actives ajoutent un motif projeté ou mesurent le temps de vol.')]);
+      function redraw() {
+        // ---- the checkerboard seen by the camera
+        clear(cam); var x = cam.x, W = cam.w, H = cam.h, cx = W / 2, cy = H / 2, k = corr.checked ? 0 : k1.get(), sz = Math.min(W, H) * 0.115;
+        var dist = function (u, v) { var nx = (u - cx) / (W / 2), ny = (v - cy) / (W / 2), r2 = nx * nx + ny * ny, s = 1 + k * r2; return [cx + (u - cx) * s, cy + (v - cy) * s]; };
+        for (var i = -5; i < 5; i++) for (var j = -4; j < 4; j++) {
+          if ((i + j) % 2) continue;
+          x.fillStyle = C.ink; x.beginPath();
+          var corners = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]];   // each side bent through 6 points
+          corners.forEach(function (p, q) { var steps = 6; var nxt = corners[(q + 1) % 4]; for (var s = 0; s < steps; s++) { var u = cx + (p[0] + (nxt[0] - p[0]) * s / steps) * sz, v = cy + (p[1] + (nxt[1] - p[1]) * s / steps) * sz, d = dist(u, v); if (!q && !s) x.moveTo(d[0], d[1]); else x.lineTo(d[0], d[1]); } });
+          x.closePath(); x.fill();
+        }
+        x.strokeStyle = C.o; x.lineWidth = 2; x.setLineDash([6, 5]); x.beginPath(); x.moveTo(8, cy + 3 * sz); x.lineTo(W - 8, cy + 3 * sz); x.stroke(); x.setLineDash([]);
+        text(cam, L('a straight line of the board', 'une droite du damier'), 10, cy + 3 * sz - 6, C.o, 11);
+        text(cam, corr.checked ? L('corrected image', 'image corrigée') : (k1.get() < 0 ? L('barrel distortion', 'distorsion en barillet') : k1.get() > 0 ? L('pincushion distortion', 'distorsion en coussinet') : L('no distortion', 'pas de distorsion')), W - 8, 16, C.axis, 11, 'right');
+        // ---- the stereo depth error against the distance
+        clear(st); var fb = f.get() * B.get() / 100, s = sd.get(), zmax = 10, pts = [], pts2 = [];
+        for (var z = 0.2; z <= zmax; z += 0.05) { pts.push([z, z * z * s / fb * 100]); pts2.push([z, z * z * s / (fb * 2) * 100]); }
+        var ymax = Math.max(5, zmax * zmax * s / fb * 100 * 0.6);
+        var c = chart(st, { x0: 0, x1: zmax, y0: 0, y1: ymax, xl: L('distance Z (m)', 'distance Z (m)'), yl: L('depth error σ_Z (cm)', 'erreur de profondeur σ_Z (cm)'), series: [{ pts: pts, col: C.o, w: 2.5, label: L('this stereo camera', 'cette caméra stéréo') }, { pts: pts2, col: C.b, w: 1.5, dash: [5, 4], label: L('with twice the baseline', 'avec une base deux fois plus grande') }] });
+        var zz = Z.get(), ez = zz * zz * s / fb * 100, px = c.X(zz), py = c.Y(Math.min(ymax, ez));
+        st.x.fillStyle = C.r; st.x.beginPath(); st.x.arc(px, py, 5, 0, 7); st.x.fill();
+        var d = fb / zz;
+        out([
+          [L('Disparity at Z', 'Disparité à Z'), num(d, 1) + ' px'],
+          [L('Depth error at Z', 'Erreur de profondeur à Z'), num(ez, 1) + ' cm', ez > 10 ? 'bad' : 'ok'],
+          [L('Relative error', 'Erreur relative'), num(ez / (zz * 100) * 100, 1) + ' %'],
+          [L('Distance where the error reaches 5 cm', 'Distance où l\'erreur atteint 5 cm'), num(Math.sqrt(0.05 * fb / s), 2) + ' m']
+        ]);
+      }
+      redraw();
+      return { redraw: function () { cam.fit(); st.fit(); redraw(); } };
+    };
+
+    // ================================================================== 5. ultrasonic
+    MAKERS.sonar = function (sec) {
+      var F = frame(sec, L('Ultrasonic range finder', 'Télémètre à ultrasons'), L('The sensor sends a short sound pulse and times the echo. The sound leaves in a wide cone, so the sensor does not know the exact direction of the obstacle; a smooth wall that is too inclined reflects the sound away like a mirror, and the sensor sees nothing. The speed of sound depends on the temperature.', 'Le capteur envoie une courte impulsion sonore et mesure le temps de l\'écho. Le son part dans un cône large, donc le capteur ne connaît pas la direction exacte de l\'obstacle ; un mur lisse trop incliné renvoie le son ailleurs comme un miroir, et le capteur ne voit rien. La vitesse du son dépend de la température.'));
+      var cv = canvas(F.view, 0.62);
+      var dw = slider(F.ctl, { label: L('Distance to the wall (m)', 'Distance au mur (m)'), min: 20, max: 400, value: 150, map: function (v) { return v / 100; }, dec: 2, on: draw });
+      var ang = slider(F.ctl, { label: L('Wall angle (°)', 'Angle du mur (°)'), min: 0, max: 60, value: 10, on: draw });
+      var cone = slider(F.ctl, { label: L('Beam half-angle (°)', 'Demi-angle du faisceau (°)'), min: 5, max: 30, value: 15, on: draw });
+      var T = slider(F.ctl, { label: L('Real air temperature (°C)', 'Température réelle de l\'air (°C)'), min: -10, max: 40, value: 35, on: draw });
+      var out = readouts(F.side);
+      notes(F.notes, [
+        L('Distance: d = c · t / 2 &emsp; Speed of sound: c ≈ 331.3 + 0.606 · T (m/s, T in °C)', 'Distance : d = c · t / 2 &emsp; Vitesse du son : c ≈ 331,3 + 0,606 · T (m/s, T en °C)'),
+        L('Width seen at distance d: w = 2 d · tan(half-angle)', 'Largeur vue à la distance d : w = 2 d · tan(demi-angle)')],
+        [L('An echo arrives only if the wall is inclined less than about the beam half-angle: beyond, the robot believes the way is free.', 'Un écho ne revient que si le mur est incliné de moins que le demi-angle du faisceau environ : au-delà, le robot croit la voie libre.'),
+          L('A sensor set for 20 °C reads about 0.17 % short per degree warmer: 3.9 cm at 1.5 m and 35 °C.', 'Un capteur réglé pour 20 °C mesure environ 0,17 % trop court par degré de plus : 3,9 cm à 1,5 m et 35 °C.'),
+          L('Several sensors firing together hear each other (cross-talk): fire them one after the other.', 'Plusieurs capteurs qui émettent ensemble s\'entendent (diaphonie) : faites-les émettre l\'un après l\'autre.')]);
+      function draw() {
+        clear(cv); var x = cv.x, W = cv.w, H = cv.h, S = (W - 80) / 4.4, sx = 40, sy = H / 2;
+        var d = dw.get(), a = ang.get() * Math.PI / 180, h = cone.get() * Math.PI / 180, t = T.get();
+        var c20 = 331.3 + 0.606 * 20, cr = 331.3 + 0.606 * t, echo = ang.get() <= cone.get() + 2;
+        // the wall, through the point at distance d on the axis, turned by the angle
+        var wx = sx + d * S, L2 = 2.2 * S;
+        x.strokeStyle = C.ink; x.lineWidth = 5; x.beginPath(); x.moveTo(wx - Math.sin(a) * L2, sy - Math.cos(a) * L2); x.lineTo(wx + Math.sin(a) * L2, sy + Math.cos(a) * L2); x.stroke();
+        // the cone
+        x.fillStyle = C.b; x.globalAlpha = 0.16; x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + 4.3 * S, sy - Math.tan(h) * 4.3 * S); x.lineTo(sx + 4.3 * S, sy + Math.tan(h) * 4.3 * S); x.closePath(); x.fill(); x.globalAlpha = 1;
+        x.strokeStyle = C.b; x.lineWidth = 1.5; x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + 4.3 * S, sy - Math.tan(h) * 4.3 * S); x.moveTo(sx, sy); x.lineTo(sx + 4.3 * S, sy + Math.tan(h) * 4.3 * S); x.stroke();
+        // the sound: going to the wall, and the reflected direction
+        x.strokeStyle = C.o; x.lineWidth = 2.5; x.beginPath(); x.moveTo(sx, sy); x.lineTo(wx, sy); x.stroke();
+        var rx = Math.cos(Math.PI - 2 * a), ry = Math.sin(Math.PI - 2 * a);
+        x.setLineDash([6, 5]); x.beginPath(); x.moveTo(wx, sy); x.lineTo(wx + rx * 1.4 * S, sy + ry * 1.4 * S); x.stroke(); x.setLineDash([]);
+        x.fillStyle = C.axis; x.fillRect(sx - 22, sy - 14, 22, 28); x.fillStyle = C.o; x.beginPath(); x.arc(sx - 4, sy - 6, 5, 0, 7); x.arc(sx - 4, sy + 6, 5, 0, 7); x.fill();
+        text(cv, echo ? L('echo received', 'écho reçu') : L('no echo: the sound goes away', 'pas d\'écho : le son part ailleurs'), W - 12, 20, echo ? C.g : C.r, 13, 'right', true);
+        // the width of the beam at the wall
+        var wd = 2 * d * Math.tan(h);
+        text(cv, L('beam width at the wall: ', 'largeur du faisceau au mur : ') + num(wd * 100, 0) + ' cm', W - 12, H - 10, C.axis, 11, 'right');
+        var tof = 2 * d / cr, meas = c20 * tof / 2;
+        out([
+          [L('True distance', 'Distance réelle'), num(d * 100, 1) + ' cm'],
+          [L('Echo time', 'Temps de l\'écho'), num(tof * 1000, 2) + ' ms'],
+          [L('Measured (set for 20 °C)', 'Mesurée (réglée pour 20 °C)'), echo ? num(meas * 100, 1) + ' cm' : '—', echo ? '' : 'bad'],
+          [L('Temperature error', 'Erreur due à la température'), echo ? num((meas - d) * 100, 1) + ' cm' : '—']
+        ]);
+      }
+      draw();
+      return { redraw: function () { cv.fit(); draw(); } };
+    };
+
+    // ------------------------------------------------------------------ theme, size, first bench
+    var redrawAll = function () { colours(); [].forEach.call(main.querySelectorAll('.sb-bench'), function (s) { if (s._b && s._b.redraw) s._b.redraw(); }); };
+    new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    var rt = 0; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(redrawAll, 150); });
+    window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
+    show(location.hash.slice(1));
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();

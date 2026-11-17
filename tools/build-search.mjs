@@ -12,7 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 
 // pages in the order results of equal score are shown; the 404 page is not indexed
-const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'offline.html')
+const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'offline.html')
   .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 function rank(f) { return f === 'index.html' ? 0 : f.startsWith('learn') ? 1 : f.startsWith('anatomy') ? 3 : 2; }
 
@@ -149,6 +149,14 @@ fs.writeFileSync(path.join(root, 'glossary-data.js'), '// glossary-data.js — g
   console.log('revision sheets:', st);
   out.push({ u: 'revision', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Revision sheets', 'Fiches de révision'], x: ['One printable page per course: the essentials of every lesson, the formulas and the key terms, to revise for an exam.', "Une page imprimable par cours : l'essentiel de chaque leçon, les formules et les mots clés, pour réviser un examen."], m: 0 });
 }
+// the sensor test bench: the page and its five benches (built in the browser, so written here)
+[['', ['Sensor test bench', 'Banc d\'essai des capteurs'], ['Live simulations of real sensors: resolution, noise, bias, drift and blind spots of encoders, IMUs, lidars, cameras and ultrasonic sensors.', 'Simulations en direct de vrais capteurs : résolution, bruit, biais, dérive et angles morts des encodeurs, IMU, lidars, caméras et ultrasons.']],
+  ['encoder', ['Encoder: resolution, quadrature and speed measurement', 'Encodeur : résolution, quadrature et mesure de vitesse'], ['incremental encoder, lines per turn, quadrature ×4, counts, speed estimate, sampling period, homing', 'encodeur incrémental, traits par tour, quadrature ×4, impulsions, estimation de vitesse, période d\'échantillonnage, prise d\'origine']],
+  ['imu', ['IMU: gyroscope drift, accelerometer noise and the complementary filter', 'IMU : dérive du gyroscope, bruit de l\'accéléromètre et filtre complémentaire'], ['gyroscope bias, integration drift, accelerometer tilt, vibration, complementary filter, time constant, Kalman', 'biais du gyroscope, dérive d\'intégration, inclinaison par l\'accéléromètre, vibrations, filtre complémentaire, constante de temps, Kalman']],
+  ['lidar', ['2D lidar: points, noise, glass and black objects', 'Lidar 2D : points, bruit, verre et objets noirs'], ['laser scanner, angular resolution, range noise, maximum range, point spacing, motion distortion, de-skewing', 'scanner laser, résolution angulaire, bruit de distance, portée maximale, espacement des points, distorsion de mouvement']],
+  ['camera', ['Camera distortion and stereo depth error', 'Distorsion de caméra et erreur de profondeur stéréo'], ['pinhole, focal length, radial distortion k1, barrel, pincushion, calibration, stereo baseline, disparity, Z = f B / d', 'sténopé, focale, distorsion radiale k1, barillet, coussinet, étalonnage, base stéréo, disparité, Z = f B / d']],
+  ['sonar', ['Ultrasonic range finder: cone, echo and temperature', 'Télémètre à ultrasons : cône, écho et température'], ['ultrasonic sensor, beam angle, specular reflection, time of flight, speed of sound, temperature, cross-talk', 'capteur à ultrasons, angle du faisceau, réflexion spéculaire, temps de vol, vitesse du son, température, diaphonie']]
+].forEach(([id, t, x]) => out.push({ u: 'sensors' + (id ? '#' + id : ''), k: 'page', p: ['Sensor test bench', 'Banc d\'essai des capteurs'], n: '', t, x, m: 0 }));
 // the glossary entries are found by the search too
 for (const e of GLOSS) out.push({ u: 'glossary#' + e.id, k: 'gloss', p: [ 'Glossary', 'Glossaire' ], n: '', t: e.t, x: [plain(e.d[0]), plain(e.d[1])], m: 0 });
 out.push({ u: 'glossary', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Robotics glossary', 'Glossaire de la robotique'], x: [`Every word of robotics in one place: ${GLOSS.length} terms with their meaning, in English and French, and the lesson that explains them.`, `Tous les mots de la robotique au même endroit : ${GLOSS.length} termes avec leur sens, en anglais et en français, et la leçon qui les explique.`], m: 0 });
