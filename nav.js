@@ -283,7 +283,7 @@
           const col = m.userData.base && m.userData.base.isColor ? m.userData.base : m.color;     // some scenes recompute the colour from a base
           if (!col || !col.getHexString) return;
           const u = m.userData;
-          if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.12 ? 'c3cad6' : 'a6b0be'; }
+          if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.06 ? '6f7a8a' : '8a94a3'; }   // graphite: visible, but still darker than the light links
           if (!u.raLight) return;
           const cur = col.getHexString();
           if (D && cur === u.raDark) col.set('#' + u.raLight); else if (!D && cur === u.raLight) col.set('#' + u.raDark);
