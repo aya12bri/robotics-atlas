@@ -101,7 +101,7 @@ matchMedia('(prefers-color-scheme: light)').addEventListener('change', paintGrou
 // ------------------------------------------------------------------ materials and helpers
 const shells = [];                                           // materials that become transparent in X-ray mode
 const shell = (color, extra) => { const m = new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.25, roughness: 0.42, clearcoat: 0.55, clearcoatRoughness: 0.22, envMapIntensity: 0.9 }, extra)); shells.push(m); return m; };   // painted or anodised covers
-const ORANGE = shell('#ff9a1f', { metalness: 0.05, roughness: 0.55 }), DARK = shell('#2b2f36'), BASE = shell('#3a3f48');
+const ORANGE = shell('#ff9a1f', { metalness: 0.05, roughness: 0.55 }), DARK = shell('#2b2f36'), BASE = shell('#3a3f48'); BASE.userData.raKeep = true;   // the base keeps its dark grey in dark mode
 const LIGHT = shell('#d3d9e1', { metalness: 0.15, roughness: 0.4 }), BLUE = shell('#2f6bff', { metalness: 0.2, roughness: 0.4 });
 const SILVER = new THREE.MeshStandardMaterial({ color: '#c3c9d1', metalness: 0.95, roughness: 0.24 });     // machined steel / aluminium
 const MOTOR = new THREE.MeshStandardMaterial({ color: '#3a4250', metalness: 0.75, roughness: 0.38 });

@@ -116,7 +116,7 @@
       Object.keys(o.data).forEach((k) => {
         if (!KEEP(k) || typeof o.data[k] !== 'string') return;
         let v = o.data[k];
-        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert') {
+        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert' || k === 'ra-exam') {
           try { const cur = JSON.parse(store.get(k) || '{}') || {}, add = JSON.parse(v) || {}; v = JSON.stringify(Object.assign(cur, add)); } catch (e) { return; }
         }
         store.set(k, v); n++;
@@ -271,7 +271,7 @@
   RA.darkParts = function (scene, opts) {
     if (!scene || !scene.traverse) return;
     let rim = null;                                                        // dark mode: a cool back light that draws the outline of the parts (black tyres too)
-    const KEEP = new Set(['1d2638', '253047', '2a3550', '242f44', '27324a', '2b2e33', '262626', '0e1420', '4b5870', '3d4b66']);   // floors and pads
+    const KEEP = new Set(['1d2638', '253047', '2a3550', '242f44', '27324a', '2b2e33', '262626', '0e1420', '2e3a52', '3d4b66']);   // floors and pads
     const lum = (h) => { const v = [0, 2, 4].map((i) => parseInt(h.substr(i, 2), 16) / 255); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
     const dark = () => (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
     const apply = () => {
@@ -290,7 +290,7 @@
           const col = m.userData.base && m.userData.base.isColor ? m.userData.base : m.color;     // some scenes recompute the colour from a base
           if (!col || !col.getHexString) return;
           const u = m.userData;
-          if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.06 ? '6f7a8a' : '8a94a3'; }   // graphite: visible, but still darker than the light links
+          if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.06 ? '6f7a8a' : '8a94a3'; }   // bases and supports are marked raKeep: they keep their dark grey   // graphite: visible, but still darker than the light links
           if (!u.raLight) return;
           const cur = col.getHexString();
           if (D && cur === u.raDark) { col.set('#' + u.raLight); changed = true; } else if (!D && cur === u.raLight) { col.set('#' + u.raDark); changed = true; }
@@ -463,7 +463,8 @@
     if (cta && curCard) {
       const c = document.createElement('p');
       c.className = 'cta cert-cta ra-own';
-      c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a> <a class="btn ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? '🖨 Fiche de révision du cours' : '🖨 Revision sheet of the course'}</a>`;
+      const noExam = ['armlab', 'wmrpro'].includes(curCard.dataset.key);   // these two have their exam in their last lesson
+      c.innerHTML = (noExam ? '' : `<a class="btn" href="exam.html#${curCard.dataset.key}">${lang === 'fr' ? '📝 Passer l\'examen final' : '📝 Take the final exam'}</a> `) + `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a> <a class="btn ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? '🖨 Fiche de révision du cours' : '🖨 Revision sheet of the course'}</a>`;
       cta.after(c);
     }
     // lessons about sensors: a link to the matching bench of the sensor test bench

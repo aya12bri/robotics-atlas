@@ -24,7 +24,10 @@
       var n = 0; for (var i = c.start; i < c.start + c.total; i++) if (P.get(c.prefix + i)) n++;
       var Q = json('ra-quiz'), ok = 0, ans = 0, re = new RegExp('^' + c.prefix.replace(/[-]/g, '\\-') + '(\\d+)-');
       Object.keys(Q).forEach(function (k) { var m = re.exec(k); if (m && +m[1] >= c.start && +m[1] < c.start + c.total) { ans++; if (Q[k] === 1) ok++; } });
-      return { n: n, done: n === c.total, quiz: ans ? Math.round(100 * ok / ans) : null };
+      // the final exam (exam.html): needed for the courses that have one
+      var hasEx = !!(window.RA_EXAMS && window.RA_EXAMS[c.key]), X = json('ra-exam')[c.key];
+      var lessons = n === c.total, exOk = !hasEx || !!(X && X.passed);
+      return { n: n, lessons: lessons, done: lessons && exOk, hasEx: hasEx, exam: X ? X.best : null, exOk: exOk, quiz: ans ? Math.round(100 * ok / ans) : null };
     }
     // the "full path" certificate: every course finished
     var PATH = { key: 'path', page: 'index.html#road', t: ['The Robotics Atlas path: every course', 'Le parcours Robotics Atlas : tous les cours'], total: C.reduce(function (a, c) { return a + c.total; }, 0), min: C.reduce(function (a, c) { return a + c.min; }, 0) };
@@ -50,13 +53,14 @@
       var card = function (c, s) {
         var pct = Math.round(100 * s.n / c.total), cls = s.done ? ' done' : '';
         var act = s.done ? '<a class="btn" href="#' + c.key + '">' + L('See my certificate', 'Voir mon certificat') + ' →</a>'
+          : s.lessons && !s.exOk ? '<a class="btn" href="exam.html#' + c.key + '">' + L('Take the final exam', 'Passer l\'examen final') + ' →</a>'
           : '<a class="btn ghost" href="' + c.page + '">' + (s.n ? L('Continue', 'Continuer') : L('Start', 'Commencer')) + ' →</a><span class="cc-left">' + (c.total - s.n) + ' ' + L(c.total - s.n > 1 ? 'lessons left' : 'lesson left', c.total - s.n > 1 ? 'leçons restantes' : 'leçon restante') + '</span>';
         return '<article class="cc' + cls + '" id="c-' + c.key + '"><div class="cc-top"><b>' + esc(c.t[LG]) + '</b>' + (s.done ? '<span class="cc-ok">🎓 ' + L('Finished', 'Terminé') + '</span>' : '') + '</div>' +
-          '<div class="cc-bar"><i style="width:' + pct + '%"></i></div><p class="cc-meta">' + s.n + ' / ' + c.total + ' ' + L('lessons', 'leçons') + (c.min ? ' · ' + hours(c.min) : '') + (s.quiz !== null ? ' · ' + L('quiz', 'quiz') + ' ' + s.quiz + ' %' : '') + '</p><div class="cc-act">' + act + '</div></article>';
+          '<div class="cc-bar"><i style="width:' + pct + '%"></i></div><p class="cc-meta">' + s.n + ' / ' + c.total + ' ' + L('lessons', 'leçons') + (c.min ? ' · ' + hours(c.min) : '') + (s.quiz !== null ? ' · ' + L('quiz', 'quiz') + ' ' + s.quiz + ' %' : '') + (s.hasEx ? '<br>' + L('Final exam: ', 'Examen final : ') + (s.exOk ? '✓ ' + s.exam + ' %' : s.exam !== null ? s.exam + ' % (' + L('70 % needed', '70 % requis') + ')' : L('to take', 'à passer')) : '') + '</p><div class="cc-act">' + act + '</div></article>';
       };
       main.innerHTML = '<h1>' + L('My certificates', 'Mes certificats') + '</h1>' +
-        '<p class="lead">' + L('Finish all the lessons of a course (pass its end-of-lesson quizzes, or tick the lessons) to get a certificate with your name, to print or save as PDF. Finish every course to get the certificate of the full path.',
-          'Terminez toutes les leçons d\'un cours (réussissez ses quiz de fin de leçon, ou cochez les leçons) pour obtenir un certificat à votre nom, à imprimer ou enregistrer en PDF. Terminez tous les cours pour obtenir le certificat du parcours complet.') + '</p>' +
+        '<p class="lead">' + L('Finish all the lessons of a course and pass its final exam (70 %) to get a certificate with your name, to print or save as PDF. Finish every course to get the certificate of the full path.',
+          'Terminez toutes les leçons d\'un cours et réussissez son examen final (70 %) pour obtenir un certificat à votre nom, à imprimer ou enregistrer en PDF. Terminez tous les cours pour obtenir le certificat du parcours complet.') + '</p>' +
         '<div class="cert-name"><label for="certName">' + L('Your name, as it will appear on your certificates', 'Votre nom, tel qu\'il apparaîtra sur vos certificats') + '</label><input id="certName" type="text" maxlength="60" autocomplete="name" placeholder="' + L('First name Last name', 'Prénom Nom') + '" value="' + esc(name()) + '"></div>' +
         '<p class="cert-sum">' + L('Courses finished: ', 'Cours terminés : ') + '<b>' + C.filter(function (c) { return stat(c).done; }).length + ' / ' + C.length + '</b></p>' +
         '<div class="cc-grid">' + C.map(function (c) { return card(c, stat(c)); }).join('') + card(PATH, ps).replace('class="cc', 'class="cc cc-path') + '</div>' +
@@ -69,7 +73,7 @@
     function sheet(c, s) {
       var nm = name(), date = issued(c.key);
       var line = c.key === 'path' ? C.length + ' ' + L('courses', 'cours') + ' · ' + c.total + ' ' + L('lessons', 'leçons') + ' · ' + L('about', 'environ') + ' ' + hours(c.min)
-        : c.total + ' ' + L('lessons', 'leçons') + (c.min ? ' · ' + L('about', 'environ') + ' ' + hours(c.min) + ' ' + L('of study', 'de travail') : '') + (s.quiz !== null ? ' · ' + L('end-of-lesson quizzes: ', 'quiz de fin de leçon : ') + s.quiz + ' % ' + L('right answers', 'de bonnes réponses') : '');
+        : c.total + ' ' + L('lessons', 'leçons') + (c.min ? ' · ' + L('about', 'environ') + ' ' + hours(c.min) + ' ' + L('of study', 'de travail') : '') + (s.hasEx && s.exam !== null ? ' · ' + L('final exam: ', 'examen final : ') + s.exam + ' %' : s.quiz !== null ? ' · ' + L('end-of-lesson quizzes: ', 'quiz de fin de leçon : ') + s.quiz + ' % ' + L('right answers', 'de bonnes réponses') : '');
       main.innerHTML = '<p class="cert-back"><a href="#">← ' + L('All my certificates', 'Tous mes certificats') + '</a></p>' +
         (nm ? '' : '<div class="cert-name warn"><label for="certName">' + L('Write your name first: it appears on the certificate.', 'Écrivez d\'abord votre nom : il apparaît sur le certificat.') + '</label><input id="certName" type="text" maxlength="60" autocomplete="name" placeholder="' + L('First name Last name', 'Prénom Nom') + '"></div>') +
         '<div class="cert-sheet" role="img" aria-label="' + esc(L('Certificate of completion', 'Certificat de réussite') + ' — ' + c.t[LG]) + '"><div class="cs-in">' +

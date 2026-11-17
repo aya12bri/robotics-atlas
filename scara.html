@@ -199,7 +199,7 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
 
       const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
       const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
-      const dark = new THREE.MeshStandardMaterial({ color: '#4a5568' });
+      const dark = new THREE.MeshStandardMaterial({ color: '#4a5568' }); dark.userData.raKeep = true;   // column and frame: they keep their dark grey
 
       const base = new THREE.Group();
       scene.add(base);

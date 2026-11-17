@@ -1,5 +1,6 @@
 // Practice blocks for learn-model.html ("Robot modelling, full course").
 import { plot, arm2, chain, T, LINE, ARROW, DOT, COL } from './fig.mjs';
+import { workspaceBlock } from './workspace.mjs';
 const D = Math.PI / 180;
 const e = (x, d = 2) => String(+x.toFixed(d)), f = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',');
 // RRR planar arm numbers (lesson 5)
@@ -63,7 +64,7 @@ export const PRACTICE = {
       { lv: 2, q: ['2R arm L₁ = L₂ = 0.5 m. Point (0.5, 0.5). θ₂ (positive) in degrees?', 'Bras 2R L₁ = L₂ = 0,5 m. Point (0,5 ; 0,5). θ₂ (positif) en degrés ?'], num: { ans: 90, tol: 0.3, unit: '°' }, sol: ['cos θ₂ = (0.25 + 0.25 − 0.25 − 0.25) / (2 × 0.25) = 0 → θ₂ = <b>90°</b>.', 'cos θ₂ = (0,25 + 0,25 − 0,25 − 0,25) / (2 × 0,25) = 0 → θ₂ = <b>90°</b>.'] },
       { lv: 3, q: ['Same arm, same point, θ₂ = +90°. θ₁ in degrees?', 'Même bras, même point, θ₂ = +90°. θ₁ en degrés ?'], num: { ans: 0, tol: 0.3, unit: '°' }, hint: ['θ₁ = atan2(y, x) − atan2(L₂ sin θ₂, L₁ + L₂ cos θ₂).', 'θ₁ = atan2(y, x) − atan2(L₂ sin θ₂, L₁ + L₂ cos θ₂).'], sol: ['θ₁ = atan2(0.5, 0.5) − atan2(0.5, 0.5) = 45° − 45° = <b>0°</b>. Check: link 1 horizontal to (0.5, 0), link 2 vertical to (0.5, 0.5). ✓', 'θ₁ = atan2(0,5 ; 0,5) − atan2(0,5 ; 0,5) = 45° − 45° = <b>0°</b>. Vérification : segment 1 horizontal jusqu\'à (0,5 ; 0), segment 2 vertical jusqu\'à (0,5 ; 0,5). ✓'] }] },
 
-  7: { sum: [['Joint space: the vector q of the joint variables. Operational space: the pose X of the tool.', 'Espace articulaire : le vecteur q des variables articulaires. Espace opérationnel : la pose X de l\'outil.'],
+  7: { more: workspaceBlock(false), sum: [['Joint space: the vector q of the joint variables. Operational space: the pose X of the tool.', 'Espace articulaire : le vecteur q des variables articulaires. Espace opérationnel : la pose X de l\'outil.'],
       ['The workspace is the set of positions the tool can reach, with the joint limits.', 'L\'espace de travail est l\'ensemble des positions que l\'outil peut atteindre, avec les butées.'],
       ['The number of degrees of freedom of the task tells how many joints are needed.', 'Le nombre de degrés de liberté de la tâche dit combien de liaisons il faut.']],
     fig: plot({ x: [-1, 1], y: [-0.2, 1], w: 560, h: 320, curves: [{ f: (x) => Math.abs(x) <= 0.9 ? Math.sqrt(0.81 - x * x) : NaN, c: COL.o, label: ['outer limit L₁ + L₂', 'limite extérieure L₁ + L₂'] }, { f: (x) => Math.abs(x) <= 0.1 ? Math.sqrt(0.01 - x * x) : NaN, c: COL.b, label: ['inner limit |L₁ − L₂|', 'limite intérieure |L₁ − L₂|'] }], xl: 'x (m)', yl: 'y (m)' }), cap: ['Upper half of the workspace of the 2R arm (0.5 m + 0.4 m) when θ₁ is limited to 0°…180°.', 'Moitié haute de l\'espace de travail du bras 2R (0,5 m + 0,4 m) quand θ₁ est limité à 0°…180°.'],

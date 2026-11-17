@@ -94,7 +94,8 @@ const target = new THREE.Mesh(new THREE.SphereGeometry(0.035, 24, 16), new THREE
 const trail = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: '#ffd60a' })); trail.frustumCulled = false; scene.add(trail); let trailPts = [];
 
 // ---------------------------------------------------------------- build a robot from its description
-const M = { link: () => mat('#ff9f43'), joint: () => mat('#2f3338', { metalness: 0.4, roughness: 0.4 }), base: () => mat('#4a4f57', { metalness: 0.3 }), steel: () => mat('#c9d0d8', { metalness: 0.6, roughness: 0.3 }), tool: () => mat('#e8eef5', { metalness: 0.3 }) };
+const M = { link: () => mat('#ff9f43'), joint: () => mat('#2f3338', { metalness: 0.4, roughness: 0.4 }), base: () => { const m = mat('#4a4f57', { metalness: 0.3 }); m.userData.raKeep = true; return m; },   // supports keep their dark grey
+  steel: () => mat('#c9d0d8', { metalness: 0.6, roughness: 0.3 }), tool: () => mat('#e8eef5', { metalness: 0.3 }) };
 const mesh = (g, m) => { const o = new THREE.Mesh(g, m); o.castShadow = o.receiveShadow = true; return o; };
 function bar(a, b, r, m) {                                     // a round bar from point a to point b
   const d = b.clone().sub(a), len = d.length(); if (len < 1e-4) return new THREE.Group();

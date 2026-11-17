@@ -1,11 +1,12 @@
 // Practice blocks for learn-world.html ("The world of robots: design, build, use").
 import { plot, COL } from './fig.mjs';
+import { makersBlock } from './makers.mjs';
 const D = Math.PI / 180, g = 9.81;
 const e = (x, d = 2) => String(+x.toFixed(d)), f = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',');
 const cup = (dmm) => 60000 * Math.PI * (dmm / 2000) ** 2;
 
 export const PRACTICE = {
-  1: { sum: [['Arms (6 axes), SCARA (fast in a plane), delta (very fast picking), cobots (work next to people).', 'Bras (6 axes), SCARA (rapide dans un plan), delta (prise très rapide), cobots (travaillent à côté des humains).'],
+  1: { more: makersBlock(), sum: [['Arms (6 axes), SCARA (fast in a plane), delta (very fast picking), cobots (work next to people).', 'Bras (6 axes), SCARA (rapide dans un plan), delta (prise très rapide), cobots (travaillent à côté des humains).'],
       ['Mobile robots: AGV/AMR on wheels, legged robots, drones, underwater robots, humanoids.', 'Robots mobiles : AGV/AMR à roues, robots à pattes, drones, robots sous-marins, humanoïdes.'],
       ['Count the degrees of freedom (DOF) to know what a robot can do.', 'Comptez les degrés de liberté (ddl) pour savoir ce qu\'un robot peut faire.']],
     ex: [
