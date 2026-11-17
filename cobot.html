@@ -23,7 +23,7 @@
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
       select {
-        background: #0f1720; color: #e8eef5; border: 1px solid #44566b;
+        background: var(--surface); color: var(--text); border: 1px solid var(--border);
         border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem;
       }
     </style>
@@ -245,6 +245,7 @@
       // ================= 3D scene =================
       const box = document.getElementById('view');
       const scene = new THREE.Scene();
+      if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
       scene.background = new THREE.Color('#1d2638');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
       camera.position.set(-1.15, 0.8, 0.95);

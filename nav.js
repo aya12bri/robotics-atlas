@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', sens: 'Sensor bench', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', sens: 'Banc des capteurs', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -264,6 +264,45 @@
     paint();
     return c;
   };
+  // ---------------------------------------------------------------- 3D views: dark parts become light grey in dark mode
+  // Every 3D scene calls RA.darkParts(scene). In dark mode, any black or very dark part of a robot (caps, tyres, forks,
+  // frames, arrows) is shown light grey, so that it stands out on the night background; in light mode its own colour
+  // comes back. Floors, grids, shadows and the colours the code changes on purpose (highlights) are left alone.
+  RA.darkParts = function (scene, opts) {
+    if (!scene || !scene.traverse) return;
+    let rim = null;                                                        // dark mode: a cool back light that draws the outline of the parts (black tyres too)
+    const KEEP = new Set(['1d2638', '253047', '2a3550', '242f44', '27324a', '2b2e33', '262626', '0e1420', '4b5870', '3d4b66']);   // floors and pads
+    const lum = (h) => { const v = [0, 2, 4].map((i) => parseInt(h.substr(i, 2), 16) / 255); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+    const dark = () => (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
+    const apply = () => {
+      const D = dark(); let changed = false;
+      if (!rim) {                                                            // made from the key light of the scene (no need to import three.js here)
+        let key = null; scene.traverse((o) => { if (!key && o.isDirectionalLight && !o.userData.raRim) key = o; });
+        // low and behind the scene: it grazes the edges of the parts, not the floor
+        if (key) { rim = key.clone(); rim.userData.raRim = true; rim.castShadow = false; rim.color.set('#a9c4ff'); rim.position.set(-key.position.x, Math.abs(key.position.y) * 0.1 + 0.1, -key.position.z); rim.userData.k = key; scene.add(rim); }
+      }
+      if (rim) rim.intensity = D ? Math.min(0.9, rim.userData.k.intensity * 0.5) : 0;
+      scene.traverse((o) => {
+        if (!o.material || o.isGridHelper || o.userData.raKeep) return;
+        const g = o.geometry && o.geometry.type; if (g === 'PlaneGeometry' || g === 'PlaneBufferGeometry') return;
+        (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
+          if (!m || m.userData.raKeep || m.vertexColors || m.map || (m.transparent && m.opacity < 0.6)) return;   // raKeep: tyres stay black (realistic)
+          const col = m.userData.base && m.userData.base.isColor ? m.userData.base : m.color;     // some scenes recompute the colour from a base
+          if (!col || !col.getHexString) return;
+          const u = m.userData;
+          if (u.raDark === undefined) { const h = col.getHexString(), l = lum(h); u.raDark = h; u.raLight = KEEP.has(h) || l >= 0.36 ? null : l < 0.06 ? '6f7a8a' : '8a94a3'; }   // graphite: visible, but still darker than the light links
+          if (!u.raLight) return;
+          const cur = col.getHexString();
+          if (D && cur === u.raDark) { col.set('#' + u.raLight); changed = true; } else if (!D && cur === u.raLight) { col.set('#' + u.raDark); changed = true; }
+        });
+      });
+      if (changed && opts && opts.onChange) opts.onChange();                 // scenes that recompute their colours from a base (home gallery)
+    };
+    apply();
+    new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+    matchMedia('(prefers-color-scheme: light)').addEventListener('change', apply);
+    setInterval(() => { if (!document.hidden) apply(); }, 1000);                 // parts added later (assembly, demos)
+  };
   window.addEventListener('storage', (e) => { if (e.key === PROG) window.dispatchEvent(new CustomEvent('ra-progress', { detail: { id: null } })); });
   const SKIP = /^(SCRIPT|STYLE|SVG|CANVAS|TEXTAREA|NOSCRIPT|PRE|CODE)$/i;
   const mine = (el) => el.classList && (el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top') || el.classList.contains('ra-own'));   // ra-own: built in the right language by its own script
@@ -427,6 +466,15 @@
       c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a> <a class="btn ghost" href="revision.html#${here.replace(/\.html$/, '')}">${lang === 'fr' ? '🖨 Fiche de révision du cours' : '🖨 Revision sheet of the course'}</a>`;
       cta.after(c);
     }
+    // lessons about sensors: a link to the matching bench of the sensor test bench
+    const SENS = { learn: { l10: 'encoder' }, 'learn-control': { l3: 'encoder' }, 'learn-intelligence': { l1: 'lidar', l3: 'imu' }, 'learn-mobile-pro': { l14: 'imu' } };
+    Object.entries(SENS[here.replace(/\.html$/, '')] || {}).forEach(([id, bench]) => {
+      const art = document.getElementById(id); if (!art) return;
+      const p = document.createElement('p'); p.className = 'try sb-link ra-own';
+      p.innerHTML = `<a href="sensors.html#${bench}">${lang === 'fr' ? 'Essayez les capteurs en direct : le banc d\'essai des capteurs (encodeur, IMU, lidar, caméra, ultrasons) →' : 'Try the sensors live: the sensor test bench (encoder, IMU, lidar, camera, ultrasonic) →'}</a>`;
+      const at = art.querySelector('details.quiz, .lquiz, .exs, label.lesson-done');
+      if (at) at.before(p); else art.appendChild(p);
+    });
     // course glossaries: a link to the general glossary, filtered on this course
     const gl = document.querySelector('section.gloss > p');
     if (gl) {
@@ -449,7 +497,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="revision.html">${ui.rev}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="revision.html">${ui.rev}</a> · <a href="sensors.html">${ui.sens}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {

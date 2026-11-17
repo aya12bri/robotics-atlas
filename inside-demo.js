@@ -17,7 +17,8 @@ const P = {
   copper: M('#c8742e', { roughness: 0.35, metalness: 0.8 }), lam: M('#6f7883', { roughness: 0.4, metalness: 0.7 }), magN: M('#d6453d', { roughness: 0.4 }), magS: M('#3d6fd6', { roughness: 0.4 }),
   orange: M('#ff9f43', { roughness: 0.4 }), brass: M('#c9a227', { roughness: 0.3, metalness: 0.8 }), pcb: M('#1f6f43', { roughness: 0.55 }), gold: M('#e2b33c', { roughness: 0.3, metalness: 0.9 }),
   white: M('#eef1f4', { roughness: 0.5 }), friction: M('#7a4a2a', { roughness: 0.9 }), glass: new THREE.MeshStandardMaterial({ color: '#9fd3ff', roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.55 }),
-  rubber: M('#202326', { roughness: 0.9 }), alu: M('#d5dbe1', { roughness: 0.35, metalness: 0.6 }), red: M('#e5484d', { emissive: '#600', emissiveIntensity: 0.6 })
+  rubber: (() => { const m = M('#202326', { roughness: 0.9 }); m.userData.raKeep = true; return m; })(),   // tyres stay black
+  alu: M('#d5dbe1', { roughness: 0.35, metalness: 0.6 }), red: M('#e5484d', { emissive: '#600', emissiveIntensity: 0.6 })
 };
 const cylA = (r, h, mat, seg = 40, open = false) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg, 1, open).rotateX(Math.PI / 2), mat); m.castShadow = m.receiveShadow = true; return m; };   // axis along z, centred
 const boxC = (w, h, d, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.castShadow = m.receiveShadow = true; return m; };
@@ -439,6 +440,7 @@ function mount(host) {
   const card = host.querySelector('.insd-card'), partsEl = host.querySelector('.insd-parts'), detail = host.querySelector('.insd-detail');
 
   const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 0.005, 40);
+  if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
   const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputColorSpace = THREE.SRGBColorSpace;
   stage.prepend(renderer.domElement);
   const orbit = new OrbitControls(camera, renderer.domElement); orbit.enableDamping = true; orbit.enablePan = false;

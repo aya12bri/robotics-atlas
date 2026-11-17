@@ -40,6 +40,7 @@ const q = CFG.home.slice();
 
 const box = document.getElementById('anatView');
 const scene = new THREE.Scene();
+if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
 scene.background = new THREE.Color('#1d2638');
 const camera = new THREE.PerspectiveCamera(42, box.clientWidth / box.clientHeight, 0.1, 50);
 camera.position.set(...CFG.cam);
@@ -106,6 +107,7 @@ const SILVER = new THREE.MeshStandardMaterial({ color: '#c3c9d1', metalness: 0.9
 const MOTOR = new THREE.MeshStandardMaterial({ color: '#3a4250', metalness: 0.75, roughness: 0.38 });
 const COPPER = new THREE.MeshStandardMaterial({ color: '#c5772b', metalness: 1, roughness: 0.3 });
 const BLACK = new THREE.MeshStandardMaterial({ color: '#131417', roughness: 0.72, metalness: 0.05 });              // rubber and plastic
+const TYRE = BLACK.clone(); TYRE.userData.raKeep = true;                                                         // tyres stay black in dark mode
 
 const mesh = (geo, mat, parent, pos, rot) => { const m = new THREE.Mesh(geo, mat); if (pos) m.position.set(...pos); if (rot) m.rotation.set(...rot); parent.add(m); return m; };
 // Real parts have no razor-sharp edges: boxes get rounded edges and cylinders a small chamfer, which catch the light.
@@ -338,7 +340,7 @@ function buildMobile() {
   for (let i = 0; i < 6; i++) xr(boxm(0.03, 0.014, 0.025, i % 2 ? BLACK : SILVER, body, [0.04 + (i % 3) * 0.05, 0.146, -0.03 + Math.floor(i / 3) * 0.06]));
   for (const s of [-1, 1]) { drive(body, [0, 0.085, s * 0.115], 'z', 0.03, 0.8); xr(cyl(0.028, 0.008, SILVER, body, [0, 0.085, s * 0.07], 'z')); }
   cable(body, [[-0.1, 0.1, 0.0], [0.0, 0.13, 0.05], [0.1, 0.14, 0.04]], 0.006); cable(body, [[0.05, 0.14, 0.0], [0.05, 0.19, 0.0], [0.05, 0.23, 0.0]], 0.006);
-  const mkWheel = (z) => { const g = group(robot, [0, R, z]); cyl(R, 0.04, BLACK, g, [0, 0, 0], 'z'); cyl(0.045, 0.044, SILVER, g, [0, 0, 0], 'z');
+  const mkWheel = (z) => { const g = group(robot, [0, R, z]); cyl(R, 0.04, TYRE, g, [0, 0, 0], 'z'); cyl(0.045, 0.044, SILVER, g, [0, 0, 0], 'z');
     for (let k = 0; k < 5; k++) { const sp = boxm(0.07, 0.012, 0.046, DARK, g, [0, 0, 0]); sp.rotation.z = k * Math.PI / 5; } return g; };
   const wl = mkWheel(-TR / 2), wr = mkWheel(TR / 2);
   mesh(new THREE.SphereGeometry(0.035, 20, 16), SILVER, robot, [-0.19, 0.035, 0]); cyl(0.012, 0.04, DARK, robot, [-0.19, 0.07, 0]);
@@ -413,7 +415,7 @@ function buildWheels() {
   const spinners = [], trackers = [];
   const tire = (parent, pos, r, w) => {
     const g = group(parent, pos);
-    cyl(r, w, BLACK, g, [0, 0, 0], 'z'); cyl(r * 0.68, w * 1.05, SILVER, g, [0, 0, 0], 'z'); cyl(r * 0.28, w * 1.2, ORANGE, g, [0, 0, 0], 'z');
+    cyl(r, w, TYRE, g, [0, 0, 0], 'z'); cyl(r * 0.68, w * 1.05, SILVER, g, [0, 0, 0], 'z'); cyl(r * 0.28, w * 1.2, ORANGE, g, [0, 0, 0], 'z');
     for (let i = 0; i < 5; i++) { const sp = boxm(r * 1.3, r * 0.13, w * 1.14, ORANGE, g, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; }
     xr(mesh(new THREE.TorusGeometry(r * 0.3, 0.008, 8, 24), SILVER, g, [0, 0, w * 0.58]));          // bearing
     const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(r * 0.22, w * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(r * 0.12, w * 1.9, COPPER, m, [0, 0, 0]));   // hub motor
@@ -442,7 +444,7 @@ function buildWheels() {
     const Y = new THREE.Vector3(0, 1, 0), rolls = [];
     for (let i = 0; i < N; i++) {
       const a = i / N * Math.PI * 2, tg = new THREE.Vector3(-Math.sin(a), Math.cos(a), 0), ax = tilt ? tg.clone().multiplyScalar(Math.cos(Math.PI / 4)).add(new THREE.Vector3(0, 0, Math.sin(Math.PI / 4))).normalize() : tg;
-      const r = mesh(new THREE.CapsuleGeometry(0.027, tilt ? 0.05 : 0.035, 6, 14), BLACK, g, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0]); r.quaternion.setFromUnitVectors(Y, ax); rolls.push(r);
+      const r = mesh(new THREE.CapsuleGeometry(0.027, tilt ? 0.05 : 0.035, 6, 14), TYRE, g, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0]); r.quaternion.setFromUnitVectors(Y, ax); rolls.push(r);
       xr(mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.09, 8), SILVER, g, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0])).quaternion.setFromUnitVectors(Y, ax);
     }
     const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(R * 0.2, W * 1.6, MOTOR, m, [0, 0, 0]));
@@ -460,7 +462,7 @@ function buildWheels() {
   const s6 = slot(6), TL = 0.34, TR = 0.1, Pn = 2 * TL + 2 * Math.PI * TR, NB = 30, belt = [];
   for (const sx of [-1, 1]) { cyl(TR * 0.82, 0.14, SILVER, s6, [sx * TL / 2, TR + 0.01, 0], 'z'); cyl(TR * 0.4, 0.16, ORANGE, s6, [sx * TL / 2, TR + 0.01, 0], 'z'); }
   for (let k = -1; k <= 1; k++) cyl(0.04, 0.12, DARK, s6, [k * TL / 2.2, 0.05, 0], 'z');
-  for (let i = 0; i < NB; i++) { const b = boxm(0.045, 0.014, 0.16, i % 2 ? BLACK : DARK, s6, [0, 0, 0]); belt.push(b); }
+  for (let i = 0; i < NB; i++) { const b = boxm(0.045, 0.014, 0.16, i % 2 ? TYRE : DARK, s6, [0, 0, 0]); belt.push(b); }
   const place = (off) => belt.forEach((b, i) => { let u = ((i * Pn / NB) + off) % Pn; if (u < 0) u += Pn; let x, y, a; const cy = TR + 0.01;
     if (u < TL) { x = TL / 2 - u; y = cy - TR; a = 0; } else if (u < TL + Math.PI * TR) { const tt = (u - TL) / TR; x = -TL / 2 - Math.sin(tt) * TR; y = cy - Math.cos(tt) * TR; a = tt; }
     else if (u < 2 * TL + Math.PI * TR) { x = -TL / 2 + (u - TL - Math.PI * TR); y = cy + TR; a = Math.PI; } else { const tt = (u - 2 * TL - Math.PI * TR) / TR; x = TL / 2 + Math.sin(tt) * TR; y = cy + Math.cos(tt) * TR; a = Math.PI + tt; }
@@ -488,13 +490,13 @@ function buildDrives() {
     o = o || {};
     const pivot = group(parent, [x, 0, -y]), steer = group(pivot), hd = group(steer); hd.rotation.y = head * D;
     const spin = group(hd, [0, R, 0]);
-    if (kind === 'fixed') { cyl(R, W, BLACK, spin, [0, 0, 0], 'z'); cyl(R * 0.68, W * 1.05, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.28, W * 1.2, ORANGE, spin, [0, 0, 0], 'z');
+    if (kind === 'fixed') { cyl(R, W, TYRE, spin, [0, 0, 0], 'z'); cyl(R * 0.68, W * 1.05, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.28, W * 1.2, ORANGE, spin, [0, 0, 0], 'z');
       for (let i = 0; i < 5; i++) { const sp = boxm(R * 1.3, R * 0.13, W * 1.14, ORANGE, spin, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; } }
     else {
       cyl(R * 0.72, W * 1.1, SILVER, spin, [0, 0, 0], 'z'); cyl(R * 0.25, W * 1.3, ORANGE, spin, [0, 0, 0], 'z');
       const Y = new THREE.Vector3(0, 1, 0);
       for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2, tg = new THREE.Vector3(-Math.sin(a), Math.cos(a), 0), ax = kind === 'mecanum' ? tg.clone().multiplyScalar(Math.SQRT1_2).add(new THREE.Vector3(0, 0, Math.SQRT1_2 * (o.tilt || 1))).normalize() : tg;
-        const r = mesh(new THREE.CapsuleGeometry(0.02, kind === 'mecanum' ? 0.035 : 0.025, 6, 12), BLACK, spin, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0]); r.quaternion.setFromUnitVectors(Y, ax); }
+        const r = mesh(new THREE.CapsuleGeometry(0.02, kind === 'mecanum' ? 0.035 : 0.025, 6, 12), TYRE, spin, [Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86, 0]); r.quaternion.setFromUnitVectors(Y, ax); }
     }
     for (const sd of [-1, 1]) boxm(0.01, 0.12, 0.05, DARK, hd, [0, R + 0.06, sd * (W / 2 + 0.012)]);
     const m = group(spin); m.rotation.x = Math.PI / 2; xr(cyl(R * 0.22, W * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(R * 0.12, W * 1.9, COPPER, m, [0, 0, 0]));
@@ -541,7 +543,7 @@ function buildDrives() {
     () => { const g = group(root); deco(g, [0.62, 0.34], [0, 0]); const tracks = [];
       for (const side of [1, -1]) { const t = group(g, [0, 0, -side * 0.2]), TL = 0.34, TR = 0.09, Pn = 2 * TL + 2 * Math.PI * TR, belt = [], cy = TR + 0.01;
         for (const sx of [-1, 1]) { cyl(TR * 0.82, 0.1, SILVER, t, [sx * TL / 2, cy, 0], 'z'); cyl(TR * 0.4, 0.12, ORANGE, t, [sx * TL / 2, cy, 0], 'z'); }
-        for (let i = 0; i < 30; i++) belt.push(boxm(0.045, 0.014, 0.12, i % 2 ? BLACK : DARK, t, [0, 0, 0]));
+        for (let i = 0; i < 30; i++) belt.push(boxm(0.045, 0.014, 0.12, i % 2 ? TYRE : DARK, t, [0, 0, 0]));
         xr(cyl(TR * 0.3, 0.1, MOTOR, t, [TL / 2, cy, 0.0], 'z'));
         const tr = { off: 0, speed: 0, side, place: () => belt.forEach((b, i) => { let u = ((i * Pn / 30) + tr.off) % Pn; if (u < 0) u += Pn; let x, y, a;
           if (u < TL) { x = TL / 2 - u; y = cy - TR; a = 0; } else if (u < TL + Math.PI * TR) { const q2 = (u - TL) / TR; x = -TL / 2 - Math.sin(q2) * TR; y = cy - Math.cos(q2) * TR; a = q2; } else if (u < 2 * TL + Math.PI * TR) { x = -TL / 2 + (u - TL - Math.PI * TR); y = cy + TR; a = Math.PI; } else { const q2 = (u - 2 * TL - Math.PI * TR) / TR; x = TL / 2 + Math.sin(q2) * TR; y = cy + Math.cos(q2) * TR; a = Math.PI + q2; }

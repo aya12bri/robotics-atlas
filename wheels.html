@@ -30,17 +30,17 @@
       .tag { display: inline-block; background: #26364a; border-radius: 4px; padding: 0.05rem 0.45rem; margin-right: 0.3rem; font-size: 0.8rem; color: #cfd8e3; }
       .pro { color: #6bdc8b; } .con { color: #ff8a80; }
       #presets button { margin: 0.2rem 0.3rem 0.2rem 0; padding: 0.3rem 0.7rem; font-size: 0.9rem; }
-      select { background: #0f1720; color: #e8eef5; border: 1px solid #44566b; border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem; }
+      select { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 1rem; }
       table.dh td.left, table.dh th.left { text-align: left; }
       ul.tight li { margin: 0.2rem 0; }
       .wlab { margin: 1rem 0 2rem; scroll-margin-top: 6rem; }
       .wl-tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.5rem; margin-bottom: 0.8rem; }
       .wl-tab { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.4rem 0.3rem 0.5rem; background: var(--surface); color: var(--muted); border: 1px solid var(--border); border-radius: 12px; font-size: 0.76rem; line-height: 1.2; text-align: center; cursor: pointer; min-height: 0; transition: border-color 0.2s, color 0.2s, transform 0.2s; }
-      .wl-tab svg { width: 100%; max-width: 64px; background: #1b1b1b; border-radius: 8px; }
+      .wl-tab svg { width: 100%; max-width: 64px; background: var(--dk-thumb, #1b1b1b); border-radius: 8px; }
       .wl-tab:hover { color: var(--text); transform: translateY(-2px); }
       .wl-tab.on { border-color: var(--btn); color: var(--text); background: color-mix(in srgb, var(--btn) 14%, var(--surface)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--btn) 30%, transparent); }
       .wl-main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
-      .wl-view { position: relative; height: 520px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: #262626; }
+      .wl-view { position: relative; height: 520px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--panel); }
       .wl-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
       .wl-bar { position: absolute; top: 0.6rem; left: 0.6rem; right: 0.6rem; display: flex; justify-content: space-between; gap: 0.4rem; z-index: 3; }
       .wl-bar button, .wl-views { background: color-mix(in srgb, #1a1a1a 88%, transparent); }
@@ -58,7 +58,7 @@
       .sc { display: grid; grid-template-columns: 9rem 1fr 2.4rem; gap: 0.6rem; align-items: center; margin: 0.3rem 0; font-size: 0.83rem; } .sc i { height: 7px; border-radius: 99px; background: color-mix(in srgb, var(--text) 12%, transparent); overflow: hidden; } .sc b { display: block; height: 100%; background: linear-gradient(90deg, var(--btn), var(--good)); } .sc em { font-style: normal; font-family: var(--mono); color: var(--muted); font-size: 0.75rem; text-align: right; }
       .wl-sim { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.8fr); gap: 1rem; margin-top: 1rem; align-items: start; }
       .wl-sim > div { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem 1rem; }
-      .pad { position: relative; width: 150px; height: 150px; margin: 0.2rem auto 0.6rem; border-radius: 50%; background: radial-gradient(circle, #1b1b1b 0 60%, #262626 61% 100%); border: 2px solid var(--border); touch-action: none; cursor: grab; display: grid; place-items: center; }
+      .pad { position: relative; width: 150px; height: 150px; margin: 0.2rem auto 0.6rem; border-radius: 50%; background: radial-gradient(circle, var(--fpanel) 0 60%, var(--surface-2) 61% 100%); border: 2px solid var(--border); touch-action: none; cursor: grab; display: grid; place-items: center; }
       .pad:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; } .padc { position: absolute; top: 6px; font-size: 0.65rem; color: var(--muted); font-family: var(--mono); pointer-events: none; }
       .pad i { width: 38px; height: 38px; border-radius: 50%; background: var(--btn); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5); pointer-events: none; transition: transform 0.05s; }
       .wl-pre { display: flex; justify-content: center; gap: 0.3rem; } .wl-pre button { padding: 0.3rem 0.65rem; min-height: 0; }

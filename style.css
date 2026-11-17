@@ -14,7 +14,7 @@
   --hl: #ffa04d;
   --ax: #ff6b6b;  --ay: #4ed17f;  --az: #5aa9ff;
   --good: #4ade80;  --bad: #fb7185;
-  --panel: #1d2638;
+  --panel: #1d2638;  --dk-thumb: #141c2b;   /* small dark drawings (wheel icons): navy in dark mode, they stay dark in light mode */
   --fpanel: #141c2b;  --f-ink: #d6dfeb;  --f-ink2: #eef3f9;  --f-axis: #a3b0c2;  --f-axis2: #75849a;  --f-dim: #8392a7;  --f-grid: #2c3a50;  --f-box: #1c2638;
   --f-base: #3b4862;  --f-mute: #8a99ae;  --f-gray: #929cab;  --f-joint: #141c2b;  --f-pn: rgba(255, 255, 255, 0.04);
   --f-o: #ffa04d;  --f-b: #5aa9ff;  --f-b2: #6b9be6;  --f-g: #4ed17f;  --f-r: #ff6b6b;  --f-y: #ffd60a;  --f-p: #b88cff;   /* figures and graphs of the courses */
@@ -34,7 +34,7 @@
   --ax: #d63a3a;  --ay: #1f9a4f;  --az: #1f6fe0;
   --good: #15803d;  --bad: #be123c;
   --line: rgba(0, 0, 0, 0.18);
-  --fpanel: #fafbfc;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
+  --fpanel: #fafbfc;  --dk-thumb: #1b1b1b;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
   --f-base: #c9ced6;  --f-mute: #6b7686;  --f-gray: #8a8a8a;  --f-joint: #ffffff;  --f-pn: rgba(0, 0, 0, 0.03);
   --f-o: #d9730d;  --f-b: #1f6fe0;  --f-b2: #2f6bd6;  --f-g: #1f9a4f;  --f-r: #d63a3a;  --f-y: #a87b00;  --f-p: #7b3fd6;
   color-scheme: light;
@@ -49,7 +49,7 @@
     --ax: #d63a3a;  --ay: #1f9a4f;  --az: #1f6fe0;
     --good: #15803d;  --bad: #be123c;
     --line: rgba(0, 0, 0, 0.18);
-    --fpanel: #fafbfc;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
+    --fpanel: #fafbfc;  --dk-thumb: #1b1b1b;  --code-bg: #f6f8fa;  --code-ink: #1f2933;  --f-ink: #1f2933;  --f-ink2: #1f2933;  --f-axis: #5b6573;  --f-axis2: #8a94a0;  --f-dim: #8a94a0;  --f-grid: #dde2e8;  --f-box: #eef1f5;
     --f-base: #c9ced6;  --f-mute: #6b7686;  --f-gray: #8a8a8a;  --f-joint: #ffffff;  --f-pn: rgba(0, 0, 0, 0.03);
     --f-o: #d9730d;  --f-b: #1f6fe0;  --f-b2: #2f6bd6;  --f-g: #1f9a4f;  --f-r: #d63a3a;  --f-y: #a87b00;  --f-p: #7b3fd6;
     color-scheme: light;
@@ -1438,3 +1438,40 @@ html.rs-open { overflow: hidden; }
   body.rev-view .rs-cols { columns: 2; column-gap: 7mm; }
 }
 .figure svg.fig[viewBox^="0 0 660"] { max-width: 640px; }
+
+/* ---- sensor test bench (sensors.html) ---- */
+.sb-page { padding-bottom: 3rem; }
+.sb-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.6rem; margin: 1.4rem 0 1.2rem; }
+.sb-tabs button { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; text-align: left; padding: 0.75rem 0.85rem; min-height: 0; border-radius: 12px; background: var(--surface); color: var(--text); border: 1.5px solid var(--border); cursor: pointer; font: inherit; }
+.sb-tabs button:hover { border-color: var(--accent); background: var(--surface); }
+.sb-tabs button[aria-selected='true'] { border-color: var(--btn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--btn) 22%, transparent); }
+.sb-tabs b { font-size: 0.95rem; }
+.sb-tabs span { font-size: 0.78rem; color: var(--muted); line-height: 1.35; font-weight: 400; }
+.sb-bench h2 { margin: 0.6rem 0 0.3rem; }
+.sb-intro { color: var(--muted); max-width: 70rem; }
+.sb-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.2rem; align-items: start; margin-top: 0.8rem; }
+.sb-view { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+.sb-view.sb-two { display: grid; grid-template-columns: 1fr 1fr; }
+.sb-cv { display: block; width: 100%; border-radius: 12px; border: 1px solid var(--border); background: var(--fpanel); }
+.sb-side { display: flex; flex-direction: column; gap: 0.9rem; }
+.sb-ctl { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); }
+.sb-sl { display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 0.6rem; font-size: 0.86rem; }
+.sb-sl input { grid-column: 1 / -1; width: 100%; accent-color: var(--btn); }
+.sb-sl b { font-family: var(--mono); font-size: 0.85rem; color: var(--accent); }
+.sb-ck { display: flex; align-items: center; gap: 0.45rem; font-size: 0.86rem; cursor: pointer; }
+.sb-ck input { accent-color: var(--btn); }
+.sb-leg { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; padding: 0 0.2rem; }
+.sb-leg i { display: inline-block; width: 14px; height: 4px; border-radius: 2px; vertical-align: middle; }
+.sb-read { display: grid; gap: 0.45rem; padding: 0.9rem 1rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); }
+.sb-read div { display: flex; justify-content: space-between; gap: 0.8rem; font-size: 0.84rem; color: var(--muted); }
+.sb-read b { font-family: var(--mono); color: var(--text); white-space: nowrap; }
+.sb-read .ok b { color: var(--good); } .sb-read .bad b { color: var(--bad); }
+.sb-notes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; margin-top: 1.2rem; }
+.sb-eq { padding: 0.8rem 1rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); border-radius: 0 12px 12px 0; }
+.sb-eq p { margin: 0.25rem 0; font-family: 'Cambria Math', 'STIX Two Math', Georgia, serif; max-width: none; }
+.sb-tips { margin: 0; padding: 0.8rem 1rem 0.8rem 2rem; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); font-size: 0.9rem; }
+.sb-tips li { margin: 0.3rem 0; }
+.lesson .sb-link { margin: 0.8rem 0; }
+@media (max-width: 1000px) { .sb-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .sb-grid { grid-template-columns: 1fr; } .sb-notes { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .sb-tabs { grid-template-columns: 1fr 1fr; } .sb-tabs span { display: none; } .sb-view.sb-two { grid-template-columns: 1fr; } }
+.sb-bench { scroll-margin-top: 90px; }
