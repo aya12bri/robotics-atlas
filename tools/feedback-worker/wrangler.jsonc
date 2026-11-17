@@ -1,0 +1,9 @@
+{
+  // A separate, small Worker for the lesson feedback. Deploy it from this folder: npx wrangler deploy
+  // Replace the domain below by yours, and the KV id by the one printed by: npx wrangler kv namespace create FEEDBACK
+  "name": "robotics-atlas-feedback",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-19",
+  "routes": [{ "pattern": "roboticsatlas.ayabriksine.com/api/*", "zone_name": "ayabriksine.com" }],
+  "kv_namespaces": [{ "binding": "FEEDBACK", "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID" }]
+}

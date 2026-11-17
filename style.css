@@ -30,7 +30,7 @@
   --text: #171717;  --muted: #595959;
   --accent: #1b4fd1;
   --btn: #1f55e0;  --btn-hover: #1744b8;  --btn-ink: #ffffff;
-  --hl: #c2570a;
+  --hl: #a84a00;
   --ax: #b91c1c;  --ay: #166534;  --az: #1858c4;
   --good: #166534;  --bad: #be123c;
   --line: rgba(0, 0, 0, 0.18);
@@ -45,7 +45,7 @@
     --text: #171717;  --muted: #595959;
     --accent: #1b4fd1;
     --btn: #1f55e0;  --btn-hover: #1744b8;  --btn-ink: #ffffff;
-    --hl: #c2570a;
+    --hl: #a84a00;
     --ax: #b91c1c;  --ay: #166534;  --az: #1858c4;
     --good: #166534;  --bad: #be123c;
     --line: rgba(0, 0, 0, 0.18);
@@ -1520,3 +1520,55 @@ html.rs-open { overflow: hidden; }
 /* anatomy joint chips: dark text on the light colours, a darker blue / violet behind white text */
 .ancard[style*="#2e9e5b"] .ann, .ancard[style*="#ff9f43"] .ann, .ancard[style*="#ff5a5f"] .ann, .ancard[style*="#1fb5c9"] .ann { color: #0b1220; }
 .ancard[style*="#2f6bff"] .ann, .ancard[style*="#8a5cf6"] .ann { background: color-mix(in srgb, var(--c) 85%, #000); }
+
+/* ---- programming sandbox (sandbox.html) ---- */
+.sbx-page { padding-bottom: 3rem; }
+.sbx-missions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.2rem 0 1rem; }
+.sbx-missions button { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.45rem 0.95rem; min-height: 0; font: 600 0.88rem var(--font); cursor: pointer; }
+.sbx-missions button:hover { border-color: var(--accent); background: var(--surface); }
+.sbx-missions button[aria-selected='true'] { border-color: var(--btn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--btn) 22%, transparent); }
+.sbx-missions button.done::after { content: ' ✓'; color: var(--good); }
+.sbx-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1.2rem; align-items: start; }
+.sbx-goal { margin: 0 0 0.6rem; padding: 0.6rem 0.9rem; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 10px 10px 0; max-width: none; }
+.sbx-ed { display: flex; border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-2); height: 340px; }
+.sbx-gutter { margin: 0; padding: 0.7rem 0.5rem; min-width: 2.4rem; text-align: right; color: var(--muted); background: var(--surface); font: 0.85rem/1.5 var(--mono); overflow: hidden; user-select: none; }
+.sbx-gutter b { color: #fff; background: var(--btn); border-radius: 4px; padding: 0 0.25rem; }
+.sbx-ed textarea { flex: 1; border: 0; outline: none; resize: none; padding: 0.7rem 0.8rem; background: transparent; color: var(--text); font: 0.85rem/1.5 var(--mono); white-space: pre; overflow: auto; }
+.sbx-ed:focus-within { border-color: var(--accent); }
+.sbx-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0.7rem 0; }
+.sbx-bar .btn { padding: 0.5rem 0.95rem; min-height: 0; cursor: pointer; }
+.sbx-speed { display: inline-flex; align-items: center; gap: 0.4rem; margin-left: auto; font-size: 0.85rem; color: var(--muted); }
+.sbx-speed input { accent-color: var(--btn); width: 7rem; }
+.sbx-msg { min-height: 1.4rem; margin: 0.3rem 0; font-weight: 600; max-width: none; }
+.sbx-msg.ok { color: var(--good); } .sbx-msg.bad { color: var(--bad); }
+.sbx-help { margin-top: 0.6rem; border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem 0.9rem; background: var(--surface); }
+.sbx-help summary { cursor: pointer; font-weight: 600; }
+.sbx-help p { font-size: 0.85rem; color: var(--muted); }
+.sbx-view { position: relative; height: 520px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--panel); }
+.sbx-view canvas { display: block; width: 100% !important; height: 100% !important; }
+.sbx-read { position: absolute; left: 0.7rem; bottom: 0.6rem; font: 0.78rem var(--mono); color: #fff; background: rgba(10, 15, 24, 0.72); padding: 0.25rem 0.6rem; border-radius: 999px; pointer-events: none; }
+@media (max-width: 900px) { .sbx-grid { grid-template-columns: 1fr; } .sbx-view { height: 380px; } .sbx-ed { height: 260px; } }
+
+/* ---- guided projects (projects.html) ---- */
+.prj-page { padding-bottom: 3rem; }
+.prj-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.9rem; margin: 1.4rem 0 2rem; }
+.prj-cards .rev-ic { font-size: 1.2rem; }
+.prj { margin: 2.5rem 0; padding-top: 1.5rem; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
+.prj h2 { margin: 0 0 0.3rem; }
+.prj h3 { margin: 1.4rem 0 0.5rem; font-size: 1.05rem; }
+.prj-meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.8rem; }
+.prj-code { margin: 0.6rem 0 1rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.prj-code-h { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.4rem 0.4rem 0.9rem; background: var(--surface); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.85rem; }
+.prj-code pre { margin: 0; max-height: 420px; overflow: auto; border-radius: 0; }
+.prj-links { margin-top: 1rem; font-size: 0.92rem; }
+
+/* ---- "was this lesson clear?" (lesson-quiz.js) ---- */
+.lfb { margin: 1.4rem 0 0.4rem; padding: 0.8rem 1rem; border: 1px dashed var(--border); border-radius: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; }
+.lfb-q { margin: 0; font-weight: 600; max-width: none; }
+.lfb-b { display: flex; gap: 0.5rem; }
+.lfb-b button { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 0.35rem 0.85rem; min-height: 0; font: 600 0.88rem var(--font); cursor: pointer; }
+.lfb-b button:hover { border-color: var(--accent); background: var(--surface); }
+.lfb-more { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem; width: 100%; }
+.lfb-more label { flex: 1 1 18rem; display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.88rem; color: var(--muted); }
+.lfb-more textarea { font: 0.92rem var(--font); padding: 0.45rem 0.6rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-2); color: var(--text); resize: vertical; }
+.lfb [hidden] { display: none; }

@@ -79,6 +79,33 @@
     paint();
   }
 
+  // "Was this lesson clear?": a vote (and an optional comment) sent to /api/feedback (tools/feedback-worker.js).
+  // Anonymous: the page, the lesson, the vote, the language and the comment. If the endpoint is not installed,
+  // nothing breaks: the vote is only remembered in this browser so the question is not asked again.
+  var FB = 'ra-fb';
+  function feedback(art) {
+    var page = location.pathname.split('/').pop().replace(/\.html$/, '') || 'index', id = page + '#' + art.id;
+    var box = el('div', 'lfb ra-own'), seen = {};
+    try { seen = JSON.parse(localStorage.getItem(FB) || '{}') || {}; } catch (e) { /* private mode */ }
+    var thanks = function () { box.innerHTML = '<p class="lfb-q">' + L('Thank you! Your answer helps to improve the lessons.', 'Merci ! Votre réponse aide à améliorer les leçons.') + '</p>'; };
+    if (seen[id]) { thanks(); return box; }
+    box.innerHTML = '<p class="lfb-q">' + L('Was this lesson clear?', 'Cette leçon était-elle claire ?') + '</p>' +
+      '<div class="lfb-b"><button type="button" data-v="1" aria-label="' + L('Yes, clear', 'Oui, claire') + '">👍 ' + L('Yes', 'Oui') + '</button><button type="button" data-v="-1" aria-label="' + L('No, not clear', 'Non, pas claire') + '">👎 ' + L('Not really', 'Pas vraiment') + '</button></div>' +
+      '<div class="lfb-more" hidden><label>' + L('What was hard to understand? (optional, anonymous)', 'Qu\'est-ce qui était difficile à comprendre ? (facultatif, anonyme)') + '<textarea maxlength="500" rows="2"></textarea></label><button type="button" class="btn sm" data-send>' + L('Send', 'Envoyer') + '</button></div>';
+    var vote = 0;
+    var send = function (comment) {
+      seen[id] = vote; try { localStorage.setItem(FB, JSON.stringify(seen)); } catch (e) { /* private mode */ }
+      try { fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, keepalive: true, body: JSON.stringify({ page: page, lesson: art.id, vote: vote, lang: FR() ? 'fr' : 'en', comment: comment || '' }) }).catch(function () {}); } catch (e) { /* offline */ }
+      thanks();
+    };
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.v) { vote = +b.dataset.v; if (vote > 0) send(''); else { box.querySelector('.lfb-b').hidden = true; box.querySelector('.lfb-more').hidden = false; box.querySelector('textarea').focus(); } }
+      else if (b.hasAttribute('data-send')) send(box.querySelector('textarea').value.trim().slice(0, 500));
+    });
+    return box;
+  }
+
   function pager(lessons) {
     var cur = document.querySelector('.courses .course.current'), next = cur && cur.nextElementSibling;
     while (next && !(next.classList && next.classList.contains('course'))) next = next.nextElementSibling;
@@ -91,6 +118,7 @@
       else if (next) { n.href = next.getAttribute('href'); n.innerHTML = '<small>' + L('Last lesson done? Next course', 'Dernière leçon finie ? Cours suivant') + ' →</small><b><span>' + next.querySelector('b').innerHTML + '</span></b>'; }
       else { n.href = 'index.html#road'; n.innerHTML = '<small>' + L('All lessons done?', 'Toutes les leçons finies ?') + '</small><b>' + L('Back to the roadmap', 'Retour au parcours') + ' →</b>'; }
       nav.append(n);
+      art.append(feedback(art));
       art.append(nav);
     });
   }

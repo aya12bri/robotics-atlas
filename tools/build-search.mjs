@@ -12,7 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 
 // pages in the order results of equal score are shown; the 404 page is not indexed
-const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'exam.html' && f !== 'offline.html')
+const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'exam.html' && f !== 'sandbox.html' && f !== 'projects.html' && f !== 'offline.html')
   .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 function rank(f) { return f === 'index.html' ? 0 : f.startsWith('learn') ? 1 : f.startsWith('anatomy') ? 3 : 2; }
 
@@ -158,6 +158,12 @@ fs.writeFileSync(path.join(root, 'glossary-data.js'), '// glossary-data.js — g
   ['sonar', ['Ultrasonic range finder: cone, echo and temperature', 'Télémètre à ultrasons : cône, écho et température'], ['ultrasonic sensor, beam angle, specular reflection, time of flight, speed of sound, temperature, cross-talk', 'capteur à ultrasons, angle du faisceau, réflexion spéculaire, temps de vol, vitesse du son, température, diaphonie']]
 ].forEach(([id, t, x]) => out.push({ u: 'sensors' + (id ? '#' + id : ''), k: 'page', p: ['Sensor test bench', 'Banc d\'essai des capteurs'], n: '', t, x, m: 0 }));
 out.push({ u: 'exam', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Final exams', 'Examens finaux'], x: ['One final exam per course: 12 questions, multiple choice and calculations, corrected with explanations; 70 % to pass and get the certificate.', 'Un examen final par cours : 12 questions, QCM et calculs, corrigées avec explications ; 70 % pour réussir et obtenir le certificat.'], m: 0 });
+out.push({ u: 'sandbox', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Programming sandbox', 'Bac à sable de programmation'], x: ['Program a 3D SCARA robot: move x y, down, up, close, open, wait, repeat … end. Missions: move a cube, stack, sort by colour.', 'Programmez un robot SCARA en 3D : déplacer x y, descendre, monter, fermer, ouvrir, attendre, répéter … fin. Missions : déplacer un cube, empiler, trier par couleur.'], m: 0 });
+[['', ['Guided projects', 'Projets guidés'], ['Real robotics projects with parts, prices, wiring, code and tests.', 'Projets de robotique réels avec pièces, prix, câblage, code et essais.']],
+  ['arm', ['Project: a 2-axis arm with servos (Arduino)', 'Projet : un bras 2 axes à servos (Arduino)'], ['Arduino, MG90S servos, inverse kinematics on the board, draw with a pen, offsets, external 5 V supply.', 'Arduino, servos MG90S, cinématique inverse sur la carte, dessiner au stylo, décalages, alimentation 5 V externe.']],
+  ['line', ['Project: a line-following robot', 'Projet : un robot suiveur de ligne'], ['IR sensors, TB6612FNG driver, PD control, tuning Kp and Kd, chassis with TT motors.', 'Capteurs IR, driver TB6612FNG, régulation PD, réglage de Kp et Kd, châssis avec moteurs TT.']],
+  ['ros', ['Project: a ROS 2 mobile robot that makes a map', 'Projet : un robot mobile ROS 2 qui fait une carte'], ['Raspberry Pi, encoders, lidar, odometry node, slam_toolbox, Nav2, watchdog.', 'Raspberry Pi, codeurs, lidar, nœud d\'odométrie, slam_toolbox, Nav2, chien de garde.']]
+].forEach(([id, t, x]) => out.push({ u: 'projects' + (id ? '#' + id : ''), k: 'page', p: ['Guided projects', 'Projets guidés'], n: '', t, x, m: 0 }));
 // the glossary entries are found by the search too
 for (const e of GLOSS) out.push({ u: 'glossary#' + e.id, k: 'gloss', p: [ 'Glossary', 'Glossaire' ], n: '', t: e.t, x: [plain(e.d[0]), plain(e.d[1])], m: 0 });
 out.push({ u: 'glossary', k: 'page', p: ['Robotics Atlas', 'Robotics Atlas'], n: '', t: ['Robotics glossary', 'Glossaire de la robotique'], x: [`Every word of robotics in one place: ${GLOSS.length} terms with their meaning, in English and French, and the lesson that explains them.`, `Tous les mots de la robotique au même endroit : ${GLOSS.length} termes avec leur sens, en anglais et en français, et la leçon qui les explique.`], m: 0 });
