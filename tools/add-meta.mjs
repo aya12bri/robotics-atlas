@@ -26,7 +26,7 @@ const DESC = {
   'revision.html': 'Printable revision sheets of every robotics course: the essentials of each lesson, the main formulas and the key terms, to print or save as PDF.',
   'sensors.html': 'A live sensor test bench: encoder, IMU (gyroscope drift, accelerometer noise, complementary filter), 2D lidar, camera distortion and stereo depth, ultrasonic range finder.',
   'exam.html': 'The final exams of the robotics courses: 12 corrected questions per course, with explanations; pass them to get the certificates.',
-  'sandbox.html': 'A programming sandbox: write a small program (move, down, close, repeat) and watch a 3D SCARA robot run it; three missions to complete.',
+  'sandbox.html': 'A programming sandbox: program a 3D SCARA or 6-axis robot (linear and joint moves, gripper, loops), complete three missions and export the program in an ABB RAPID or KUKA KRL style.',
   'projects.html': 'Three guided robotics projects: a 2-axis servo arm on Arduino, a PID line follower and a ROS 2 mobile robot with a lidar, with parts, prices, wiring, code and tests.',
   'about.html': 'About Robotics Atlas: what the site offers, how the courses are made, sources, privacy, and how to report an error.',
   'review.html': 'Spaced-repetition reviews of robotics: the questions come back after 1, 3, 7, 16 and 35 days until you know them.',
