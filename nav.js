@@ -279,7 +279,7 @@
         if (!o.material || o.isGridHelper || o.userData.raKeep) return;
         const g = o.geometry && o.geometry.type; if (g === 'PlaneGeometry' || g === 'PlaneBufferGeometry') return;
         (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
-          if (!m || m.vertexColors || m.map || (m.transparent && m.opacity < 0.6)) return;
+          if (!m || m.userData.raKeep || m.vertexColors || m.map || (m.transparent && m.opacity < 0.6)) return;   // raKeep: tyres stay black (realistic)
           const col = m.userData.base && m.userData.base.isColor ? m.userData.base : m.color;     // some scenes recompute the colour from a base
           if (!col || !col.getHexString) return;
           const u = m.userData;

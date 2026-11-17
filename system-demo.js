@@ -19,7 +19,7 @@ const C = {
   black: M('#16191d', { roughness: 0.55 }), grey: M('#6b7480', { roughness: 0.5, metalness: 0.3 }), white: M('#eef1f4', { roughness: 0.45 }), cream: M('#e6e1d6', { roughness: 0.6 }),
   pcb: M('#1f6f43', { roughness: 0.55 }), pcbBlue: M('#1f4fa8', { roughness: 0.55 }), pcbRed: M('#b3262c', { roughness: 0.55 }), gold: M('#e2b33c', { roughness: 0.3, metalness: 0.9 }),
   copper: M('#c8742e', { roughness: 0.35, metalness: 0.8 }), orange: M('#ff9f43', { roughness: 0.4 }), yellow: M('#f5c518', { roughness: 0.45 }), red: M('#e5484d', { roughness: 0.4 }),
-  blue: M('#2f6bff', { roughness: 0.45 }), cyan: M('#1aa0c8', { roughness: 0.4 }), green: M('#30a46c'), rubber: M('#1d2024', { roughness: 0.95 }), glass: new THREE.MeshStandardMaterial({ color: '#7fb6e6', roughness: 0.05, metalness: 0.3, transparent: true, opacity: 0.75 }),
+  blue: M('#2f6bff', { roughness: 0.45 }), cyan: M('#1aa0c8', { roughness: 0.4 }), green: M('#30a46c'), rubber: (() => { const m = M('#1d2024', { roughness: 0.95 }); m.userData.raKeep = true; return m; })(), glass: new THREE.MeshStandardMaterial({ color: '#7fb6e6', roughness: 0.05, metalness: 0.3, transparent: true, opacity: 0.75 }),
   lens: M('#0b1622', { roughness: 0.05, metalness: 0.6 }), led: M('#30ff8a', { emissive: '#30ff8a', emissiveIntensity: 0.9 }), ledR: M('#ff3b3b', { emissive: '#ff3b3b', emissiveIntensity: 0.9 }), wood: M('#b98d5a', { roughness: 0.85 })
 };
 const bx = (w, h, d, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); o.castShadow = o.receiveShadow = true; return o; };

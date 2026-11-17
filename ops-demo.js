@@ -235,7 +235,7 @@ function makeAMR(s) {                                       // autonomous mobile
   const stripe = box(s * 1.005, h * 0.16, w * 1.005, MAT.orange); stripe.position.y = s * 0.06 + h * 0.62; g.add(stripe);
   const top = box(s * 0.92, s * 0.03, w * 0.92, MAT.dark); top.position.y = s * 0.06 + h; g.add(top);
   const lidar = cyl(s * 0.07, s * 0.06, MAT.black); lidar.position.set(s * 0.4, s * 0.06 + h, 0); g.add(lidar);
-  const wheels = [-1, 1].map((sd) => { const wh = cylZ(s * 0.075, s * 0.05, MAT.black); wh.position.set(0, s * 0.075, sd * (w / 2 - s * 0.02)); g.add(wh); return wh; });
+  const wheels = [-1, 1].map((sd) => { const wh = cylZ(s * 0.075, s * 0.05, MAT.black); wh.userData.raKeep = true; wh.position.set(0, s * 0.075, sd * (w / 2 - s * 0.02)); g.add(wh); return wh; });
   const ring = new THREE.Mesh(new THREE.RingGeometry(s * 0.75, s * 0.8, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#30a46c', transparent: true, opacity: 0.0, depthWrite: false }));
   ring.position.y = 0.004; g.add(ring);
   g.userData = { deck: s * 0.06 + h + s * 0.03, wheels, ring, s };

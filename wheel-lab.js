@@ -42,7 +42,7 @@ paintGround(); new MutationObserver(paintGround).observe(document.documentElemen
 
 // ------------------------------------------------------------------ materials and parts
 const M = (c, r = 0.5, m = 0.1) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m });
-const mTire = M('#1c1c1c', 0.9, 0), mRim = M('#c9ced6', 0.35, 0.5), mDark = M('#3a3f48', 0.6, 0.3), mOr = M('#ff9f43', 0.45, 0.1), mBlue = M('#2f6bff', 0.4, 0.1), mChassis = new THREE.MeshStandardMaterial({ color: '#5b8fd6', roughness: 0.5, transparent: true, opacity: 0.75 }), mRoller = M('#ff9f43', 0.5, 0.1), mStripe = M('#222222', 0.6, 0);
+const mTire = M('#1c1c1c', 0.9, 0); mTire.userData.raKeep = true; const mRim = M('#c9ced6', 0.35, 0.5), mDark = M('#3a3f48', 0.6, 0.3), mOr = M('#ff9f43', 0.45, 0.1), mBlue = M('#2f6bff', 0.4, 0.1), mChassis = new THREE.MeshStandardMaterial({ color: '#5b8fd6', roughness: 0.5, transparent: true, opacity: 0.75 }), mRoller = M('#ff9f43', 0.5, 0.1), mStripe = M('#222222', 0.6, 0);
 const bx = (w, h, d, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.castShadow = m.receiveShadow = true; return m; };
 const cylZ = (r, h, mat, seg = 40) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg), mat); m.rotation.x = Math.PI / 2; m.castShadow = m.receiveShadow = true; return m; };
 const cylY = (r, h, mat, seg = 32) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg), mat); m.castShadow = m.receiveShadow = true; return m; };
