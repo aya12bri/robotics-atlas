@@ -131,7 +131,7 @@ lesson(PRE, 6, {
       UL([
         ['“<em>frame does not exist</em>” or two separate trees: a link of the tree is missing. Look at the PDF of <code>view_frames</code>.', '« <em>frame does not exist</em> » ou deux arbres séparés : il manque un lien de l\'arbre. Regardez le PDF de <code>view_frames</code>.'],
         ['The sensor data appears at the wrong place: the <code>origin</code> of the sensor in the URDF is wrong (measure it on the real robot).', 'Les données d\'un capteur apparaissent au mauvais endroit : l\'<code>origin</code> du capteur dans l\'URDF est faux (mesurez-le sur le vrai robot).'],
-        ['“<em>extrapolation into the future</em>”: the clocks of two computers differ, or simulated time is not enabled (<code>use_sim_time</code>).', '« <em>extrapolation into the future</em> » : les horloges de deux ordinateurs diffèrent, ou le temps simulé n\'est pas activé (<code>use_sim_time</code>).']
+        ['“<em>extrapolation into the future</em>”: the clocks of two computers differ, or simulated time is not enabled (<code>use_sim_time</code>).', '« <em lang="en">extrapolation into the future</em> » (« extrapolation dans le futur ») : les horloges de deux ordinateurs diffèrent, ou le temps simulé n\'est pas activé (<code>use_sim_time</code>).']
       ]))
   ],
   terms: [['tf2', 'tf2'], ['frame', 'repère'], ['transform', 'transformation'], ['URDF', 'URDF'], ['link / joint', 'segment / liaison'], ['robot_state_publisher', 'robot_state_publisher'], ['RViz', 'RViz']],

@@ -303,7 +303,7 @@ RA.add({
  "1ndxd961k0z": "<strong>RViz</strong> est le visualiseur 3D de ROS 2. Il ne simule rien : il <strong>dessine les données</strong> que les nœuds publient (le modèle du robot, les repères, les points du laser, la carte, le chemin planifié). Choisissez le <em>Fixed Frame</em> en haut à gauche (<code>base_link</code>, <code>odom</code> ou <code>map</code>), puis ajoutez des affichages.",
  "13dn9s468oa": "« <em>frame does not exist</em> » ou deux arbres séparés : il manque un lien de l'arbre. Regardez le PDF de <code>view_frames</code>.",
  "24o5sb70cna": "Les données d'un capteur apparaissent au mauvais endroit : l'<code>origin</code> du capteur dans l'URDF est faux (mesurez-le sur le vrai robot).",
- "jq4a55o0ko": "« <em>extrapolation into the future</em> » : les horloges de deux ordinateurs diffèrent, ou le temps simulé n'est pas activé (<code>use_sim_time</code>).",
+ "jq4a55o0ko": "« <em lang=\"en\">extrapolation into the future</em> » (« extrapolation dans le futur ») : les horloges de deux ordinateurs diffèrent, ou le temps simulé n'est pas activé (<code>use_sim_time</code>).",
  "gpclss76m4": "Problèmes typiques de tf",
  "tk4i2smmbt": "Pourquoi les repères d'un robot forment-ils un arbre et pas un réseau libre ?",
  "1hj0sqnlk2o": "Chaque repère a exactement un parent, il y a donc exactement un chemin entre deux repères, et une seule transformation.",

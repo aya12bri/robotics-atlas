@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://roboticsatlas.ayabriksine.com/about</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/anatomy-cobot</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/anatomy-delta</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/anatomy-drives</loc></url>
@@ -36,6 +37,7 @@
   <url><loc>https://roboticsatlas.ayabriksine.com/learn</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/mobile</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/projects</loc></url>
+  <url><loc>https://roboticsatlas.ayabriksine.com/review</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/revision</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/sandbox</loc></url>
   <url><loc>https://roboticsatlas.ayabriksine.com/scara</loc></url>

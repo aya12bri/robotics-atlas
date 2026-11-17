@@ -342,6 +342,11 @@ if (window.RA && RA.toolCard) {
     L('One printable page per course: the essentials of each lesson, the formulas and the key terms.', "Une page imprimable par cours : l'essentiel de chaque leçon, les formules et les mots clés."));
   rc.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="revision.html">${L('Open the sheets', 'Ouvrir les fiches')}</a>`;
   RA.toolStatus(rc, `<b>${(window.RA_COURSES || []).length || 13}</b> ${L('sheets, to print or save as PDF', 'fiches, à imprimer ou en PDF')}`);
+  const rv = RA.toolCard($('rmBackup'), 'review', L('Remember', 'Retenir'), L('My reviews', 'Mes révisions'),
+    L('Spaced repetition: the questions come back just before you would forget them.', 'Révision espacée : les questions reviennent juste avant que vous ne les oubliiez.'));
+  rv.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="review.html">${L('Review', 'Réviser')}</a>`;
+  { let S = {}; try { S = JSON.parse(localStorage.getItem('ra-srs') || '{}') || {}; } catch (e) { /* */ } const today = new Date().toISOString().slice(0, 10), ids = Object.keys(S), due = ids.filter((k) => S[k].due <= today).length;
+    RA.toolStatus(rv, ids.length ? `<b>${due}</b> ${L('to review today', 'à réviser aujourd\'hui')} · ${ids.length} ${L('in the deck', 'dans le paquet')}` : L('Empty deck: add questions', 'Paquet vide : ajoutez des questions')); }
   RA.backupPanel($('rmBackup'));
   RA.offlinePanel($('rmBackup'));
 }

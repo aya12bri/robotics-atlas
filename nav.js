@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', sens: 'Sensor bench', sbx: 'Sandbox', prj: 'Projects', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', sens: 'Sensor bench', sbx: 'Sandbox', prj: 'Projects', about: 'About', review: 'My reviews', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', sens: 'Banc des capteurs', sbx: 'Bac à sable', prj: 'Projets', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', sens: 'Banc des capteurs', sbx: 'Bac à sable', prj: 'Projets', about: 'À propos', review: 'Mes révisions', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -116,7 +116,7 @@
       Object.keys(o.data).forEach((k) => {
         if (!KEEP(k) || typeof o.data[k] !== 'string') return;
         let v = o.data[k];
-        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert' || k === 'ra-exam') {
+        if (k === PROG || k === 'ra-quiz' || k === 'ra-wmr-ex' || k === 'ra-cert' || k === 'ra-exam' || k === 'ra-srs') {
           try { const cur = JSON.parse(store.get(k) || '{}') || {}, add = JSON.parse(v) || {}; v = JSON.stringify(Object.assign(cur, add)); } catch (e) { return; }
         }
         store.set(k, v); n++;
@@ -128,6 +128,7 @@
   // ---------------------------------------------------------------- the "tool cards" (home roadmap, certificate page)
   const ICON = {
     cert: '<path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="m8.5 14 -1.5 7 5-2.5 5 2.5-1.5-7"/>',
+    review: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/>',
     rev: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>',
     save: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
     off: '<path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12a10 10 0 0 1 13 0"/><path d="M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/>'
@@ -377,7 +378,7 @@
   }
   function loadDictionaries(done) {
     // pages built in the right language by their own script have no page dictionary
-    const own = ['certificate', 'glossary', 'revision', 'exam', 'sensors', 'sandbox', 'offline', 'projects'].includes(pageName);
+    const own = ['certificate', 'glossary', 'revision', 'exam', 'sensors', 'sandbox', 'offline', 'projects', 'about', 'review'].includes(pageName);
     const files = ['i18n/fr-common.js'].concat(own ? [] : [`i18n/fr-${pageName}.js`]);
     let left = files.length;
     const fin = () => { if (--left === 0) done(); };
@@ -507,7 +508,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="revision.html">${ui.rev}</a> · <a href="sensors.html">${ui.sens}</a> · <a href="sandbox.html">${ui.sbx}</a> · <a href="projects.html">${ui.prj}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="revision.html">${ui.rev}</a> · <a href="review.html">${ui.review}</a> · <a href="sensors.html">${ui.sens}</a> · <a href="sandbox.html">${ui.sbx}</a> · <a href="projects.html">${ui.prj}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a> · <a href="about.html">${ui.about}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {

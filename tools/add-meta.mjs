@@ -28,6 +28,8 @@ const DESC = {
   'exam.html': 'The final exams of the robotics courses: 12 corrected questions per course, with explanations; pass them to get the certificates.',
   'sandbox.html': 'A programming sandbox: write a small program (move, down, close, repeat) and watch a 3D SCARA robot run it; three missions to complete.',
   'projects.html': 'Three guided robotics projects: a 2-axis servo arm on Arduino, a PID line follower and a ROS 2 mobile robot with a lidar, with parts, prices, wiring, code and tests.',
+  'about.html': 'About Robotics Atlas: what the site offers, how the courses are made, sources, privacy, and how to report an error.',
+  'review.html': 'Spaced-repetition reviews of robotics: the questions come back after 1, 3, 7, 16 and 35 days until you know them.',
   'build.html': 'A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',
   'gantry.html': 'Interactive 3D Cartesian gantry robot with three sliding axes: kinematics, workspace and pick and place.',
