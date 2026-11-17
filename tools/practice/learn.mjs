@@ -1,5 +1,6 @@
 // Practice blocks for learn.html ("Foundations"): essentials, a figure, worked exercises for each lesson.
 import { plot, arm2, chain, T, LINE, ARROW, DOT, JOINT, BOXR, COL } from './fig.mjs';
+import { workspaceBlock } from './workspace.mjs';
 const D = Math.PI / 180, r2 = (x) => +x.toFixed(2);
 const e = (x, d = 2) => String(+x.toFixed(d)), f = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',');
 
@@ -84,7 +85,7 @@ export const PRACTICE = {
       { lv: 2, q: ['Same arm. The tool must go to (0.6, 0.3) m. Compute θ₂ (elbow down, positive), in degrees.', 'Même bras. L\'outil doit aller en (0,6 ; 0,3) m. Calculez θ₂ (coude en bas, positif), en degrés.'], num: { ans: ik2, tol: 0.3, unit: '°' }, hint: ['cos θ₂ = (x² + y² − L₁² − L₂²) / (2 L₁ L₂).', 'cos θ₂ = (x² + y² − L₁² − L₂²) / (2 L₁ L₂).'], sol: [`x² + y² = 0.36 + 0.09 = 0.45. cos θ₂ = (0.45 − 0.25 − 0.16) / (2 × 0.5 × 0.4) = 0.04 / 0.4 = 0.1. θ₂ = arccos 0.1 ≈ <b>${e(ik2, 1)}°</b>. The other answer is −${e(ik2, 1)}° (elbow up).`, `x² + y² = 0,36 + 0,09 = 0,45. cos θ₂ = (0,45 − 0,25 − 0,16) / (2 × 0,5 × 0,4) = 0,04 / 0,4 = 0,1. θ₂ = arccos 0,1 ≈ <b>${f(ik2, 1)}°</b>. L\'autre réponse est −${f(ik2, 1)}° (coude en haut).`] },
       { lv: 3, q: ['Same arm. Is the point (1.0, 0) m reachable?', 'Même bras. Le point (1,0 ; 0) m est-il atteignable ?'], mcq: [['No: it is 1.0 m away and the arm reaches at most 0.9 m.', 'Non : il est à 1,0 m et le bras atteint au plus 0,9 m.', true], ['Yes, with θ₂ = 0.', 'Oui, avec θ₂ = 0.', false], ['Yes, with two answers.', 'Oui, avec deux réponses.', false]], sol: ['Distance = √(1² + 0²) = 1.0 m > L₁ + L₂ = 0.9 m: the formula gives cos θ₂ = (1 − 0.41)/0.4 = 1.475 > 1, which is impossible. <b>No solution.</b>', 'Distance = √(1² + 0²) = 1,0 m > L₁ + L₂ = 0,9 m : la formule donne cos θ₂ = (1 − 0,41)/0,4 = 1,475 > 1, ce qui est impossible. <b>Pas de solution.</b>'] }] },
 
-  9: { sum: [['The <b>workspace</b> is the set of all points the tool can reach.', 'L\'<b>espace de travail</b> est l\'ensemble des points que l\'outil peut atteindre.'],
+  9: { more: workspaceBlock(true), sum: [['The <b>workspace</b> is the set of all points the tool can reach.', 'L\'<b>espace de travail</b> est l\'ensemble des points que l\'outil peut atteindre.'],
       ['For a 2-link arm it is a ring: outer radius L₁ + L₂, inner radius |L₁ − L₂|.', 'Pour un bras à 2 segments, c\'est un anneau : rayon extérieur L₁ + L₂, rayon intérieur |L₁ − L₂|.'],
       ['Joint limits and obstacles make it smaller.', 'Les butées des liaisons et les obstacles le réduisent.']],
     fig: { vb: '0 0 560 300', svg: `<rect width="560" height="300" rx="10" fill="#1b1f25"/><circle cx="280" cy="150" r="126" fill="${COL.o}" opacity="0.28" stroke="${COL.o}" stroke-width="2"/><circle cx="280" cy="150" r="14" fill="#1b1f25" stroke="${COL.o}" stroke-width="2"/>` + JOINT(280, 150) + LINE(280, 150, 280 + 126, 150, COL.y, 2, '6 4') + T(345, 142, 'L₁ + L₂', { raw: true, c: COL.y }) + T(300, 182, '|L₁ − L₂|', { raw: true, c: COL.y, fs: 13 }) },

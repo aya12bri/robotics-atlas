@@ -29,7 +29,7 @@ for (const [key, file, prefix, i18n] of COURSES) {
   for (const [n, L] of Object.entries(PRACTICE)) {
     const fig = L.fig ? `<figure class="figure pfig"><svg viewBox="${L.fig.vb}" class="fig" role="img" aria-hidden="true">${L.fig.svg}</svg>${L.cap ? `<figcaption>${tx(L.cap[0], L.cap[1])}</figcaption>` : ''}</figure>` : '';
     const block = `          <!-- BEGIN practice -->
-          ${BOX('key', ['The essentials', 'L\'essentiel'], UL(L.sum))}
+          ${L.more ? L.more + '\n          ' : ''}${BOX('key', ['The essentials', 'L\'essentiel'], UL(L.sum))}
           ${fig}
           ${EXS(prefix, n, L.ex, { title: ['Worked exercises', 'Exercices corrigés'], note: ['Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.', 'Faites d\'abord chaque exercice sur papier, puis tapez votre réponse (une petite erreur est acceptée) ou choisissez une option. Ouvrez l\'indice si vous bloquez, puis lisez la solution : chaque étape est expliquée.'] })}
           <!-- END practice -->
