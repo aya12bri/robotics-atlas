@@ -612,10 +612,10 @@
       var ex = ol.closest('.ex'), id = ex.dataset.id, exam = ex.hasAttribute('data-exam'), lis = ol.querySelectorAll('li'), locked = false;
       var lock = function () { locked = true; ol.classList.add('locked'); };
       [].forEach.call(lis, function (li) {
-        li.setAttribute('tabindex', '0'); li.setAttribute('role', 'button');
+        li.setAttribute('tabindex', '0'); li.setAttribute('role', 'radio'); li.setAttribute('aria-checked', 'false'); if (li.parentNode) li.parentNode.setAttribute('role', 'radiogroup');
         var pick = function () {
           if (locked) return; var ok = li.hasAttribute('data-ok');
-          [].forEach.call(lis, function (o) { o.classList.remove('wrong'); }); li.classList.add(ok ? 'right' : 'wrong');
+          [].forEach.call(lis, function (o) { o.classList.remove('wrong'); o.setAttribute('aria-checked', String(o === li)); }); li.classList.add(ok ? 'right' : 'wrong');
           fb(ex, ok, exam); if (exam) lock(); else if (ok) lock(); if (ok || ST[id] === undefined || exam) setS(id, ok ? 1 : 0);
         };
         li.addEventListener('click', pick); li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });

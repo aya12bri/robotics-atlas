@@ -91,9 +91,9 @@ const RB = (function () {
       const row = document.createElement('div');
       row.className = 'ctl';
       row.innerHTML =
-        `<span class="ctl-name">${d.label}</span>` +
-        `<input type="range" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.value}">` +
-        `<input type="number" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.value}">` +
+        `<span class="ctl-name" id="ctl${controls.n = (controls.n || 0) + 1}">${d.label}</span>` +   // the name labels both inputs (screen readers)
+        `<input type="range" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.value}" aria-labelledby="ctl${controls.n}">` +
+        `<input type="number" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.value}" aria-labelledby="ctl${controls.n}">` +
         `<span class="ctl-unit">${d.unit}</span>`;
       const range = row.querySelector('[type=range]');
       const num = row.querySelector('[type=number]');

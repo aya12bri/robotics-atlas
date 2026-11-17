@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html data-page="sandbox">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Programming sandbox</title>
+    <!-- seo -->
+    <meta name="description" content="A programming sandbox: write a small program (move, down, close, repeat) and watch a 3D SCARA robot run it; three missions to complete." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/sandbox" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Programming sandbox" />
+    <meta property="og:description" content="A programming sandbox: write a small program (move, down, close, repeat) and watch a 3D SCARA robot run it; three missions to complete." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/sandbox" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+  <script src="nav.js" defer></script></head>
+  <body>
+    <main id="sbx" class="sbx-page ra-own">
+      <h1>Programming sandbox</h1>
+      <p class="lead">Write a small program and watch a 3D SCARA robot run it: move, go down, close the gripper, repeat.</p>
+    </main>
+    <script type="module">
+      // nav.js sets the language first (it is deferred, this module runs after it)
+      import('./sandbox.js');
+    </script>
+  </body>
+</html>

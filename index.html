@@ -87,8 +87,8 @@
 
     <section class="scene-sec gal wide" id="gallery">
       <div class="wrap">
-        <button class="gal-arrow prev" id="galPrev" type="button"></button>
-        <button class="gal-arrow next" id="galNext" type="button"></button>
+        <button class="gal-arrow prev" id="galPrev" type="button" aria-label="Previous robot"></button>
+        <button class="gal-arrow next" id="galNext" type="button" aria-label="Next robot"></button>
         <div class="gal-foot">
           <div class="gal-cards" id="galCards">
           <article class="panel card fade on" data-i="0">
@@ -297,17 +297,19 @@ const RM = {
   wmrpro: { href: 'learn-mobile-pro.html', tag: ['Part 2', 'Partie 2'], min: 290, lv: 3, t: ['Wheeled mobile robots, part 2', 'Robots mobiles à roues, partie 2'], d: ['Professional level: control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs.', 'Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP.'] },
   build: { href: 'build.html', tag: ['Workshop', 'Atelier'], min: 20, lv: 1, t: ['Build your first robot', 'Construisez votre premier robot'], d: ['Choose a robot, assemble it in 3D, move it and see how its motion is computed.', 'Choisissez un robot, assemblez-le en 3D, bougez-le et voyez comment son mouvement est calculé.'] },
   anatomy: { href: 'anatomy.html', tag: ['3D', '3D'], min: 20, lv: 1, t: ['Anatomy of a robot', 'Anatomie d\'un robot'], d: ['Every component of a robot cell, layer by layer, in 3D.', 'Tous les composants d\'une cellule robotisée, couche par couche, en 3D.'] },
+  sandbox: { href: 'sandbox.html', tag: ['Programming', 'Programmation'], min: 30, lv: 2, t: ['Programming sandbox', 'Bac à sable de programmation'], d: ['Program a 3D SCARA robot with simple commands and complete three missions.', 'Programmez un robot SCARA en 3D avec des commandes simples et réussissez trois missions.'] },
+  projects: { href: 'projects.html', tag: ['Hands-on', 'Pratique'], min: 600, lv: 3, t: ['Guided projects', 'Projets guidés'], d: ['A servo arm, a line follower and a ROS 2 robot: parts, prices, wiring, code and tests.', 'Un bras à servos, un suiveur de ligne et un robot ROS 2 : pièces, prix, câblage, code et essais.'] },
   sensors: { href: 'sensors.html', tag: ['Test bench', 'Banc d\'essai'], min: 30, lv: 2, t: ['Sensor test bench', 'Banc d\'essai des capteurs'], d: ['Encoder, IMU, lidar, camera and ultrasonic, live: resolution, noise, drift and blind spots.', 'Encodeur, IMU, lidar, caméra et ultrasons, en direct : résolution, bruit, dérive et angles morts.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'armlab', 'ctrl', 'sensors', 'ros', 'ai', 'world', 'mobile', 'wheels', 'wmr', 'wmrpro', 'adv'];
+const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'armlab', 'sandbox', 'ctrl', 'sensors', 'ros', 'ai', 'world', 'mobile', 'wheels', 'wmr', 'wmrpro', 'adv', 'projects'];
 // five levels; each row has a main page (c) and optional side pages (l, r)
 const RM_LEVELS = [
   { t: ['Discover robotics', 'Découvrir la robotique'], d: ['What a robot is, its components, the robot types, the joints.', 'Ce qu\'est un robot, ses composants, les types de robots, les articulations.'], lv: 1, rows: [{ c: 'learn', l: 'build', r: 'anatomy' }] },
   { t: ['Mathematics for robotics', 'Mathématiques pour la robotique'], d: ['Vectors, matrices, trigonometry, transformations, derivatives, probability.', 'Vecteurs, matrices, trigonométrie, transformations, dérivées, probabilités.'], lv: 1, rows: [{ c: 'mk', r: 'maths' }] },
   { t: ['Robot kinematics', 'Cinématique des robots'], d: ['Frames, DH tables, forward and inverse models (MGD, MGI), the Jacobian.', 'Repères, tableaux DH, modèles direct et inverse (MGD, MGI), la jacobienne.'], lv: 2, rows: [{ c: 'arm', l: 'gantry', r: 'scara' }, { c: 'articulated', l: 'cobot', r: 'delta' }, { c: 'model', l: 'armlab', r: 'sing' }] },
-  { t: ['Dynamics and control', 'Dynamique et commande'], d: ['Motors, dynamic models, PID, trajectories.', 'Moteurs, modèles dynamiques, PID, trajectoires.'], lv: 3, rows: [{ c: 'ctrl', r: 'sensors' }] },
-  { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'wmrpro', r: 'adv' }] }
+  { t: ['Dynamics and control', 'Dynamique et commande'], d: ['Motors, dynamic models, PID, trajectories.', 'Moteurs, modèles dynamiques, PID, trajectoires.'], lv: 3, rows: [{ c: 'ctrl', l: 'sandbox', r: 'sensors' }] },
+  { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'wmrpro', l: 'projects', r: 'adv' }] }
 ];
 const LVL = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
 const rmEl = $('roadmap'), prog = () => (window.RA && RA.progress) || { get: () => false, set() {}, clear() {} };

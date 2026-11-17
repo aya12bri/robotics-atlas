@@ -26,6 +26,8 @@ const DESC = {
   'revision.html': 'Printable revision sheets of every robotics course: the essentials of each lesson, the main formulas and the key terms, to print or save as PDF.',
   'sensors.html': 'A live sensor test bench: encoder, IMU (gyroscope drift, accelerometer noise, complementary filter), 2D lidar, camera distortion and stereo depth, ultrasonic range finder.',
   'exam.html': 'The final exams of the robotics courses: 12 corrected questions per course, with explanations; pass them to get the certificates.',
+  'sandbox.html': 'A programming sandbox: write a small program (move, down, close, repeat) and watch a 3D SCARA robot run it; three missions to complete.',
+  'projects.html': 'Three guided robotics projects: a 2-axis servo arm on Arduino, a PID line follower and a ROS 2 mobile robot with a lidar, with parts, prices, wiring, code and tests.',
   'build.html': 'A hands-on 3D workshop: choose a robot, discover its parts, assemble it, understand its joints and degrees of freedom, move it and see how its motion is computed.',
   'arm.html': 'Interactive 3D model of a 3-DOF robot arm: move each joint, see the kinematic diagram, the DH table and the Jacobian.',
   'gantry.html': 'Interactive 3D Cartesian gantry robot with three sliding axes: kinematics, workspace and pick and place.',
