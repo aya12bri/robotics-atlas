@@ -27,6 +27,7 @@
     <script src="helpers.js"></script>
     <script src="dharm.js"></script>
     <script src="nav.js" defer></script>
+    <script src="courses.js" defer></script>
   </head>
   <body class="home">
     <div id="spot" aria-hidden="true"></div>
@@ -322,11 +323,21 @@ function paintRoad() {
 }
 rmEl.addEventListener('change', (e) => { const i = e.target.closest('input[data-id]'); if (i) prog().set(i.dataset.id, i.checked); });
 addEventListener('ra-progress', paintRoad); paintRoad();
-// save / restore the progress, and the certificates (built in the right language: not translated again)
-$('rmBackup').className = 'rm-extra ra-own';
-$('rmBackup').innerHTML = `<p class="rm-cert"><a class="btn ghost" href="certificate.html">🎓 ${L('My certificates', 'Mes certificats')}</a> <span>${L('Finish a course to get a certificate with your name, to print or save as PDF.', 'Terminez un cours pour obtenir un certificat à votre nom, à imprimer ou enregistrer en PDF.')}</span></p>`;
-if (window.RA && RA.backupPanel) RA.backupPanel($('rmBackup'));
-if (window.RA && RA.offlinePanel) { const op = RA.offlinePanel($('rmBackup')); if (location.hash === '#offline') setTimeout(() => op.scrollIntoView({ block: 'center' }), 600); }
+// the tool cards under the roadmap: certificates, save the progress, offline mode (built in the right language)
+$('rmBackup').className = 'tool-row';
+if (window.RA && RA.toolCard) {
+  const cc = RA.toolCard($('rmBackup'), 'cert', L('Certificates', 'Certificats'), L('My certificates', 'Mes certificats'),
+    L('Finish a course to get a certificate with your name, to print or save as PDF.', 'Terminez un cours pour obtenir un certificat à votre nom, à imprimer ou enregistrer en PDF.'));
+  cc.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="certificate.html">${L('See my certificates', 'Voir mes certificats')}</a>`;
+  const paintCert = () => {
+    const C = window.RA_COURSES || [], P = prog();
+    const n = C.filter((c) => { for (let i = c.start; i < c.start + c.total; i++) if (!P.get(c.prefix + i)) return false; return true; }).length;
+    if (C.length) RA.toolStatus(cc, `<b>${n}</b> / ${C.length} ${L('courses finished', 'cours terminés')}<div class="tc-bar"><i style="width:${Math.round(100 * n / C.length)}%"></i></div>`);
+  };
+  addEventListener('ra-progress', paintCert); addEventListener('load', paintCert); paintCert();
+  RA.backupPanel($('rmBackup'));
+  RA.offlinePanel($('rmBackup'));
+}
 // ---------- smooth hand-over between the screens: each one fades and drifts as it leaves or arrives ----------
 const FADE = [[secHero, [...secHero.querySelectorAll('.hero-front, .hero-title, .ticker')]], [secTour, [secTour.querySelector('.wrap')]], [secGal, [secGal.querySelector('.wrap')]]];
 let fadeRaf = 0;

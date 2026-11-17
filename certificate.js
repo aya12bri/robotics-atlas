@@ -7,7 +7,10 @@
     var C = window.RA_COURSES || [], page = document.getElementById('cert');
     // the content is redrawn when the progress changes; the save panel stays (it shows its own messages)
     page.innerHTML = '<div id="certBody"></div>';
-    var main = document.getElementById('certBody'), bk = RA.backupPanel ? RA.backupPanel(page) : null;
+    var main = document.getElementById('certBody'), row = document.createElement('div');
+    row.className = 'tool-row two'; page.appendChild(row);
+    var bk = RA.backupPanel ? RA.backupPanel(row) : null; if (RA.offlinePanel) RA.offlinePanel(row);
+    if (bk) bk = row;
     var P = RA.progress || { get: function () { return false; }, all: function () { return {}; } };
     var store = {
       get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
