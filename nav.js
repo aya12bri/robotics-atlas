@@ -40,9 +40,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
     fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -425,6 +425,14 @@
       c.innerHTML = `<a class="btn ghost" href="certificate.html#${curCard.dataset.key}">${lang === 'fr' ? '🎓 Obtenir mon certificat' : '🎓 Get my certificate'}</a>`;
       cta.after(c);
     }
+    // course glossaries: a link to the general glossary, filtered on this course
+    const gl = document.querySelector('section.gloss > p');
+    if (gl) {
+      const g = document.createElement('p');
+      g.className = 'gl-link ra-own';
+      g.innerHTML = `<a class="btn sm ghost" href="glossary.html?course=${here.replace(/\.html$/, '')}">${lang === 'fr' ? 'Ouvrir le glossaire général de tous les cours →' : 'Open the general glossary of every course →'}</a>`;
+      gl.after(g);
+    }
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (dd) dd.classList.remove('open'); nav.classList.remove('open'); } });
 
     const foot = document.createElement('footer');
@@ -439,7 +447,7 @@
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
     foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
+      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {
