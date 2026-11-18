@@ -1779,3 +1779,7 @@ nav.courses.fold:not(.open) .course.current .cnt { white-space: nowrap; }
 }
 /* short page titles: the name, then its kinematics or "3D anatomy" in a small tag */
 h1 .h1tag { display: inline-block; vertical-align: middle; margin-left: 0.5rem; padding: 0.2rem 0.65rem; border-radius: 999px; font-family: var(--mono); font-size: 0.32em; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 70%, transparent); }
+/* the giant word of the home page in 3D (index.html): a plain face over an extruded block (text-shadow, drawn by the page) */
+.hero-title .row.big { padding: 0 0.06em 0.16em; will-change: transform; color: #eef3fa; }
+:root[data-theme="light"] .hero-title .row.big { color: #1b2230; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .hero-title .row.big { color: #1b2230; } }
