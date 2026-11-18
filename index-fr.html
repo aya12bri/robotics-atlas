@@ -348,6 +348,11 @@ if (window.RA && RA.toolCard) {
   rv.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="review-fr.html">${L('Review', 'Réviser')}</a>`;
   { let S = {}; try { S = JSON.parse(localStorage.getItem('ra-srs') || '{}') || {}; } catch (e) { /* */ } const today = new Date().toISOString().slice(0, 10), ids = Object.keys(S), due = ids.filter((k) => S[k].due <= today).length;
     RA.toolStatus(rv, ids.length ? `<b>${due}</b> ${L('to review today', 'à réviser aujourd\'hui')} · ${ids.length} ${L('in the deck', 'dans le paquet')}` : L('Empty deck: add questions', 'Paquet vide : ajoutez des questions')); }
+  const sb = RA.toolCard($('rmBackup'), 'sens', L('Experiment', 'Expérimenter'), L('Sensor test bench', 'Banc des capteurs'),
+    L('Six real sensors simulated live, including GNSS, with a challenge each and a guide to choose one.', 'Six vrais capteurs simulés en direct, dont le GNSS, avec un défi chacun et un guide pour bien choisir.'));
+  sb.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="sensors-fr.html">${L('Open the bench', 'Ouvrir le banc')}</a> <a class="btn sm ghost" href="sandbox-fr.html">${L('Sandbox', 'Bac à sable')}</a>`;
+  { let D = {}; try { D = JSON.parse(localStorage.getItem('ra-sens-ch') || '{}') || {}; } catch (e) { /* */ }
+    RA.toolStatus(sb, `<b>${Object.keys(D).length}</b> / 6 ${L('challenges met', 'défis réussis')}`); }
   RA.backupPanel($('rmBackup'));
   RA.offlinePanel($('rmBackup'));
 }

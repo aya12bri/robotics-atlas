@@ -1329,7 +1329,7 @@ html.rs-open { overflow: hidden; }
 .off-tip { color: var(--muted); font-size: 0.9rem; }
 
 /* ---- tool cards: certificates, save the progress, offline (home roadmap, certificate page) ---- */
-.tool-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 2.4rem 0 1.4rem; }
+.tool-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; margin: 2.4rem 0 1.4rem; }
 .tool-row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1.6rem; }
 .tool-row[hidden] { display: none; }
 .tool-card { display: flex; flex-direction: column; gap: 0.55rem; padding: 1.15rem 1.25rem 1.1rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.6); min-width: 0; }
@@ -1441,7 +1441,7 @@ html.rs-open { overflow: hidden; }
 
 /* ---- sensor test bench (sensors.html) ---- */
 .sb-page { padding-bottom: 3rem; }
-.sb-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.6rem; margin: 1.4rem 0 1.2rem; }
+.sb-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.6rem; margin: 1.4rem 0 1.2rem; }
 .sb-tabs button { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; text-align: left; padding: 0.75rem 0.85rem; min-height: 0; border-radius: 12px; background: var(--surface); color: var(--text); border: 1.5px solid var(--border); cursor: pointer; font: inherit; }
 .sb-tabs button:hover { border-color: var(--accent); background: var(--surface); }
 .sb-tabs button[aria-selected='true'] { border-color: var(--btn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--btn) 22%, transparent); }
@@ -1475,6 +1475,31 @@ html.rs-open { overflow: hidden; }
 @media (max-width: 1000px) { .sb-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .sb-grid { grid-template-columns: 1fr; } .sb-notes { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .sb-tabs { grid-template-columns: 1fr 1fr; } .sb-tabs span { display: none; } .sb-view.sb-two { grid-template-columns: 1fr; } }
 .sb-bench { scroll-margin-top: 90px; }
+@media (max-width: 1250px) { .sb-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.sb-tabs button.done b::after { content: ' ✓'; color: var(--good); }
+.sb-seg { display: grid; gap: 0.35rem; font-size: 0.86rem; }
+.sb-seg > div { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.sb-seg button { background: transparent; color: var(--text); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.28rem 0.7rem; min-height: 0; font: 600 0.8rem var(--font); cursor: pointer; }
+.sb-seg button:hover { border-color: var(--accent); background: transparent; }
+.sb-seg button[aria-checked='true'] { border-color: var(--btn); background: color-mix(in srgb, var(--btn) 16%, transparent); }
+.sb-chal { padding: 0.8rem 1rem; border-radius: 14px; border: 1.5px dashed var(--border); background: var(--surface); font-size: 0.86rem; }
+.sb-chal b { color: var(--hl); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.06em; }
+.sb-chal p { margin: 0.25rem 0 0.35rem; max-width: none; }
+.sb-chal span { color: var(--muted); font-weight: 600; }
+.sb-chal.ok { border-style: solid; border-color: var(--good); }
+.sb-chal.ok span { color: var(--good); }
+.sb-nmea { padding: 0.7rem 0.9rem; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); }
+.sb-nmea code { display: block; margin-top: 0.3rem; font: 0.72rem/1.4 var(--mono); color: var(--text); word-break: break-all; }
+.sb-guide { margin-top: 2.6rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
+.sb-needs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
+.sb-needs button { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.45rem 0.95rem; min-height: 0; font: 600 0.86rem var(--font); cursor: pointer; }
+.sb-needs button:hover { border-color: var(--accent); background: var(--surface); }
+.sb-needs button[aria-pressed='true'] { border-color: var(--btn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--btn) 22%, transparent); }
+.sb-advice { min-height: 1.5rem; max-width: 70rem; }
+.sb-tbl { overflow-x: auto; }
+.sb-tbl table { min-width: 860px; font-size: 0.86rem; }
+.sb-tbl tr.hit td { background: color-mix(in srgb, var(--btn) 14%, transparent); }
+.sb-tbl tr.dim td { opacity: 0.45; }
 
 /* ---- final exams (exam.html) ---- */
 .ex-page { padding-bottom: 3rem; }

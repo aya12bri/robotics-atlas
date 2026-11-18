@@ -143,6 +143,7 @@
   // ---------------------------------------------------------------- the "tool cards" (home roadmap, certificate page)
   const ICON = {
     cert: '<path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><path d="m8.5 14 -1.5 7 5-2.5 5 2.5-1.5-7"/>',
+    sens: '<path d="M4 15a8 8 0 1 1 16 0"/><path d="m12 15 3.5-4.5"/><circle cx="12" cy="15" r="1.3" fill="currentColor"/><path d="M4 19h16"/>',
     review: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/>',
     rev: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>',
     save: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
@@ -494,11 +495,11 @@
       cta.after(c);
     }
     // lessons about sensors: a link to the matching bench of the sensor test bench
-    const SENS = { learn: { l10: 'encoder' }, 'learn-control': { l3: 'encoder' }, 'learn-intelligence': { l1: 'lidar', l3: 'imu' }, 'learn-mobile-pro': { l14: 'imu' } };
+    const SENS = { learn: { l10: 'encoder' }, 'learn-control': { l3: 'encoder' }, 'learn-intelligence': { l1: 'lidar', l3: 'imu' }, 'learn-mobile-pro': { l14: 'imu', l15: 'gnss' } };
     Object.entries(SENS[here.replace(/\.html$/, '')] || {}).forEach(([id, bench]) => {
       const art = document.getElementById(id); if (!art) return;
       const p = document.createElement('p'); p.className = 'try sb-link ra-own';
-      p.innerHTML = `<a href="sensors.html#${bench}">${lang === 'fr' ? 'Essayez les capteurs en direct : le banc d\'essai des capteurs (encodeur, IMU, lidar, caméra, ultrasons) →' : 'Try the sensors live: the sensor test bench (encoder, IMU, lidar, camera, ultrasonic) →'}</a>`;
+      p.innerHTML = `<a href="sensors.html#${bench}">${lang === 'fr' ? 'Essayez les capteurs en direct : le banc d\'essai des capteurs (encodeur, IMU, lidar, caméra, ultrasons, GNSS) →' : 'Try the sensors live: the sensor test bench (encoder, IMU, lidar, camera, ultrasonic, GNSS) →'}</a>`;
       const at = art.querySelector('details.quiz, .lquiz, .exs, label.lesson-done');
       if (at) at.before(p); else art.appendChild(p);
     });

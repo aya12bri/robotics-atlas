@@ -1,6 +1,8 @@
-// sensors.js — the sensor test bench (sensors.html): five live benches that show what real sensors measure,
+// sensors.js — the sensor test bench (sensors.html): six live benches that show what real sensors measure,
 // with their resolution, noise, bias and blind spots: encoder, IMU (gyroscope + accelerometer), 2D lidar,
-// camera and stereo depth, ultrasonic range finder. Everything is simulated in the browser (no library).
+// camera and stereo depth, ultrasonic range finder, GNSS receiver (satellites, DOP, multipath, SBAS, RTK, fusion).
+// Each bench has a challenge; under the benches, a guide to choose a sensor for a need.
+// Everything is simulated in the browser (no library).
 (function () {
   function start() {
     var RA = window.RA || {}, FR = RA.lang === 'fr';
@@ -70,18 +72,43 @@
     function check(host, label, on, cb) { var w = document.createElement('label'); w.className = 'sb-ck'; w.innerHTML = '<input type="checkbox"' + (on ? ' checked' : '') + '> ' + label; host.appendChild(w); var i = w.querySelector('input'); i.addEventListener('change', cb); return i; }
     function readouts(host) { var d = document.createElement('div'); d.className = 'sb-read'; host.appendChild(d); return function (rows) { d.innerHTML = rows.map(function (r) { return '<div' + (r[2] ? ' class="' + r[2] + '"' : '') + '><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join(''); }; }
 
+    // a row of choices (one at a time)
+    function seg(host, label, opts, val, cb) {
+      var w = document.createElement('div'); w.className = 'sb-seg'; w.setAttribute('role', 'radiogroup'); w.setAttribute('aria-label', label);
+      w.innerHTML = '<span>' + label + '</span><div>' + opts.map(function (o) { return '<button type="button" role="radio" data-v="' + o[0] + '" aria-checked="' + (o[0] === val) + '">' + o[1] + '</button>'; }).join('') + '</div>';
+      host.appendChild(w); var cur = val;
+      w.addEventListener('click', function (e) { var b = e.target.closest('button[data-v]'); if (!b || b.dataset.v === cur) return; cur = b.dataset.v; [].forEach.call(w.querySelectorAll('button'), function (x) { x.setAttribute('aria-checked', String(x.dataset.v === cur)); }); if (cb) cb(); });
+      return { get: function () { return cur; } };
+    }
+    // a challenge for each bench: it turns green when the settings meet it; the benches already met get a ✓ on their tab
+    var CH = 'ra-sens-ch', chDone = function () { try { return JSON.parse(localStorage.getItem(CH) || '{}') || {}; } catch (e) { return {}; } };
+    function challenge(host, id, txt) {
+      var d = document.createElement('div'); d.className = 'sb-chal'; d.setAttribute('aria-live', 'polite');
+      d.innerHTML = '<b>' + L('Challenge', 'Défi') + '</b><p>' + txt + '</p><span></span>'; host.appendChild(d);
+      var st = d.querySelector('span'), was = null;
+      return function (ok) {
+        if (ok === was) return; was = ok; d.classList.toggle('ok', ok);
+        var done = chDone();
+        if (ok && !done[id]) { done[id] = 1; try { localStorage.setItem(CH, JSON.stringify(done)); } catch (e) { /* */ } paintTabs(); }
+        st.textContent = ok ? L('✓ Challenge met!', '✓ Défi réussi !') : done[id] ? L('Met before: can you do it again?', 'Déjà réussi : saurez-vous le refaire ?') : L('Not yet: change the settings.', 'Pas encore : changez les réglages.');
+      };
+    }
+    function paintTabs() { var done = chDone(); [].forEach.call(main.querySelectorAll('.sb-tabs button'), function (b) { b.classList.toggle('done', !!done[b.dataset.b]); }); }
+
     // ------------------------------------------------------------------ page
     var BENCH = [
       { id: 'encoder', t: L('Encoder', 'Encodeur'), d: L('How finely does a wheel or a joint know its angle and its speed?', 'À quel point une roue ou une articulation connaît-elle son angle et sa vitesse ?') },
       { id: 'imu', t: L('IMU: gyro + accelerometer', 'Centrale inertielle (IMU)'), d: L('Why a gyroscope drifts, why an accelerometer is noisy, and how to combine them.', 'Pourquoi un gyroscope dérive, pourquoi un accéléromètre est bruité, et comment les combiner.') },
       { id: 'lidar', t: L('2D lidar', 'Lidar 2D'), d: L('What a laser scanner sees in a room: noise, resolution, glass and black objects.', 'Ce qu\'un scanner laser voit dans une pièce : bruit, résolution, verre et objets noirs.') },
       { id: 'camera', t: L('Camera and stereo', 'Caméra et stéréo'), d: L('Lens distortion, and why stereo depth gets worse with the square of the distance.', 'La distorsion de l\'objectif, et pourquoi la profondeur stéréo se dégrade avec le carré de la distance.') },
-      { id: 'sonar', t: L('Ultrasonic', 'Ultrasons'), d: L('A wide cone, walls that do not answer, and the temperature that changes the distance.', 'Un cône large, des murs qui ne répondent pas, et la température qui change la distance.') }
+      { id: 'sonar', t: L('Ultrasonic', 'Ultrasons'), d: L('A wide cone, walls that do not answer, and the temperature that changes the distance.', 'Un cône large, des murs qui ne répondent pas, et la température qui change la distance.') },
+      { id: 'gnss', t: L('GNSS (GPS…)', 'GNSS (GPS…)'), d: L('Satellites, buildings that hide and reflect them, SBAS and RTK corrections, and the fusion with odometry.', 'Les satellites, les immeubles qui les cachent et les réfléchissent, les corrections SBAS et RTK, et la fusion avec l\'odométrie.') }
     ];
     main.innerHTML = '<h1>' + L('Sensor test bench', 'Banc d\'essai des capteurs') + '</h1>' +
       '<p class="lead">' + L('Every sensor lies a little: it has a resolution, noise, a bias, and blind spots. Turn the knobs and watch what a robot really measures, then read the numbers that engineers use to choose a sensor.', 'Tout capteur ment un peu : il a une résolution, du bruit, un biais et des angles morts. Tournez les boutons et regardez ce qu\'un robot mesure vraiment, puis lisez les chiffres que les ingénieurs utilisent pour choisir un capteur.') + '</p>' +
       '<nav class="sb-tabs" role="tablist">' + BENCH.map(function (b, k) { return '<button type="button" role="tab" data-b="' + b.id + '" aria-selected="' + (k === 0) + '"><b>' + esc(b.t) + '</b><span>' + esc(b.d) + '</span></button>'; }).join('') + '</nav>' +
-      BENCH.map(function (b) { return '<section class="sb-bench" id="' + b.id + '" hidden></section>'; }).join('');
+      BENCH.map(function (b) { return '<section class="sb-bench" id="' + b.id + '" hidden></section>'; }).join('') +
+      '<section class="sb-guide" aria-labelledby="sbGuideT"></section>';
     var running = null;                                                    // the animation of the bench on screen
     function show(id) {
       if (!BENCH.some(function (b) { return b.id === id; })) id = 'encoder';
@@ -112,6 +139,7 @@
       var rpm = slider(F.ctl, { label: L('True speed (rpm)', 'Vitesse réelle (tr/min)'), min: 0, max: 100, value: 75, map: function (v) { return Math.round(Math.pow(10, v / 100 * 3.3)) / 1; }, fmt: function (v) { return v; }, on: redraw });
       var per = slider(F.ctl, { label: L('Sampling period T (ms)', 'Période d\'échantillonnage T (ms)'), min: 1, max: 50, value: 10, on: redraw });
       var out = readouts(F.side);
+      var ch = challenge(F.side, 'encoder', L('Get a speed resolution of 2 rpm or better with a sampling period of 5 ms or less.', 'Obtenez une résolution de vitesse de 2 tr/min ou mieux avec une période d\'échantillonnage de 5 ms ou moins.'));
       notes(F.notes, [
         L('Angle resolution: Δθ = 360° / (4 N) &emsp; Speed resolution: Δω = 60 / (4 N · T) rpm', 'Résolution d\'angle : Δθ = 360° / (4 N) &emsp; Résolution de vitesse : Δω = 60 / (4 N · T) tr/min'),
         L('Speed estimate: ω̂ = Δcounts / (4 N · T) turns per second', 'Vitesse estimée : ω̂ = Δimpulsions / (4 N · T) tours par seconde')],
@@ -136,6 +164,7 @@
           [L('Speed resolution', 'Résolution de vitesse'), num(60 / (n * T), 1) + ' ' + L('rpm', 'tr/min')],
           [L('RMS speed error', 'Erreur de vitesse RMS'), num(Math.sqrt(err / Math.max(1, k)), 1) + ' ' + L('rpm', 'tr/min'), Math.sqrt(err / Math.max(1, k)) > 0.2 * rpm.get() ? 'bad' : 'ok']
         ]);
+        ch(60 / (n * T) <= 2.0001 && per.get() <= 5);
       }
       function draw(now) {
         var t = (now - t0) / 1000, N = lines.get(), x = top.x; clear(top);
@@ -170,6 +199,7 @@
       var al = slider(F.ctl, { label: L('Filter: gyro weight α', 'Filtre : poids du gyro α'), min: 0, max: 100, value: 80, map: function (v) { return 0.9 + v / 100 * 0.099; }, dec: 3, on: compute });
       var shown = { gyro: true, acc: true, fus: true };
       var out = readouts(F.side);
+      var ch = challenge(F.side, 'imu', L('With a gyro bias of at least 1 °/s and vibrations of at least 0.6, bring the RMS error of the complementary filter under 1.1°.', 'Avec un biais de gyro d\'au moins 1 °/s et des vibrations d\'au moins 0,6, ramenez l\'erreur RMS du filtre complémentaire sous 1,1°.'));
       notes(F.notes, [
         L('Gyro only: θ<sub>g</sub>(t) = ∫ ω<sub>meas</sub> dt → error grows like b · t &emsp; Accelerometer: θ<sub>a</sub> = atan2(a<sub>x</sub>, a<sub>z</sub>)', 'Gyro seul : θ<sub>g</sub>(t) = ∫ ω<sub>mes</sub> dt → l\'erreur croît comme b · t &emsp; Accéléromètre : θ<sub>a</sub> = atan2(a<sub>x</sub>, a<sub>z</sub>)'),
         L('Complementary filter: θ ← α (θ + ω<sub>meas</sub> Δt) + (1 − α) θ<sub>a</sub> &emsp; time constant τ = α Δt / (1 − α)', 'Filtre complémentaire : θ ← α (θ + ω<sub>mes</sub> Δt) + (1 − α) θ<sub>a</sub> &emsp; constante de temps τ = α Δt / (1 − α)')],
@@ -199,6 +229,7 @@
           [L('Complementary filter: RMS error', 'Filtre complémentaire : erreur RMS'), num(rms(P.fus), 2) + '°', rms(P.fus) < Math.min(rms(P.acc), rms(P.gyr)) ? 'ok' : ''],
           [L('Filter time constant τ', 'Constante de temps du filtre τ'), num(tau, 2) + ' s']
         ]);
+        ch(b >= 1 && vb >= 0.6 && rms(P.fus) < 1.1);
       }
       var leg = document.createElement('div'); leg.className = 'sb-leg'; F.side.insertBefore(leg, F.side.querySelector('.sb-read'));
       [['gyro', L('gyro integrated', 'gyro intégré'), 'o'], ['acc', L('accelerometer', 'accéléromètre'), 'p'], ['fus', L('filter', 'filtre'), 'g']].forEach(function (s) {
@@ -230,10 +261,11 @@
       var res = slider(F.ctl, { label: L('Angular resolution (°)', 'Résolution angulaire (°)'), min: 1, max: 40, value: 8, map: function (v) { return v / 8; }, dec: 2, on: rescan });
       var noise = slider(F.ctl, { label: L('Range noise σ (cm)', 'Bruit de distance σ (cm)'), min: 0, max: 20, value: 3, on: rescan });
       var maxr = slider(F.ctl, { label: L('Maximum range (m)', 'Portée maximale (m)'), min: 2, max: 12, value: 8, on: rescan });
-      var rate = slider(F.ctl, { label: L('Scan rate (Hz)', 'Fréquence de balayage (Hz)'), min: 1, max: 20, value: 5, on: function () {} });
+      var rate = slider(F.ctl, { label: L('Scan rate (Hz)', 'Fréquence de balayage (Hz)'), min: 1, max: 20, value: 5, on: function () { rescan(); } });
       var moving = check(F.ctl, L('Robot moving (1 m/s)', 'Robot en mouvement (1 m/s)'), false, rescan);
       var showRays = check(F.ctl, L('Show the laser rays', 'Afficher les rayons laser'), false, function () {});
       var out = readouts(F.side);
+      var ch = challenge(F.side, 'lidar', L('See a 4 cm wide pole at 5 m (spacing ≤ 4 cm) with at least 10 scans per second, without going over 10 000 points per second.', 'Voyez un poteau de 4 cm de large à 5 m (espacement ≤ 4 cm) avec au moins 10 balayages par seconde, sans dépasser 10 000 points par seconde.'));
       notes(F.notes, [
         L('Points per turn = 360° / Δθ &emsp; Spacing between points at distance d: s = d · Δθ (rad)', 'Points par tour = 360° / Δθ &emsp; Espacement entre points à la distance d : s = d · Δθ (rad)'),
         L('Distortion when moving: the robot travels v / f during one turn (1 m/s at 5 Hz → 20 cm)', 'Distorsion en mouvement : le robot parcourt v / f pendant un tour (1 m/s à 5 Hz → 20 cm)')],
@@ -272,6 +304,7 @@
           [L('Spacing at 5 m', 'Espacement à 5 m'), num(far * step * 100, 1) + ' cm'],
           [L('Points per second', 'Points par seconde'), Math.round(n * rate.get())]
         ]);
+        ch(far * step * 100 <= 4.0001 && rate.get() >= 10 && n * rate.get() <= 10000);
       }
       var S = 1, OX = 0, OY = 0;
       function place() { S = Math.min((cv.w - 20) / 10, (cv.h - 20) / 6); OX = (cv.w - 10 * S) / 2; OY = (cv.h - 6 * S) / 2; }
@@ -319,6 +352,7 @@
       var sd = slider(F.ctl, { label: L('Disparity error σ_d (px)', 'Erreur de disparité σ_d (px)'), min: 5, max: 100, value: 25, map: function (v) { return v / 100; }, dec: 2, on: redraw });
       var Z = slider(F.ctl, { label: L('Object distance Z (m)', 'Distance de l\'objet Z (m)'), min: 2, max: 100, value: 30, map: function (v) { return v / 10; }, dec: 1, on: redraw });
       var out = readouts(F.side);
+      var ch = challenge(F.side, 'camera', L('Make the stereo camera measure an object at 5 m with a depth error of 5 cm or less.', 'Faites mesurer à la caméra stéréo un objet à 5 m avec une erreur de profondeur de 5 cm ou moins.'));
       notes(F.notes, [
         L('Pinhole: u = f · X / Z + c<sub>x</sub> &emsp; Distortion: r′ = r (1 + k₁ r²)', 'Sténopé : u = f · X / Z + c<sub>x</sub> &emsp; Distorsion : r′ = r (1 + k₁ r²)'),
         L('Stereo: Z = f · B / d &emsp; Depth error: σ<sub>Z</sub> ≈ Z² · σ<sub>d</sub> / (f · B)', 'Stéréo : Z = f · B / d &emsp; Erreur de profondeur : σ<sub>Z</sub> ≈ Z² · σ<sub>d</sub> / (f · B)')],
@@ -353,6 +387,7 @@
           [L('Relative error', 'Erreur relative'), num(ez / (zz * 100) * 100, 1) + ' %'],
           [L('Distance where the error reaches 5 cm', 'Distance où l\'erreur atteint 5 cm'), num(Math.sqrt(0.05 * fb / s), 2) + ' m']
         ]);
+        ch(25 * s / fb * 100 <= 5);
       }
       redraw();
       return { redraw: function () { cam.fit(); st.fit(); redraw(); } };
@@ -367,6 +402,7 @@
       var cone = slider(F.ctl, { label: L('Beam half-angle (°)', 'Demi-angle du faisceau (°)'), min: 5, max: 30, value: 15, on: draw });
       var T = slider(F.ctl, { label: L('Real air temperature (°C)', 'Température réelle de l\'air (°C)'), min: -10, max: 40, value: 35, on: draw });
       var out = readouts(F.side);
+      var ch = challenge(F.side, 'sonar', L('With a beam half-angle of 10°, find the steepest wall angle that still sends an echo back.', 'Avec un demi-angle de faisceau de 10°, trouvez l\'inclinaison de mur la plus grande qui renvoie encore un écho.'));
       notes(F.notes, [
         L('Distance: d = c · t / 2 &emsp; Speed of sound: c ≈ 331.3 + 0.606 · T (m/s, T in °C)', 'Distance : d = c · t / 2 &emsp; Vitesse du son : c ≈ 331,3 + 0,606 · T (m/s, T en °C)'),
         L('Width seen at distance d: w = 2 d · tan(half-angle)', 'Largeur vue à la distance d : w = 2 d · tan(demi-angle)')],
@@ -399,10 +435,251 @@
           [L('Measured (set for 20 °C)', 'Mesurée (réglée pour 20 °C)'), echo ? num(meas * 100, 1) + ' cm' : '—', echo ? '' : 'bad'],
           [L('Temperature error', 'Erreur due à la température'), echo ? num((meas - d) * 100, 1) + ' cm' : '—']
         ]);
+        ch(cone.get() === 10 && ang.get() === 12);
       }
       draw();
       return { redraw: function () { cv.fit(); draw(); } };
     };
+
+    // ================================================================== 6. GNSS
+    MAKERS.gnss = function (sec) {
+      var F = frame(sec, L('GNSS receiver: GPS, Galileo, GLONASS, BeiDou', 'Récepteur GNSS : GPS, Galileo, GLONASS, BeiDou'), L(
+        'A GNSS receiver measures how long the signal of each satellite took to arrive: that gives its distance to the satellite (a pseudo-range, because the clock of the receiver is not perfect). With four satellites or more it solves its position x, y, z and its clock error. The robot below drives a loop of 30 × 16 m: watch the positions scatter, then change the place, the satellites and the corrections.',
+        'Un récepteur GNSS mesure le temps mis par le signal de chaque satellite pour arriver : cela donne sa distance au satellite (une pseudo-distance, car l\'horloge du récepteur n\'est pas parfaite). Avec quatre satellites ou plus, il calcule sa position x, y, z et l\'erreur de son horloge. Le robot ci-dessous fait une boucle de 30 × 16 m : regardez les positions se disperser, puis changez le lieu, les satellites et les corrections.'));
+      var row = document.createElement('div'); row.className = 'sb-view sb-two'; F.view.appendChild(row);
+      var sky = canvas(row, 1), map = canvas(row, 1), ech = canvas(F.view, 0.34);
+      var env = seg(F.ctl, L('Place', 'Lieu'), [['open', L('Open field', 'Champ ouvert')], ['forest', L('Forest', 'Forêt')], ['canyon', L('Street between buildings', 'Rue entre immeubles')], ['wall', L('Along a wall', 'Le long d\'un mur')]], 'open', reset);
+      var cor = seg(F.ctl, L('Corrections', 'Corrections'), [['none', L('None', 'Aucune')], ['sbas', 'SBAS (EGNOS)'], ['rtk', 'RTK']], 'none', reset);
+      var multi = check(F.ctl, L('All constellations (GPS + Galileo, GLONASS, BeiDou)', 'Toutes les constellations (GPS + Galileo, GLONASS, BeiDou)'), true, reset);
+      var mask = slider(F.ctl, { label: L('Elevation mask (°)', 'Masque d\'élévation (°)'), min: 0, max: 30, value: 10, on: reset });
+      var fuse = check(F.ctl, L('Fuse with wheel odometry + IMU (Kalman filter)', 'Fusionner avec l\'odométrie des roues + IMU (filtre de Kalman)'), true, resetStats);
+      var out = readouts(F.side);
+      var ch = challenge(F.side, 'gnss', L('In the street between buildings, keep the error of the position used by the robot under 20 cm (RMS over 30 s).', 'Dans la rue entre immeubles, gardez l\'erreur de la position utilisée par le robot sous 20 cm (RMS sur 30 s).'));
+      var nmea = document.createElement('div'); nmea.className = 'sb-nmea'; F.side.appendChild(nmea);
+      notes(F.notes, [
+        L('Pseudo-range: ρᵢ = c · (t<sub>received</sub> − t<sub>sent</sub>) = ‖Sᵢ − P‖ + c · δt &emsp; 4 unknowns (x, y, z, δt): at least 4 satellites', 'Pseudo-distance : ρᵢ = c · (t<sub>réception</sub> − t<sub>émission</sub>) = ‖Sᵢ − P‖ + c · δt &emsp; 4 inconnues (x, y, z, δt) : au moins 4 satellites'),
+        L('Accuracy: σ<sub>position</sub> ≈ DOP × σ<sub>UERE</sub> &emsp; (UERE ≈ 1 to 5 m without corrections, about 1 cm with an RTK fix)', 'Précision : σ<sub>position</sub> ≈ DOP × σ<sub>UERE</sub> &emsp; (UERE ≈ 1 à 5 m sans correction, environ 1 cm en RTK fixe)'),
+        L('To local metres: Δnorth = R · Δφ, Δeast = R · cos φ · Δλ &emsp; (R ≈ 6 371 km, angles in radians)', 'Vers des mètres locaux : Δnord = R · Δφ, Δest = R · cos φ · Δλ &emsp; (R ≈ 6 371 km, angles en radians)')],
+        [L('Between buildings the signals bounce on the walls (multipath): the path is longer, the error reaches several metres and the receiver does not see it. More constellations give more direct satellites.', 'Entre les immeubles, les signaux rebondissent sur les murs (multitrajets) : le chemin est plus long, l\'erreur atteint plusieurs mètres et le récepteur ne le voit pas. Plus de constellations donnent plus de satellites directs.'),
+          L('DOP (dilution of precision): satellites spread over the whole sky give a low DOP; satellites all in one strip of sky (a street) give a large error across it.', 'Le DOP (dilution de précision) : des satellites répartis dans tout le ciel donnent un DOP faible ; des satellites tous dans une bande de ciel (une rue) donnent une grande erreur en travers.'),
+          L('RTK: a base station at a known place (or a network, through NTRIP over the internet) sends its corrections; within about 10 to 20 km the robot gets 1 to 2 cm once the solution is “fixed”, a few decimetres while it is “float”.', 'RTK : une station de base à une position connue (ou un réseau, par NTRIP sur internet) envoie ses corrections ; à moins de 10 à 20 km environ, le robot obtient 1 à 2 cm une fois la solution « fixe », quelques décimètres tant qu\'elle est « flottante ».'),
+          L('SBAS (EGNOS in Europe, WAAS in America): free corrections broadcast by geostationary satellites, about 1 m.', 'SBAS (EGNOS en Europe, WAAS en Amérique) : des corrections gratuites diffusées par des satellites géostationnaires, environ 1 m.'),
+          L('GNSS gives 1 to 10 positions per second and nothing under a roof or in a tunnel: robots fuse it with the odometry and the IMU. In ROS 2: the message sensor_msgs/NavSatFix and navsat_transform_node of robot_localization.', 'Le GNSS donne 1 à 10 positions par seconde et rien sous un toit ou dans un tunnel : les robots le fusionnent avec l\'odométrie et l\'IMU. Dans ROS 2 : le message sensor_msgs/NavSatFix et navsat_transform_node de robot_localization.')]);
+
+      // ---- the satellites (fixed in the sky for this demo): constellation, azimuth, elevation
+      var DEG = Math.PI / 180, R0 = rng(11), SATS = [], CONS = [['G', 'GPS', 9, 'b'], ['E', 'Galileo', 8, 'g'], ['R', 'GLONASS', 7, 'r'], ['C', 'BeiDou', 9, 'p']];
+      CONS.forEach(function (c) { for (var i = 0; i < c[2]; i++) SATS.push({ c: c[0], col: c[3], id: c[0] + (i < 9 ? '0' : '') + (i + 1), az: R0() * 360, el: 3 + Math.asin(R0()) / DEG * 0.95, h: R0() }); });
+      function horizon(az) {                                              // height of the obstacles (°) in the direction az
+        az = ((az % 360) + 360) % 360; var e = env.get();
+        if (e === 'canyon') { var d = Math.min(az, Math.abs(az - 180), 360 - az); return d < 16 ? 14 : 64; }   // a north-south street
+        if (e === 'wall') return az >= 180 ? 72 : 3;                      // a high wall on the west side
+        return 0;
+      }
+      function status(s) {
+        if (!multi.checked && s.c !== 'G') return 'off';
+        if (s.el < mask.get()) return 'mask';
+        var e = env.get();
+        if (e === 'forest') return s.el < 40 ? 'weak' : 'ok';
+        if (s.el < horizon(s.az)) return s.el < 20 && s.h < (e === 'canyon' ? 0.6 : 0.4) ? 'mp' : 'block';   // the low satellites bounce on the walls
+        return 'ok';
+      }
+      function inv4(M) {
+        var A = M.map(function (r, i) { return r.concat([0, 1, 2, 3].map(function (j) { return i === j ? 1 : 0; })); });
+        for (var c = 0; c < 4; c++) {
+          var p = c, r, k; for (r = c + 1; r < 4; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+          if (Math.abs(A[p][c]) < 1e-9) return null;
+          var tmp = A[c]; A[c] = A[p]; A[p] = tmp; var d = A[c][c];
+          for (k = 0; k < 8; k++) A[c][k] /= d;
+          for (r = 0; r < 4; r++) if (r !== c) { var f = A[r][c]; for (k = 0; k < 8; k++) A[r][k] -= f * A[c][k]; }
+        }
+        return A.map(function (r) { return r.slice(4); });
+      }
+      // the solution: satellites used, HDOP, type of fix, accuracy (DRMS, m), multipath bias (m)
+      var SOL = null;
+      function solve() {
+        var used = [], cnt = { ok: 0, weak: 0, mp: 0 }, vis = 0;
+        SATS.forEach(function (s) { s.st = status(s); if (s.st !== 'off') vis++; if (s.st === 'ok' || s.st === 'weak' || s.st === 'mp') { used.push(s); cnt[s.st]++; } });
+        var o = { used: used.length, vis: vis, cnt: cnt, q: 0, hdop: Infinity, sig: 0, mpb: 0 };
+        if (used.length >= 4) {
+          var N = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+          used.forEach(function (s) { var a = s.az * DEG, e = s.el * DEG, g = [-Math.cos(e) * Math.sin(a), -Math.cos(e) * Math.cos(a), -Math.sin(e), 1]; for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) N[i][j] += g[i] * g[j]; });
+          var Q = inv4(N); if (Q) o.hdop = Math.sqrt(Q[0][0] + Q[1][1]);
+        }
+        if (o.hdop < 15) {
+          var wf = Math.sqrt((cnt.ok + cnt.weak * 6 + cnt.mp) / used.length), m = cor.get();
+          if (m === 'rtk' && used.length >= 5 && cnt.mp === 0 && cnt.weak <= 3) { o.q = 4; o.sig = 0.01 * o.hdop; }
+          else if (m === 'rtk' && used.length >= 5) { o.q = 5; o.sig = 0.2 * o.hdop * wf; o.mpb = 0.3 * Math.sqrt(cnt.mp); }
+          else { o.q = m === 'sbas' ? 2 : 1; o.sig = o.hdop * (m === 'sbas' ? 0.9 : 2.2) * wf; o.mpb = 3 * Math.sqrt(cnt.mp); }
+        }
+        SOL = o;
+      }
+
+      // ---- the robot: a loop of 30 × 16 m at 1.5 m/s, its GNSS fixes (1 per second) and the fused estimate
+      var HX = 15, HY = 8, PER = 4 * (HX + HY), V = 1.5;
+      function truth(t) {
+        var s = (V * t) % PER;
+        if (s < 2 * HX) return [-HX + s, -HY, 0];
+        s -= 2 * HX; if (s < 2 * HY) return [HX, -HY + s, Math.PI / 2];
+        s -= 2 * HY; if (s < 2 * HX) return [HX - s, HY, Math.PI];
+        s -= 2 * HX; return [-HX, HY - s, -Math.PI / 2];
+      }
+      var rr = rng(5), T = 0, tReset = 0, nextFix = 0, ge = [0, 0], mpA = 0, fix = null, fixes = [], fu = null, Pf = 0, trail = [], hist = [], raf = 0, last = 0;
+      function resetStats() { hist = []; tReset = T; ch(false); }
+      function reset() { solve(); ge = [0, 0]; fixes = []; trail = []; var p = truth(T); fu = [p[0], p[1]]; Pf = 0.01; fix = null; nextFix = T; resetStats(); paint(); }
+      function step(dt) {
+        var p0 = truth(T); T += dt; var p1 = truth(T);
+        // odometry + IMU: the displacement, 2 % too long and turned by a heading error that grows (gyro bias)
+        var drift = 0.002 * (T - tReset), dx = (p1[0] - p0[0]) * 1.02, dy = (p1[1] - p0[1]) * 1.02, c = Math.cos(drift), s = Math.sin(drift);
+        fu[0] += c * dx - s * dy; fu[1] += s * dx + c * dy; Pf += 0.004 * Math.hypot(dx, dy) + 1e-5;
+        if (T >= nextFix) {
+          nextFix += 1;
+          if (SOL.q) {
+            var tau = SOL.q === 4 ? 3 : 20, a = Math.exp(-1 / tau), sa = SOL.sig / Math.SQRT2 * Math.sqrt(1 - a * a);
+            ge[0] = a * ge[0] + sa * gauss(rr); ge[1] = a * ge[1] + sa * gauss(rr);
+            mpA += 0.25 * gauss(rr);
+            fix = [p1[0] + ge[0] + SOL.mpb * Math.cos(mpA), p1[1] + ge[1] + SOL.mpb * Math.sin(mpA) * 0.4, T];
+            fixes.push(fix); if (fixes.length > 45) fixes.shift();
+            // Kalman update with the accuracy the receiver announces (it cannot know the multipath)
+            var Rm = Math.pow(SOL.sig / Math.SQRT2, 2) + 1e-4, K = Pf / (Pf + Rm);
+            fu[0] += K * (fix[0] - fu[0]); fu[1] += K * (fix[1] - fu[1]); Pf *= 1 - K;
+          } else fix = null;
+          hist.push({ t: T, g: fix ? Math.hypot(fix[0] - p1[0], fix[1] - p1[1]) : null, f: Math.hypot(fu[0] - p1[0], fu[1] - p1[1]) });
+          while (hist.length && hist[0].t < T - 60) hist.shift();
+        }
+        trail.push([fu[0], fu[1]]); if (trail.length > 900) trail.shift();
+      }
+      var fmt = function (m) { return m < 1 ? num(m * 100, m < 0.1 ? 1 : 0) + ' cm' : num(m, 1) + ' m'; };
+      function rmsOf(key, win) { var a = hist.filter(function (h) { return h.t >= T - win; }), s = 0, n = 0, miss = 0; a.forEach(function (h) { if (h[key] === null) miss++; else { s += h[key] * h[key]; n++; } }); return { v: n ? Math.sqrt(s / n) : null, n: a.length, miss: miss }; }
+      // the NMEA GGA sentence the receiver would send for the last fix
+      function gga() {
+        var lat0 = 46, lon0 = 2, q = fix ? SOL.q : 0, p = fix || [0, 0], lat = lat0 + p[1] / 111320, lon = lon0 + p[0] / (111320 * Math.cos(lat0 * DEG));
+        var dm = function (v, w) { var d = Math.floor(v), m = (v - d) * 60; return String(d).padStart(w, '0') + m.toFixed(5).padStart(8, '0'); };
+        var sec = 43200 + Math.floor(T), hh = String(Math.floor(sec / 3600) % 24).padStart(2, '0'), mi = String(Math.floor(sec / 60) % 60).padStart(2, '0'), ss = String(sec % 60).padStart(2, '0');
+        var body = (multi.checked ? 'GNGGA' : 'GPGGA') + ',' + hh + mi + ss + '.00,' + (q ? dm(lat, 2) + ',N,' + dm(lon, 3) + ',E,' : ',,,,') + q + ',' + String(Math.min(SOL.used, 99)).padStart(2, '0') + ',' + (q ? SOL.hdop.toFixed(1) : '') + ',' + (q ? '212.4,M,49.6,M,' : ',,,,') + (q >= 4 ? '1.0,0001' : q === 2 ? '3.0,0120' : ',');
+        var cs = 0; for (var i = 0; i < body.length; i++) cs ^= body.charCodeAt(i);
+        return '$' + body + '*' + cs.toString(16).toUpperCase().padStart(2, '0');
+      }
+
+      function drawSky() {
+        clear(sky); var x = sky.x, W = sky.w, H = sky.h, cx = W / 2, cy = H / 2 - 8, R = Math.min(W, H) / 2 - 30;
+        var P = function (az, el) { var r = R * (90 - el) / 90; return [cx + r * Math.sin(az * DEG), cy - r * Math.cos(az * DEG)]; };
+        x.fillStyle = C.box; x.beginPath(); x.arc(cx, cy, R, 0, 7); x.fill();
+        var e = env.get();
+        if (e === 'forest') { x.fillStyle = C.g; x.globalAlpha = 0.2; x.beginPath(); x.arc(cx, cy, R, 0, 7); x.arc(cx, cy, R * 50 / 90, 0, 7, true); x.fill('evenodd'); x.globalAlpha = 1; text(sky, L('leaves: weak signals', 'feuillage : signaux faibles'), cx, cy + R * 0.72, C.g, 11, 'center'); }
+        if (e === 'canyon' || e === 'wall') {
+          x.fillStyle = C.mute; x.globalAlpha = 0.32; x.beginPath(); x.arc(cx, cy, R, 0, 7);
+          for (var a = 360; a >= 0; a -= 2) { var q = P(a, horizon(a)); if (a === 360) x.moveTo(q[0], q[1]); else x.lineTo(q[0], q[1]); }
+          x.closePath(); x.fill('evenodd'); x.globalAlpha = 1;
+          text(sky, e === 'canyon' ? L('buildings', 'immeubles') : L('wall', 'mur'), e === 'canyon' ? cx + R * 0.62 : cx - R * 0.62, cy + 4, C.ink, 11, 'center', true);
+        }
+        x.strokeStyle = C.grid; x.lineWidth = 1;
+        [0, 30, 60].forEach(function (el) { x.beginPath(); x.arc(cx, cy, R * (90 - el) / 90, 0, 7); x.stroke(); text(sky, el + '°', cx + 3, cy - R * (90 - el) / 90 + 12, C.axis, 10); });
+        x.beginPath(); x.moveTo(cx - R, cy); x.lineTo(cx + R, cy); x.moveTo(cx, cy - R); x.lineTo(cx, cy + R); x.stroke();
+        if (mask.get() > 0) { x.strokeStyle = C.y; x.setLineDash([4, 4]); x.beginPath(); x.arc(cx, cy, R * (90 - mask.get()) / 90, 0, 7); x.stroke(); x.setLineDash([]); }
+        text(sky, 'N', cx, cy - R - 6, C.ink, 12, 'center', true); text(sky, L('S', 'S'), cx, cy + R + 15, C.ink, 12, 'center', true); text(sky, L('E', 'E'), cx + R + 10, cy + 4, C.ink, 12, 'center', true); text(sky, L('W', 'O'), cx - R - 10, cy + 4, C.ink, 12, 'center', true);
+        SATS.forEach(function (s) {
+          if (s.st === 'off') return; var p = P(s.az, s.el), col = C[s.col];
+          x.lineWidth = 2;
+          if (s.st === 'ok' || s.st === 'weak') { x.globalAlpha = s.st === 'weak' ? 0.45 : 1; x.fillStyle = col; x.beginPath(); x.arc(p[0], p[1], 7, 0, 7); x.fill(); x.globalAlpha = 1; }
+          else if (s.st === 'mp') { x.strokeStyle = C.o; x.setLineDash([3, 2]); x.beginPath(); x.arc(p[0], p[1], 7, 0, 7); x.stroke(); x.setLineDash([]); text(sky, '↯', p[0], p[1] + 4, C.o, 11, 'center', true); }
+          else { x.strokeStyle = C.mute; x.beginPath(); x.arc(p[0], p[1], 6, 0, 7); x.stroke(); }
+          text(sky, s.id, p[0] + 9, p[1] - 6, s.st === 'ok' || s.st === 'weak' ? C.ink : C.mute, 9);
+        });
+        // legend
+        var lx = 8, ly = H - 8;
+        CONS.forEach(function (c) { if (!multi.checked && c[0] !== 'G') return; x.fillStyle = C[c[3]]; x.beginPath(); x.arc(lx + 5, ly - 4, 5, 0, 7); x.fill(); text(sky, c[1], lx + 13, ly, C.ink, 10); lx += x.measureText(c[1]).width + 26; });
+        text(sky, L('↯ reflected  ○ hidden', '↯ réfléchi  ○ caché'), W - 8, 16, C.axis, 10, 'right');
+      }
+      function drawMap() {
+        clear(map); var x = map.x, W = map.w, H = map.h, S = Math.min((W - 30) / 36, (H - 50) / 24), ox = W / 2, oy = H / 2 + 6;
+        var X = function (v) { return ox + v * S; }, Y = function (v) { return oy - v * S; };
+        x.strokeStyle = C.grid; x.lineWidth = 1;
+        for (var g = -15; g <= 15; g += 5) { x.beginPath(); x.moveTo(X(g), Y(-11)); x.lineTo(X(g), Y(11)); x.stroke(); }
+        for (g = -10; g <= 10; g += 5) { x.beginPath(); x.moveTo(X(-17), Y(g)); x.lineTo(X(17), Y(g)); x.stroke(); }
+        x.strokeStyle = C.axis; x.setLineDash([6, 5]); x.lineWidth = 1.5; x.strokeRect(X(-HX), Y(HY), 2 * HX * S, 2 * HY * S); x.setLineDash([]);
+        if (fuse.checked && trail.length > 1) { x.strokeStyle = C.g; x.lineWidth = 2; x.beginPath(); trail.forEach(function (p, k) { if (k) x.lineTo(X(p[0]), Y(p[1])); else x.moveTo(X(p[0]), Y(p[1])); }); x.stroke(); }
+        x.save(); x.beginPath(); x.rect(0, 24, W, H - 46); x.clip();   // far positions leave the map: they are cut, not drawn over the legend
+        fixes.forEach(function (f, k) { x.globalAlpha = 0.25 + 0.75 * k / fixes.length; x.fillStyle = C.o; x.beginPath(); x.arc(X(f[0]), Y(f[1]), 3, 0, 7); x.fill(); }); x.globalAlpha = 1; x.restore();
+        var p = truth(T); x.save(); x.translate(X(p[0]), Y(p[1])); x.rotate(-p[2]); x.fillStyle = C.b; x.beginPath(); x.moveTo(9, 0); x.lineTo(-6, 6); x.lineTo(-6, -6); x.closePath(); x.fill(); x.restore();
+        text(map, L('top view, 5 m grid', 'vue de dessus, grille de 5 m'), 8, 16, C.axis, 10);
+        var lg = [[C.b, L('real robot', 'robot réel')], [C.o, L('GNSS positions', 'positions GNSS')]].concat(fuse.checked ? [[C.g, L('fused estimate', 'estimation fusionnée')]] : []), lx = 8;
+        lg.forEach(function (l) { x.fillStyle = l[0]; x.fillRect(lx, H - 14, 12, 4); text(map, l[1], lx + 16, H - 9, l[0], 10); lx += x.measureText(l[1]).width + 30; });
+        if (!SOL.q) text(map, L('NO POSITION', 'PAS DE POSITION'), W - 8, 16, C.r, 12, 'right', true);
+      }
+      function drawErr() {
+        clear(ech); var g = [], f = [], seg = [], mx = 0.05;
+        hist.forEach(function (h) { if (h.g !== null) { seg.push([h.t, h.g]); mx = Math.max(mx, h.g); } else if (seg.length) { g.push(seg); seg = []; } f.push([h.t, h.f]); if (fuse.checked) mx = Math.max(mx, h.f); });
+        if (seg.length) g.push(seg);
+        var series = g.map(function (sg, k) { return { pts: sg, col: C.o, w: 2, label: k ? null : L('GNSS error', 'erreur GNSS') }; });
+        if (fuse.checked) series.push({ pts: f, col: C.g, w: 2, label: L('fused error', 'erreur fusionnée') });
+        chart(ech, { x0: Math.max(0, T - 60), x1: Math.max(60, T), y0: 0, y1: mx * 1.2, xl: L('time (s)', 'temps (s)'), yl: L('horizontal error (m)', 'erreur horizontale (m)'), series: series });
+      }
+      var FIX = { 0: [L('No position', 'Pas de position'), 'bad'], 1: [L('Autonomous', 'Autonome'), ''], 2: [L('SBAS corrected', 'Corrigée SBAS'), ''], 4: [L('RTK fixed', 'RTK fixe'), 'ok'], 5: [L('RTK float', 'RTK flottant'), ''] };
+      function paint() {
+        drawSky(); drawMap(); drawErr();
+        var rg = rmsOf('g', 30), rf = rmsOf('f', 30);
+        out([
+          [L('Satellites used', 'Satellites utilisés'), SOL.used + ' / ' + SOL.vis + (SOL.cnt.mp ? ' (' + SOL.cnt.mp + ' ↯)' : ''), SOL.used < 4 ? 'bad' : ''],
+          ['HDOP', isFinite(SOL.hdop) ? num(SOL.hdop, 1) : '—', SOL.hdop > 2 ? 'bad' : 'ok'],
+          [L('Fix', 'Solution'), FIX[SOL.q][0], FIX[SOL.q][1]],
+          [L('Announced accuracy (95 %)', 'Précision annoncée (95 %)'), SOL.q ? fmt(2 * SOL.sig) : '—'],
+          [L('Real GNSS error (RMS 30 s)', 'Erreur GNSS réelle (RMS 30 s)'), rg.v === null ? '—' : fmt(rg.v) + (rg.miss ? ' · ' + rg.miss + ' s ' + L('without fix', 'sans position') : ''), rg.v !== null && rg.v > 2 * SOL.sig + 0.05 ? 'bad' : ''],
+          [L('Fused error (RMS 30 s)', 'Erreur fusionnée (RMS 30 s)'), fuse.checked && rf.v !== null ? fmt(rf.v) : '—']
+        ]);
+        nmea.innerHTML = '<span>' + L('What the receiver sends (NMEA GGA):', 'Ce qu\'envoie le récepteur (NMEA GGA) :') + '</span><code>' + esc(gga()) + '</code>';
+        var use = fuse.checked ? rf : rg;
+        ch(env.get() === 'canyon' && T - tReset >= 30 && use.v !== null && rg.miss <= 3 && use.v < 0.2);   // with GNSS positions, not on odometry alone
+      }
+      var acc = 0;
+      function frameLoop(now) {
+        var dt = last ? Math.min(0.1, (now - last) / 1000) : 0; last = now;
+        var simDt = dt * 4; while (simDt > 0) { var h = Math.min(0.05, simDt); step(h); simDt -= h; }
+        acc += dt; if (acc > 0.05) { acc = 0; paint(); }
+        raf = requestAnimationFrame(frameLoop);
+      }
+      reset();
+      return { start: function () { last = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(frameLoop); }, stop: function () { cancelAnimationFrame(raf); }, redraw: function () { sky.fit(); map.fit(); ech.fit(); paint(); } };
+    };
+
+    // ------------------------------------------------------------------ which sensor for which need
+    (function guide() {
+      var G = main.querySelector('.sb-guide');
+      // one row per sensor: bench, name, what it measures, range, typical accuracy, indicative price, where, main trap
+      var ROWS = [
+        ['encoder', L('Encoder', 'Encodeur'), L('Angle and speed of a motor or a wheel', 'Angle et vitesse d\'un moteur ou d\'une roue'), '—', L('0.01° to 1°', '0,01° à 1°'), L('€5 to €100', '5 à 100 €'), L('everywhere', 'partout'), L('wheel slip: it counts turns, not metres', 'le patinage : il compte des tours, pas des mètres')],
+        ['imu', L('IMU', 'Centrale inertielle'), L('Rotation speed, acceleration, tilt', 'Vitesse de rotation, accélération, inclinaison'), '—', L('tilt ≈ 0.1° to 1°', 'inclinaison ≈ 0,1° à 1°'), L('€2 to €50 (MEMS)', '2 à 50 € (MEMS)'), L('everywhere', 'partout'), L('the integrated gyro drifts; no heading reference', 'le gyro intégré dérive ; pas de référence de cap')],
+        ['gnss', 'GNSS', L('Position on Earth', 'Position sur la Terre'), L('worldwide', 'mondiale'), L('2 to 5 m · 1 m SBAS · 2 cm RTK', '2 à 5 m · 1 m SBAS · 2 cm RTK'), L('€10 to €50 · RTK €150 to €500', '10 à 50 € · RTK 150 à 500 €'), L('outdoors only', 'extérieur seulement'), L('buildings, trees, tunnels: hidden or reflected satellites', 'immeubles, arbres, tunnels : satellites cachés ou réfléchis')],
+        ['lidar', L('2D lidar', 'Lidar 2D'), L('Distances all around, in one plane', 'Distances tout autour, dans un plan'), L('0.1 to 30 m', '0,1 à 30 m'), L('1 to 3 cm', '1 à 3 cm'), L('€100 to €1 000', '100 à 1 000 €'), L('indoors (outdoors with care)', 'intérieur (extérieur avec précaution)'), L('glass, black objects, obstacles above or below the plane', 'verre, objets noirs, obstacles au-dessus ou sous le plan')],
+        ['camera', L('Camera / stereo', 'Caméra / stéréo'), L('Image, colours, objects; depth with two cameras', 'Image, couleurs, objets ; profondeur avec deux caméras'), L('0.3 to 20 m', '0,3 à 20 m'), L('depth error grows with Z²', 'erreur de profondeur en Z²'), L('€20 to €500', '20 à 500 €'), L('everywhere, with light', 'partout, avec de la lumière'), L('darkness, glare, surfaces without texture', 'obscurité, éblouissement, surfaces sans texture')],
+        ['sonar', L('Ultrasonic', 'Ultrasons'), L('One distance, in a wide cone', 'Une distance, dans un cône large'), L('0.02 to 4 m', '0,02 à 4 m'), L('1 cm (plus temperature)', '1 cm (plus la température)'), L('€1 to €30', '1 à 30 €'), L('everywhere', 'partout'), L('inclined walls send no echo; soft materials absorb', 'les murs inclinés ne renvoient rien ; les matières molles absorbent')]
+      ];
+      var NEEDS = [
+        [L('Control a motor or a joint', 'Commander un moteur ou une articulation'), ['encoder'], L('An encoder on each motor: it gives the angle and the speed the controller needs, many times per second.', 'Un encodeur sur chaque moteur : il donne l\'angle et la vitesse dont l\'asservissement a besoin, des centaines de fois par seconde.')],
+        [L('Keep a robot balanced or level', 'Garder un robot en équilibre ou à plat'), ['imu'], L('An IMU with a complementary or Kalman filter: the gyro for fast moves, the accelerometer for the long-term tilt.', 'Une centrale inertielle avec un filtre complémentaire ou de Kalman : le gyro pour les mouvements rapides, l\'accéléromètre pour l\'inclinaison à long terme.')],
+        [L('Find its way outdoors (field, road, park)', 'Se repérer en extérieur (champ, route, parc)'), ['gnss', 'imu', 'encoder'], L('GNSS for the absolute position (RTK for centimetres), fused with the odometry and the IMU to fill the gaps under trees and between buildings.', 'Le GNSS pour la position absolue (RTK pour le centimètre), fusionné avec l\'odométrie et l\'IMU pour boucher les trous sous les arbres et entre les immeubles.')],
+        [L('Map a building and find its way in it', 'Cartographier un bâtiment et s\'y repérer'), ['lidar', 'encoder', 'imu'], L('A 2D lidar for SLAM, helped by the odometry and the IMU; no GNSS indoors.', 'Un lidar 2D pour le SLAM, aidé par l\'odométrie et l\'IMU ; pas de GNSS en intérieur.')],
+        [L('Avoid obstacles cheaply', 'Éviter les obstacles à petit prix'), ['sonar', 'lidar'], L('A ring of ultrasonic sensors (fired one after the other) catches glass and close obstacles; a lidar if the budget allows.', 'Une ceinture de capteurs à ultrasons (qui émettent l\'un après l\'autre) attrape le verre et les obstacles proches ; un lidar si le budget le permet.')],
+        [L('Recognise and grasp objects', 'Reconnaître et saisir des objets'), ['camera'], L('A camera for recognition, a stereo or depth camera for the distance at short range.', 'Une caméra pour la reconnaissance, une caméra stéréo ou de profondeur pour la distance à courte portée.')]
+      ];
+      var name = {}; ROWS.forEach(function (r) { name[r[0]] = r[1]; });
+      G.innerHTML = '<h2 id="sbGuideT">' + L('Which sensor for which need?', 'Quel capteur pour quel besoin ?') + '</h2>' +
+        '<p class="sb-intro">' + L('Choose a need: the sensors that answer it are highlighted in the table. Orders of magnitude for small robots; industrial sensors cost much more.', 'Choisissez un besoin : les capteurs qui y répondent sont mis en avant dans le tableau. Ordres de grandeur pour de petits robots ; les capteurs industriels coûtent bien plus.') + '</p>' +
+        '<div class="sb-needs" role="group" aria-label="' + esc(L('Needs', 'Besoins')) + '">' + NEEDS.map(function (n, i) { return '<button type="button" data-n="' + i + '" aria-pressed="false">' + n[0] + '</button>'; }).join('') + '</div>' +
+        '<p class="sb-advice" aria-live="polite"></p>' +
+        '<div class="sb-tbl"><table class="dh"><thead><tr><th class="left">' + [L('Sensor', 'Capteur'), L('Measures', 'Mesure'), L('Range', 'Portée'), L('Typical accuracy', 'Précision typique'), L('Indicative price', 'Prix indicatif'), L('Where', 'Où'), L('Main trap', 'Piège principal'), ''].join('</th><th class="left">') + '</th></tr></thead><tbody>' +
+        ROWS.map(function (r) { return '<tr data-s="' + r[0] + '"><td class="left"><b>' + r[1] + '</b></td>' + r.slice(2).map(function (c) { return '<td class="left">' + c + '</td>'; }).join('') + '<td class="left"><a href="#' + r[0] + '">' + L('Try it', 'Essayer') + ' →</a></td></tr>'; }).join('') + '</tbody></table></div>';
+      var adv = G.querySelector('.sb-advice');
+      G.querySelector('.sb-needs').addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-n]'); if (!b) return;
+        var on = b.getAttribute('aria-pressed') !== 'true', n = NEEDS[+b.dataset.n];
+        [].forEach.call(G.querySelectorAll('.sb-needs button'), function (x) { x.setAttribute('aria-pressed', String(on && x === b)); });
+        [].forEach.call(G.querySelectorAll('tbody tr'), function (tr) { tr.classList.toggle('hit', on && n[1].indexOf(tr.dataset.s) >= 0); tr.classList.toggle('dim', on && n[1].indexOf(tr.dataset.s) < 0); });
+        adv.innerHTML = on ? '<b>' + n[1].map(function (k) { return name[k]; }).join(' + ') + '</b> — ' + n[2] : '';
+      });
+      // "Try it": open the bench and go up to it
+      G.addEventListener('click', function (e) { var a = e.target.closest('a[href^="#"]'); if (!a) return; e.preventDefault(); show(a.getAttribute('href').slice(1)); main.querySelector('.sb-tabs').scrollIntoView({ behavior: 'smooth' }); });
+    })();
+    paintTabs();
 
     // ------------------------------------------------------------------ theme, size, first bench
     var redrawAll = function () { colours(); [].forEach.call(main.querySelectorAll('.sb-bench'), function (s) { if (s._b && s._b.redraw) s._b.redraw(); }); };
