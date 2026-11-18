@@ -606,30 +606,59 @@
         kids.slice(ih, ic + 1).forEach((el) => side.appendChild(el));
       }
     }
-    // long pages in three tabs. starts: the three body children where the tabs begin; T: their names; IDS: their addresses
+    // long pages in three parts, with a menu on the left that lists every title. starts: the three body children where the
+    // parts begin; T: the names of the parts; IDS: their addresses. One part is shown at a time; a title opens its part.
     const makeTabs = (starts, T, IDS) => {
       const kids = [...body.children], at = starts.map((el) => kids.indexOf(el));
       const skip = (el) => /^(SCRIPT|STYLE|HEADER|FOOTER)$/.test(el.tagName) || el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top');
-      const panes = IDS.map((id) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; d.setAttribute('role', 'tabpanel'); d.setAttribute('aria-labelledby', 'tabbtn-' + id); return d; });
+      const panes = IDS.map((id) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; return d; });
       kids.forEach((el, i) => { if (i < at[0] || skip(el)) return; panes[i < at[1] ? 0 : i < at[2] ? 1 : 2].appendChild(el); });
-      const bar = document.createElement('div'); bar.className = 'rtabs ra-own'; bar.setAttribute('role', 'tablist');
-      bar.innerHTML = IDS.map((id, k) => `<button type="button" role="tab" id="tabbtn-${id}" aria-controls="tab-${id}" aria-selected="false"><b>${k + 1}</b> ${T[k]}</button>`).join('');
+      // the menu: each part, then the titles (h2) inside it
+      const wrap = document.createElement('div'); wrap.className = 'rside-wrap';
+      const side = document.createElement('nav'); side.className = 'rside ra-own'; side.setAttribute('aria-label', lang === 'fr' ? 'Sommaire de la page' : 'Page contents');
+      const main = document.createElement('div'); main.className = 'rside-main';
+      let n = 0;
+      const heads = panes.map((p) => [...p.querySelectorAll('h2')].filter((h) => h.textContent.trim()).map((h) => { if (!h.id) h.id = 'sec' + (++n); return h; }));
+      const short = (h) => h.textContent.replace(/\s*\((schéma cinématique|kinematic diagram)\)\s*$/i, '').trim();
+      side.innerHTML = `<details open><summary>${lang === 'fr' ? 'Sommaire' : 'Contents'}</summary><ol>` + IDS.map((id, k) =>
+        `<li class="rs-part" data-k="${k}"><a href="#${id}" class="rs-head" data-k="${k}"><b>${k + 1}</b>${T[k]}</a><ul>` +
+        heads[k].map((h) => `<li><a href="#${h.id}" data-k="${k}" data-h="${h.id}">${short(h)}</a></li>`).join('') + '</ul></li>').join('') + '</ol></details>';
       const anchor = h1.nextElementSibling && h1.nextElementSibling.classList.contains('crumbs') ? h1.nextElementSibling : h1;
-      anchor.after(bar); bar.after(...panes);
-      const show = (k, scroll) => {
+      anchor.after(wrap); wrap.append(side, main); main.append(...panes);
+      // the menu follows the language (the titles are translated after the page is built)
+      heads.flat().forEach((h) => new MutationObserver(() => { const a = side.querySelector(`a[data-h="${h.id}"]`); if (a && a.textContent !== short(h)) a.textContent = short(h); }).observe(h, { childList: true, characterData: true, subtree: true }));
+      let cur = -1;
+      const show = (k) => {
+        if (k === cur) return; cur = k;
         panes.forEach((p, j) => { p.hidden = j !== k; });
-        [...bar.children].forEach((b, j) => { b.setAttribute('aria-selected', String(j === k)); b.tabIndex = j === k ? 0 : -1; });
+        side.querySelectorAll('.rs-part').forEach((li) => li.classList.toggle('open', +li.dataset.k === k));
         window.dispatchEvent(new Event('resize'));                                   // the 3D views and the diagram take their size again
         const svg = document.getElementById('schema'); if (svg) svg.setAttribute('data-shown', String(Date.now()));
-        if (scroll) window.scrollTo({ top: Math.max(0, bar.getBoundingClientRect().top + window.scrollY - 90), behavior: 'smooth' });
       };
-      bar.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; const k = [...bar.children].indexOf(b); show(k, true); history.replaceState(null, '', '#' + IDS[k]); });
-      bar.addEventListener('keydown', (e) => { const k = [...bar.children].findIndex((b) => b.getAttribute('aria-selected') === 'true'), d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; const n = (k + d + 3) % 3; show(n); bar.children[n].focus(); history.replaceState(null, '', '#' + IDS[n]); });
-      // the tab of the address: one of IDS, or the tab that holds the element the address points to
+      const go = (y) => window.scrollTo({ top: Math.max(0, y - 90), behavior: 'smooth' });
+      side.addEventListener('click', (e) => {
+        const a = e.target.closest('a'); if (!a) return; e.preventDefault();
+        const k = +a.dataset.k; show(k);
+        if (a.dataset.h) { const h = document.getElementById(a.dataset.h); go(h.getBoundingClientRect().top + window.scrollY); history.replaceState(null, '', '#' + a.dataset.h); }
+        else { go(wrap.getBoundingClientRect().top + window.scrollY); history.replaceState(null, '', '#' + IDS[k]); }
+        if (matchMedia('(max-width: 900px)').matches) side.querySelector('details').open = false;
+      });
+      // the title being read is marked in the menu
+      const mark = () => {
+        const list = heads[cur] || []; let on = null;
+        for (const h of list) if (h.getBoundingClientRect().top < 140) on = h.id;
+        side.querySelectorAll('a[data-h]').forEach((a) => a.classList.toggle('on', a.dataset.h === on));
+      };
+      window.addEventListener('scroll', mark, { passive: true });
+      // the part of the address: one of IDS, or the part that holds the element the address points to
       const h = decodeURIComponent(location.hash.slice(1)), byId = IDS.indexOf(h), el = h && document.getElementById(h);
       show(byId >= 0 ? byId : el ? Math.max(0, panes.findIndex((p) => p.contains(el))) : 0);
-      // links to a section of another tab open that tab first
-      document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a) return; const t = document.getElementById(a.getAttribute('href').slice(1)); const k = t ? panes.findIndex((p) => p.contains(t)) : -1; if (k >= 0 && panes[k].hidden) show(k); }, true);
+      if (matchMedia('(max-width: 900px)').matches) side.querySelector('details').open = false;
+      mark();
+      // other links to a section of a hidden part open that part first
+      document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.closest('.rside')) return; const t = document.getElementById(a.getAttribute('href').slice(1)); const k = t ? panes.findIndex((p) => p.contains(t)) : -1; if (k >= 0 && panes[k].hidden) show(k); }, true);
+      side.querySelector('summary').addEventListener('click', (e) => { if (!matchMedia('(max-width: 900px)').matches) e.preventDefault(); });   // always open on a computer
+      body.classList.add('has-rside');
     };
     const fr = lang === 'fr', bodyH2 = [...body.children].filter((el) => el.tagName === 'H2' && !el.closest('.stage-side'));
     // robot pages: 1. the robot in 3D (view and joints), 2. kinematics and models (from the kinematic diagram to the result),
@@ -640,13 +669,13 @@
     }
     // 3D anatomy pages: 1. the robot in 3D (the model, X-ray, the axes), 2. inside each joint, 3. all the components
     const anat = body.querySelector(':scope > .anat');
-    if (h1 && anat && bodyH2.length >= 2 && !body.querySelector('.rtabs')) {
+    if (h1 && anat && bodyH2.length >= 2 && !body.querySelector('.rside')) {
       const first = body.querySelector(':scope > p.lead') || anat;
       makeTabs([first, bodyH2[0], bodyH2[1]], fr ? ['Le robot en 3D', 'Dans chaque articulation', 'Tous les composants'] : ['The robot in 3D', 'Inside each joint', 'All the components'], ['robot', 'joints', 'components']);
     }
     // chips that jump to each section
     const heads = [...body.querySelectorAll('h2')].filter((h) => !h.closest('.stage-side') && !h.closest('.robot') && h.textContent.trim());
-    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn') && !body.querySelector('.rtabs')) {
+    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn') && !body.querySelector('.rside')) {
       const toc = document.createElement('nav'); toc.className = 'toc'; toc.setAttribute('aria-label', lang === 'fr' ? 'Sur cette page' : 'On this page');
       const short = (h) => h.textContent.replace(/^\d+\.\s*/, '').replace(/\s*\(.*$/, '').replace(/,\s*(side|top|front) view$/i, '').trim() || h.textContent.trim();
       heads.forEach((h, i) => {
