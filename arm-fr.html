@@ -125,7 +125,7 @@
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      const grid = new THREE.GridHelper(6, 12, '#7a7a7a', '#3a3a3a'); scene.add(grid);
+      const grid = new THREE.GridHelper(24, 48, '#7a7a7a', '#3a3a3a'); scene.add(grid);
       // light / dark ground: background, hemisphere ground colour and grid lines follow the site theme
       const floor = new THREE.Mesh((grid.geometry.computeBoundingBox(), new THREE.PlaneGeometry(grid.geometry.boundingBox.max.x * 2, grid.geometry.boundingBox.max.z * 2)).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#7d8691', roughness: 1 }));
       floor.position.y = -0.003; scene.add(floor);                      // dark grey pad exactly under the grid; everything else stays light grey
