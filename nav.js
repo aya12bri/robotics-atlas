@@ -606,9 +606,40 @@
         kids.slice(ih, ic + 1).forEach((el) => side.appendChild(el));
       }
     }
+    // robot pages: three tabs instead of one long page. 1. the robot in 3D (view and joints), 2. kinematics and models
+    // (from the kinematic diagram to the result), 3. uses and inside (where it is used, the real components, the operations)
+    const firstKin = [...body.children].find((el) => el.tagName === 'H2' && !el.closest('.stage-side'));
+    const usesAt = body.querySelector(':scope > .robot');
+    if (view && firstKin && usesAt && [...body.children].indexOf(usesAt) > [...body.children].indexOf(firstKin)) {
+      const kids = [...body.children], start = kids.indexOf(body.querySelector(':scope > .stage') || view);
+      const skip = (el) => /^(SCRIPT|STYLE|HEADER|FOOTER)$/.test(el.tagName) || el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top');
+      const T = lang === 'fr' ? ['Le robot en 3D', 'Cinématique et modèles', 'Usages et intérieur'] : ['The robot in 3D', 'Kinematics and models', 'Uses and inside'];
+      const IDS = ['robot', 'kinematics', 'uses'];
+      const panes = IDS.map((id, k) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; d.setAttribute('role', 'tabpanel'); d.setAttribute('aria-labelledby', 'tabbtn-' + id); return d; });
+      const iK = kids.indexOf(firstKin), iU = kids.indexOf(usesAt);
+      kids.forEach((el, i) => { if (i < start || skip(el)) return; panes[i < iK ? 0 : i < iU ? 1 : 2].appendChild(el); });
+      const bar = document.createElement('div'); bar.className = 'rtabs ra-own'; bar.setAttribute('role', 'tablist');
+      bar.innerHTML = IDS.map((id, k) => `<button type="button" role="tab" id="tabbtn-${id}" aria-controls="tab-${id}" aria-selected="false"><b>${k + 1}</b> ${T[k]}</button>`).join('');
+      const anchor = h1.nextElementSibling && h1.nextElementSibling.classList.contains('crumbs') ? h1.nextElementSibling : h1;
+      anchor.after(bar); bar.after(...panes);
+      const show = (k, scroll) => {
+        panes.forEach((p, j) => { p.hidden = j !== k; });
+        [...bar.children].forEach((b, j) => { b.setAttribute('aria-selected', String(j === k)); b.tabIndex = j === k ? 0 : -1; });
+        window.dispatchEvent(new Event('resize'));                                   // the 3D views and the diagram take their size again
+        const svg = document.getElementById('schema'); if (svg) svg.setAttribute('data-shown', String(Date.now()));
+        if (scroll) window.scrollTo({ top: Math.max(0, bar.getBoundingClientRect().top + window.scrollY - 90), behavior: 'smooth' });
+      };
+      bar.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; const k = [...bar.children].indexOf(b); show(k, true); history.replaceState(null, '', '#' + IDS[k]); });
+      bar.addEventListener('keydown', (e) => { const k = [...bar.children].findIndex((b) => b.getAttribute('aria-selected') === 'true'), d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; const n = (k + d + 3) % 3; show(n); bar.children[n].focus(); history.replaceState(null, '', '#' + IDS[n]); });
+      // the tab of the address: #kinematics, #uses, or the tab that holds the element the address points to
+      const h = decodeURIComponent(location.hash.slice(1)), byId = IDS.indexOf(h), el = h && document.getElementById(h);
+      show(byId >= 0 ? byId : el ? Math.max(0, panes.findIndex((p) => p.contains(el))) : 0);
+      // links to a section of another tab open that tab first
+      document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a) return; const t = document.getElementById(a.getAttribute('href').slice(1)); const k = t ? panes.findIndex((p) => p.contains(t)) : -1; if (k >= 0 && panes[k].hidden) show(k); }, true);
+    }
     // chips that jump to each section
     const heads = [...body.querySelectorAll('h2')].filter((h) => !h.closest('.stage-side') && !h.closest('.robot') && h.textContent.trim());
-    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn')) {
+    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn') && !body.querySelector('.rtabs')) {
       const toc = document.createElement('nav'); toc.className = 'toc'; toc.setAttribute('aria-label', lang === 'fr' ? 'Sur cette page' : 'On this page');
       const short = (h) => h.textContent.replace(/^\d+\.\s*/, '').replace(/\s*\(.*$/, '').replace(/,\s*(side|top|front) view$/i, '').trim() || h.textContent.trim();
       heads.forEach((h, i) => {
