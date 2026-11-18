@@ -299,6 +299,7 @@
       ], (v) => { q = v; update(); });
 
       studio(THREE, renderer, scene);
+      window.RA3D_VIEW = { THREE, scene, camera, orbit, renderer };   // for tools that take pictures (thumbnails)
       renderer.setAnimationLoop(() => {
         orbit.update();
         renderer.render(scene, camera);

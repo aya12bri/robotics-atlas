@@ -63,6 +63,7 @@ window.addEventListener('resize', resize);
 let visible = true;
 new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(box);
 studio(THREE, renderer, scene);
+window.RA3D_VIEW = { THREE, scene, camera, orbit, renderer };   // for tools that take pictures (thumbnails)
 renderer.setAnimationLoop(() => { if (!visible) return; if (R.tick) R.tick(); orbit.update(); renderer.render(scene, camera); });
 
 // ================= diagram =================
