@@ -9,6 +9,7 @@ const $ = (id) => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const R = 0.5, W = 0.24;                       // wheel radius and width (m)
 const TAU = Math.PI * 2, GAMMA = Math.PI / 4;   // roller angle of the Mecanum wheel
+const CASTOR_E = 0.17;                         // castor offset: wheel axle behind the swivel axis (m)
 const fmt = (v, d = 2) => v.toFixed(d).replace('.', FR ? ',' : '.');
 
 const SCORE = {   // 1 (poor) to 5 (excellent)
@@ -92,13 +93,33 @@ function buildModel(kind) {
     return { group: g, spin, labels: [lab(0.5, 0.35, 0, 'Tire (rubber tread)', 'Pneu (bande de roulement)'), lab(0, 0.5, 0.2, 'Rim and hub', 'Jante et moyeu'), lab(0, 1.25, 0.26, 'Fork (fixed axle)', 'Fourche (axe fixe)'), lab(0.2, 1.4, -0.3, 'Chassis', 'Châssis')] };
   }
   if (kind === 'castor') {
-    const sw = new THREE.Group(), E = 0.3;
-    const wheel = tireWheel(); wheel.position.set(-E, R, 0); wheel.scale.setScalar(0.62); wheel.position.y = R * 0.62; sw.add(wheel);
-    const f = fork(0.34); f.scale.setScalar(0.62); f.position.set(-E, 0, 0); sw.add(f);
-    const arm = bx(E + 0.1, 0.07, 0.3, mDark); arm.position.set(-E / 2, R * 1.24 + 0.26, 0); sw.add(arm);
-    const pivot = cylY(0.09, 0.28, mOr); pivot.position.set(0, R * 1.24 + 0.34, 0); sw.add(pivot);
-    const plate = cylY(0.2, 0.05, mRim); plate.position.set(0, R * 1.24 + 0.5, 0); g.add(plate); g.add(chassis(R * 1.24 + 0.58)); g.add(sw);
-    return { group: g, spin: wheel, swivel: sw, labels: [lab(-0.62, 0.3, 0, 'Wheel (small, no motor)', 'Roue (petite, sans moteur)'), lab(0, 0.95, 0.15, 'Swivel pivot (vertical axis)', 'Pivot orientable (axe vertical)'), lab(-0.25, 0.8, 0.26, 'Offset: the wheel trails behind the pivot', 'Déport : la roue suit derrière le pivot'), lab(0.3, 1.18, -0.3, 'Chassis', 'Châssis')] };
+    // a real swivel castor: top plate bolted under the chassis, a swivel bearing (vertical axis), and a fork whose
+    // legs go down and back to the axle, so the wheel sits behind the swivel axis (the offset) and trails
+    const sw = new THREE.Group(), K = 0.62, rw = R * K, E = CASTOR_E, H = rw * 2 + 0.24, legZ = W * K / 2 + 0.05;
+    const wheel = tireWheel(); wheel.scale.setScalar(K); wheel.position.set(-E, rw, 0); sw.add(wheel);
+    // fork crown: a round plate under the bearing that turns with the wheel
+    const crown = cylY(0.17, 0.035, mDark); crown.position.y = H - 0.05; sw.add(crown);
+    const brace = bx(0.12, 0.035, legZ * 2 + 0.04, mDark); brace.position.set(-0.04, H - 0.05, 0); sw.add(brace);
+    // the two legs, slanted from the crown to the axle, with a round end around the axle
+    const top = new THREE.Vector2(0.0, H - 0.07), bot = new THREE.Vector2(-E, rw), d = top.clone().sub(bot), len = d.length(), ang = Math.atan2(d.y, d.x);
+    for (const s of [-1, 1]) {
+      const leg = bx(len, 0.1, 0.03, mDark); leg.position.set((top.x + bot.x) / 2, (top.y + bot.y) / 2, s * legZ); leg.rotation.z = ang; sw.add(leg);
+      const eye = cylZ(0.065, 0.03, mDark); eye.position.set(-E, rw, s * legZ); sw.add(eye);
+      const nut = cylZ(0.035, 0.03, mRim, 6); nut.position.set(-E, rw, s * (legZ + 0.03)); sw.add(nut);
+    }
+    const axle = cylZ(0.02, legZ * 2 + 0.06, mRim); axle.position.set(-E, rw, 0); sw.add(axle);
+    // swivel bearing: two races with a ring of balls between them, and the kingpin bolt on the swivel axis
+    const lower = cylY(0.16, 0.025, mRim); lower.position.y = H - 0.02; sw.add(lower);
+    const balls = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.012, 8, 40), mOr); balls.rotation.x = Math.PI / 2; balls.position.y = H; sw.add(balls);
+    const upper = cylY(0.16, 0.025, mRim); upper.position.y = H + 0.02; g.add(upper);
+    const pin = cylY(0.03, 0.14, mOr); pin.position.y = H; g.add(pin);
+    const plate = bx(0.42, 0.03, 0.42, mRim); plate.position.y = H + 0.045; g.add(plate);
+    for (const [x, z] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) { const bolt = cylY(0.022, 0.03, mDark, 6); bolt.position.set(x * 0.16, H + 0.07, z * 0.16); g.add(bolt); }
+    g.add(chassis(H + 0.11)); g.add(sw);
+    // the swivel axis drawn as a thin dashed line down to the floor: the contact point is behind it
+    const axisPts = [new THREE.Vector3(0, 0.005, 0), new THREE.Vector3(0, H + 0.2, 0)];
+    const axisLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(axisPts), new THREE.LineDashedMaterial({ color: 0xff9f43, dashSize: 0.05, gapSize: 0.035 })); axisLine.computeLineDistances(); g.add(axisLine);
+    return { group: g, spin: wheel, swivel: sw, labels: [lab(-0.45, 0.2, 0.2, 'Wheel (no motor)', 'Roue (sans moteur)'), lab(-0.12, 0.55, 0.15, 'Fork (legs go down and back)', 'Fourche (pattes inclinées vers l\'arrière)'), lab(0.05, H, 0.2, 'Swivel bearing (vertical axis)', 'Roulement de pivot (axe vertical)'), lab(-0.1, 0.06, 0.3, 'Offset: the wheel trails behind the axis', 'Déport : la roue suit derrière l\'axe'), lab(0.3, H + 0.12, -0.3, 'Mounting plate and chassis', 'Platine de fixation et châssis')] };
   }
   if (kind === 'steer') {
     const sw = new THREE.Group(), spin = tireWheel(); spin.position.y = R; sw.add(spin, fork());
@@ -192,7 +213,7 @@ function step(dt, t) {
   const v = S.cmd, speed = v.length(), kind = S.kind;
   puck.style.transform = `translate(${(v.z / S.vmax) * 38}px, ${(-v.x / S.vmax) * 38}px)`;       // the puck shows the command
   // heading of the wheel (castor swivels by itself, steered wheel is turned by its motor, the others are fixed)
-  if (kind === 'castor') { const e = 0.3, vyc = v.x * Math.sin(S.theta) + v.z * Math.cos(S.theta); S.theta += (-vyc / e) * dt; if (speed > 0.05 && Math.abs(Math.sin(S.theta)) < 0.002 && v.x * Math.cos(S.theta) < 0) S.theta += 0.01; }
+  if (kind === 'castor') { const e = CASTOR_E, vyc = v.x * Math.sin(S.theta) + v.z * Math.cos(S.theta); S.theta += (-vyc / e) * dt; if (speed > 0.05 && Math.abs(Math.sin(S.theta)) < 0.002 && v.x * Math.cos(S.theta) < 0) S.theta += 0.01; }
   else if (kind === 'steer') { if (speed > 0.05) { let tgt = Math.atan2(-v.z, v.x); const cur = S.theta; let d = tgt - cur; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > Math.PI / 2) d -= Math.sign(d) * Math.PI; S.theta += clamp(d * 6, -2.6, 2.6) * dt; } }
   else S.theta = 0;
   S.theta = Math.atan2(Math.sin(S.theta), Math.cos(S.theta));

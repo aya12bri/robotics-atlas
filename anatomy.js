@@ -413,12 +413,12 @@ function buildWheels() {
   const R = 0.15, W = 0.06, SP = 0.78, X0 = -3 * SP;
   const slot = (k) => { const g = group(scene, k < 4 ? [(k - 1.5) * 0.78, 0, 0.5] : [(k - 5) * 0.78, 0, -0.5]); boxm(0.64, 0.01, 0.4, DARK, g, [0, 0.005, 0]); return g; };
   const spinners = [], trackers = [];
-  const tire = (parent, pos, r, w) => {
+  const tire = (parent, pos, r, w, noMotor) => {
     const g = group(parent, pos);
     cyl(r, w, TYRE, g, [0, 0, 0], 'z'); cyl(r * 0.68, w * 1.05, SILVER, g, [0, 0, 0], 'z'); cyl(r * 0.28, w * 1.2, ORANGE, g, [0, 0, 0], 'z');
     for (let i = 0; i < 5; i++) { const sp = boxm(r * 1.3, r * 0.13, w * 1.14, ORANGE, g, [0, 0, 0]); sp.rotation.z = i * Math.PI / 5; }
     xr(mesh(new THREE.TorusGeometry(r * 0.3, 0.008, 8, 24), SILVER, g, [0, 0, w * 0.58]));          // bearing
-    const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(r * 0.22, w * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(r * 0.12, w * 1.9, COPPER, m, [0, 0, 0]));   // hub motor
+    if (!noMotor) { const m = group(g); m.rotation.x = Math.PI / 2; xr(cyl(r * 0.22, w * 1.5, MOTOR, m, [0, 0, 0])); xr(cyl(r * 0.12, w * 1.9, COPPER, m, [0, 0, 0])); }   // hub motor (a castor has none)
     return g;
   };
   const fork = (parent, r, w, h) => { for (const s of [-1, 1]) boxm(0.012, h, r * 0.5, DARK, parent, [0, r + (h - r) / 2, s * (w / 2 + 0.014)]); boxm(r * 0.5, 0.012, w + 0.05, DARK, parent, [0, r + (h - r) + 0.006, 0]); };
@@ -427,11 +427,27 @@ function buildWheels() {
   const s0 = slot(0); const w0 = tire(s0, [0, R, 0], R, W); fork(s0, R, W, R * 2 + 0.1); plate(s0, R * 2 + 0.12); spinners.push(w0);
   ring(0, s0, [0, R, 0], 'z', R + 0.05, { noAxis: true });
   // 1: castor
-  const s1 = slot(1); boxm(0.3, 0.025, 0.3, BASE, s1, [0, 0.4, 0]); cyl(0.03, 0.12, SILVER, s1, [0, 0.33, 0]);
-  xr(mesh(new THREE.TorusGeometry(0.05, 0.012, 8, 24), SILVER, s1, [0, 0.3, 0], [Math.PI / 2, 0, 0]));
-  const sw1 = group(s1, [0, 0.28, 0]); boxm(0.14, 0.02, 0.06, DARK, sw1, [-0.05, 0, 0]);
-  const gg = group(sw1, [0, -0.28, 0]), w1 = tire(gg, [-0.1, 0.1, 0], 0.1, 0.045); fork(group(gg, [-0.1, 0, 0]), 0.1, 0.045, 0.26); spinners.push(w1);
-  ring(1, s1, [0, 0.28, 0], 'y', 0.09, { len: 0.5, axisPos: [0, 0.3, 0] });
+  // a real swivel castor: mounting plate, swivel bearing on a vertical axis, and a fork whose legs go down and back
+  // to the axle, so the wheel sits behind the axis (the offset) and trails behind
+  const s1 = slot(1), CR = 0.1, CW = 0.05, CE = 0.07, CH = 0.3, CZ = CW / 2 + 0.018;
+  boxm(0.3, 0.025, 0.3, BASE, s1, [0, CH + 0.1, 0]);                                   // robot plate
+  boxm(0.13, 0.012, 0.13, SILVER, s1, [0, CH + 0.08, 0]);                              // castor mounting plate
+  for (const [x, z] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) cyl(0.008, 0.012, DARK, s1, [x * 0.05, CH + 0.09, z * 0.05]);
+  cyl(0.055, 0.01, SILVER, s1, [0, CH + 0.068, 0]);                                    // upper race
+  xr(mesh(new THREE.TorusGeometry(0.045, 0.006, 8, 28), ORANGE, s1, [0, CH + 0.06, 0], [Math.PI / 2, 0, 0]));   // balls of the swivel bearing
+  cyl(0.012, 0.05, ORANGE, s1, [0, CH + 0.06, 0]);                                     // kingpin
+  const sw1 = group(s1, [0, 0, 0]);
+  cyl(0.055, 0.01, SILVER, sw1, [0, CH + 0.052, 0]);                                   // lower race (turns)
+  cyl(0.055, 0.012, DARK, sw1, [0, CH + 0.04, 0]);                                     // fork crown
+  const ftop = [0, CH + 0.035], fbot = [-CE, CR], fl = Math.hypot(ftop[0] - fbot[0], ftop[1] - fbot[1]), fa = Math.atan2(ftop[1] - fbot[1], ftop[0] - fbot[0]);
+  for (const s of [-1, 1]) {
+    boxm(fl, 0.035, 0.01, DARK, sw1, [(ftop[0] + fbot[0]) / 2, (ftop[1] + fbot[1]) / 2, s * CZ]).rotation.z = fa;   // slanted fork leg
+    cyl(0.022, 0.01, DARK, sw1, [-CE, CR, s * CZ], 'z');                               // round end around the axle
+    cyl(0.011, 0.01, SILVER, sw1, [-CE, CR, s * (CZ + 0.01)], 'z');                    // axle nut
+  }
+  cyl(0.006, CZ * 2 + 0.02, SILVER, sw1, [-CE, CR, 0], 'z');                           // axle
+  const w1 = tire(sw1, [-CE, CR, 0], CR, CW, true); spinners.push(w1);
+  ring(1, s1, [0, CH + 0.06, 0], 'y', 0.08, { len: 0.55, axisPos: [0, 0.2, 0] });
   // 2: steered drive wheel
   const s2 = slot(2); boxm(0.3, 0.025, 0.3, BASE, s2, [0, 0.62, 0]); cyl(0.07, 0.08, BLUE, s2, [0, 0.69, 0]);
   xr(cyl(0.05, 0.12, MOTOR, s2, [0, 0.74, 0])); xr(cyl(0.065, 0.015, SILVER, s2, [0, 0.62, 0]));
