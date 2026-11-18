@@ -36,15 +36,7 @@
     ['anatomy-quadrotor.html', { en: 'Quadrotor',               fr: 'Quadrirotor' }],
     ['anatomy-humanoid.html', { en: 'Humanoid',                 fr: 'Humanoïde' }]
   ];
-  // the menus of the top bar (the same on every page): the courses by theme, the robots by family, the tools, my space
-  const MENU_COURSES = [
-    [{ en: 'Basics', fr: 'Bases' }, [['learn.html', 'Foundations', 'Les fondations'], ['learn-mathkit.html', 'The maths of robotics', 'Les maths de la robotique'], ['learn-maths.html', 'Maths and motion', 'Maths et mouvement']]],
-    [{ en: 'Modelling', fr: 'Modélisation' }, [['learn-model.html', 'Robot modelling, full course', 'Modélisation d\'un robot'], ['learn-singularities.html', 'Singularities and the Jacobian', 'Singularités et jacobienne'], ['learn-parallel.html', 'Workspaces and parallel robots', 'Espaces de travail et robots parallèles'], ['learn-armlab.html', 'Code a robot arm in Python', 'Coder un bras robot en Python']]],
-    [{ en: 'Mechanics and control', fr: 'Mécanique et commande' }, [['learn-control.html', 'Dynamics and control', 'Dynamique et commande'], ['learn-transmission.html', 'Transmissions and grippers', 'Transmissions et préhenseurs']]],
-    [{ en: 'Mobile robots', fr: 'Robots mobiles' }, [['learn-mobile.html', 'Wheeled mobile robots, part 1', 'Robots mobiles à roues, partie 1'], ['learn-mobile-pro.html', 'Wheeled mobile robots, part 2', 'Robots mobiles à roues, partie 2']]],
-    [{ en: 'Perception and AI', fr: 'Perception et IA' }, [['learn-intelligence.html', 'Perception, planning and AI', 'Perception, planification et IA'], ['learn-kalman.html', 'Data fusion and Kalman filter', 'Fusion de données et filtre de Kalman'], ['learn-ros.html', 'ROS 2 from zero', 'ROS 2 depuis zéro']]],
-    [{ en: 'Master and real world', fr: 'Master et monde réel' }, [['learn-advanced.html', 'Advanced robotics', 'Robotique avancée'], ['learn-teleop.html', 'Teleoperation, cobotics, safety', 'Téléopération, cobotique, sécurité'], ['learn-world.html', 'Robots in the real world', 'Les robots dans le monde réel']]]
-  ];
+  // the groups of links of the footer: the robots by family, the tools, my space
   const ROBOT_FAMILIES = [
     [{ en: 'Serial arms', fr: 'Bras série' }, ['arm.html', 'gantry.html', 'cylindrical.html', 'spherical.html', 'scara.html', 'articulated.html', 'cobot.html', 'redundant.html']],
     [{ en: 'Parallel robots', fr: 'Robots parallèles' }, ['delta.html', 'hexapod.html']],
@@ -451,25 +443,15 @@
     const link = (href, text) => `<a href="${href}"${here === href ? ' aria-current="page"' : ''}>${text}</a>`;
     const effective = () => root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
 
-    // a menu of the top bar: a button that opens a panel of grouped links; the button is marked when this page is in it
-    const ddMenu = (key, label, groups, foot) => {
-      const all = groups.flatMap((g) => g[1].map((x) => x[0].split('#')[0]));
-      const cur = all.includes(here) && !(key === 'me' && here === 'index.html');
-      return `<div class="dd mega" data-dd="${key}"><button class="dd-top" type="button" aria-haspopup="true" aria-expanded="false"${cur ? ' aria-current="page"' : ''}>${label} <span aria-hidden="true">▾</span></button>` +
-        `<div class="dd-menu mega-menu${groups.length > 3 ? ' wide4' : groups.length > 2 ? ' wide' : ''}">${groups.map(([title, items]) => `<div class="mm-col">${title ? `<span class="mm-h">${title[lang]}</span>` : ''}${items.map(([h, t]) => link(h, t)).join('')}</div>`).join('')}${foot || ''}</div></div>`;
-    };
-    const R = (h) => { const r = ROBOTS.find((x) => x[0] === h), k = r[2].split(' / '); const tag = k[lang === 'fr' && k[1] ? 1 : 0]; return [h, `${r[1][lang]}${tag === '—' ? '' : ` <small>${tag}</small>`}`]; };
-    const megaMenus = () =>
-      ddMenu('courses', ui.courses, MENU_COURSES.map(([g, list]) => [g, list.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en])]), `<a class="mm-foot" href="index.html#road">${ui.allCourses} →</a>`) +
-      ddMenu('robots', ui.robots, ROBOT_FAMILIES.map(([g, list]) => [g, list.map(R)]).concat([[{ en: ui.anatomy, fr: ui.anatomy }, ANATOMY.map(([h, n]) => [h, `${n[lang]} <small>3D</small>`])]]), `<a class="mm-foot" href="index.html#robots">${ui.allRobots} →</a>`) +
-      ddMenu('tools', ui.tools, [[null, MENU_TOOLS.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en])]]) +
-      ddMenu('me', ui.me, [[null, MENU_ME.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en])]]);
     const nav = document.createElement('header');
     nav.className = 'site-nav';
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
-      '<nav class="nav-l" aria-label="Main">' + link('index.html', ui.home) + megaMenus() + '</nav>' +
+      '<nav class="nav-l" aria-label="Main">' +
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
       '<div class="nav-r">' +
+      (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
+      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
       `<button class="icon-btn search-btn" type="button" aria-label="${ui.search}" title="${ui.search}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>` +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
@@ -498,12 +480,7 @@
       if (hasTwin(here) && pageName !== '404') location.href = twinUrl(b.dataset.lang); else location.reload();
     }));
     const links = nav.querySelector('.nav-l'), toggle = nav.querySelector('.nav-toggle');
-    const dds = [...nav.querySelectorAll('.dd.mega')], dd = null;
-    const closeAll = (except) => dds.forEach((d) => { if (d !== except) { d.classList.remove('open'); d.querySelector('.dd-top').setAttribute('aria-expanded', 'false'); } });
-    dds.forEach((d) => { const b = d.querySelector('.dd-top'); b.addEventListener('click', (e) => { e.stopPropagation(); closeAll(d); const o = d.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); }); });
-    document.addEventListener('click', (e) => { if (!e.target.closest('.dd.mega')) closeAll(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
-    const ddBtn = null;
+    const ddBtn = nav.querySelector('.dd-btn'), dd = nav.querySelector('.dd');
     toggle.addEventListener('click', () => { const o = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(o)); });
     if (ddBtn) {
       ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
