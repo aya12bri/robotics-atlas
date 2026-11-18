@@ -293,6 +293,7 @@ const RM = {
   world: { href: 'learn-world.html', tag: ['Course', 'Cours'], min: 115, lv: 2, t: ['Robots in the real world', 'Les robots dans le monde réel'], d: ['Every robot family, grippers, electronics, ROS, safety, careers.', 'Toutes les familles de robots, pinces, électronique, ROS, sécurité, métiers.'] },
   armlab: { href: 'learn-armlab.html', tag: ['Hands-on', 'Pratique'], min: 150, lv: 2, t: ['Code a robot arm in Python', 'Coder un bras robot en Python'], d: ['FK, DH engine, exact and numerical IK, trajectories, a real servo arm, exam and labs.', 'MGD, moteur DH, MGI exact et numérique, trajectoires, un vrai bras à servos, examen et TP.'] },
   adv: { href: 'learn-advanced.html', tag: ['Master', 'Master'], min: 150, lv: 3, t: ['Advanced robotics', 'Robotique avancée'], d: ['Parallel robots, LQR, MPC, legged and aerial robots, vision in practice, reinforcement learning, grasping in practice.', 'Robots parallèles, LQR, MPC, robots à pattes et aériens, vision en pratique, apprentissage par renforcement, préhension en pratique.'] },
+  tel: { href: 'learn-teleop.html', tag: ['Master', 'Master'], min: 240, lv: 3, t: ['Teleoperation, cobotics, safety', 'Téléopération, cobotique, sécurité'], d: ['Master-slave in 3D (TD1, TD2), wave variables, co-manipulation, control architectures (PAT), CE marking.', 'Maître-esclave en 3D (TD1, TD2), variables d\'onde, comanipulation, architectures de contrôle (PAT), marquage CE.'] },
   ros: { href: 'learn-ros.html', tag: ['Course', 'Cours'], min: 115, lv: 2, t: ['ROS 2 from zero', 'ROS 2 depuis zéro'], d: ['Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project.', 'Nœuds, topics, Python, fichiers de lancement, tf2, URDF, simulation, Nav2, MoveIt 2 et un premier projet.'] },
   wmr: { href: 'learn-mobile.html', tag: ['Part 1', 'Partie 1'], min: 160, lv: 2, t: ['Wheeled mobile robots, part 1', 'Robots mobiles à roues, partie 1'], d: ['How a robot rolls: maths from zero, every wheel and drive, constraints, ICR, maneuverability, holonomy.', 'Comment un robot roule : maths depuis zéro, chaque roue et motorisation, contraintes, CIR, manœuvrabilité, holonomie.'] },
   wmrpro: { href: 'learn-mobile-pro.html', tag: ['Part 2', 'Partie 2'], min: 290, lv: 3, t: ['Wheeled mobile robots, part 2', 'Robots mobiles à roues, partie 2'], d: ['Professional level: control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs.', 'Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP.'] },
@@ -303,14 +304,14 @@ const RM = {
   sensors: { href: 'sensors.html', tag: ['Test bench', 'Banc d\'essai'], min: 30, lv: 2, t: ['Sensor test bench', 'Banc d\'essai des capteurs'], d: ['Encoder, IMU, lidar, camera and ultrasonic, live: resolution, noise, drift and blind spots.', 'Encodeur, IMU, lidar, caméra et ultrasons, en direct : résolution, bruit, dérive et angles morts.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'armlab', 'sandbox', 'ctrl', 'sensors', 'ros', 'ai', 'world', 'mobile', 'wheels', 'wmr', 'wmrpro', 'adv', 'projects'];
+const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'armlab', 'sandbox', 'ctrl', 'sensors', 'ros', 'ai', 'world', 'mobile', 'wheels', 'wmr', 'wmrpro', 'adv', 'tel', 'projects'];
 // five levels; each row has a main page (c) and optional side pages (l, r)
 const RM_LEVELS = [
   { t: ['Discover robotics', 'Découvrir la robotique'], d: ['What a robot is, its components, the robot types, the joints.', 'Ce qu\'est un robot, ses composants, les types de robots, les articulations.'], lv: 1, rows: [{ c: 'learn', l: 'build', r: 'anatomy' }] },
   { t: ['Mathematics for robotics', 'Mathématiques pour la robotique'], d: ['Vectors, matrices, trigonometry, transformations, derivatives, probability.', 'Vecteurs, matrices, trigonométrie, transformations, dérivées, probabilités.'], lv: 1, rows: [{ c: 'mk', r: 'maths' }] },
   { t: ['Robot kinematics', 'Cinématique des robots'], d: ['Frames, DH tables, forward and inverse models (MGD, MGI), the Jacobian.', 'Repères, tableaux DH, modèles direct et inverse (MGD, MGI), la jacobienne.'], lv: 2, rows: [{ c: 'arm', l: 'gantry', r: 'scara' }, { c: 'articulated', l: 'cobot', r: 'delta' }, { c: 'model', l: 'armlab', r: 'sing' }] },
   { t: ['Dynamics and control', 'Dynamique et commande'], d: ['Motors, dynamic models, PID, trajectories.', 'Moteurs, modèles dynamiques, PID, trajectoires.'], lv: 3, rows: [{ c: 'ctrl', l: 'sandbox', r: 'sensors' }] },
-  { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'wmrpro', l: 'projects', r: 'adv' }] }
+  { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'wmrpro', l: 'projects', r: 'adv' }, { c: 'tel' }] }
 ];
 const LVL = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
 const rmEl = $('roadmap'), prog = () => (window.RA && RA.progress) || { get: () => false, set() {}, clear() {} };
@@ -348,6 +349,11 @@ if (window.RA && RA.toolCard) {
   rv.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="review-fr.html">${L('Review', 'Réviser')}</a>`;
   { let S = {}; try { S = JSON.parse(localStorage.getItem('ra-srs') || '{}') || {}; } catch (e) { /* */ } const today = new Date().toISOString().slice(0, 10), ids = Object.keys(S), due = ids.filter((k) => S[k].due <= today).length;
     RA.toolStatus(rv, ids.length ? `<b>${due}</b> ${L('to review today', 'à réviser aujourd\'hui')} · ${ids.length} ${L('in the deck', 'dans le paquet')}` : L('Empty deck: add questions', 'Paquet vide : ajoutez des questions')); }
+  const sb = RA.toolCard($('rmBackup'), 'sens', L('Experiment', 'Expérimenter'), L('Sensor test bench', 'Banc des capteurs'),
+    L('Six real sensors simulated live, including GNSS, with a challenge each and a guide to choose one.', 'Six vrais capteurs simulés en direct, dont le GNSS, avec un défi chacun et un guide pour bien choisir.'));
+  sb.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="sensors-fr.html">${L('Open the bench', 'Ouvrir le banc')}</a> <a class="btn sm ghost" href="sandbox-fr.html">${L('Sandbox', 'Bac à sable')}</a>`;
+  { let D = {}; try { D = JSON.parse(localStorage.getItem('ra-sens-ch') || '{}') || {}; } catch (e) { /* */ }
+    RA.toolStatus(sb, `<b>${Object.keys(D).length}</b> / 6 ${L('challenges met', 'défis réussis')}`); }
   RA.backupPanel($('rmBackup'));
   RA.offlinePanel($('rmBackup'));
 }

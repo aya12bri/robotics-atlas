@@ -121,6 +121,8 @@ RA.add({
  "rlkui6xok5": "Comment un robot roule : maths depuis zéro, chaque roue et motorisation, contraintes, CIR, manœuvrabilité, holonomie",
  "28can399dzj": "Robots mobiles à roues, partie 2",
  "172gtkfcq6": "Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
+ "2c3vfnfuuvh": "Téléopération, cobotique, architectures, sécurité",
+ "1qe3jf726eq": "Maître-esclave en 3D (TD1, TD2), variables d'onde, comanipulation, architecture PAT, marquage CE",
  "19vx26vb6n7": "12 leçons courtes, environ 50 minutes au total. Lisez-les dans l'ordre, répondez à la question de fin de chaque leçon, puis cochez-la. Votre progression est enregistrée dans ce navigateur et apparaît dans le parcours de la page d'accueil. Quand vous avez fini, des cours plus longs vont plus loin (voir les cartes ci-dessus) : maths, modélisation complète, singularités, commande, perception et IA, et le monde réel.",
  "2bkljlnfmeh": "Aller au cours sur les singularités →"
 });
