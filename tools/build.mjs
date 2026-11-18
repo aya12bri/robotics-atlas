@@ -18,6 +18,7 @@ const pageHtml = (c, lessonsHtml) => `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${c.title}</title>
     <link rel="stylesheet" href="style.css" />
+    <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }</script>
   <script src="nav.js" defer></script></head>
   <body class="learn">
     <h1>${c.title}</h1>
@@ -43,6 +44,8 @@ ${c.gloss}
       </div>
     </div>
     <script src="learn-more-widgets.js" defer></script>
+    <script src="lab3d.js" defer></script>
+    <script src="labkit.js" defer></script>
 ${c.script ? `    <script src="${c.script}" defer></script>\n` : ''}    <script src="lesson-quiz.js" defer></script>\n    <script>
 document.addEventListener('DOMContentLoaded', function () {
   var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };

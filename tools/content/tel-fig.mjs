@@ -154,3 +154,6 @@ export const cert = () => ({ vb: '0 0 680 230', svg: DEFS +
   box(260, 110, 160, 52, V.o, ['4 · Declaration', '4 · Déclaration'], ['of conformity', 'de conformité']) +
   box(440, 110, 200, 52, V.p, ['3 · Technical file', '3 · Dossier technique'], ['kept by the manufacturer', 'gardé par le fabricant']) +
   arr(340, 162, 340, 182) + box(270, 182, 140, 42, V.g, ['5 · CE marking', '5 · Marquage CE']) });
+
+// the drawing primitives, shared with the figures of the other courses
+export const PRIM = { DEFS, V, box, arr, lab, t };

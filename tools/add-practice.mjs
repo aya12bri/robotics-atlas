@@ -13,7 +13,7 @@ const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 const COURSES = [
   ['mathkit', 'learn-mathkit.html', 'mk-', 'learn-mathkit'], ['learn', 'learn.html', 'lesson-', 'learn'], ['maths', 'learn-maths.html', 'maths-', 'learn-maths'], ['model', 'learn-model.html', 'model-', 'learn-model'],
   ['sing', 'learn-singularities.html', 'sing-', 'learn-singularities'], ['control', 'learn-control.html', 'ctrl-', 'learn-control'],
-  ['ai', 'learn-intelligence.html', 'ai-', 'learn-intelligence'], ['world', 'learn-world.html', 'world-', 'learn-world'], ['ros', 'learn-ros.html', 'ros-', 'learn-ros'], ['labs', 'learn-armlab.html', 'lab-', 'learn-armlab'], ['adv', 'learn-advanced.html', 'adv-', 'learn-advanced'], ['tel', 'learn-teleop.html', 'tel-', 'learn-teleop']
+  ['ai', 'learn-intelligence.html', 'ai-', 'learn-intelligence'], ['world', 'learn-world.html', 'world-', 'learn-world'], ['ros', 'learn-ros.html', 'ros-', 'learn-ros'], ['labs', 'learn-armlab.html', 'lab-', 'learn-armlab'], ['adv', 'learn-advanced.html', 'adv-', 'learn-advanced'], ['tel', 'learn-teleop.html', 'tel-', 'learn-teleop'], ['kf', 'learn-kalman.html', 'kf-', 'learn-kalman'], ['tr', 'learn-transmission.html', 'tr-', 'learn-transmission'], ['par', 'learn-parallel.html', 'par-', 'learn-parallel']
 ];
 const only = process.argv.slice(2);
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });
