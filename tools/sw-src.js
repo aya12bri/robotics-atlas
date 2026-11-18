@@ -133,19 +133,22 @@ self.addEventListener('fetch', (e) => {
     // network first (3.5 s at most), then the stored copy, then the offline page
     e.respondWith((async () => {
       const cache = await caches.open(SITE);
+      const net = fetch(req);
+      const use = (r) => {
+        if (r.ok && FILES[k]) { e.waitUntil(stamp(r.clone(), k).then((c) => cache.put(k, c))); return clean(r); }
+        return r;
+      };
+      // a French twin (learn-fr.html) is not stored: its English page is, and nav.js shows it in French at this address
+      const stored = async () => (await cache.match(k)) || (/-fr\.html$/.test(k) && await cache.match(k.replace(/-fr\.html$/, '.html')));
       try {
-        const r = await Promise.race([fetch(req), timeout(3500)]);
-        if (r.ok && FILES[k]) {
-          e.waitUntil(stamp(r.clone(), k).then((c) => cache.put(k, c)));
-          return clean(r);
-        }
-        if (r.ok || r.status === 404 || r.type === 'opaqueredirect') return r;   // /learn.html → /learn on Cloudflare: the browser follows it
+        const r = await Promise.race([net, timeout(3500)]);
+        if (r.ok || r.status === 404 || r.type === 'opaqueredirect') return use(r);   // /learn.html → /learn on Cloudflare: the browser follows it
         throw new Error('status ' + r.status);
       } catch (err) {
-        // a French twin (learn-fr.html) is not stored: its English page is, and nav.js shows it in French at this address
-        const hit = (await cache.match(k)) || (/-fr\.html$/.test(k) && await cache.match(k.replace(/-fr\.html$/, '.html')));
+        const hit = await stored();
         if (hit) return hit;
-        return (await cache.match('/offline.html')) || Response.error();
+        // nothing stored for this page (a new page, a first visit): a slow network is not "offline", wait for the real answer
+        try { return use(await net); } catch (err2) { return (await cache.match('/offline.html')) || Response.error(); }
       }
     })());
     return;
