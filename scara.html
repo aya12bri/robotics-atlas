@@ -167,6 +167,7 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { studio } from './studio3d.js';
 
       const L1 = 0.6, L2 = 0.5, H = 0.6;     // link lengths and column height (m)
 
@@ -486,6 +487,7 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
       });
 
       let lastTime = performance.now();
+      studio(THREE, renderer, scene);
       renderer.setAnimationLoop((now) => {
         const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;

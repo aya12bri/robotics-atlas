@@ -235,6 +235,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { studio } from './studio3d.js';
 
       // ================= geometry of the robot (metres) =================
       const RB_ = 0.16, RE = 0.05, L = 0.28, LL = 0.55, W = 0.07;      // base radius, effector radius, upper arm, forearm, parallelogram width
@@ -667,6 +668,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       ], (v) => { th = v; update(); });
 
       let lastTime = performance.now();
+      studio(THREE, renderer, scene);
       renderer.setAnimationLoop((now) => {
         const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;

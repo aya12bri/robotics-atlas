@@ -194,6 +194,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { studio } from './studio3d.js';
 
       const L = 0.40;                 // distance between the two wheels (m)
       const WHEEL_R = 0.07;           // wheel radius (m)
@@ -523,6 +524,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
       chooseMode();
 
       let lastTime = performance.now();
+      studio(THREE, renderer, scene);
       renderer.setAnimationLoop((now) => {
         const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;

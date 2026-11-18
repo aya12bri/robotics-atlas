@@ -103,6 +103,7 @@
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { studio } from './studio3d.js';
       const FR = (window.RA && RA.lang === 'fr') || /-fr(\.html)?$/.test(location.pathname), L = (en, fr) => (FR ? fr : en);
       const D2R = Math.PI / 180;
 
@@ -176,6 +177,7 @@
       const resize = () => { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
       window.addEventListener('resize', resize);
       let visible = true; new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(box);
+      studio(THREE, renderer, scene);
       renderer.setAnimationLoop(() => { if (!visible) return; orbit.update(); renderer.render(scene, camera); });
 
       // ================= update =================
