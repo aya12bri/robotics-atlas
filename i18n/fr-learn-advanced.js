@@ -463,6 +463,8 @@ RA.add({
  "rlkui6xok5": "Comment un robot roule : maths depuis zéro, chaque roue et motorisation, contraintes, CIR, manœuvrabilité, holonomie",
  "28can399dzj": "Robots mobiles à roues, partie 2",
  "172gtkfcq6": "Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
+ "2c3vfnfuuvh": "Téléopération, cobotique, architectures, sécurité",
+ "1qe3jf726eq": "Maître-esclave en 3D (TD1, TD2), variables d'onde, comanipulation, architecture PAT, marquage CE",
  "odws3x5cci": "centre de masse 2 cm devant le pied",
  "sqy4ebkyvl": "temps (s)",
  "1nu4pa81zk5": "x − p (m)",

@@ -1641,3 +1641,46 @@ html.rs-open { overflow: hidden; }
 .rv-card { max-width: 46rem; padding: 1.2rem 1.3rem; border-radius: 16px; background: var(--surface); border: 1.5px solid var(--border); }
 .rv-card .ex-fb.ok b { color: var(--good); } .rv-card .ex-fb.bad b { color: var(--bad); }
 .rv-reset { margin-top: 1.5rem; font-size: 0.85rem; }
+
+/* ---------- labs of the teleoperation course (learn-teleop-widgets.js) ---------- */
+.tw-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 1rem; align-items: start; }
+.tw-view { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+.tw-cv { display: block; width: 100%; border-radius: 12px; border: 1px solid var(--border); background: var(--fpanel); touch-action: none; }
+.tw-3d canvas { display: block; width: 100% !important; border-radius: 12px; border: 1px solid var(--border); cursor: grab; }
+.tw-side { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+.tw-ctl { display: flex; flex-direction: column; gap: 0.65rem; padding: 0.9rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); }
+.tw-sl { display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 0.6rem; font-size: 0.84rem; }
+.tw-sl input { grid-column: 1 / -1; width: 100%; accent-color: var(--btn); }
+.tw-sl output { font-family: var(--mono); font-size: 0.82rem; color: var(--accent); }
+.tw-seg { display: grid; gap: 0.3rem; font-size: 0.84rem; }
+.tw-seg > div { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.tw-seg button { background: transparent; color: var(--text); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.25rem 0.65rem; min-height: 0; font: 600 0.78rem var(--font); cursor: pointer; flex: none; }
+.tw-seg button:hover { border-color: var(--accent); background: transparent; }
+.tw-seg button[aria-checked='true'] { border-color: var(--btn); background: color-mix(in srgb, var(--btn) 16%, transparent); }
+.tw-ck { display: flex; align-items: center; gap: 0.45rem; font-size: 0.84rem; cursor: pointer; }
+.tw-ck input { accent-color: var(--btn); }
+.tw-note { margin: 0; font-size: 0.84rem; color: var(--muted); max-width: none; }
+.tw-read { display: grid; gap: 0.4rem; padding: 0.8rem 0.9rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); }
+.tw-read div { display: flex; justify-content: space-between; gap: 0.7rem; font-size: 0.82rem; color: var(--muted); }
+.tw-read b { font-family: var(--mono); color: var(--text); text-align: right; }
+.tw-read .ok b { color: var(--good); } .tw-read .bad b { color: var(--bad); }
+.tw-chal { padding: 0.7rem 0.9rem; border-radius: 14px; border: 1.5px dashed var(--border); background: var(--surface); font-size: 0.84rem; }
+.tw-chal b { color: var(--hl); text-transform: uppercase; font-size: 0.74rem; letter-spacing: 0.06em; }
+.tw-chal p { margin: 0.25rem 0 0.3rem; max-width: none; }
+.tw-chal span { color: var(--muted); font-weight: 600; }
+.tw-chal.ok { border-style: solid; border-color: var(--good); } .tw-chal.ok span { color: var(--good); }
+.tw-layers { display: grid; gap: 0.3rem; padding: 0.8rem 0.9rem; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--border); font-size: 0.82rem; }
+.tw-layers div { padding: 0.25rem 0.5rem; border-radius: 8px; border: 1px solid var(--border); color: var(--muted); }
+.tw-layers .on { border-color: var(--accent); color: var(--text); }
+.tw-layers .win { border-color: var(--good); background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--text); font-weight: 600; }
+.tw-sort { display: grid; gap: 0.6rem; }
+.tw-item { padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); }
+.tw-item > p { margin: 0 0 0.5rem; max-width: none; }
+.tw-opts { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tw-opts button { background: transparent; color: var(--text); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.3rem 0.8rem; min-height: 0; font: 600 0.82rem var(--font); cursor: pointer; }
+.tw-opts button:hover { border-color: var(--accent); background: transparent; }
+.tw-opts button.good { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, transparent); }
+.tw-opts button.bad { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, transparent); }
+.tw-why { margin: 0.5rem 0 0; font-size: 0.86rem; max-width: none; } .tw-why.ok { color: var(--good); } .tw-why.no { color: var(--bad); }
+.tw-score { font-weight: 600; margin: 0.6rem 0 0; }
+@media (max-width: 900px) { .tw-grid { grid-template-columns: 1fr; } }
