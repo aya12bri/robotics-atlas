@@ -5,7 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Robotics Atlas — robots, cinématique et modèles 3D</title>
-    <meta name="description" content="An illustrated atlas of robot types: tasks, kinematic diagrams, DH tables and interactive 3D models." />
+    <!-- seo -->
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/index-fr" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/index-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/" />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Robotics Atlas — robots, cinématique et modèles 3D" />
+    <meta property="og:description" content="Un atlas illustré des types de robots : tâches, schémas cinématiques, tables DH et modèles 3D interactifs, avec des cours gratuits en français." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/index-fr" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <meta name="description" content="Un atlas illustré des types de robots : tâches, schémas cinématiques, tables DH et modèles 3D interactifs, avec des cours gratuits en français." />
     <link rel="stylesheet" href="style.css" />
     <script type="importmap">
       { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
@@ -76,7 +94,7 @@
           <div class="gal-cards" id="galCards">
           <article class="panel card fade on" data-i="0">
         <p class="step">1 / 12</p>
-        <h2>Bras robot 3 axes</h2>
+        <h2>Bras 3 axes</h2>
         <p class="rtag"><span class="notation">R-R-R</span>3 degrés de liberté, bras sériel</p>
         <p>Le bras le plus simple qui peut atteindre un point de l'espace. Le meilleur endroit pour apprendre les repères, les tableaux DH et la jacobienne.</p>
         <dl><dt>Utilisé pour</dt><dd>Enseignement, prise et dépose légères, petite automatisation de laboratoire.</dd><dt>Effecteurs</dt><dd>Pince, ventouse, stylo ou outil léger.</dd></dl>
@@ -84,7 +102,7 @@
       </article>
           <article class="panel card fade" data-i="1">
         <p class="step">2 / 12</p>
-        <h2>Robot cartésien (portique)</h2>
+        <h2>Cartésien</h2>
         <p class="rtag"><span class="notation">P-P-P</span>3 degrés de liberté, trois axes coulissants</p>
         <p>Trois axes coulissants à angle droit (x, y, z), comme une imprimante 3D ou une machine CNC.</p>
         <dl><dt>Utilisé pour</dt><dd>Machines CNC, imprimantes 3D, préparation de commandes en entrepôt, grande prise et dépose, manipulation en laboratoire.</dd><dt>Effecteurs</dt><dd>Pince, ventouse, broche, tête d'impression, caméra.</dd></dl>
@@ -92,7 +110,7 @@
       </article>
           <article class="panel card fade" data-i="2">
         <p class="step">3 / 12</p>
-        <h2>Robot cylindrique</h2>
+        <h2>Cylindrique</h2>
         <p class="rtag"><span class="notation">R-P-P</span>3 degrés de liberté, coordonnées cylindriques</p>
         <p>Une colonne qui tourne, un chariot qui monte et un bras qui sort : un angle, une hauteur et un rayon.</p>
         <dl><dt>Utilisé pour</dt><dd>Chargement de machines, fonderie sous pression, salles blanches, manutention de plaquettes, assemblage simple.</dd><dt>Effecteurs</dt><dd>Pince ou ventouse tournée vers l'extérieur.</dd></dl>
@@ -100,7 +118,7 @@
       </article>
           <article class="panel card fade" data-i="3">
         <p class="step">4 / 12</p>
-        <h2>Robot sphérique (polaire)</h2>
+        <h2>Sphérique</h2>
         <p class="rtag"><span class="notation">R-R-P</span>3 degrés de liberté, coordonnées sphériques</p>
         <p>Deux angles et un bras télescopique, comme l'Unimate, le tout premier robot industriel (1961).</p>
         <dl><dt>Utilisé pour</dt><dd>Soudage par points, forge, chargement de presses, pointage de télescopes et d'antennes.</dd><dt>Effecteurs</dt><dd>Pince de soudage, préhenseur pour pièces chaudes.</dd></dl>
@@ -116,7 +134,7 @@
       </article>
           <article class="panel card fade" data-i="5">
         <p class="step">6 / 12</p>
-        <h2>Robot industriel 6 axes</h2>
+        <h2>Robot 6 axes</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrés de liberté, bras sériel</p>
         <p>Le robot classique des usines automobiles : n'importe quelle position, n'importe quelle orientation, grâce à son poignet sphérique.</p>
         <dl><dt>Utilisé pour</dt><dd>Soudage, peinture, chargement de machines, palettisation, assemblage.</dd><dt>Effecteurs</dt><dd>Pince, vide, torche de soudage, pistolet de peinture, changeur d'outil.</dd></dl>
@@ -124,7 +142,7 @@
       </article>
           <article class="panel card fade" data-i="6">
         <p class="step">7 / 12</p>
-        <h2>Robot collaboratif (UR5)</h2>
+        <h2>Cobot</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrés de liberté, travaille à côté des humains</p>
         <p>Les vrais paramètres de l'UR5, un poignet décalé et une limitation des efforts : un robot qui peut travailler sans barrière.</p>
         <dl><dt>Utilisé pour</dt><dd>Petites séries, vissage, emballage, inspection, laboratoires.</dd><dt>Effecteurs</dt><dd>Pince électrique, pince souple, visseuse, caméra.</dd></dl>
@@ -132,7 +150,7 @@
       </article>
           <article class="panel card fade" data-i="7">
         <p class="step">8 / 12</p>
-        <h2>Robot redondant 7 axes</h2>
+        <h2>Robot 7 axes</h2>
         <p class="rtag"><span class="notation">7 × R</span>7 degrés de liberté, un de plus que nécessaire</p>
         <p>Comme un bras humain : pour une même pose de l'outil, le coude peut encore bouger, pour éviter les obstacles et les butées.</p>
         <dl><dt>Utilisé pour</dt><dd>Robots collaboratifs et médicaux (KUKA LBR iiwa, Franka), recherche, bras spatiaux.</dd><dt>Effecteurs</dt><dd>Pince, visseuse, instrument chirurgical, caméra.</dd></dl>
@@ -140,7 +158,7 @@
       </article>
           <article class="panel card fade" data-i="8">
         <p class="step">9 / 12</p>
-        <h2>Robot Delta</h2>
+        <h2>Delta</h2>
         <p class="rtag"><span class="notation">3 × R</span>robot parallèle, 3 bras et 1 rotation optionnelle</p>
         <p>Trois bras légers et des parallélogrammes portent une petite plateforme : extrêmement rapide, mais avec un petit espace de travail.</p>
         <dl><dt>Utilisé pour</dt><dd>Emballage alimentaire, pharmaceutique et électronique sur tapis roulant, plus de 100 prises par minute.</dd><dt>Effecteurs</dt><dd>Ventouses, doigts souples, pince.</dd></dl>
@@ -148,7 +166,7 @@
       </article>
           <article class="panel card fade" data-i="9">
         <p class="step">10 / 12</p>
-        <h2>Hexapode (plateforme de Stewart)</h2>
+        <h2>Hexapode</h2>
         <p class="rtag"><span class="notation">6-UPS</span>6 degrés de liberté, pleinement parallèle</p>
         <p>Six jambes qui changent de longueur bougent une plateforme dans ses six directions : très rigide et précis.</p>
         <dl><dt>Utilisé pour</dt><dd>Simulateurs de vol, tables vibrantes, miroirs de télescopes, positionnement de précision.</dd><dt>Effecteurs</dt><dd>La plateforme elle-même : un cockpit, un miroir, une pièce à usiner.</dd></dl>
@@ -156,7 +174,7 @@
       </article>
           <article class="panel card fade" data-i="10">
         <p class="step">11 / 12</p>
-        <h2>Robot mobile (entraînement différentiel)</h2>
+        <h2>Robot mobile</h2>
         <p class="rtag"><span class="notation">2 roues</span>robot mobile, x, y et cap</p>
         <p>Un robot qui se déplace au lieu d'atteindre : vitesses des roues, cercle de braquage, odométrie et programmes.</p>
         <dl><dt>Utilisé pour</dt><dd>Entrepôts, hôpitaux, usines, nettoyage, livraison.</dd><dt>Effecteurs</dt><dd>En général aucun (il transporte des charges) ; un manipulateur mobile y ajoute un bras.</dd></dl>
@@ -164,7 +182,7 @@
       </article>
           <article class="panel card fade" data-i="11">
         <p class="step">12 / 12</p>
-        <h2>Roues et bases mobiles</h2>
+        <h2>Roues et motorisations</h2>
         <p class="rtag"><span class="notation">5 roues</span>référence et simulateur d'entraînement</p>
         <p>Roues fixes, folles, omnidirectionnelles, Mecanum et sphériques ; entraînements différentiel, Ackermann, 3 roues omnidirectionnelles et Mecanum ; capteurs et navigation.</p>
         <dl><dt>Utilisé pour</dt><dd>Choisir la bonne base pour un AGV ou un AMR.</dd><dt>Effecteurs</dt><dd>Aucun : cette page parle de la base.</dd></dl>

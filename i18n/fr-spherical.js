@@ -1,5 +1,6 @@
 // Français — page spherical. Clé = empreinte du texte anglais, valeur = traduction (généré par tools/add-robot-fr.mjs).
-RA.add({"2eflb0ga7ze":"Robot sphérique (polaire)",
+RA.add({"9jrmdtezno":"Sphérique <span class=\"h1tag\">R-R-P</span>",
+"2eflb0ga7ze":"Robot sphérique (polaire)",
 "26a5zi1g4cj":"Robot sphérique (polaire) (R-R-P)",
 "7e5qzfoq6a":"La base tourne (q1), le bras s'incline vers le haut ou le bas (q2), et un bras télescopique entre et sort (q3). L'outil se déplace en <strong>coordonnées sphériques</strong> : deux angles et une distance, comme une tourelle ou une caméra sur trépied avec un zoom. C'est la structure de l'Unimate, le tout premier robot industriel (1961), et du bras de Stanford.",
 "1yqq76oz9ib":"Deux rotations, puis une translation. Déplacez un curseur, ou tapez une valeur dans une case numérique.",

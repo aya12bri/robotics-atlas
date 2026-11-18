@@ -1,5 +1,6 @@
 // Français — page cylindrical. Clé = empreinte du texte anglais, valeur = traduction (généré par tools/add-robot-fr.mjs).
-RA.add({"28r1pt3j0h3":"Robot cylindrique",
+RA.add({"1ftmmab78r0":"Cylindrique <span class=\"h1tag\">R-P-P</span>",
+"28r1pt3j0h3":"Robot cylindrique",
 "u32zfs7mjh":"Robot cylindrique (R-P-P)",
 "4cz6siuynf":"Une colonne tourne sur sa base (q1), un chariot monte et descend le long de la colonne (q2), et un bras entre et sort (q3). L'outil se déplace en <strong>coordonnées cylindriques</strong> : un angle, une hauteur et un rayon. C'est l'une des six familles classiques de bras robotisés, avec les robots cartésiens, sphériques, SCARA, articulés et parallèles.",
 "g4z1seipz0":"Une rotation, puis deux translations. Déplacez un curseur, ou tapez une valeur dans une case numérique.",

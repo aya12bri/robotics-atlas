@@ -1,5 +1,6 @@
 // Français — page redundant. Clé = empreinte du texte anglais, valeur = traduction (généré par tools/add-robot-fr.mjs).
-RA.add({"1f6vhzpqjsj":"Robot redondant 7 axes",
+RA.add({"23zku46sb8d":"Robot 7 axes <span class=\"h1tag\">7 × R</span>",
+"1f6vhzpqjsj":"Robot redondant 7 axes",
 "2d64nx1y776":"Robot redondant 7 axes (7 × R)",
 "2esfk6uhzo":"Tourner le coude, garder l'outil immobile",
 "1704rb3uwo5":"Mouvement propre : le bras bouge, l'outil non.",

@@ -5,6 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Anatomie d'une plateforme de Stewart (3D)</title>
+    <!-- seo -->
+    <meta name="description" content="Anatomie 3D d'une plateforme de Stewart : six jambes, actionneurs et liaisons, avec un mode rayons X." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/anatomy-stewart-fr" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/anatomy-stewart" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/anatomy-stewart-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/anatomy-stewart" />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Anatomie d'une plateforme de Stewart (3D)" />
+    <meta property="og:description" content="Anatomie 3D d'une plateforme de Stewart : six jambes, actionneurs et liaisons, avec un mode rayons X." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/anatomy-stewart-fr" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
     <style>
       /* The stage: the model in the middle, a callout card for each part on both sides, each tied to its part by a leader line.
@@ -69,7 +88,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="stewart">
-    <h1>Anatomie d'une plateforme de Stewart (3D)</h1>
+    <h1>Hexapode <span class="h1tag">anatomie 3D</span></h1>
     <p><a href="index-fr.html" style="color:#ff9f43">← Liste des robots</a> · <a href="learn-singularities-fr.html" style="color:#ff9f43">Cours sur les singularités</a></p>
     <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
     <div class="andef"><b>Définition</b><p>Une <strong>plateforme de Stewart</strong> (hexapode) est un robot parallèle à six vérins de longueur variable entre une base fixe et une plateforme mobile. En changeant les six longueurs, la plateforme se déplace avec 6 degrés de liberté : trois translations et trois rotations. Elle est très rigide et porte de lourdes charges dans un petit espace de travail : simulateurs de vol, télescopes, positionnement de précision.</p></div>
@@ -89,7 +108,7 @@
         <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Articulations de la base (cardans)</b></button><p>Chaque jambe est tenue à la base par un cardan (2 rotations), pour pouvoir s'incliner dans toutes les directions.</p></div>
         <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Articulations de la plateforme (rotules)</b></button><p>En haut chaque jambe se termine par une rotule (3 rotations). Les jambes vont par paires qui partagent des points voisins.</p></div>
         <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Plateforme mobile</b></button><p>Elle porte la charge. Sa pose a 6 nombres : x, y, z, roulis, tangage, lacet. Elle est très rigide car les six jambes se partagent la charge.</p></div>
-        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Charge</b></button><p>Une cabine de simulateur de vol, un miroir de télescope, une machine-outil ou un outil chirurgical : la plateforme de Stewart déplace de lourdes charges avec une grande précision.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Charge utile</b></button><p>Une cabine de simulateur de vol, un miroir de télescope, une machine-outil ou un outil chirurgical : la plateforme de Stewart déplace de lourdes charges avec une grande précision.</p></div>
       </div>
     </div>
     <h2>Que contient chaque articulation ?</h2>

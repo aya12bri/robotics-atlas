@@ -15,6 +15,7 @@ const EE = ['End effector (tool)', 'Effecteur (outil)'];
 
 export const FR = {
   'cylindrical.html': [
+    ["Cylindrical <span class=\"h1tag\">R-P-P</span>", "Cylindrique <span class=\"h1tag\">R-P-P</span>"],
     ['Cylindrical robot', 'Robot cylindrique'],
     ['Cylindrical robot (R-P-P)', 'Robot cylindrique (R-P-P)'],
     ['A column turns on its base (q1), a carriage slides up and down the column (q2), and an arm slides in and out (q3). The tool moves in <strong>cylindrical coordinates</strong>: an angle, a height and a radius. One of the six classic families of robot arms, with the Cartesian, spherical, SCARA, articulated and parallel robots.',
@@ -41,6 +42,7 @@ export const FR = {
     ['<a href="learn-parallel.html#l2">Course: from joint limits to the real workspace →</a>', '<a href="learn-parallel.html#l2">Cours : des limites articulaires à l\'espace de travail réel →</a>']
   ],
   'spherical.html': [
+    ["Spherical <span class=\"h1tag\">R-R-P</span>", "Sphérique <span class=\"h1tag\">R-R-P</span>"],
     ['Spherical (polar) robot', 'Robot sphérique (polaire)'],
     ['Spherical (polar) robot (R-R-P)', 'Robot sphérique (polaire) (R-R-P)'],
     ['The base turns (q1), the arm tilts up and down (q2), and a telescopic arm slides in and out (q3). The tool moves in <strong>spherical coordinates</strong>: two angles and a distance, like a gun turret or a camera on a tripod with a zoom. This is the structure of the Unimate, the very first industrial robot (1961), and of the Stanford arm.',
@@ -67,6 +69,7 @@ export const FR = {
     ['<a href="learn-parallel.html#l1">Course: joint space and operational space →</a>', '<a href="learn-parallel.html#l1">Cours : espace articulaire et espace opérationnel →</a>']
   ],
   'redundant.html': [
+    ["7-axis robot <span class=\"h1tag\">7 × R</span>", "Robot 7 axes <span class=\"h1tag\">7 × R</span>"],
     ['7-axis redundant robot', 'Robot redondant 7 axes'],
     ['7-axis redundant robot (7 × R)', 'Robot redondant 7 axes (7 × R)'],
     ['Turn the elbow, keep the tool still', 'Tourner le coude, garder l\'outil immobile'],
@@ -96,6 +99,7 @@ export const FR = {
     ['<a href="learn-parallel.html#l4">Course: aspects and redundancy →</a> · <a href="learn-singularities.html#l7">Redundancy and the null space →</a>', '<a href="learn-parallel.html#l4">Cours : aspects et redondance →</a> · <a href="learn-singularities.html#l7">Redondance et noyau →</a>']
   ],
   'hexapod.html': [
+    ["Hexapod <span class=\"h1tag\">6-UPS</span>", "Hexapode <span class=\"h1tag\">6-UPS</span>"],
     ['Hexapod (Gough-Stewart platform)', 'Hexapode (plateforme de Gough-Stewart)'],
     ['Hexapod: the Gough-Stewart platform (6-UPS)', 'Hexapode : la plateforme de Gough-Stewart (6-UPS)'],
     ['Six legs that change length (linear actuators) join a fixed base to a moving platform. Each leg has a universal joint at the base and a ball joint at the platform: U-P-S, six times. By changing the six lengths together, the platform moves in its <strong>six degrees of freedom</strong>: three translations and three rotations. It is a <strong>fully parallel robot</strong>: one motor per chain, all the motors near the base. Invented by Eric Gough (1954, tyre testing) and made famous by Stewart (1965, flight simulators).',

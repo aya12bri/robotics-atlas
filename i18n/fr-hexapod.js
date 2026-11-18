@@ -1,5 +1,6 @@
 // Français — page hexapod. Clé = empreinte du texte anglais, valeur = traduction (généré par tools/add-robot-fr.mjs).
-RA.add({"fjcz71aczi":"Hexapode (plateforme de Gough-Stewart)",
+RA.add({"hm3zdyzqke":"Hexapode <span class=\"h1tag\">6-UPS</span>",
+"fjcz71aczi":"Hexapode (plateforme de Gough-Stewart)",
 "1oo6v8kq96y":"Hexapode : la plateforme de Gough-Stewart (6-UPS)",
 "1pyjwxjdytm":"Six jambes de longueur variable (vérins électriques) relient une base fixe à une plateforme mobile. Chaque jambe a un cardan à la base et une rotule à la plateforme : U-P-S, six fois. En changeant les six longueurs ensemble, la plateforme bouge selon ses <strong>six degrés de liberté</strong> : trois translations et trois rotations. C'est un <strong>robot pleinement parallèle</strong> : un moteur par chaîne, tous les moteurs près de la base. Inventé par Eric Gough (1954, essais de pneus) et rendu célèbre par Stewart (1965, simulateurs de vol).",
 "cyl71aavw8":"Pose de la plateforme",
