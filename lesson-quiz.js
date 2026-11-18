@@ -84,7 +84,7 @@
   // nothing breaks: the vote is only remembered in this browser so the question is not asked again.
   var FB = 'ra-fb';
   function feedback(art) {
-    var page = location.pathname.split('/').pop().replace(/\.html$/, '') || 'index', id = page + '#' + art.id;
+    var page = (window.RA && RA.page) || 'index', id = page + '#' + art.id;
     var box = el('div', 'lfb ra-own'), seen = {};
     try { seen = JSON.parse(localStorage.getItem(FB) || '{}') || {}; } catch (e) { /* private mode */ }
     var thanks = function () { box.innerHTML = '<p class="lfb-q">' + L('Thank you! Your answer helps to improve the lessons.', 'Merci ! Votre réponse aide à améliorer les leçons.') + '</p>'; };
@@ -134,7 +134,7 @@
   // only one lesson is shown at a time; "next lesson", the checklist and #lN links switch the lesson
   function oneAtATime(lessons) {
     var box = lessons[0].parentNode, after = [].slice.call(box.children).filter(function (e) { return e.tagName === 'SECTION' && e.compareDocumentPosition(lessons[lessons.length - 1]) & Node.DOCUMENT_POSITION_PRECEDING; });
-    var nav = document.getElementById('lessonNav'), SK = 'ra-cur:' + location.pathname.split('/').pop(), cur = -1;
+    var nav = document.getElementById('lessonNav'), SK = 'ra-cur:' + ((window.RA && RA.page) || 'index') + '.html', cur = -1;
     var idx = function (hash) { for (var i = 0; i < lessons.length; i++) if ('#' + lessons[i].id === hash) return i; return -1; };
     function mark() { if (nav) [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i === cur); }); }
     function show(i, scroll) {

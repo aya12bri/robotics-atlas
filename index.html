@@ -6,6 +6,10 @@
     <title>Robotics Atlas — robots, kinematics and 3D models</title>
     <!-- seo -->
     <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/index-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/" />
+    <meta property="og:locale" content="en_US" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Robotics Atlas" />
@@ -297,7 +301,7 @@ const RM = {
   wmrpro: { href: 'learn-mobile-pro.html', tag: ['Part 2', 'Partie 2'], min: 290, lv: 3, t: ['Wheeled mobile robots, part 2', 'Robots mobiles à roues, partie 2'], d: ['Professional level: control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs.', 'Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP.'] },
   build: { href: 'build.html', tag: ['Workshop', 'Atelier'], min: 20, lv: 1, t: ['Build your first robot', 'Construisez votre premier robot'], d: ['Choose a robot, assemble it in 3D, move it and see how its motion is computed.', 'Choisissez un robot, assemblez-le en 3D, bougez-le et voyez comment son mouvement est calculé.'] },
   anatomy: { href: 'anatomy.html', tag: ['3D', '3D'], min: 20, lv: 1, t: ['Anatomy of a robot', 'Anatomie d\'un robot'], d: ['Every component of a robot cell, layer by layer, in 3D.', 'Tous les composants d\'une cellule robotisée, couche par couche, en 3D.'] },
-  sandbox: { href: 'sandbox.html', tag: ['Programming', 'Programmation'], min: 30, lv: 2, t: ['Programming sandbox', 'Bac à sable de programmation'], d: ['Program a 3D SCARA robot with simple commands and complete three missions.', 'Programmez un robot SCARA en 3D avec des commandes simples et réussissez trois missions.'] },
+  sandbox: { href: 'sandbox.html', tag: ['Programming', 'Programmation'], min: 30, lv: 2, t: ['Programming sandbox', 'Bac à sable de programmation'], d: ['Program a 3D SCARA or 6-axis robot, compare linear and joint moves, export in an industrial style.', 'Programmez un robot SCARA ou 6 axes en 3D, comparez mouvements linéaires et articulaires, exportez dans un style industriel.'] },
   projects: { href: 'projects.html', tag: ['Hands-on', 'Pratique'], min: 600, lv: 3, t: ['Guided projects', 'Projets guidés'], d: ['A servo arm, a line follower and a ROS 2 robot: parts, prices, wiring, code and tests.', 'Un bras à servos, un suiveur de ligne et un robot ROS 2 : pièces, prix, câblage, code et essais.'] },
   sensors: { href: 'sensors.html', tag: ['Test bench', 'Banc d\'essai'], min: 30, lv: 2, t: ['Sensor test bench', 'Banc d\'essai des capteurs'], d: ['Encoder, IMU, lidar, camera and ultrasonic, live: resolution, noise, drift and blind spots.', 'Encodeur, IMU, lidar, caméra et ultrasons, en direct : résolution, bruit, dérive et angles morts.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
@@ -342,6 +346,11 @@ if (window.RA && RA.toolCard) {
     L('One printable page per course: the essentials of each lesson, the formulas and the key terms.', "Une page imprimable par cours : l'essentiel de chaque leçon, les formules et les mots clés."));
   rc.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="revision.html">${L('Open the sheets', 'Ouvrir les fiches')}</a>`;
   RA.toolStatus(rc, `<b>${(window.RA_COURSES || []).length || 13}</b> ${L('sheets, to print or save as PDF', 'fiches, à imprimer ou en PDF')}`);
+  const rv = RA.toolCard($('rmBackup'), 'review', L('Remember', 'Retenir'), L('My reviews', 'Mes révisions'),
+    L('Spaced repetition: the questions come back just before you would forget them.', 'Révision espacée : les questions reviennent juste avant que vous ne les oubliiez.'));
+  rv.querySelector('.tc-act').innerHTML = `<a class="btn sm" href="review.html">${L('Review', 'Réviser')}</a>`;
+  { let S = {}; try { S = JSON.parse(localStorage.getItem('ra-srs') || '{}') || {}; } catch (e) { /* */ } const today = new Date().toISOString().slice(0, 10), ids = Object.keys(S), due = ids.filter((k) => S[k].due <= today).length;
+    RA.toolStatus(rv, ids.length ? `<b>${due}</b> ${L('to review today', 'à réviser aujourd\'hui')} · ${ids.length} ${L('in the deck', 'dans le paquet')}` : L('Empty deck: add questions', 'Paquet vide : ajoutez des questions')); }
   RA.backupPanel($('rmBackup'));
   RA.offlinePanel($('rmBackup'));
 }

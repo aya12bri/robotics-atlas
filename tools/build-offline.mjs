@@ -16,6 +16,7 @@ const files = [];
     const rel = path.relative(root, path.join(dir, e.name)).split(path.sep).join('/');
     if (e.name.startsWith('.') || SKIP.has(rel) || SKIP.has(e.name)) continue;
     if (e.isDirectory()) walk(path.join(dir, e.name));
+    else if (/-fr\.html$/.test(e.name)) continue;          // the French twins: offline, sw.js shows their English page (in French)
     else if (/\.(html|js|css|svg|png|jpg|jpeg|webp|json|webmanifest|woff2?)$/i.test(e.name)) files.push(rel);
   }
 })(root);

@@ -142,7 +142,8 @@ self.addEventListener('fetch', (e) => {
         if (r.ok || r.status === 404 || r.type === 'opaqueredirect') return r;   // /learn.html → /learn on Cloudflare: the browser follows it
         throw new Error('status ' + r.status);
       } catch (err) {
-        const hit = await cache.match(k);
+        // a French twin (learn-fr.html) is not stored: its English page is, and nav.js shows it in French at this address
+        const hit = (await cache.match(k)) || (/-fr\.html$/.test(k) && await cache.match(k.replace(/-fr\.html$/, '.html')));
         if (hit) return hit;
         return (await cache.match('/offline.html')) || Response.error();
       }
