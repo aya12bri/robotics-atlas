@@ -11,10 +11,14 @@
   const ROBOTS = [
     ['arm.html',        { en: '3-DOF arm',                fr: 'Bras 3 axes' },              'R-R-R'],
     ['gantry.html',     { en: 'Cartesian gantry',         fr: 'Robot cartésien' },          'P-P-P'],
+    ['cylindrical.html',{ en: 'Cylindrical robot',        fr: 'Robot cylindrique' },        'R-P-P'],
+    ['spherical.html',  { en: 'Spherical (polar) robot',  fr: 'Robot sphérique (polaire)' }, 'R-R-P'],
     ['scara.html',      { en: 'SCARA',                    fr: 'SCARA' },                    'R-R-P-R'],
     ['articulated.html',{ en: '6-axis industrial robot',  fr: 'Robot industriel 6 axes' },  '6 × R'],
     ['cobot.html',      { en: 'Collaborative robot (UR5)',fr: 'Robot collaboratif (UR5)' }, '6 × R'],
+    ['redundant.html',  { en: '7-axis redundant robot',   fr: 'Robot redondant 7 axes' },   '7 × R'],
     ['delta.html',      { en: 'Delta robot',              fr: 'Robot Delta' },              'parallel / parallèle'],
+    ['hexapod.html',    { en: 'Hexapod (Stewart platform)', fr: 'Hexapode (plateforme de Stewart)' }, '6-UPS'],
     ['mobile.html',     { en: 'Mobile robot',             fr: 'Robot mobile' },             '2 wheels / roues'],
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];

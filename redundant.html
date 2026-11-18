@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>7-axis redundant robot</title>
+    <!-- seo -->
+    <meta name="description" content="Interactive 3D 7-axis redundant robot (KUKA LBR iiwa): DH and DHM tables, elbow angle and self-motion, the tool stays still while the arm moves." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/redundant" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/redundant" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/redundant-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/redundant" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="7-axis redundant robot" />
+    <meta property="og:description" content="Interactive 3D 7-axis redundant robot (KUKA LBR iiwa): DH and DHM tables, elbow angle and self-motion, the tool stays still while the arm moves." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/redundant" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 480px; border-radius: 6px; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script src="helpers.js"></script>
+    <script src="dharm.js"></script>
+  <script src="nav.js" defer></script></head>
+  <body>
+    <h1>7-axis redundant robot (7 × R)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+    <div class="toolbar">
+      <button id="selfBtn">Turn the elbow, keep the tool still</button>
+      <span id="selfStatus">Self-motion: the arm moves, the tool does not.</span>
+    </div>
+
+    <p class="lead">Seven revolute joints, like a human arm: shoulder (3), elbow (1), wrist (3). To place and orient a tool in space you need 6; the 7th is <strong>one too many on purpose</strong>. For every pose of the tool there are infinitely many postures of the arm, so the robot can move its elbow out of the way, avoid a joint limit or a singularity, or let a person push it by hand, while the tool keeps working. The geometry here is the KUKA LBR iiwa 7 R800.</p>
+
+    <h2>Joints</h2>
+    <p>Move a slider, or type a value in a number box. With q = 0 for all joints, the arm points straight up.</p>
+    <div id="controls"></div>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames:
+        <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
+        <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
+      </span>
+      <label>Show: <select id="frameSel"></select></label>
+      <label>View:
+        <select id="viewSel">
+          <option value="side">Side view</option>
+          <option value="front">Front view</option>
+          <option value="top">Top view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
+    <p>
+      A circle is a joint whose axis points at you (⊙) or away from you (⊗); a bar is a joint whose axis lies in the picture.
+      The joints alternate: a rotation about the arm (q1, q3, q5, q7), then a bend (q2, q4, q6).
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>, <span class="legend-z">z blue</span>.
+      Choose “Frame {i} only” to read one frame at a time.
+    </p>
+    <p id="readout"></p>
+    <p id="elbow"></p>
+
+    <h2>DH table (standard)</h2>
+    <p>Frame i is attached to the axis of joint i+1. Each row is: <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>.
+       All the a are zero: the axes cross two by two, which gives a <strong>spherical shoulder</strong> (q1, q2, q3 meet at one point) and a <strong>spherical wrist</strong> (q5, q6, q7). Orange numbers are the current values.</p>
+    <div id="dhStd"></div>
+
+    <h2>DHM table (modified DH)</h2>
+    <p>Frame i is attached to the axis of joint i. Each row is: <code>A<sub>i</sub> = Rx(α<sub>i−1</sub>) · Tx(a<sub>i−1</sub>) · Rz(θ) · Tz(d)</code>.
+       The last row is the fixed step from the wrist to the flange (0.126 m).</p>
+    <div id="dhMod"></div>
+
+    <h2>Result: where is the tool?</h2>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the position of the flange in the base frame {0}, the third column the direction the tool points to. Both tables give exactly this same matrix.</p>
+
+    <h2>Redundancy: one pose, infinitely many postures</h2>
+    <p>The <strong>degree of redundancy</strong> is r = n − m = 7 − 6 = 1: when the tool pose is fixed, one parameter is still free. For this arm it is the <strong>elbow angle</strong> ψ, the rotation of the elbow around the line from the shoulder to the wrist (the “swivel” of your own elbow when you keep your hand on a table). Press the button under the 3D view: the controller holds the 6 coordinates of the tool and turns ψ; the line under the diagram shows that the tool does not move by more than a few hundredths of a millimetre.</p>
+    <p>How the button works: it turns q3 a little, then solves the inverse model of the six other joints so that the tool comes back exactly where it was (a damped least squares on the Jacobian, the method of the <a href="learn-armlab.html#l4">Python course</a>). Real controllers do the same at the level of speeds, with the null space of the Jacobian: q̇ = J⁺ ẋ + (I − J⁺J) z.</p>
+
+    <div class="robot">
+      <h2>Where is a 7-axis robot used?</h2>
+      <p>Collaborative and sensitive robots (KUKA LBR iiwa and LBR Med, Franka Research 3, Kinova Gen3, ABB YuMi's arms), surgery and medical robots, research, assembly in tight spaces where the elbow must avoid obstacles, and space arms (the Canadarm2 of the International Space Station has 7 joints).</p>
+      <p><strong>Strengths:</strong> it can reach around obstacles, avoid its joint limits and singularities, choose the posture that resists a force best, and move like a human arm; torque sensors in every joint (iiwa, Franka) make it safe next to people. <strong>Weaknesses:</strong> one more motor (cost, weight), the inverse model has no single answer and the controller must choose ψ, and payloads stay small (7 to 14 kg).</p>
+      <h3>End effector (tool)</h3>
+      <p>Grippers, screwdrivers, surgical instruments, cameras: the full 6 dof of the tool are available, plus the elbow for free.</p>
+    </div>
+
+    <p class="try"><a href="learn-parallel.html#l4">Course: aspects and redundancy →</a> · <a href="learn-singularities.html#l7">Redundancy and the null space →</a></p>
+
+    <script>
+      // the robot of this page, read by robot-page.js: the KUKA LBR iiwa 7 R800. Angles in degrees, lengths in metres.
+      const IIWA_LIM = [[-170, 170], [-120, 120], [-170, 170], [-120, 120], [-170, 170], [-120, 120], [-175, 175]];
+      window.ROBOT = {
+        std: [
+          { th: ['q1', (q) => q[0]], d: ['0.340', 0.34], a: ['0', 0], al: ['−90', -90] },
+          { th: ['q2', (q) => q[1]], d: ['0', 0],        a: ['0', 0], al: ['90', 90] },
+          { th: ['q3', (q) => q[2]], d: ['0.400', 0.4],  a: ['0', 0], al: ['90', 90] },
+          { th: ['q4', (q) => q[3]], d: ['0', 0],        a: ['0', 0], al: ['−90', -90] },
+          { th: ['q5', (q) => q[4]], d: ['0.400', 0.4],  a: ['0', 0], al: ['−90', -90] },
+          { th: ['q6', (q) => q[5]], d: ['0', 0],        a: ['0', 0], al: ['90', 90] },
+          { th: ['q7', (q) => q[6]], d: ['0.126', 0.126], a: ['0', 0], al: ['0', 0] }
+        ],
+        mod: [
+          { al: ['0', 0],     a: ['0', 0], th: ['q1', (q) => q[0]], d: ['0.340', 0.34] },
+          { al: ['−90', -90], a: ['0', 0], th: ['q2', (q) => q[1]], d: ['0', 0] },
+          { al: ['90', 90],   a: ['0', 0], th: ['q3', (q) => q[2]], d: ['0.400', 0.4] },
+          { al: ['90', 90],   a: ['0', 0], th: ['q4', (q) => q[3]], d: ['0', 0] },
+          { al: ['−90', -90], a: ['0', 0], th: ['q5', (q) => q[4]], d: ['0.400', 0.4] },
+          { al: ['−90', -90], a: ['0', 0], th: ['q6', (q) => q[5]], d: ['0', 0] },
+          { al: ['90', 90],   a: ['0', 0], th: ['q7', (q) => q[6]], d: ['0', 0] },
+          { al: ['0', 0],     a: ['0', 0], th: ['0 (fixed)', 0],    d: ['0.126', 0.126] }
+        ],
+        joints: [
+          { type: 'R', name: ['shoulder turn', 'rotation de l\'épaule'], min: -170, max: 170, value: 0 },
+          { type: 'R', name: ['shoulder bend', 'flexion de l\'épaule'], min: -120, max: 120, value: 40 },
+          { type: 'R', name: ['arm turn (elbow swivel)', 'rotation du bras (pivot du coude)'], min: -170, max: 170, value: 0 },
+          { type: 'R', name: ['elbow', 'coude'], min: -120, max: 120, value: -80 },
+          { type: 'R', name: ['forearm turn', 'rotation de l\'avant-bras'], min: -170, max: 170, value: 0 },
+          { type: 'R', name: ['wrist bend', 'flexion du poignet'], min: -120, max: 120, value: 60 },
+          { type: 'R', name: ['flange turn', 'rotation de la bride'], min: -175, max: 175, value: 0 }
+        ],
+        look: { link: '#e8eef5', joint: '#ff9f43', cap: '#222a33', lr: 0.04, baseR: 0.13,
+                sizes: [{ r: 0.075, l: 0.12 }, { r: 0.072, l: 0.13 }, { r: 0.065, l: 0.11 }, { r: 0.065, l: 0.12 },
+                        { r: 0.055, l: 0.1 }, { r: 0.05, l: 0.1 }, { r: 0.04, l: 0.05 }] },
+        cam: [1.5, 1.15, 1.55], target: [0.15, 0.55, 0], toolLen: 0.06, axisLen: 34,
+        views: {
+          side:  { right: [1, 0, 0], up: [0, 0, 1], toward: [0, -1, 0], map: (u, v) => [300 + u * 300, 405 - v * 300], ground: true },
+          front: { right: [0, 1, 0], up: [0, 0, 1], toward: [1, 0, 0],  map: (u, v) => [350 + u * 300, 405 - v * 300], ground: true },
+          top:   { right: [1, 0, 0], up: [0, 1, 0], toward: [0, 0, 1],  map: (u, v) => [350 + u * 220, 210 - v * 220], ground: false }
+        },
+        ready(api) {
+          const L = api.L, R = window.ROBOT, D2R = Math.PI / 180;
+          const out = document.getElementById('elbow'), btn = document.getElementById('selfBtn'), st = document.getElementById('selfStatus');
+          const P = (T) => [T[0][3], T[1][3], T[2][3]], sub = (a, b) => a.map((v, i) => v - b[i]);
+          const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+          const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], unit = (a) => { const n = Math.hypot(...a) || 1; return a.map((v) => v / n); };
+          // the elbow angle psi: the elbow around the shoulder-wrist line, 0 when the elbow is in the vertical plane, above the line
+          const psi = (Ts) => {
+            const S = P(Ts[1]), E = P(Ts[3]), Wr = P(Ts[5]), u = unit(sub(Wr, S));
+            const e = sub(E, S), ep = unit(sub(e, u.map((v) => v * dot(e, u))));
+            let ref = sub([0, 0, 1], u.map((v) => v * u[2])); if (Math.hypot(...ref) < 1e-6) ref = [1, 0, 0]; ref = unit(ref);
+            return Math.atan2(dot(cross(ref, ep), u), dot(ref, ep)) / D2R;
+          };
+          let hold = null, running = false;
+          api.onUpdate((q, T, Ts) => {
+            let txt = L('Elbow angle ψ = ', 'Angle de coude ψ = ') + (Math.abs(psi(Ts)) < 0.05 ? 0 : psi(Ts)).toFixed(1) + '°';
+            if (hold) txt += L('   ·   tool moved by ', '   ·   l\'outil a bougé de ') + (Math.hypot(...sub(P(T), hold.p)) * 1000).toFixed(3) + ' mm';
+            out.textContent = txt;
+          });
+          let dir = 1;
+          const step = () => {
+            if (!running) return;
+            const q = api.q;
+            let q3 = q[2] + dir * 0.8;
+            if (q3 > 160 || q3 < -160) { dir = -dir; q3 = q[2] + dir * 0.8; }
+            q[2] = q3;
+            const lim = IIWA_LIM.map((l, i) => (i === 2 ? [q3, q3] : l));      // q3 is imposed, the six others solve the pose
+            const r = DHArm.solveIK(R.std, q, { p: hold.p, z: hold.z, x: hold.x }, { limits: lim, iters: 40 });
+            if (r.posErr > 2e-4 || r.oriErr > 2e-3) { dir = -dir; } else api.setQ(r.q);
+            requestAnimationFrame(step);
+          };
+          btn.addEventListener('click', () => {
+            running = !running;
+            if (running) {
+              const Ts = RB.stdChain(R.std, api.q), T = Ts[7];
+              hold = { p: P(T), z: [T[0][2], T[1][2], T[2][2]], x: [T[0][0], T[1][0], T[2][0]] };
+              btn.textContent = L('Stop', 'Arrêter'); st.textContent = L('The six coordinates of the tool are held; only the posture of the arm changes.', 'Les six coordonnées de l\'outil sont tenues ; seule la posture du bras change.');
+              requestAnimationFrame(step);
+            } else {
+              btn.textContent = L('Turn the elbow, keep the tool still', 'Tourner le coude, garder l\'outil immobile'); st.textContent = L('Self-motion: the arm moves, the tool does not.', 'Mouvement propre : le bras bouge, l\'outil non.');
+            }
+          });
+          // a slider moved by hand ends the self-motion
+          document.getElementById('controls').addEventListener('input', () => { if (running) btn.click(); hold = null; });
+        }
+      };
+    </script>
+    <script type="module" src="robot-page.js"></script>
+  </body>
+</html>
