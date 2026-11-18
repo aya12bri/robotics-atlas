@@ -270,31 +270,6 @@ requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('load
 const bigRow = document.querySelector('.hero-title .row.big');
 function fitTitle() { bigRow.style.fontSize = '100px'; const w = [...bigRow.children].reduce((s, c) => s + c.getBoundingClientRect().width, 0) || 1; bigRow.style.fontSize = Math.min((100 * innerWidth * 0.92) / w, innerHeight * 0.5) + 'px'; }
 fitTitle(); addEventListener('resize', fitTitle); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
-// the giant word in 3D: an extruded block (stacked shadows, from the face to the back), a lit face and a soft shadow; it leans
-// a little towards the mouse and its depth turns with it (still for visitors who reduce motion)
-{
-  const reduce3d = matchMedia('(prefers-reduced-motion: reduce)').matches, N = 16;
-  let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
-  const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
-  const paint = () => {
-    raf = 0;
-    cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
-    const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'dark';
-    const fs = parseFloat(bigRow.style.fontSize) || 160, step = Math.max(0.6, fs * 0.0042);
-    const dx = -cx * 0.9 + 0.35, dy = cy * 0.6 + 1;                                  // the depth goes away from the light (top left)
-    const front = dark ? [120, 140, 175] : [150, 160, 178], back = dark ? [22, 30, 48] : [70, 80, 98];
-    const layers = [];
-    for (let k = 1; k <= N; k++) { const c = mix(front, back, k / N); layers.push(`${(dx * step * k).toFixed(1)}px ${(dy * step * k).toFixed(1)}px 0 rgb(${c})`); }
-    layers.push(`${(dx * step * N * 1.6).toFixed(1)}px ${(dy * step * N * 2.2).toFixed(1)}px ${(step * 14).toFixed(0)}px rgba(0, 0, 0, ${dark ? 0.55 : 0.28})`);
-    bigRow.style.textShadow = layers.join(', ');
-    bigRow.style.transform = `perspective(1400px) rotateX(${(cy * 7).toFixed(2)}deg) rotateY(${(cx * 9).toFixed(2)}deg)`;
-    if (Math.abs(tx - cx) + Math.abs(ty - cy) > 0.002) raf = requestAnimationFrame(paint);
-  };
-  const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
-  if (!reduce3d) addEventListener('pointermove', (e) => { if (scrollY > innerHeight) return; tx = (e.clientX / innerWidth) * 2 - 1; ty = -((e.clientY / innerHeight) * 2 - 1); ask(); }, { passive: true });
-  new MutationObserver(ask).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
-  addEventListener('resize', ask); ask();
-}
 
 // ---------- shared pointer ----------
 const pointer = { nx: 0, ny: 0, last: -1e9 };
