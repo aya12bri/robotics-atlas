@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hexapod (Gough-Stewart platform)</title>
+    <!-- seo -->
+    <meta name="description" content="Interactive hexapod (Gough-Stewart platform, 6-UPS): six legs, inverse model, Newton direct model, Jacobian and parallel singularities, uses." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/hexapod" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/hexapod" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/hexapod-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/hexapod" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Hexapod (Gough-Stewart platform)" />
+    <meta property="og:description" content="Interactive hexapod (Gough-Stewart platform, 6-UPS): six legs, inverse model, Newton direct model, Jacobian and parallel singularities, uses." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/hexapod" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 460px; border-radius: 6px; }
+      .legs { width: 100%; max-width: 720px; }
+      .legs td.bar { width: 45%; }
+      .legs .gauge { position: relative; height: 12px; border-radius: 6px; background: var(--surface-2); overflow: hidden; }
+      .legs .gauge i { position: absolute; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--accent); border-radius: 2px; }
+      .legs tr.bad td { color: var(--bad); font-weight: 700; }
+      .legs tr.bad .gauge i { background: var(--bad); }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script src="helpers.js"></script>
+  <script src="nav.js" defer></script></head>
+  <body>
+    <h1>Hexapod: the Gough-Stewart platform (6-UPS)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+
+    <p class="lead">Six legs that change length (linear actuators) join a fixed base to a moving platform. Each leg has a universal joint at the base and a ball joint at the platform: U-P-S, six times. By changing the six lengths together, the platform moves in its <strong>six degrees of freedom</strong>: three translations and three rotations. It is a <strong>fully parallel robot</strong>: one motor per chain, all the motors near the base. Invented by Eric Gough (1954, tyre testing) and made famous by Stewart (1965, flight simulators).</p>
+
+    <h2>Pose of the platform</h2>
+    <p>Here you drive the <strong>platform</strong>, and the page computes the six leg lengths: this is the inverse model, the easy one for a parallel robot.</p>
+    <div id="controls"></div>
+
+    <h2>The six legs</h2>
+    <p>Each leg can only work between its shortest and its longest length. The marker shows where it is in its stroke; a red line means the pose is out of reach.</p>
+    <div class="cmp-wrap"><table class="dh legs" id="legs"></table></div>
+    <p id="state"></p>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <label>View:
+        <select id="viewSel">
+          <option value="top">Top view</option>
+          <option value="side">Side view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
+    <p>The grey hexagon is the base with its six universal joints (squares), the orange one the platform with its six ball joints (circles), and the lines the legs, numbered 1 to 6. The cross is the centre of the platform.</p>
+
+    <h2>Inverse model: one line per leg</h2>
+    <pre class="matrix">lᵢ = ‖ p + R(φ, θ, ψ) · bᵢ − aᵢ ‖        i = 1 … 6</pre>
+    <p>aᵢ is the joint of leg i on the base, bᵢ its joint on the platform (in the platform frame), p the position of the centre of the platform and R its rotation (roll φ, pitch θ, yaw ψ). Knowing the pose, each leg is <strong>a single distance</strong>: six independent lines, always one answer. Compare with a serial robot, whose inverse model is the hard one.</p>
+
+    <h2>Direct model: Newton's method</h2>
+    <p>The other way round, from six lengths to the pose, has no formula: the equations are coupled and a general Gough-Stewart platform can close in up to <strong>40</strong> different poses. The controller uses Newton's method, starting from the last known pose: X<sub>k+1</sub> = X<sub>k</sub> + J<sup>−1</sup> (l − G(X<sub>k</sub>)), where G is the inverse model above and J its Jacobian. Press the button: the page takes the current six lengths, starts from the home pose, and finds the pose back.</p>
+    <div class="toolbar"><button id="newtonBtn">Find the pose from the six lengths</button></div>
+    <pre class="matrix" id="newton"></pre>
+
+    <h2>Velocities and singularities</h2>
+    <p>Each leg speed is the platform velocity projected on the leg: l̇ᵢ = uᵢ · v + (Rbᵢ × uᵢ) · ω, with uᵢ the unit vector of the leg. The six lines form the 6 × 6 matrix J⁻¹ (this is the matrix A⁻¹B of the course, up to a sign). When it becomes singular, the platform gains a motion that the locked legs cannot stop: a <strong>parallel singularity</strong>. The indicator below measures how far we are from it (1 = perfect, 0 = singular).</p>
+    <p id="sing"></p>
+
+    <div class="robot">
+      <h2>Where is a hexapod used?</h2>
+      <p>Flight and driving simulators (the cockpit sits on the platform), earthquake and vibration test tables, precision positioning for optics, the secondary mirrors of telescopes and the alignment of particle accelerators (micrometre hexapods by PI, Symétrie), machining heads, and patient positioning in radiotherapy.</p>
+      <p><strong>Strengths:</strong> very stiff and accurate (the legs only pull or push, the errors do not add up), a large payload for its own weight, six degrees of freedom. <strong>Weaknesses:</strong> a small workspace, especially in rotation, coupled motions (every leg moves for any motion), a direct model without formula, and singularities inside the workspace that the controller must avoid.</p>
+    </div>
+
+    <p class="try"><a href="anatomy-stewart.html">See it in 3D, with the inside of the robot →</a></p>
+    <p class="try"><a href="learn-parallel.html#l5">Course: parallel robots and Grübler's mobility →</a> · <a href="learn-parallel.html#l6">Models and singularities →</a></p>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      const FR = (window.RA && RA.lang === 'fr') || /-fr(\.html)?$/.test(location.pathname), L = (en, fr) => (FR ? fr : en);
+      const D2R = Math.PI / 180;
+
+      // ================= geometry (metres) =================
+      const RB_ = 0.5, RP = 0.3, GB = 12 * D2R, GP = 15 * D2R, H0 = 0.62;          // base and platform radius, half-gap of each pair, home height
+      const A = [], Bp = [];                                                    // joints on the base (world) and on the platform (platform frame)
+      for (let k = 0; k < 3; k++) for (const s of [-1, 1]) {
+        const tb = k * 120 * D2R + s * GB, tp = k * 120 * D2R + s * (60 * D2R - GP);
+        A.push([RB_ * Math.cos(tb), RB_ * Math.sin(tb), 0]);
+        Bp.push([RP * Math.cos(tp), RP * Math.sin(tp), 0]);
+      }
+      const rot = (r, p, y) => {                                                // R = Rz(yaw) Ry(pitch) Rx(roll)
+        const [cr, sr, cp, sp, cy, sy] = [Math.cos(r), Math.sin(r), Math.cos(p), Math.sin(p), Math.cos(y), Math.sin(y)];
+        return [[cy * cp, cy * sp * sr - sy * cr, cy * sp * cr + sy * sr], [sy * cp, sy * sp * sr + cy * cr, sy * sp * cr - cy * sr], [-sp, cp * sr, cp * cr]];
+      };
+      const mv = (M, v) => M.map((r) => r[0] * v[0] + r[1] * v[1] + r[2] * v[2]);
+      const add = (a, b) => a.map((v, i) => v + b[i]), sub = (a, b) => a.map((v, i) => v - b[i]), norm = (a) => Math.hypot(...a);
+      const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+      // inverse model: X = [x, y, z, roll, pitch, yaw] -> the six lengths
+      const G = (X) => { const R = rot(X[3], X[4], X[5]), p = [X[0], X[1], X[2]]; return A.map((a, i) => norm(sub(add(p, mv(R, Bp[i])), a))); };
+      const L0 = G([0, 0, H0, 0, 0, 0])[0], LMIN = L0 - 0.13, LMAX = L0 + 0.13;
+      // inverse Jacobian: l' = Jinv [v, w]
+      const Jinv = (X) => { const R = rot(X[3], X[4], X[5]), p = [X[0], X[1], X[2]];
+        return A.map((a, i) => { const rb = mv(R, Bp[i]), d = sub(add(p, rb), a), u = d.map((v) => v / norm(d)); return [...u, ...cross(rb, u)]; }); };
+      const solve = (M, b) => {                                                 // Gauss with partial pivoting
+        const n = b.length, m = M.map((r, i) => [...r, b[i]]);
+        for (let c = 0; c < n; c++) { let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(m[r][c]) > Math.abs(m[p][c])) p = r; [m[c], m[p]] = [m[p], m[c]];
+          for (let r = c + 1; r < n; r++) { const f = m[r][c] / m[c][c]; for (let k = c; k <= n; k++) m[r][k] -= f * m[c][k]; } }
+        const x = new Array(n).fill(0); for (let r = n - 1; r >= 0; r--) { let s = m[r][n]; for (let k = r + 1; k < n; k++) s -= m[r][k] * x[k]; x[r] = s / m[r][r]; } return x;
+      };
+      // how far from a singularity: smallest / largest singular value of Jinv (from the eigenvalues of JᵀJ, Jacobi method)
+      const conditioning = (J) => {
+        const n = 6, M = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, k) => J.reduce((s, r) => s + r[i] * r[k], 0)));
+        for (let sweep = 0; sweep < 30; sweep++) for (let p = 0; p < n; p++) for (let q = p + 1; q < n; q++) {
+          if (Math.abs(M[p][q]) < 1e-12) continue;
+          const th = 0.5 * Math.atan2(2 * M[p][q], M[q][q] - M[p][p]), c = Math.cos(th), s = Math.sin(th);
+          for (let k = 0; k < n; k++) { const a = M[k][p], b = M[k][q]; M[k][p] = c * a - s * b; M[k][q] = s * a + c * b; }
+          for (let k = 0; k < n; k++) { const a = M[p][k], b = M[q][k]; M[p][k] = c * a - s * b; M[q][k] = s * a + c * b; }
+        }
+        const ev = M.map((r, i) => Math.max(0, r[i])); return Math.sqrt(Math.min(...ev) / Math.max(...ev));
+      };
+
+      // ================= 3D scene =================
+      const box = document.getElementById('view');
+      const scene = new THREE.Scene();
+      if (window.RA && RA.darkParts) RA.darkParts(scene);
+      scene.background = new THREE.Color('#1d2638');
+      const camera = new THREE.PerspectiveCamera(42, box.clientWidth / box.clientHeight, 0.05, 50);
+      camera.position.set(1.45, 1.15, 1.55);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.setSize(box.clientWidth, box.clientHeight); box.appendChild(renderer.domElement);
+      const orbit = new OrbitControls(camera, renderer.domElement); orbit.target.set(0, 0.35, 0);
+      const hemi = new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2); scene.add(hemi);
+      const sun = new THREE.DirectionalLight('#ffffff', 1.5); sun.position.set(3, 5, 2); scene.add(sun);
+      const grid = new THREE.GridHelper(4, 16, '#7a7a7a', '#3a3a3a'); scene.add(grid);
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(4, 4).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#253047' })); floor.position.y = -0.003; scene.add(floor);
+      RB.onTheme((light) => { scene.background.set(light ? '#d9dde3' : '#1d2638'); floor.material.color.set(light ? '#7d8691' : '#253047'); hemi.groundColor.set(light ? '#c9d0d8' : '#5d6b85'); hemi.intensity = light ? 1.2 : 1.75; sun.intensity = light ? 1.5 : 2.1; box.classList.toggle('light3d', light); });
+      const W = (v) => new THREE.Vector3(v[0], v[2], -v[1]);                    // maths (x, y, z up) -> scene (X, Y up, Z)
+      const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.45, metalness: 0.25, ...o });
+      const baseMat = mat('#4a5568'); baseMat.userData.raKeep = true;
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(RB_ + 0.06, RB_ + 0.08, 0.05, 6), baseMat); base.position.y = 0.025; base.rotation.y = Math.PI / 6; scene.add(base);
+      const plat = new THREE.Group(); scene.add(plat);
+      const top = new THREE.Mesh(new THREE.CylinderGeometry(RP + 0.04, RP + 0.04, 0.035, 6), mat('#ff9f43')); top.rotation.y = Math.PI / 6; plat.add(top);
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.18), mat('#cfd8e3')); seat.position.y = 0.08; plat.add(seat);
+      const legs = A.map(() => {
+        const g = { lo: new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1, 18), mat('#5a6474')), hi: new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.017, 1, 14), mat('#e8eef5', { metalness: 0.6 })),
+          u: new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.06), mat('#222a33')), s: new THREE.Mesh(new THREE.SphereGeometry(0.03, 16, 12), mat('#222a33')) };
+        g.lo.material.userData.raKeep = true; Object.values(g).forEach((m) => scene.add(m)); return g;
+      });
+      const place = (m, a, b, len) => { const d = b.clone().sub(a), n = d.length(); m.position.copy(a).addScaledVector(d, (len || n) / (2 * n)); m.scale.set(1, len || n, 1); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); };
+      const resize = () => { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+      window.addEventListener('resize', resize);
+      let visible = true; new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(box);
+      renderer.setAnimationLoop(() => { if (!visible) return; orbit.update(); renderer.render(scene, camera); });
+
+      // ================= update =================
+      const svg = document.getElementById('schema'), viewSel = document.getElementById('viewSel');
+      let X = [0, 0, H0, 0, 0, 0];
+      function update() {
+        const R = rot(X[3], X[4], X[5]), p = [X[0], X[1], X[2]], B = Bp.map((b) => add(p, mv(R, b))), l = G(X);
+        // 3D
+        plat.position.copy(W(p)); const m = new THREE.Matrix4().set(R[0][0], R[0][2], -R[0][1], 0, R[2][0], R[2][2], -R[2][1], 0, -R[1][0], -R[1][2], R[1][1], 0, 0, 0, 0, 1);
+        plat.quaternion.setFromRotationMatrix(m);
+        legs.forEach((g, i) => { const a = W(add(A[i], [0, 0, 0.05])), b = W(B[i]); g.u.position.copy(a); g.s.position.copy(b); place(g.lo, a, b, LMIN * 0.55); const dir = b.clone().sub(a).normalize(); place(g.hi, b.clone().addScaledVector(dir, -(l[i] - LMIN * 0.45)), b); });
+        // the six legs
+        const bad = l.map((v) => v < LMIN - 1e-9 || v > LMAX + 1e-9);
+        document.getElementById('legs').innerHTML = `<tr><th>${L('Leg', 'Jambe')}</th><th>${L('Length (mm)', 'Longueur (mm)')}</th><th>${L('Stroke used', 'Course utilisée')}</th></tr>` +
+          l.map((v, i) => `<tr class="${bad[i] ? 'bad' : ''}"><td>${i + 1}</td><td>${(v * 1000).toFixed(1)}</td><td class="bar"><div class="gauge"><i style="left:${Math.max(0, Math.min(100, (v - LMIN) / (LMAX - LMIN) * 100)).toFixed(1)}%"></i></div></td></tr>`).join('');
+        const ok = !bad.some(Boolean);
+        document.getElementById('state').innerHTML = ok ? L(`All six legs are within their stroke (${(LMIN * 1000).toFixed(0)} to ${(LMAX * 1000).toFixed(0)} mm): the pose is reachable.`, `Les six jambes sont dans leur course (${(LMIN * 1000).toFixed(0)} à ${(LMAX * 1000).toFixed(0)} mm) : la pose est atteignable.`)
+          : `<strong style="color:var(--bad)">${L('Out of reach: at least one leg would have to be shorter or longer than it can.', 'Hors d\'atteinte : au moins une jambe devrait être plus courte ou plus longue qu\'elle ne peut.')}</strong>`;
+        const c = conditioning(Jinv(X).map((r) => [...r.slice(0, 3), ...r.slice(3).map((v) => v / RP)]));   // rotations scaled by the platform radius: same units
+        document.getElementById('sing').innerHTML = L('Conditioning of the Jacobian: ', 'Conditionnement de la jacobienne : ') + `<strong>${c.toFixed(3)}</strong> — ` +
+          (c > 0.2 ? L('far from any singularity.', 'loin de toute singularité.') : c > 0.08 ? L('getting closer to a singularity: the motors must work harder.', 'on se rapproche d\'une singularité : les moteurs doivent forcer davantage.') : L('very close to a singularity!', 'très près d\'une singularité !'));
+        // the diagram
+        const view = viewSel.value, S = 300, M2 = view === 'top' ? (v) => [350 + v[0] * S, 210 - v[1] * S] : (v) => [350 + v[0] * S, 390 - v[2] * S];
+        svg.innerHTML = '';
+        if (view === 'side') RB.shape(svg, 'line', { x1: 40, y1: 390, x2: 660, y2: 390, stroke: '#7a7a7a', 'stroke-width': 2 });
+        const poly = (pts, st, fill) => RB.shape(svg, 'polygon', { points: pts.map((q) => M2(q).map((v) => v.toFixed(1)).join(',')).join(' '), fill, stroke: st, 'stroke-width': 2.5, 'fill-opacity': 0.15 });
+        poly(A, '#9fb0c3', '#9fb0c3'); poly(B, '#ff9f43', '#ff9f43');
+        A.forEach((a, i) => { const pa = M2(a), pb = M2(B[i]); RB.shape(svg, 'line', { x1: pa[0], y1: pa[1], x2: pb[0], y2: pb[1], stroke: bad[i] ? '#ff6b6b' : '#e8eef5', 'stroke-width': 3 });
+          RB.shape(svg, 'rect', { x: pa[0] - 6, y: pa[1] - 6, width: 12, height: 12, fill: '#262626', stroke: '#9fb0c3', 'stroke-width': 2 });
+          RB.shape(svg, 'circle', { cx: pb[0], cy: pb[1], r: 6, fill: '#262626', stroke: '#ff9f43', 'stroke-width': 2 });
+          const mid = M2(add(a, B[i]).map((v) => v / 2)); RB.label(svg, mid[0] + 8, mid[1] - 6, String(i + 1), '#ffffff', 15); });
+        const pc = M2(p); RB.shape(svg, 'line', { x1: pc[0] - 7, y1: pc[1] - 7, x2: pc[0] + 7, y2: pc[1] + 7, stroke: '#ff9f43', 'stroke-width': 2 }); RB.shape(svg, 'line', { x1: pc[0] - 7, y1: pc[1] + 7, x2: pc[0] + 7, y2: pc[1] - 7, stroke: '#ff9f43', 'stroke-width': 2 });
+      }
+      viewSel.addEventListener('change', update);
+      RB.controls(document.getElementById('controls'), [
+        { label: L('x · forward', 'x · avant'), min: -15, max: 15, step: 0.5, value: 0, unit: 'cm' },
+        { label: L('y · sideways', 'y · côté'), min: -15, max: 15, step: 0.5, value: 0, unit: 'cm' },
+        { label: L('z · height', 'z · hauteur'), min: 45, max: 80, step: 0.5, value: H0 * 100, unit: 'cm' },
+        { label: L('roll φ (about x)', 'roulis φ (autour de x)'), min: -25, max: 25, step: 0.5, value: 0, unit: '°' },
+        { label: L('pitch θ (about y)', 'tangage θ (autour de y)'), min: -25, max: 25, step: 0.5, value: 0, unit: '°' },
+        { label: L('yaw ψ (about z)', 'lacet ψ (autour de z)'), min: -40, max: 40, step: 0.5, value: 0, unit: '°' }
+      ], (v) => { X = [v[0] / 100, v[1] / 100, v[2] / 100, v[3] * D2R, v[4] * D2R, v[5] * D2R]; update(); });
+
+      // Newton's method for the direct model, from the home pose
+      document.getElementById('newtonBtn').addEventListener('click', () => {
+        const target = G(X); let Y = [0, 0, H0, 0, 0, 0]; const lines = [];
+        const fmt = (Z) => `x ${(Z[0] * 100).toFixed(2)} cm  y ${(Z[1] * 100).toFixed(2)} cm  z ${(Z[2] * 100).toFixed(2)} cm  φ ${(Z[3] / D2R).toFixed(2)}°  θ ${(Z[4] / D2R).toFixed(2)}°  ψ ${(Z[5] / D2R).toFixed(2)}°`;
+        for (let k = 0; k <= 12; k++) {
+          const e = sub(target, G(Y)), err = Math.max(...e.map(Math.abs));
+          lines.push(`${L('iteration', 'itération')} ${k}:  ${L('largest leg error', 'plus grande erreur de jambe')} ${(err * 1000).toFixed(4)} mm   →  ${fmt(Y)}`);
+          if (err < 1e-9) break;
+          const J = Jinv(Y), dv = solve(J, e);                                   // [v, w] of the correction
+          Y = [Y[0] + dv[0], Y[1] + dv[1], Y[2] + dv[2], Y[3], Y[4], Y[5]];
+          // small rotation w applied to R, then read back as roll, pitch, yaw
+          const R0 = rot(Y[3], Y[4], Y[5]), w = [dv[3], dv[4], dv[5]], th = norm(w);
+          if (th > 1e-12) { const k2 = w.map((v) => v / th), c = Math.cos(th), s = Math.sin(th), K = [[0, -k2[2], k2[1]], [k2[2], 0, -k2[0]], [-k2[1], k2[0], 0]];
+            const Rw = [0, 1, 2].map((i) => [0, 1, 2].map((j) => (i === j ? 1 : 0) + s * K[i][j] + (1 - c) * [0, 1, 2].reduce((a, m) => a + K[i][m] * K[m][j], 0)));
+            const Rn = [0, 1, 2].map((i) => [0, 1, 2].map((j) => [0, 1, 2].reduce((a, m) => a + Rw[i][m] * R0[m][j], 0)));
+            Y[4] = -Math.asin(Math.max(-1, Math.min(1, Rn[2][0]))); Y[3] = Math.atan2(Rn[2][1], Rn[2][2]); Y[5] = Math.atan2(Rn[1][0], Rn[0][0]); }
+        }
+        lines.push(L('true pose:      ', 'vraie pose :    ') + fmt(X));
+        document.getElementById('newton').textContent = lines.join('\n');
+      });
+    </script>
+  </body>
+</html>

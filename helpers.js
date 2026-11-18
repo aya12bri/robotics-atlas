@@ -210,4 +210,51 @@ RB.onTheme = (fn) => {
   new MutationObserver(run).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', run);
 };
-window.RB = RB;
+window.RB = RB;// kinematic diagrams (svg#schema): no label on top of another one. After each drawing, every text that overlaps a text
+// placed before it is moved to the nearest free spot (above, below, then to the sides), inside the picture.
+RB.declutter = (svg) => {
+  const vb = svg.viewBox && svg.viewBox.baseVal, W = vb && vb.width ? vb.width : 700, H = vb && vb.height ? vb.height : 420;
+  const placed = [], pad = 2;
+  svg.querySelectorAll('.rb-leader').forEach((l) => l.remove());
+  const hit = (b) => placed.some((p) => b.x < p.x + p.w + pad && b.x + b.w + pad > p.x && b.y < p.y + p.h + pad && b.y + b.h + pad > p.y);
+  const inside = (b) => b.x >= 0 && b.y >= 0 && b.x + b.w <= W && b.y + b.h <= H;
+  // the joint symbols, the tool and the targets are obstacles too (small circles and boxes; not the long links or the base)
+  svg.querySelectorAll('circle, rect').forEach((s) => {
+    let b; try { b = s.getBBox(); } catch (e) { return; }
+    if (b.width && b.width <= 44 && b.height <= 44) placed.push({ x: b.x, y: b.y, w: b.width, h: b.height });
+  });
+  svg.querySelectorAll('text').forEach((t) => {
+    t.removeAttribute('transform');
+    let b; try { b = t.getBBox(); } catch (e) { return; }
+    if (!b.width) return;
+    const box = { x: b.x, y: b.y, w: b.width, h: b.height };
+    if (hit(box)) {
+      const s = b.height * 0.95, tries = [];
+      for (let k = 1; k <= 4; k++) tries.push([0, -k * s], [0, k * s], [-(b.width / 2 + 4) * k / 2, -k * s / 2], [(b.width / 2 + 4) * k / 2, k * s / 2], [-(b.width + 6) * k / 2, 0], [(b.width + 6) * k / 2, 0]);
+      const ok = tries.find(([dx, dy]) => { const c = { x: box.x + dx, y: box.y + dy, w: box.w, h: box.h }; return inside(c) && !hit(c); });
+      if (ok) {
+        t.setAttribute('transform', `translate(${ok[0].toFixed(1)},${ok[1].toFixed(1)})`);
+        if (Math.hypot(ok[0], ok[1]) > b.height * 1.5) {     // moved far: a thin leader line back to where the label belongs
+          const cx = b.x + b.width / 2, cy = b.y + b.height / 2, nx = cx + ok[0], ny = cy + ok[1];
+          const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          const f = 1 - (b.height * 0.6) / Math.hypot(ok[0], ok[1]);
+          l.setAttribute('x1', cx); l.setAttribute('y1', cy); l.setAttribute('x2', (cx + ok[0] * f).toFixed(1)); l.setAttribute('y2', (cy + ok[1] * f).toFixed(1));
+          l.setAttribute('stroke', t.getAttribute('fill') || '#999'); l.setAttribute('stroke-width', 1); l.setAttribute('stroke-dasharray', '2 2'); l.setAttribute('opacity', 0.7); l.setAttribute('class', 'rb-leader');
+          svg.insertBefore(l, svg.firstChild);
+        }
+        box.x += ok[0]; box.y += ok[1];
+      }
+    }
+    placed.push(box);
+  });
+};
+(function () {
+  const watch = (svg) => {
+    let queued = false;
+    const run = () => { queued = false; RB.declutter(svg); };
+    new MutationObserver(() => { if (!queued) { queued = true; requestAnimationFrame(run); } }).observe(svg, { childList: true });
+    run();
+  };
+  const start = () => document.querySelectorAll('svg#schema').forEach(watch);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();

@@ -11,11 +11,15 @@
   const ROBOTS = [
     ['arm.html',        { en: '3-DOF arm',                fr: 'Bras 3 axes' },              'R-R-R'],
     ['gantry.html',     { en: 'Cartesian gantry',         fr: 'Robot cartésien' },          'P-P-P'],
+    ['cylindrical.html',{ en: 'Cylindrical robot',        fr: 'Robot cylindrique' },        'R-P-P'],
+    ['spherical.html',  { en: 'Spherical (polar) robot',  fr: 'Robot sphérique (polaire)' }, 'R-R-P'],
     ['scara.html',      { en: 'SCARA',                    fr: 'SCARA' },                    'R-R-P-R'],
     ['articulated.html',{ en: '6-axis industrial robot',  fr: 'Robot industriel 6 axes' },  '6 × R'],
     ['cobot.html',      { en: 'Collaborative robot (UR5)',fr: 'Robot collaboratif (UR5)' }, '6 × R'],
+    ['redundant.html',  { en: '7-axis redundant robot',   fr: 'Robot redondant 7 axes' },   '7 × R'],
     ['delta.html',      { en: 'Delta robot',              fr: 'Robot Delta' },              'parallel / parallèle'],
-    ['mobile.html',     { en: 'Mobile robot',             fr: 'Robot mobile' },             '2 wheels / roues'],
+    ['hexapod.html',    { en: 'Hexapod (Stewart platform)', fr: 'Hexapode (plateforme de Stewart)' }, '6-UPS'],
+    ['mobile.html',     { en: 'Mobile robot',             fr: 'Robot mobile' },             '2 wheels / 2 roues'],
     ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
   ];
   // the 3D "anatomy" pages (in the menu, not in the previous / next pager)
@@ -32,6 +36,22 @@
     ['anatomy-quadrotor.html', { en: 'Quadrotor',               fr: 'Quadrirotor' }],
     ['anatomy-humanoid.html', { en: 'Humanoid',                 fr: 'Humanoïde' }]
   ];
+  // the menus of the top bar (the same on every page): the courses by theme, the robots by family, the tools, my space
+  const MENU_COURSES = [
+    [{ en: 'Basics', fr: 'Bases' }, [['learn.html', 'Foundations', 'Les fondations'], ['learn-mathkit.html', 'The maths of robotics', 'Les maths de la robotique'], ['learn-maths.html', 'Maths and motion', 'Maths et mouvement']]],
+    [{ en: 'Modelling', fr: 'Modélisation' }, [['learn-model.html', 'Robot modelling, full course', 'Modélisation d\'un robot'], ['learn-singularities.html', 'Singularities and the Jacobian', 'Singularités et jacobienne'], ['learn-parallel.html', 'Workspaces and parallel robots', 'Espaces de travail et robots parallèles'], ['learn-armlab.html', 'Code a robot arm in Python', 'Coder un bras robot en Python']]],
+    [{ en: 'Mechanics and control', fr: 'Mécanique et commande' }, [['learn-control.html', 'Dynamics and control', 'Dynamique et commande'], ['learn-transmission.html', 'Transmissions and grippers', 'Transmissions et préhenseurs']]],
+    [{ en: 'Mobile robots', fr: 'Robots mobiles' }, [['learn-mobile.html', 'Wheeled mobile robots, part 1', 'Robots mobiles à roues, partie 1'], ['learn-mobile-pro.html', 'Wheeled mobile robots, part 2', 'Robots mobiles à roues, partie 2']]],
+    [{ en: 'Perception and AI', fr: 'Perception et IA' }, [['learn-intelligence.html', 'Perception, planning and AI', 'Perception, planification et IA'], ['learn-kalman.html', 'Data fusion and Kalman filter', 'Fusion de données et filtre de Kalman'], ['learn-ros.html', 'ROS 2 from zero', 'ROS 2 depuis zéro']]],
+    [{ en: 'Master and real world', fr: 'Master et monde réel' }, [['learn-advanced.html', 'Advanced robotics', 'Robotique avancée'], ['learn-teleop.html', 'Teleoperation, cobotics, safety', 'Téléopération, cobotique, sécurité'], ['learn-world.html', 'Robots in the real world', 'Les robots dans le monde réel']]]
+  ];
+  const ROBOT_FAMILIES = [
+    [{ en: 'Serial arms', fr: 'Bras série' }, ['arm.html', 'gantry.html', 'cylindrical.html', 'spherical.html', 'scara.html', 'articulated.html', 'cobot.html', 'redundant.html']],
+    [{ en: 'Parallel robots', fr: 'Robots parallèles' }, ['delta.html', 'hexapod.html']],
+    [{ en: 'Mobile robots', fr: 'Robots mobiles' }, ['mobile.html', 'wheels.html']]
+  ];
+  const MENU_TOOLS = [['build.html', 'Build your first robot', 'Construire votre premier robot'], ['sandbox.html', 'Programming sandbox', 'Bac à sable de programmation'], ['sensors.html', 'Sensor test bench', 'Banc d\'essai des capteurs'], ['projects.html', 'Guided projects', 'Projets guidés']];
+  const MENU_ME = [['index.html#road', 'My roadmap', 'Mon parcours'], ['certificate.html', 'My certificates', 'Mes certificats'], ['exam.html', 'Final exams', 'Examens finaux'], ['review.html', 'My reviews', 'Mes révisions'], ['revision.html', 'Revision sheets', 'Fiches de révision'], ['glossary.html', 'Glossary', 'Glossaire'], ['index.html#rmBackup', 'Save my progress, offline mode', 'Sauvegarde et mode hors ligne']];
   const SOCIAL = [
     ['LinkedIn', 'https://www.linkedin.com/in/aya-briksine/', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>'],
     ['GitHub', 'https://github.com/aya12bri', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>'],
@@ -39,9 +59,9 @@
   ];
   window.RA_SOCIAL = SOCIAL;
   const UI = {
-    en: { secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
+    en: { courses: 'Courses', tools: 'Tools', me: 'My space', allCourses: 'All the courses (roadmap)', allRobots: 'All the robots, by family', learnH: 'Learn', aboutH: 'About', secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
           foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', sens: 'Sensor bench', sbx: 'Sandbox', prj: 'Projects', about: 'About', review: 'My reviews', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
-    fr: { secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
+    fr: { courses: 'Cours', tools: 'Outils', me: 'Mon espace', allCourses: 'Tous les cours (parcours)', allRobots: 'Tous les robots, par famille', learnH: 'Apprendre', aboutH: 'À propos', secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
           foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', sens: 'Banc des capteurs', sbx: 'Bac à sable', prj: 'Projets', about: 'À propos', review: 'Mes révisions', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
   };
 
@@ -431,15 +451,25 @@
     const link = (href, text) => `<a href="${href}"${here === href ? ' aria-current="page"' : ''}>${text}</a>`;
     const effective = () => root.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
 
+    // a menu of the top bar: a button that opens a panel of grouped links; the button is marked when this page is in it
+    const ddMenu = (key, label, groups, foot) => {
+      const all = groups.flatMap((g) => g[1].map((x) => x[0].split('#')[0]));
+      const cur = all.includes(here) && !(key === 'me' && here === 'index.html');
+      return `<div class="dd mega" data-dd="${key}"><button class="dd-top" type="button" aria-haspopup="true" aria-expanded="false"${cur ? ' aria-current="page"' : ''}>${label} <span aria-hidden="true">▾</span></button>` +
+        `<div class="dd-menu mega-menu${groups.length > 3 ? ' wide4' : groups.length > 2 ? ' wide' : ''}">${groups.map(([title, items]) => `<div class="mm-col">${title ? `<span class="mm-h">${title[lang]}</span>` : ''}${items.map(([h, t]) => link(h, t)).join('')}</div>`).join('')}${foot || ''}</div></div>`;
+    };
+    const R = (h) => { const r = ROBOTS.find((x) => x[0] === h), k = r[2].split(' / '); const tag = k[lang === 'fr' && k[1] ? 1 : 0]; return [h, `${r[1][lang]}${tag === '—' ? '' : ` <small>${tag}</small>`}`]; };
+    const megaMenus = () =>
+      ddMenu('courses', ui.courses, MENU_COURSES.map(([g, list]) => [g, list.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en])]), `<a class="mm-foot" href="index.html#road">${ui.allCourses} →</a>`) +
+      ddMenu('robots', ui.robots, ROBOT_FAMILIES.map(([g, list]) => [g, list.map(R)]).concat([[{ en: ui.anatomy, fr: ui.anatomy }, ANATOMY.map(([h, n]) => [h, `${n[lang]} <small>3D</small>`])]]), `<a class="mm-foot" href="index.html#robots">${ui.allRobots} →</a>`) +
+      ddMenu('tools', ui.tools, [[null, MENU_TOOLS.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en])]]) +
+      ddMenu('me', ui.me, [[null, MENU_ME.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en])]]);
     const nav = document.createElement('header');
     nav.className = 'site-nav';
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
-      '<nav class="nav-l" aria-label="Main">' +
-      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
+      '<nav class="nav-l" aria-label="Main">' + link('index.html', ui.home) + megaMenus() + '</nav>' +
       '<div class="nav-r">' +
-      (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
-      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
       `<button class="icon-btn search-btn" type="button" aria-label="${ui.search}" title="${ui.search}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>` +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
@@ -468,7 +498,12 @@
       if (hasTwin(here) && pageName !== '404') location.href = twinUrl(b.dataset.lang); else location.reload();
     }));
     const links = nav.querySelector('.nav-l'), toggle = nav.querySelector('.nav-toggle');
-    const ddBtn = nav.querySelector('.dd-btn'), dd = nav.querySelector('.dd');
+    const dds = [...nav.querySelectorAll('.dd.mega')], dd = null;
+    const closeAll = (except) => dds.forEach((d) => { if (d !== except) { d.classList.remove('open'); d.querySelector('.dd-top').setAttribute('aria-expanded', 'false'); } });
+    dds.forEach((d) => { const b = d.querySelector('.dd-top'); b.addEventListener('click', (e) => { e.stopPropagation(); closeAll(d); const o = d.classList.toggle('open'); b.setAttribute('aria-expanded', String(o)); }); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.dd.mega')) closeAll(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
+    const ddBtn = null;
     toggle.addEventListener('click', () => { const o = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(o)); });
     if (ddBtn) {
       ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
@@ -485,6 +520,15 @@
       if (((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) || (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey)) { e.preventDefault(); openSearch(); }
     });
     const q0 = new URLSearchParams(location.search).get('q'); if (q0) openSearch(q0);
+    // course pages: the list of the 17 courses is folded into one line (this course, its progress, "All the courses")
+    const cnav = document.querySelector('nav.courses');
+    if (cnav && cnav.querySelector('.course.current')) {
+      cnav.classList.add('fold');
+      const tg = document.createElement('button'); tg.type = 'button'; tg.className = 'courses-toggle ra-own'; tg.setAttribute('aria-expanded', 'false');
+      const lab = (o) => { tg.innerHTML = o ? (lang === 'fr' ? 'Replier la liste ▴' : 'Fold the list ▴') : (lang === 'fr' ? 'Tous les cours ▾' : 'All the courses ▾'); };
+      lab(false); cnav.appendChild(tg);
+      tg.addEventListener('click', () => { const o = cnav.classList.toggle('open'); tg.setAttribute('aria-expanded', String(o)); lab(o); });
+    }
     // course pages: a link to the certificate after the last lesson
     const cta = document.querySelector('.finish .cta'), curCard = document.querySelector('.courses .course.current');
     if (cta && curCard) {
@@ -541,9 +585,17 @@
     }
     const doneBar = i >= 0 ? `<div class="done-bar"><label class="done-toggle"><input type="checkbox" id="pageDone"><span class="box" aria-hidden="true"></span><span class="lbl">${ui.done}</span></label><a href="index.html#road">${ui.road} →</a></div>` : '';
     const social = '<p class="social">' + SOCIAL.map(([name, url, icon]) => `<a href="${url}" target="_blank" rel="noopener" aria-label="${name}">${icon}<span>${name}</span></a>`).join('') + '</p>';
-    foot.innerHTML = doneBar + pager + `<p>${ui.foot} <a href="https://threejs.org">three.js</a></p>` +
+    // the footer: four columns of links (the same groups as the top menus), then who made the site
+    const col = (title, items) => `<div class="fcol"><span class="fh">${title}</span>${items.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</div>`;
+    const T = (list) => list.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en]);
+    const cols = '<nav class="fcols" aria-label="' + (lang === 'fr' ? 'Plan du site' : 'Site map') + '">' +
+      col(ui.learnH, [['index.html#road', lang === 'fr' ? 'Parcours et tous les cours' : 'Roadmap and all the courses'], ['learn.html', ui.learnFoot], ['glossary.html', ui.gloss], ['revision.html', ui.rev], ['exam.html', lang === 'fr' ? 'Examens finaux' : 'Final exams']]) +
+      col(ui.robots, ROBOT_FAMILIES.map(([g, list]) => [list[0], g[lang]]).concat([['index.html#robots', ui.allRobots], ['anatomy.html', ui.anatomy]])) +
+      col(ui.tools, T(MENU_TOOLS)) +
+      col(ui.me, T(MENU_ME.filter((x) => !/glossary|revision|exam/.test(x[0]))).concat([['about.html', ui.aboutH]])) + '</nav>';
+    foot.innerHTML = doneBar + pager + cols +
       `<p class="by">${ui.by} <a href="https://ayabriksine.com" target="_blank" rel="noopener">Aya Briksine</a></p>` + social +
-      `<p><a href="index.html">${ui.home}</a> · <a href="learn.html">${ui.learnFoot}</a> · <a href="wheels.html">${ui.wheels}</a> · <a href="glossary.html">${ui.gloss}</a> · <a href="revision.html">${ui.rev}</a> · <a href="review.html">${ui.review}</a> · <a href="sensors.html">${ui.sens}</a> · <a href="sandbox.html">${ui.sbx}</a> · <a href="projects.html">${ui.prj}</a> · <a href="certificate.html">${ui.certs}</a> · <a href="index.html#offline">${ui.offline}</a> · <a href="about.html">${ui.about}</a></p>`;
+      `<p class="fsmall">${ui.foot} <a href="https://threejs.org">three.js</a></p>`;
     document.body.appendChild(foot);
     const dn = foot.querySelector('#pageDone');
     if (dn) {

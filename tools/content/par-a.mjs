@@ -58,7 +58,7 @@ lesson(PRE, 2, {
       'Les câbles, les tuyaux, le corps du robot et les butées mécaniques interdisent les tours complets : chaque variable articulaire vit dans un intervalle q<sub>i,min</sub> ≤ qᵢ ≤ q<sub>i,max</sub>. Dans l\'espace articulaire les postures permises forment une boîte (un rectangle pour deux articulations). Chaque point de la boîte est une posture ; l\'<strong>espace de travail</strong> est l\'ensemble des positions de l\'outil que produisent ces postures.'),
     TABLE([['Robot', 'Robot'], ['Joints', 'Articulations'], ['Shape of the workspace', 'Forme de l\'espace de travail']], [
       [['Cartesian (gantry)', 'Cartésien (portique)'], ['3 sliders', '3 glissières'], ['a rectangular box: the joint box itself', 'un parallélépipède rectangle : la boîte articulaire elle-même']],
-      [['Cylindrical', 'Cylindrique'], ['1 pivot + 2 sliders', '1 pivot + 2 glissières'], ['a thick cylinder sector', 'un secteur de cylindre épais']],
+      [['<a href="cylindrical.html">Cylindrical</a>', '<a href="cylindrical.html">Cylindrique</a>'], ['1 pivot + 2 sliders', '1 pivot + 2 glissières'], ['a thick cylinder sector', 'un secteur de cylindre épais']],
       [['SCARA', 'SCARA'], ['2 pivots in a plane + 1 slider', '2 pivots dans un plan + 1 glissière'], ['a crescent, extruded vertically', 'un croissant, extrudé verticalement']],
       [['6-axis anthropomorphic', 'Anthropomorphe 6 axes'], ['6 pivots', '6 pivots'], ['a “mushroom” or a thick sphere with holes', 'un « champignon » ou une sphère épaisse trouée']]
     ]),

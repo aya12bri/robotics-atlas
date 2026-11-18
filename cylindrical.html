@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cylindrical robot</title>
+    <!-- seo -->
+    <meta name="description" content="Interactive 3D cylindrical robot (R-P-P): a column that turns, a carriage that goes up, an arm that slides; DH and DHM tables, direct and inverse models, hollow-cylinder workspace." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/cylindrical" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/cylindrical" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/cylindrical-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/cylindrical" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Cylindrical robot" />
+    <meta property="og:description" content="Interactive 3D cylindrical robot (R-P-P): a column that turns, a carriage that goes up, an arm that slides; DH and DHM tables, direct and inverse models, hollow-cylinder workspace." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/cylindrical" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 460px; border-radius: 6px; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script src="helpers.js"></script>
+    <script src="dharm.js"></script>
+  <script src="nav.js" defer></script></head>
+  <body>
+    <h1>Cylindrical robot (R-P-P)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+
+    <p class="lead">A column turns on its base (q1), a carriage slides up and down the column (q2), and an arm slides in and out (q3). The tool moves in <strong>cylindrical coordinates</strong>: an angle, a height and a radius. One of the six classic families of robot arms, with the Cartesian, spherical, SCARA, articulated and parallel robots.</p>
+
+    <h2>Joints</h2>
+    <p>One rotation, then two slides. Move a slider, or type a value in a number box.</p>
+    <div id="controls"></div>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames:
+        <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
+        <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
+      </span>
+      <label>Show: <select id="frameSel"></select></label>
+      <label>View:
+        <select id="viewSel">
+          <option value="side">Side view</option>
+          <option value="top">Top view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
+    <p>
+      The circle is the revolute joint q1 (its axis is vertical), the squares are the sliding joints q2 and q3. The side view turns with q1, so the arm always lies in the picture.
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
+      <span class="legend-z">z blue</span>. ⊙ points <em>at you</em>, ⊗ points <em>away</em>.
+    </p>
+    <p id="readout"></p>
+
+    <h2>DH table (standard)</h2>
+    <p>Frame i is attached to the axis of joint i+1. Each row is: <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>.
+       For a sliding joint, <strong>d</strong> is the variable. Orange numbers are the current values.</p>
+    <div id="dhStd"></div>
+
+    <h2>DHM table (modified DH)</h2>
+    <p>Frame i is attached to the axis of joint i. Each row is: <code>A<sub>i</sub> = Rx(α<sub>i−1</sub>) · Tx(a<sub>i−1</sub>) · Rz(θ) · Tz(d)</code>.</p>
+    <div id="dhMod"></div>
+
+    <h2>Result: where is the tool?</h2>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the position of the tool in the base frame {0}. Both tables give exactly this same matrix.</p>
+
+    <h2>The models in three lines</h2>
+    <pre class="matrix">Direct model (MGD):    x = q3 · cos q1     y = q3 · sin q1     z = h + q2
+Inverse model (MGI):   q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − h      (h = 0.30 m)</pre>
+    <p>The joints are exactly the <strong>cylindrical coordinates</strong> of the tool (angle, height, radius). The inverse model has a single answer, except on the axis of the column (x = y = 0), where q1 is undefined: that line is the singularity of this robot, and the sleeve of the column keeps the tool away from it.</p>
+
+    <h2>Workspace</h2>
+    <svg class="fig" viewBox="0 0 640 230" aria-hidden="true" style="width:100%;max-width:640px">
+      <rect x="40" y="40" width="250" height="150" rx="6" fill="#262626" stroke="#4a5568" />
+      <rect x="135" y="55" width="60" height="120" fill="#4a5568" />
+      <rect x="62" y="65" width="60" height="100" fill="#ff9f43" opacity="0.35" stroke="#ff9f43" />
+      <rect x="208" y="65" width="60" height="100" fill="#ff9f43" opacity="0.35" stroke="#ff9f43" />
+      <text x="165" y="215" text-anchor="middle" fill="#cfd8e3" font-size="14">side view: two rectangles</text>
+      <circle cx="470" cy="115" r="80" fill="#ff9f43" opacity="0.35" stroke="#ff9f43" />
+      <circle cx="470" cy="115" r="30" fill="#262626" stroke="#ff9f43" />
+      <line x1="470" y1="115" x2="550" y2="115" stroke="#e8eef5" stroke-width="1.5" />
+      <text x="510" y="108" text-anchor="middle" fill="#e8eef5" font-size="13">r max</text>
+      <text x="470" y="215" text-anchor="middle" fill="#cfd8e3" font-size="14">top view: a ring (a thick tube in 3D)</text>
+    </svg>
+    <p>With q3 between r<sub>min</sub> and r<sub>max</sub> and q2 between its two stops, the tool sweeps a <strong>hollow cylinder</strong> (a thick tube), cut by the stops of q1 if the column cannot turn all the way round. The volume is the area of the ring times the stroke of q2: V = θ<sub>range</sub>/2 · (r<sub>max</sub>² − r<sub>min</sub>²) · stroke.</p>
+
+    <div class="robot">
+      <h2>Where is a cylindrical robot used?</h2>
+      <p>Loading and unloading machine tools and presses, die casting and forging, handling in clean rooms (wafers, glass), stacking, and simple assembly. The Versatran (1960), one of the first industrial robots, was cylindrical; today you meet the structure in wafer handlers, in tabletop teaching robots and in many “pick and place” units.</p>
+      <p><strong>Strengths:</strong> very simple maths, rigid in the vertical direction, the tool keeps its orientation, a large reach for a small footprint. <strong>Weaknesses:</strong> it cannot reach behind the column or near its base, the sliding axes need protected guides, and the arm sticks out behind when it retracts.</p>
+      <h3>End effector (tool)</h3>
+      <p>A gripper or a vacuum cup that points radially, or downwards with a small wrist. Add a fourth joint at the end of the arm to turn the part.</p>
+    </div>
+
+    <p class="try"><a href="learn-parallel.html#l2">Course: from joint limits to the real workspace →</a></p>
+
+    <script>
+      // the robot of this page, read by robot-page.js. Angles in degrees, lengths in metres.
+      window.ROBOT = {
+        std: [
+          { th: ['q1', (q) => q[0]], d: ['h = 0.30', 0.3],   a: ['0', 0], al: ['0', 0] },
+          { th: ['−90', -90],        d: ['q2', (q) => q[1]], a: ['0', 0], al: ['−90', -90] },
+          { th: ['0', 0],            d: ['q3', (q) => q[2]], a: ['0', 0], al: ['0', 0] }
+        ],
+        mod: [
+          { al: ['0', 0],     a: ['0', 0], th: ['q1', (q) => q[0]], d: ['h = 0.30', 0.3] },
+          { al: ['0', 0],     a: ['0', 0], th: ['−90', -90],        d: ['q2', (q) => q[1]] },
+          { al: ['−90', -90], a: ['0', 0], th: ['0', 0],            d: ['q3', (q) => q[2]] }
+        ],
+        joints: [
+          { type: 'R', name: ['column rotation', 'rotation de la colonne'], min: -150, max: 150, value: 30 },
+          { type: 'P', name: ['height', 'hauteur'], min: 10, max: 80, value: 45 },
+          { type: 'P', name: ['radius', 'rayon'], min: 25, max: 75, value: 50 }
+        ],
+        look: { link: '#cfd8e3', joint: '#ff9f43', cap: '#222a33', lr: 0.025, baseR: 0.16,
+                sizes: [{ r: 0.08, l: 0.12 }, { r: 0.06, l: 0.1 }, { r: 0.04, l: 0.1 }] },
+        cam: [1.4, 1.2, 1.5], target: [0, 0.45, 0], toolLen: 0.07,
+        views: {
+          side: { right: [1, 0, 0], up: [0, 0, 1], toward: [0, -1, 0], map: (u, v) => [330 + u * 300, 395 - v * 300], ground: true },
+          top:  { right: [1, 0, 0], up: [0, 1, 0], toward: [0, 0, 1],  map: (u, v) => [350 + u * 230, 210 - v * 230], ground: false }
+        },
+        scene3d(THREE, scene) {                            // the column the carriage slides on
+          const col = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.85, 24), new THREE.MeshStandardMaterial({ color: '#4a5568' }));
+          col.material.userData.raKeep = true; col.position.y = 0.72; scene.add(col);
+        },
+        beforeDraw(q) {                                    // the side view turns with q1, so the arm always lies in the picture
+          const p = q[0] * Math.PI / 180, side = this.views.side;
+          side.right = [Math.cos(p), Math.sin(p), 0]; side.toward = [Math.sin(p), -Math.cos(p), 0];
+        }
+      };
+    </script>
+    <script type="module" src="robot-page.js"></script>
+  </body>
+</html>

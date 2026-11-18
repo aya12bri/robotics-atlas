@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spherical (polar) robot</title>
+    <!-- seo -->
+    <meta name="description" content="Interactive 3D spherical (polar) robot (R-R-P), the structure of the Unimate: DH and DHM tables, spherical coordinates, direct and inverse models, workspace." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/spherical" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/spherical" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/spherical-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/spherical" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Spherical (polar) robot" />
+    <meta property="og:description" content="Interactive 3D spherical (polar) robot (R-R-P), the structure of the Unimate: DH and DHM tables, spherical coordinates, direct and inverse models, workspace." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/spherical" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #view { width: 100%; height: 460px; border-radius: 6px; }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+    <script src="helpers.js"></script>
+    <script src="dharm.js"></script>
+  <script src="nav.js" defer></script></head>
+  <body>
+    <h1>Spherical (polar) robot (R-R-P)</h1>
+    <p>
+      <a href="index.html" style="color:#ff9f43">← Robot list</a> ·
+      <a href="learn.html" style="color:#ff9f43">Learn the basics</a>
+    </p>
+
+    <div id="view"></div>
+
+    <p class="lead">The base turns (q1), the arm tilts up and down (q2), and a telescopic arm slides in and out (q3). The tool moves in <strong>spherical coordinates</strong>: two angles and a distance, like a gun turret or a camera on a tripod with a zoom. This is the structure of the Unimate, the very first industrial robot (1961), and of the Stanford arm.</p>
+
+    <h2>Joints</h2>
+    <p>Two rotations, then one slide. Move a slider, or type a value in a number box.</p>
+    <div id="controls"></div>
+
+    <h2>Kinematic diagram (schéma cinématique)</h2>
+    <div class="toolbar">
+      <button id="axesBtn">Hide axes</button>
+      <span>Frames:
+        <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
+        <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
+      </span>
+      <label>Show: <select id="frameSel"></select></label>
+      <label>View:
+        <select id="viewSel">
+          <option value="side">Side view</option>
+          <option value="top">Top view</option>
+        </select>
+      </label>
+    </div>
+    <svg id="schema" viewBox="0 0 700 420"
+         style="width:100%;max-width:720px;background:#262626;border-radius:6px"></svg>
+    <p>
+      The circles and bars are the revolute joints q1 (vertical axis) and q2 (horizontal axis), the square is the sliding joint q3.
+      The side view turns with q1, so the arm always lies in the picture.
+      Axes: <span class="legend-x">x red</span>, <span class="legend-y">y green</span>,
+      <span class="legend-z">z blue</span>. ⊙ points <em>at you</em>, ⊗ points <em>away</em>.
+    </p>
+    <p id="readout"></p>
+
+    <h2>DH table (standard)</h2>
+    <p>Frame i is attached to the axis of joint i+1. Each row is: <code>A<sub>i</sub> = Rz(θ) · Tz(d) · Tx(a) · Rx(α)</code>.
+       The +90° on θ2 lines the axis x up so that z2, the direction of the slide, follows the arm. Orange numbers are the current values.</p>
+    <div id="dhStd"></div>
+
+    <h2>DHM table (modified DH)</h2>
+    <p>Frame i is attached to the axis of joint i. Each row is: <code>A<sub>i</sub> = Rx(α<sub>i−1</sub>) · Tx(a<sub>i−1</sub>) · Rz(θ) · Tz(d)</code>.</p>
+    <div id="dhMod"></div>
+
+    <h2>Result: where is the tool?</h2>
+    <pre class="matrix" id="matrix"></pre>
+    <p>The last column is the position of the tool in the base frame {0}. Both tables give exactly this same matrix.</p>
+
+    <h2>The models in three lines</h2>
+    <pre class="matrix">Direct model (MGD):    x = q3 · cos q2 · cos q1    y = q3 · cos q2 · sin q1    z = h + q3 · sin q2
+Inverse model (MGI):   q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))    q3 = √(x² + y² + (z − h)²)      (h = 0.40 m)</pre>
+    <p>The joints are the <strong>spherical coordinates</strong> of the tool seen from the shoulder: azimuth q1, elevation q2 and distance q3. Like the cylindrical robot, the inverse model has a single answer except on the vertical line above the shoulder, where q1 is undefined (singularity).</p>
+
+    <h2>Workspace</h2>
+    <svg class="fig" viewBox="0 0 640 230" aria-hidden="true" style="width:100%;max-width:640px">
+      <path d="M160,170 L160,170 L300,170 A140,140 0 0 0 281,100 L160,170 Z" fill="none" />
+      <path d="M220,170 L300,170 A140,140 0 0 0 281,100 L212,140 A60,60 0 0 1 220,170 Z" fill="#ff9f43" opacity="0.35" stroke="#ff9f43" />
+      <path d="M100,170 L20,170 A140,140 0 0 1 39,100 L108,140 A60,60 0 0 0 100,170 Z" fill="#ff9f43" opacity="0.35" stroke="#ff9f43" />
+      <line x1="10" y1="190" x2="310" y2="190" stroke="#4a5568" stroke-width="2" />
+      <rect x="150" y="160" width="20" height="30" fill="#4a5568" />
+      <circle cx="160" cy="170" r="5" fill="#e8eef5" />
+      <text x="160" y="220" text-anchor="middle" fill="#cfd8e3" font-size="14">side view: two slices of a thick shell</text>
+      <circle cx="470" cy="115" r="85" fill="#ff9f43" opacity="0.35" stroke="#ff9f43" />
+      <circle cx="470" cy="115" r="38" fill="#262626" stroke="#ff9f43" />
+      <text x="470" y="220" text-anchor="middle" fill="#cfd8e3" font-size="14">top view: a ring</text>
+    </svg>
+    <p>The tool stays between two spheres centred on the shoulder (radius q3 min and q3 max), between the lowest and highest tilt of q2: a <strong>thick spherical shell</strong> cut by two cones. The volume grows with the cube of the reach: a long telescopic arm covers a huge space, but every millimetre of play at the shoulder becomes a large error at the tool.</p>
+
+    <div class="robot">
+      <h2>Where is a spherical robot used?</h2>
+      <p>Historically: spot welding and die casting (Unimate at General Motors, 1961), forging, loading presses and machine tools. Today the structure survives in heavy hydraulic manipulators, in some teaching robots, and in the positioning of telescopes, antennas, cameras and radiotherapy arms (two angles and a distance).</p>
+      <p><strong>Strengths:</strong> a large reach and workspace for a compact body, simple maths, a strong hydraulic arm is easy to build. <strong>Weaknesses:</strong> accuracy drops far from the shoulder (errors grow with the distance), the telescopic arm is heavy and hard to seal, and it cannot reach near its own base. The 6-axis articulated robot has replaced it in most factories.</p>
+      <h3>End effector (tool)</h3>
+      <p>Welding guns, grippers for hot parts, and, with a wrist of 2 or 3 axes, any tool that must also be oriented.</p>
+    </div>
+
+    <p class="try"><a href="learn-parallel.html#l1">Course: joint space and operational space →</a></p>
+
+    <script>
+      // the robot of this page, read by robot-page.js. Angles in degrees, lengths in metres.
+      window.ROBOT = {
+        std: [
+          { th: ['q1', (q) => q[0]],             d: ['h = 0.40', 0.4],   a: ['0', 0], al: ['90', 90] },
+          { th: ['q2 + 90', (q) => q[1] + 90],   d: ['0', 0],            a: ['0', 0], al: ['90', 90] },
+          { th: ['0', 0],                        d: ['q3', (q) => q[2]], a: ['0', 0], al: ['0', 0] }
+        ],
+        mod: [
+          { al: ['0', 0],   a: ['0', 0], th: ['q1', (q) => q[0]],           d: ['h = 0.40', 0.4] },
+          { al: ['90', 90], a: ['0', 0], th: ['q2 + 90', (q) => q[1] + 90], d: ['0', 0] },
+          { al: ['90', 90], a: ['0', 0], th: ['0', 0],                      d: ['q3', (q) => q[2]] }
+        ],
+        joints: [
+          { type: 'R', name: ['base rotation', 'rotation de la base'], min: -160, max: 160, value: 30 },
+          { type: 'R', name: ['tilt', 'inclinaison'], min: -30, max: 60, value: 20 },
+          { type: 'P', name: ['reach', 'allonge'], min: 30, max: 85, value: 55 }
+        ],
+        look: { link: '#cfd8e3', joint: '#ff9f43', cap: '#222a33', lr: 0.025, baseR: 0.16,
+                sizes: [{ r: 0.09, l: 0.14 }, { r: 0.07, l: 0.16 }, { r: 0.045, l: 0.12 }] },
+        cam: [1.35, 1.1, 1.45], target: [0.15, 0.45, 0], toolLen: 0.07,
+        views: {
+          side: { right: [1, 0, 0], up: [0, 0, 1], toward: [0, -1, 0], map: (u, v) => [300 + u * 290, 390 - v * 290], ground: true },
+          top:  { right: [1, 0, 0], up: [0, 1, 0], toward: [0, 0, 1],  map: (u, v) => [350 + u * 220, 210 - v * 220], ground: false }
+        },
+        scene3d(THREE, scene) {                            // a pedestal under the shoulder
+          const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.36, 24), new THREE.MeshStandardMaterial({ color: '#4a5568' }));
+          ped.material.userData.raKeep = true; ped.position.y = 0.2; scene.add(ped);
+        },
+        beforeDraw(q) {                                    // the side view turns with q1, so the arm always lies in the picture
+          const p = q[0] * Math.PI / 180, side = this.views.side;
+          side.right = [Math.cos(p), Math.sin(p), 0]; side.toward = [Math.sin(p), -Math.cos(p), 0];
+        }
+      };
+    </script>
+    <script type="module" src="robot-page.js"></script>
+  </body>
+</html>

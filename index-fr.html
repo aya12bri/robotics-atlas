@@ -93,7 +93,7 @@
         <div class="gal-foot">
           <div class="gal-cards" id="galCards">
           <article class="panel card fade on" data-i="0">
-        <p class="step">1 / 8</p>
+        <p class="step">1 / 12</p>
         <h2>Bras robot 3 axes</h2>
         <p class="rtag"><span class="notation">R-R-R</span>3 degrés de liberté, bras sériel</p>
         <p>Le bras le plus simple qui peut atteindre un point de l'espace. Le meilleur endroit pour apprendre les repères, les tableaux DH et la jacobienne.</p>
@@ -101,7 +101,7 @@
         <a class="btn" href="arm-fr.html">Ouvrir le modèle 3D</a>
       </article>
           <article class="panel card fade" data-i="1">
-        <p class="step">2 / 8</p>
+        <p class="step">2 / 12</p>
         <h2>Robot cartésien</h2>
         <p class="rtag"><span class="notation">P-P-P</span>3 degrés de liberté, trois axes coulissants</p>
         <p>Trois axes coulissants à angle droit (x, y, z), comme une imprimante 3D ou une machine CNC.</p>
@@ -109,47 +109,79 @@
         <a class="btn" href="gantry-fr.html">Ouvrir le modèle 3D</a>
       </article>
           <article class="panel card fade" data-i="2">
-        <p class="step">3 / 8</p>
+        <p class="step">3 / 12</p>
+        <h2>Robot cylindrique</h2>
+        <p class="rtag"><span class="notation">R-P-P</span>3 degrés de liberté, coordonnées cylindriques</p>
+        <p>Une colonne qui tourne, un chariot qui monte et un bras qui sort : un angle, une hauteur et un rayon.</p>
+        <dl><dt>Utilisé pour</dt><dd>Chargement de machines, fonderie sous pression, salles blanches, manutention de plaquettes, assemblage simple.</dd><dt>Effecteurs</dt><dd>Pince ou ventouse tournée vers l'extérieur.</dd></dl>
+        <a class="btn" href="cylindrical-fr.html">Ouvrir le modèle 3D</a>
+      </article>
+          <article class="panel card fade" data-i="3">
+        <p class="step">4 / 12</p>
+        <h2>Robot sphérique (polaire)</h2>
+        <p class="rtag"><span class="notation">R-R-P</span>3 degrés de liberté, coordonnées sphériques</p>
+        <p>Deux angles et un bras télescopique, comme l'Unimate, le tout premier robot industriel (1961).</p>
+        <dl><dt>Utilisé pour</dt><dd>Soudage par points, forge, chargement de presses, pointage de télescopes et d'antennes.</dd><dt>Effecteurs</dt><dd>Pince de soudage, préhenseur pour pièces chaudes.</dd></dl>
+        <a class="btn" href="spherical-fr.html">Ouvrir le modèle 3D</a>
+      </article>
+          <article class="panel card fade" data-i="4">
+        <p class="step">5 / 12</p>
         <h2>SCARA</h2>
         <p class="rtag"><span class="notation">R-R-P-R</span>4 degrés de liberté, bras sériel</p>
         <p>Rigide à la verticale, souple dans le plan horizontal. Assemblage rapide et précis, vu de dessus.</p>
         <dl><dt>Utilisé pour</dt><dd>Assemblage électronique, vissage, dépose de colle, emballage, prise et dépose rapides.</dd><dt>Effecteurs</dt><dd>Pince, buse à vide, visseuse, doseur de colle.</dd></dl>
         <a class="btn" href="scara-fr.html">Ouvrir le modèle 3D et la démo de prise et dépose</a>
       </article>
-          <article class="panel card fade" data-i="3">
-        <p class="step">4 / 8</p>
+          <article class="panel card fade" data-i="5">
+        <p class="step">6 / 12</p>
         <h2>Robot industriel 6 axes</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrés de liberté, bras sériel</p>
         <p>Le robot classique des usines automobiles : n'importe quelle position, n'importe quelle orientation, grâce à son poignet sphérique.</p>
         <dl><dt>Utilisé pour</dt><dd>Soudage, peinture, chargement de machines, palettisation, assemblage.</dd><dt>Effecteurs</dt><dd>Pince, vide, torche de soudage, pistolet de peinture, changeur d'outil.</dd></dl>
         <a class="btn" href="articulated-fr.html">Ouvrir le modèle 3D et la démo de prise et dépose</a>
       </article>
-          <article class="panel card fade" data-i="4">
-        <p class="step">5 / 8</p>
+          <article class="panel card fade" data-i="6">
+        <p class="step">7 / 12</p>
         <h2>Robot collaboratif (UR5)</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrés de liberté, travaille à côté des humains</p>
         <p>Les vrais paramètres de l'UR5, un poignet décalé et une limitation des efforts : un robot qui peut travailler sans barrière.</p>
         <dl><dt>Utilisé pour</dt><dd>Petites séries, vissage, emballage, inspection, laboratoires.</dd><dt>Effecteurs</dt><dd>Pince électrique, pince souple, visseuse, caméra.</dd></dl>
         <a class="btn" href="cobot-fr.html">Ouvrir le modèle 3D et la démo de prise et dépose</a>
       </article>
-          <article class="panel card fade" data-i="5">
-        <p class="step">6 / 8</p>
+          <article class="panel card fade" data-i="7">
+        <p class="step">8 / 12</p>
+        <h2>Robot redondant 7 axes</h2>
+        <p class="rtag"><span class="notation">7 × R</span>7 degrés de liberté, un de plus que nécessaire</p>
+        <p>Comme un bras humain : pour une même pose de l'outil, le coude peut encore bouger, pour éviter les obstacles et les butées.</p>
+        <dl><dt>Utilisé pour</dt><dd>Robots collaboratifs et médicaux (KUKA LBR iiwa, Franka), recherche, bras spatiaux.</dd><dt>Effecteurs</dt><dd>Pince, visseuse, instrument chirurgical, caméra.</dd></dl>
+        <a class="btn" href="redundant-fr.html">Ouvrir le modèle 3D et le mouvement propre</a>
+      </article>
+          <article class="panel card fade" data-i="8">
+        <p class="step">9 / 12</p>
         <h2>Robot Delta</h2>
         <p class="rtag"><span class="notation">3 × R</span>robot parallèle, 3 bras et 1 rotation optionnelle</p>
         <p>Trois bras légers et des parallélogrammes portent une petite plateforme : extrêmement rapide, mais avec un petit espace de travail.</p>
         <dl><dt>Utilisé pour</dt><dd>Emballage alimentaire, pharmaceutique et électronique sur tapis roulant, plus de 100 prises par minute.</dd><dt>Effecteurs</dt><dd>Ventouses, doigts souples, pince.</dd></dl>
         <a class="btn" href="delta-fr.html">Ouvrir le modèle 3D et la démo de prise et dépose</a>
       </article>
-          <article class="panel card fade" data-i="6">
-        <p class="step">7 / 8</p>
+          <article class="panel card fade" data-i="9">
+        <p class="step">10 / 12</p>
+        <h2>Hexapode (plateforme de Stewart)</h2>
+        <p class="rtag"><span class="notation">6-UPS</span>6 degrés de liberté, pleinement parallèle</p>
+        <p>Six jambes qui changent de longueur bougent une plateforme dans ses six directions : très rigide et précis.</p>
+        <dl><dt>Utilisé pour</dt><dd>Simulateurs de vol, tables vibrantes, miroirs de télescopes, positionnement de précision.</dd><dt>Effecteurs</dt><dd>La plateforme elle-même : un cockpit, un miroir, une pièce à usiner.</dd></dl>
+        <a class="btn" href="hexapod-fr.html">Ouvrir le modèle 3D</a>
+      </article>
+          <article class="panel card fade" data-i="10">
+        <p class="step">11 / 12</p>
         <h2>Robot mobile (entraînement différentiel)</h2>
         <p class="rtag"><span class="notation">2 roues</span>robot mobile, x, y et cap</p>
         <p>Un robot qui se déplace au lieu d'atteindre : vitesses des roues, cercle de braquage, odométrie et programmes.</p>
         <dl><dt>Utilisé pour</dt><dd>Entrepôts, hôpitaux, usines, nettoyage, livraison.</dd><dt>Effecteurs</dt><dd>En général aucun (il transporte des charges) ; un manipulateur mobile y ajoute un bras.</dd></dl>
         <a class="btn" href="mobile-fr.html">Ouvrir le modèle 3D et les programmes</a>
       </article>
-          <article class="panel card fade" data-i="7">
-        <p class="step">8 / 8</p>
+          <article class="panel card fade" data-i="11">
+        <p class="step">12 / 12</p>
         <h2>Roues et bases mobiles</h2>
         <p class="rtag"><span class="notation">5 roues</span>référence et simulateur d'entraînement</p>
         <p>Roues fixes, folles, omnidirectionnelles, Mecanum et sphériques ; entraînements différentiel, Ackermann, 3 roues omnidirectionnelles et Mecanum ; capteurs et navigation.</p>
@@ -165,18 +197,22 @@
     <section class="scene-sec end wide" id="start">
       <div class="wrap">
         <!-- anatomy-home -->
-        <div class="anat-home" id="inside">
-          <h3>Regarder à l'intérieur des robots</h3>
-          <p>Onze robots en 3D. Tournez-les à la souris, ouvrez-les en rayons X pour voir les moteurs, réducteurs et câbles, et démontez-les composant par composant.</p>
-          <div class="anat-filter" role="group" aria-label="Type of robot"><button type="button" data-f="all" aria-pressed="true">Tous <i>11</i></button><button type="button" data-f="man" aria-pressed="false">Manipulateurs <i>6</i></button><button type="button" data-f="mob" aria-pressed="false">Robots mobiles <i>3</i></button><button type="button" data-f="leg" aria-pressed="false">Humanoïdes et drones <i>2</i></button></div>
-          <div class="anat-groups"><section class="anat-group" data-type="man" style="--n:4"><div class="anat-gh"><h4>Bras robotisés</h4><span>Des bras qui prennent, posent, soudent et assemblent dans les usines.</span></div><div class="anat-grid"><a href="anatomy-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>6 × R</i></span><b>Robot industriel 6 axes</b><em>Le bras des usines automobiles : fort, rapide, dans une cage.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-cobot-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-cobot.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-cobot-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>6 × R</i></span><b>Robot collaboratif</b><em>Un bras doux qui travaille à côté des personnes, sans cage.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-scara-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-scara.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-scara-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>R-R-P-R</i></span><b>SCARA</b><em>Très rapide pour assembler de petites pièces sur une table.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-gantry-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-gantry.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-gantry-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>P-P-P</i></span><b>Robot cartésien</b><em>Trois axes droits X, Y, Z : simple, précis, peut être immense.</em><span class="anat-go">Explorer en 3D →</span></a></div></section><section class="anat-group" data-type="man" style="--n:2"><div class="anat-gh"><h4>Robots parallèles</h4><span>Plusieurs bras tiennent la même plateforme : léger et très rapide.</span></div><div class="anat-grid"><a href="anatomy-delta-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-delta.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-delta-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>Parallèle</i></span><b>Robot Delta</b><em>Prend des centaines de chocolats par minute.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-stewart-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-stewart.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-stewart-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>6 vérins</i></span><b>Plateforme de Stewart</b><em>Six vérins inclinent une plateforme : simulateurs de vol.</em><span class="anat-go">Explorer en 3D →</span></a></div></section><section class="anat-group" data-type="leg" style="--n:2"><div class="anat-gh"><h4>Robots qui marchent et qui volent</h4><span>Des jambes et des hélices : l'équilibre le plus difficile.</span></div><div class="anat-grid"><a href="anatomy-humanoid-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-humanoid.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-humanoid-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>il marche</i></span><b>Humanoïde</b><em>Marche sur deux jambes et garde son équilibre.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-quadrotor-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-quadrotor.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-quadrotor-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>il vole</i></span><b>Quadrirotor</b><em>Quatre hélices : il vole, s'incline et tourne.</em><span class="anat-go">Explorer en 3D →</span></a></div></section><section class="anat-group" data-type="mob" style="--n:3"><div class="anat-gh"><h4>Robots mobiles</h4><span>Des robots qui se déplacent sur des roues.</span></div><div class="anat-grid"><a href="anatomy-mobile-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-mobile.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-mobile-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>2 roues</i></span><b>Robot mobile</b><em>Deux roues motrices : il avance et tourne.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-drives-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-drives.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-drives-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>8 configurations</i></span><b>Configurations de motorisation</b><em>Conduisez vous-même 8 robots différents.</em><span class="anat-go">Explorer en 3D →</span></a><a href="anatomy-wheels-fr.html" class="anat-card"><span class="anat-img"><img class="th-light" src="thumbs/anatomy-wheels.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-wheels-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>7 types</i></span><b>Roues</b><em>De la roue simple à la roue omni et Mecanum.</em><span class="anat-go">Explorer en 3D →</span></a></div></section></div>
+        <div class="anat-home rcat" id="robots">
+          <span id="inside"></span>
+          <h3>Tous les robots, par famille</h3>
+          <p>Chaque robot une seule fois, avec ses deux pages : le modèle interactif (articulations, schéma cinématique, tableau DH, modèles) et l'anatomie 3D (moteurs, réducteurs et câbles, en rayons X).</p>
+          <div class="anat-filter" role="group" aria-label="Type of robot"><button type="button" data-f="all" aria-pressed="true">Tous <i>15</i></button><button type="button" data-f="ser" aria-pressed="false">Bras série <i>8</i></button><button type="button" data-f="par" aria-pressed="false">Robots parallèles <i>2</i></button><button type="button" data-f="mob" aria-pressed="false">Robots mobiles <i>3</i></button><button type="button" data-f="leg" aria-pressed="false">Robots qui marchent et qui volent <i>2</i></button></div>
+          <section class="anat-group rcat-group" data-type="ser"><div class="anat-gh"><h4>Bras série</h4><span>Une seule chaîne d'articulations de la base à l'outil : ils prennent, posent, soudent et assemblent.</span></div><div class="anat-grid"><div class="anat-card rcat-card"><a class="anat-img" href="arm-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/robot-arm.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/robot-arm-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>R-R-R</i></a><b><a href="arm-fr.html">Bras 3 axes</a></b><em>Le bras le plus simple qui atteint un point de l'espace.</em><span class="rcat-btns"><a class="btn sm" href="arm-fr.html">Modèle interactif</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="gantry-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-gantry.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-gantry-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>P-P-P</i></a><b><a href="gantry-fr.html">Robot cartésien</a></b><em>Trois axes droits X, Y, Z : simple, précis, peut être immense.</em><span class="rcat-btns"><a class="btn sm" href="gantry-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-gantry-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="cylindrical-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/robot-cylindrical.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/robot-cylindrical-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>R-P-P</i></a><b><a href="cylindrical-fr.html">Robot cylindrique</a></b><em>Une colonne qui tourne, un chariot qui monte, un bras qui sort.</em><span class="rcat-btns"><a class="btn sm" href="cylindrical-fr.html">Modèle interactif</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="spherical-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/robot-spherical.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/robot-spherical-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>R-R-P</i></a><b><a href="spherical-fr.html">Robot sphérique (polaire)</a></b><em>Deux angles et un bras télescopique : le tout premier robot industriel.</em><span class="rcat-btns"><a class="btn sm" href="spherical-fr.html">Modèle interactif</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="scara-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-scara.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-scara-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>R-R-P-R</i></a><b><a href="scara-fr.html">SCARA</a></b><em>Très rapide pour assembler de petites pièces sur une table.</em><span class="rcat-btns"><a class="btn sm" href="scara-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-scara-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="articulated-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>6 × R</i></a><b><a href="articulated-fr.html">Robot industriel 6 axes</a></b><em>Le bras des usines automobiles : fort, rapide, dans une cage.</em><span class="rcat-btns"><a class="btn sm" href="articulated-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="cobot-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-cobot.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-cobot-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>6 × R</i></a><b><a href="cobot-fr.html">Robot collaboratif</a></b><em>Un bras doux qui travaille à côté des personnes, sans cage.</em><span class="rcat-btns"><a class="btn sm" href="cobot-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-cobot-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="redundant-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/robot-redundant.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/robot-redundant-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>7 × R</i></a><b><a href="redundant-fr.html">Robot redondant 7 axes</a></b><em>Une articulation de trop, exprès : le coude bouge, l'outil reste immobile.</em><span class="rcat-btns"><a class="btn sm" href="redundant-fr.html">Modèle interactif</a></span></div></div></section>
+          <section class="anat-group rcat-group" data-type="par"><div class="anat-gh"><h4>Robots parallèles</h4><span>Plusieurs chaînes tiennent la même plateforme : légers, rigides et très rapides.</span></div><div class="anat-grid"><div class="anat-card rcat-card"><a class="anat-img" href="delta-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-delta.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-delta-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>Parallèle</i></a><b><a href="delta-fr.html">Robot Delta</a></b><em>Prend des centaines de chocolats par minute.</em><span class="rcat-btns"><a class="btn sm" href="delta-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-delta-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="hexapod-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-stewart.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-stewart-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>6-UPS</i></a><b><a href="hexapod-fr.html">Hexapode (plateforme de Stewart)</a></b><em>Six jambes bougent une plateforme dans 6 directions : simulateurs de vol.</em><span class="rcat-btns"><a class="btn sm" href="hexapod-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-stewart-fr.html">Anatomie 3D</a></span></div></div></section>
+          <section class="anat-group rcat-group" data-type="mob"><div class="anat-gh"><h4>Robots mobiles</h4><span>Des robots qui se déplacent sur des roues.</span></div><div class="anat-grid"><div class="anat-card rcat-card"><a class="anat-img" href="mobile-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-mobile.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-mobile-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>2 roues</i></a><b><a href="mobile-fr.html">Robot mobile</a></b><em>Deux roues motrices : il avance et tourne.</em><span class="rcat-btns"><a class="btn sm" href="mobile-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-mobile-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="wheels-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-wheels.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-wheels-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>7 types</i></a><b><a href="wheels-fr.html">Roues</a></b><em>De la roue simple à la roue omni et Mecanum.</em><span class="rcat-btns"><a class="btn sm" href="wheels-fr.html">Modèle interactif</a><a class="btn sm ghost" href="anatomy-wheels-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="anatomy-drives-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-drives.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-drives-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>8 configurations</i></a><b><a href="anatomy-drives-fr.html">Configurations de motorisation</a></b><em>Conduisez vous-même 8 robots différents.</em><span class="rcat-btns"><a class="btn sm ghost" href="anatomy-drives-fr.html">Anatomie 3D</a></span></div></div></section>
+          <section class="anat-group rcat-group" data-type="leg"><div class="anat-gh"><h4>Robots qui marchent et qui volent</h4><span>Des jambes et des hélices : l'équilibre le plus difficile.</span></div><div class="anat-grid"><div class="anat-card rcat-card"><a class="anat-img" href="anatomy-humanoid-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-humanoid.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-humanoid-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>il marche</i></a><b><a href="anatomy-humanoid-fr.html">Humanoïde</a></b><em>Marche sur deux jambes et garde son équilibre.</em><span class="rcat-btns"><a class="btn sm ghost" href="anatomy-humanoid-fr.html">Anatomie 3D</a></span></div><div class="anat-card rcat-card"><a class="anat-img" href="anatomy-quadrotor-fr.html" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/anatomy-quadrotor.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/anatomy-quadrotor-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>il vole</i></a><b><a href="anatomy-quadrotor-fr.html">Quadrirotor</a></b><em>Quatre hélices : il vole, s'incline et tourne.</em><span class="rcat-btns"><a class="btn sm ghost" href="anatomy-quadrotor-fr.html">Anatomie 3D</a></span></div></div></section>
         </div>
-          <script>document.querySelectorAll('.anat-filter button').forEach((b) => b.addEventListener('click', () => { const f = b.dataset.f; document.querySelectorAll('.anat-filter button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); document.querySelectorAll('.anat-group').forEach((g) => { g.hidden = f !== 'all' && g.dataset.type !== f; }); document.querySelector('.anat-groups').classList.toggle('filtered', f !== 'all'); }));</script>
+          <script>document.querySelectorAll('.anat-filter button').forEach((b) => b.addEventListener('click', () => { const f = b.dataset.f; document.querySelectorAll('.anat-filter button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); document.querySelectorAll('.anat-group').forEach((g) => { g.hidden = f !== 'all' && g.dataset.type !== f; }); }));</script>
         <!-- /anatomy-home -->
         <div class="rm-head" id="road">
           <div>
             <h2>Parcours d'apprentissage de la robotique</h2>
-            <p>Cinq niveaux, de votre premier robot à la robotique intelligente. Suivez-les de haut en bas et cochez chaque page terminée. Vous pouvez aussi aller directement au niveau qu'il vous faut.</p>
+            <p>Six niveaux, de votre premier robot à la robotique intelligente. Le niveau où vous en êtes est ouvert ; cliquez sur un autre niveau pour voir ses pages. Cochez chaque page terminée.</p>
           </div>
           <div class="rm-prog" id="rmProg"></div>
         </div>
@@ -256,13 +292,13 @@ function RA_LANG() { return (window.RA && window.RA.lang) || document.documentEl
 const secHero = $('top'), secTour = $('tour'), secGal = $('gallery'), secEnd = document.querySelector('.scene-sec.end');
 const NAMES = [['3-DOF arm', 'Bras 3 axes'], ['Cartesian gantry', 'Robot cartésien'], ['SCARA', 'SCARA'], ['6-axis robot', 'Robot 6 axes'], ['Cobot UR5', 'Cobot UR5'], ['Delta', 'Delta'], ['Mobile robot', 'Robot mobile'], ['Mecanum wheel', 'Roue Mecanum']];
 { const row = NAMES.map((n) => `<span>${L(n[0], n[1])}</span>`).join(''); $('ticker').innerHTML = `<div class="track">${row}${row}</div>`; }
-const ui = { step: 1, gi: 0, auto: !reduce, last: 0 };          // tour step (1..4) and gallery index (0..7)
+const ui = { step: 1, gi: 0, auto: !reduce, last: 0 };          // tour step (1..4) and gallery index (0..11)
 const tourPanels = [...document.querySelectorAll('#tourFader .panel')], cards = [...document.querySelectorAll('#galCards .card')];
 const stepper = $('stepper'), dots = $('galDots');
 const setFade = (list, k) => list.forEach((p, i) => p.classList.toggle('on', i === k));
 function setStep(n, manual) { ui.step = ((n - 1 + 4) % 4) + 1; if (manual) ui.auto = false; ui.last = performance.now(); const bar = stepper.querySelector('.bar'); if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; bar.classList.toggle('run', ui.auto); } setFade(tourPanels, ui.step - 1); [...stepper.querySelectorAll('[data-n]')].forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === ui.step))); }
 const gnEls = [];
-function setGal(i) { ui.gi = ((i % 8) + 8) % 8; setFade(cards, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
+function setGal(i) { const n = cards.length; ui.gi = ((i % n) + n) % n; setFade(cards, ui.gi); [...dots.children].forEach((b, k) => b.setAttribute('aria-current', String(k === ui.gi))); }
 stepper.innerHTML = `<button type="button" class="arr" data-d="-1" aria-label="${L('Previous step', 'Étape précédente')}">←</button>` + [1, 2, 3, 4].map((n) => `<button type="button" data-n="${n}" aria-label="${L('Step', 'Étape')} ${n}">0${n}</button>`).join('') + `<button type="button" class="arr" data-d="1" aria-label="${L('Next step', 'Étape suivante')}">→</button>`;
 stepper.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; setStep(b.dataset.n ? +b.dataset.n : ui.step + +b.dataset.d, true); });
 dots.innerHTML = cards.map((c) => `<button type="button" aria-label="${c.querySelector('h2').textContent}"></button>`).join('');
@@ -286,6 +322,10 @@ const RM = {
   cobot: { href: 'cobot.html', tag: ['6 × R', '6 × R'], min: 30, lv: 2, t: ['Cobot (UR5)', 'Cobot (UR5)'], d: ['Offset wrist, safety and a real UR5 table.', 'Poignet décalé, sécurité et vrai tableau d\'un UR5.'] },
   delta: { href: 'delta.html', tag: ['Parallel', 'Parallèle'], min: 45, lv: 3, t: ['Delta robot', 'Robot Delta'], d: ['Parallel robots and closed loops.', 'Robots parallèles et boucles fermées.'] },
   mobile: { href: 'mobile.html', tag: ['2 wheels', '2 roues'], min: 30, lv: 2, t: ['Mobile robot', 'Robot mobile'], d: ['Wheel speeds, turning circle and odometry.', 'Vitesses des roues, cercle de virage et odométrie.'] },
+  cylindrical: { href: 'cylindrical.html', tag: ['R-P-P', 'R-P-P'], min: 20, lv: 1, t: ['Cylindrical robot', 'Robot cylindrique'], d: ['An angle, a height, a radius: the simplest arm after the gantry.', 'Un angle, une hauteur, un rayon : le bras le plus simple après le portique.'] },
+  spherical: { href: 'spherical.html', tag: ['R-R-P', 'R-R-P'], min: 20, lv: 1, t: ['Spherical robot', 'Robot sphérique'], d: ['Two angles and a telescopic arm, like the first industrial robot.', 'Deux angles et un bras télescopique, comme le premier robot industriel.'] },
+  redundant: { href: 'redundant.html', tag: ['7 × R', '7 × R'], min: 30, lv: 3, t: ['7-axis redundant robot', 'Robot redondant 7 axes'], d: ['One joint too many: the elbow moves while the tool stays still.', 'Une articulation de trop : le coude bouge pendant que l\'outil reste immobile.'] },
+  hexapod: { href: 'hexapod.html', tag: ['6-UPS', '6-UPS'], min: 30, lv: 3, t: ['Hexapod (Stewart platform)', 'Hexapode (Stewart)'], d: ['Six legs, six degrees of freedom, Newton for the direct model.', 'Six jambes, six degrés de liberté, Newton pour le modèle direct.'] },
   model: { href: 'learn-model.html', tag: ['Full course', 'Cours complet'], min: 200, lv: 3, t: ['Robot modelling', 'Modélisation d\'un robot'], d: ['Master level: DHm, MGD, MGI, Jacobian, motion laws, dynamics.', 'Niveau Master : DHm, MGD, MGI, jacobienne, lois de mouvement, dynamique.'] },
   sing: { href: 'learn-singularities.html', tag: ['Course', 'Cours'], min: 100, lv: 3, t: ['Singularities and the Jacobian', 'Singularités et jacobienne'], d: ['Why a robot loses a direction, gimbal lock, redundancy, how to avoid it.', 'Pourquoi un robot perd une direction, blocage de cardan, redondance, comment l\'éviter.'] },
   ctrl: { href: 'learn-control.html', tag: ['Course', 'Cours'], min: 175, lv: 3, t: ['Dynamics and control', 'Dynamique et commande'], d: ['Torques, motors, sensors, PID, computed torque, force control.', 'Couples, moteurs, capteurs, PID, couple calculé, commande en effort.'] },
@@ -307,19 +347,20 @@ const RM = {
   sensors: { href: 'sensors.html', tag: ['Test bench', 'Banc d\'essai'], min: 30, lv: 2, t: ['Sensor test bench', 'Banc d\'essai des capteurs'], d: ['Encoder, IMU, lidar, camera and ultrasonic, live: resolution, noise, drift and blind spots.', 'Encodeur, IMU, lidar, caméra et ultrasons, en direct : résolution, bruit, dérive et angles morts.'] },
   wheels: { href: 'wheels.html', tag: ['Reference', 'Référence'], min: 40, lv: 2, t: ['Wheels and drive types', 'Roues et motorisations'], d: ['Every wheel type, four drives to try yourself.', 'Tous les types de roues, quatre motorisations à essayer.'] }
 };
-const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'scara', 'articulated', 'cobot', 'delta', 'model', 'sing', 'par', 'armlab', 'sandbox', 'ctrl', 'tr', 'sensors', 'ros', 'ai', 'kf', 'world', 'mobile', 'wheels', 'wmr', 'wmrpro', 'adv', 'tel', 'projects'];
-// five levels; each row has a main page (c) and optional side pages (l, r)
+const RM_ORDER = ['learn', 'build', 'anatomy', 'mk', 'maths', 'arm', 'gantry', 'cylindrical', 'spherical', 'scara', 'articulated', 'cobot', 'redundant', 'delta', 'hexapod', 'model', 'sing', 'par', 'armlab', 'sandbox', 'ctrl', 'tr', 'sensors', 'ros', 'ai', 'kf', 'world', 'mobile', 'wheels', 'wmr', 'wmrpro', 'adv', 'tel', 'projects'];
+// six levels; each row has a main page (c) and optional side pages (l, r)
 const RM_LEVELS = [
   { t: ['Discover robotics', 'Découvrir la robotique'], d: ['What a robot is, its components, the robot types, the joints.', 'Ce qu\'est un robot, ses composants, les types de robots, les articulations.'], lv: 1, rows: [{ c: 'learn', l: 'build', r: 'anatomy' }] },
   { t: ['Mathematics for robotics', 'Mathématiques pour la robotique'], d: ['Vectors, matrices, trigonometry, transformations, derivatives, probability.', 'Vecteurs, matrices, trigonométrie, transformations, dérivées, probabilités.'], lv: 1, rows: [{ c: 'mk', r: 'maths' }] },
-  { t: ['Robot kinematics', 'Cinématique des robots'], d: ['Frames, DH tables, forward and inverse models (MGD, MGI), the Jacobian.', 'Repères, tableaux DH, modèles direct et inverse (MGD, MGI), la jacobienne.'], lv: 2, rows: [{ c: 'arm', l: 'gantry', r: 'scara' }, { c: 'articulated', l: 'cobot', r: 'delta' }, { c: 'model', l: 'armlab', r: 'sing' }, { c: 'par' }] },
+  { t: ['Robot kinematics', 'Cinématique des robots'], d: ['Frames, DH tables, forward and inverse models (MGD, MGI), the Jacobian.', 'Repères, tableaux DH, modèles direct et inverse (MGD, MGI), la jacobienne.'], lv: 2, rows: [{ c: 'arm', l: 'gantry', r: 'scara' }, { c: 'articulated', l: 'cobot', r: 'delta' }, { c: 'redundant', l: 'cylindrical', r: 'spherical' }, { c: 'model', l: 'armlab', r: 'sing' }, { c: 'par', r: 'hexapod' }] },
   { t: ['Dynamics and control', 'Dynamique et commande'], d: ['Motors, dynamic models, PID, trajectories.', 'Moteurs, modèles dynamiques, PID, trajectoires.'], lv: 3, rows: [{ c: 'ctrl', l: 'sandbox', r: 'sensors' }, { c: 'tr' }] },
-  { t: ['Intelligent robotics', 'Robotique intelligente'], d: ['ROS 2, SLAM, vision, navigation and AI.', 'ROS 2, SLAM, vision, navigation et IA.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'wmrpro', l: 'projects', r: 'adv' }, { c: 'kf', r: 'tel' }] }
+  { t: ['Mobile robots', 'Robots mobiles'], d: ['Wheels and drives, kinematics, odometry, control, planning and a real project.', 'Roues et motorisations, cinématique, odométrie, commande, planification et un vrai projet.'], lv: 2, rows: [{ c: 'mobile', l: 'wheels', r: 'wmr' }, { c: 'wmrpro', l: 'projects' }] },
+  { t: ['Intelligent robotics and Master', 'Robotique intelligente et Master'], d: ['ROS 2, perception, AI, data fusion, advanced control, teleoperation, the real world.', 'ROS 2, perception, IA, fusion de données, commande avancée, téléopération, le monde réel.'], lv: 3, rows: [{ c: 'ros', l: 'ai', r: 'world' }, { c: 'kf', l: 'adv', r: 'tel' }] }
 ];
 const LVL = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
 const rmEl = $('roadmap'), prog = () => (window.RA && RA.progress) || { get: () => false, set() {}, clear() {} };
 const rmNode = (id, cls) => { const n = RM[id]; if (!n) return ''; return `<article class="rm-node ${cls}" data-id="${id}"><div class="rm-top"><span class="rm-tag">${n.tag[+FR]}</span><span class="rm-meta">${n.min} min · <i class="lv l${n.lv}" title="${LVL[n.lv - 1][+FR]}"><b></b><b></b><b></b></i> ${LVL[n.lv - 1][+FR]}</span></div><h3><a href="${n.href}">${n.t[+FR]}</a></h3><p>${n.d[+FR]}</p><div class="rm-bot"><label class="rm-check"><input type="checkbox" data-id="${id}"><span class="box" aria-hidden="true"></span><span class="lbl">${L('Done', 'Fait')}</span></label><a class="rm-go" href="${n.href}">${L('Open', 'Ouvrir')} →</a></div></article>`; };
-rmEl.innerHTML = RM_LEVELS.map((lv, k) => `<div class="rm-level" data-lv="${k}"><span class="rm-ln">${L('Level', 'Niveau')} ${k + 1}</span><div><h3>${lv.t[+FR]}</h3><p>${lv.d[+FR]}</p></div><em><i class="lv l${lv.lv}"><b></b><b></b><b></b></i> ${LVL[lv.lv - 1][+FR]} · <b class="rm-lc"></b></em></div>` + lv.rows.map((r) => `<div class="rm-row"><div class="rm-side l">${r.l ? rmNode(r.l, 'side') : ''}</div><div class="rm-main">${rmNode(r.c, 'main')}</div><div class="rm-side r">${r.r ? rmNode(r.r, 'side') : ''}</div></div>`).join('')).join('');
+rmEl.innerHTML = RM_LEVELS.map((lv, k) => `<div class="rm-level" data-lv="${k}" role="button" tabindex="0" aria-expanded="false"><span class="rm-ln">${L('Level', 'Niveau')} ${k + 1}</span><div><h3>${lv.t[+FR]}</h3><p>${lv.d[+FR]}</p></div><em><i class="lv l${lv.lv}"><b></b><b></b><b></b></i> ${LVL[lv.lv - 1][+FR]} · <b class="rm-lc"></b><span class="rm-chev" aria-hidden="true">▾</span></em></div>` + lv.rows.map((r) => `<div class="rm-row" data-lv="${k}"><div class="rm-side l">${r.l ? rmNode(r.l, 'side') : ''}</div><div class="rm-main">${rmNode(r.c, 'main')}</div><div class="rm-side r">${r.r ? rmNode(r.r, 'side') : ''}</div></div>`).join('')).join('');
 function paintRoad() {
   const P = prog(); let done = 0, next = null;
   RM_ORDER.forEach((id) => { const ok = P.get(id); if (ok) done++; else if (!next) next = id; });
@@ -330,6 +371,13 @@ function paintRoad() {
   const rs = $('rmReset'); if (rs) rs.addEventListener('click', () => { if (confirm(L('Clear your progress?', 'Effacer votre progression ?'))) prog().clear(Object.keys(prog().all ? prog().all() : {})); });
 }
 rmEl.addEventListener('change', (e) => { const i = e.target.closest('input[data-id]'); if (i) prog().set(i.dataset.id, i.checked); });
+// one level open at a time at first: the level of the next page to do; a click on a level header opens or closes it
+const rmOpen = (k, open) => { const h = rmEl.querySelector(`.rm-level[data-lv="${k}"]`); h.classList.toggle('open', open); h.setAttribute('aria-expanded', String(open)); rmEl.querySelectorAll(`.rm-row[data-lv="${k}"]`).forEach((r) => { r.hidden = !open; }); };
+{ const P = prog(), nx = RM_ORDER.find((id) => !P.get(id)), lv0 = Math.max(0, RM_LEVELS.findIndex((lv) => lv.rows.some((r) => [r.c, r.l, r.r].includes(nx))));
+  RM_LEVELS.forEach((_, k) => rmOpen(k, k === lv0)); }
+rmEl.addEventListener('click', (e) => { const h = e.target.closest('.rm-level'); if (h) rmOpen(+h.dataset.lv, !h.classList.contains('open')); });
+rmEl.addEventListener('keydown', (e) => { const h = e.target.closest('.rm-level'); if (h && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); rmOpen(+h.dataset.lv, !h.classList.contains('open')); } });
+// "Continue" opens the level of the next page
 addEventListener('ra-progress', paintRoad); paintRoad();
 // the tool cards under the roadmap: certificates, save the progress, offline mode (built in the right language)
 $('rmBackup').className = 'tool-row';
@@ -455,9 +503,9 @@ if (renderer) {
   const resetCube = () => { scene.attach(cube); cube.rotation.set(0, 0, 0); cube.position.set(PAD_A.x, CUBE / 2, -PAD_A.y); };
   resetCube(); place.visible = false; cube.visible = false;
 
-  // ---------- the gallery: eight robots on pedestals, far from the hero robot ----------
+  // ---------- the gallery: twelve robots on pedestals, far from the hero robot (pedestal(k): k = place in the row) ----------
   const FIT_H = 1.3, FIT_W = 1.5;                                   // every gallery robot is scaled to fit this box
-  const GAL_Z = -22, GX = (i) => (i - 3.5) * 2.0, galY = 0.12;
+  const GAL_N = 12, GAL_Z = -22, GX = (i) => (i - (GAL_N - 1) / 2) * 2.0, galY = 0.12;
   const gal = new THREE.Group(); scene.add(gal);
   const stdMat = (c, r, m) => new THREE.MeshStandardMaterial({ color: c, roughness: r === undefined ? 0.45 : r, metalness: m === undefined ? 0.2 : m });
   const mLink = stdMat('#d8d8d8'), mOr = stdMat('#ff9f43', 0.4), mDark = stdMat('#3a3a3a', 0.7), mBlue = stdMat('#2f6bff', 0.35);
@@ -466,7 +514,7 @@ if (renderer) {
   const bx = (w, h, d, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
   const cy = (r, h, m, seg) => new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg || 32), m);
   function pedestal(i) {
-    const g = new THREE.Group(); g.position.set(GX(i), 0, GAL_Z);
+    const g = new THREE.Group(); g.position.set(GX(i), 0, GAL_Z); g.userData.slot = i;
     const base = cy(0.8, 0.12, mDark, 72); base.position.y = 0.06; base.receiveShadow = true;
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.014, 8, 120), new THREE.MeshBasicMaterial({ color: '#2f6bff' })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.122;
     g.add(base, ring); gal.add(g); return g;
@@ -488,25 +536,25 @@ if (renderer) {
     const wp = bx(0.4, 0.14, 0.3, mBlue); wp.position.set(0.25, 0.07, -0.1); body.add(wp); const base = bx(1.25, 0.04, 0.85, mDark); base.position.y = 0.02; body.add(base); shadowed(body);
     models.push({ i: 1, update: (t) => { cross.position.x = 0.38 * Math.sin(t * 0.7); car.position.z = 0.26 * Math.sin(t * 1.1 + 1); const z = 0.28 + 0.2 * (0.5 + 0.5 * Math.sin(t * 1.6)); ram.scale.y = z / 0.9; ram.position.y = -z / 2 - 0.06; grip.position.y = -z - 0.06; } }); }
   // 3. SCARA
-  { const g = pedestal(2), L1 = 0.5, L2 = 0.42, body = new THREE.Group(); body.position.y = galY; g.add(body);
+  { const g = pedestal(4), L1 = 0.5, L2 = 0.42, body = new THREE.Group(); body.position.y = galY; g.add(body);
     const col = cy(0.12, 0.6, mLink); col.position.y = 0.3; body.add(col); const sh = new THREE.Group(); sh.position.y = 0.66; body.add(sh);
     const a1 = bx(L1, 0.09, 0.14, mLink); a1.position.x = L1 / 2; sh.add(a1); const j1 = cy(0.09, 0.12, mOr); sh.add(j1);
     const el = new THREE.Group(); el.position.set(L1, 0.08, 0); sh.add(el); const a2 = bx(L2, 0.08, 0.12, mLink); a2.position.x = L2 / 2; el.add(a2); el.add(cy(0.075, 0.1, mOr));
     const qh = cy(0.04, 0.12, mDark); qh.position.set(L2, 0.02, 0); el.add(qh); const quill = cy(0.022, 0.55, mLink, 16); el.add(quill);
-    models.push({ i: 2, update: (t) => { sh.rotation.y = 1.1 * Math.sin(t * 0.6); el.rotation.y = 1.3 * Math.sin(t * 0.9 + 1); const z = 0.12 + 0.12 * Math.sin(t * 1.7); quill.position.set(L2, -0.16 - z, 0); } }); shadowed(body); }
+    models.push({ i: 4, update: (t) => { sh.rotation.y = 1.1 * Math.sin(t * 0.6); el.rotation.y = 1.3 * Math.sin(t * 0.9 + 1); const z = 0.12 + 0.12 * Math.sin(t * 1.7); quill.position.set(L2, -0.16 - z, 0); } }); shadowed(body); }
   // 4. 6-axis industrial robot
-  { const g = pedestal(3); const a = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14, sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.1 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
+  { const g = pedestal(5); const a = DHArm.build(THREE, STD, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.035, baseR: 0.14, sizes: [{ r: 0.09, l: 0.14 }, { r: 0.075, l: 0.12 }, { r: 0.065, l: 0.11 }, { r: 0.055, l: 0.1 }, { r: 0.05, l: 0.09 }, { r: 0.04, l: 0.05 }] });
     a.root.scale.setScalar(1.15); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
-    models.push({ i: 3, update: (t) => a.setPose([50 * Math.sin(t * 0.5), -45 + 25 * Math.sin(t * 0.7 + 1), -60 + 30 * Math.sin(t * 0.9), 70 * Math.sin(t * 0.8), -50 + 30 * Math.sin(t * 1.1), 90 * Math.sin(t * 1.3)]) }); }
+    models.push({ i: 5, update: (t) => a.setPose([50 * Math.sin(t * 0.5), -45 + 25 * Math.sin(t * 0.7 + 1), -60 + 30 * Math.sin(t * 0.9), 70 * Math.sin(t * 0.8), -50 + 30 * Math.sin(t * 1.1), 90 * Math.sin(t * 1.3)]) }); }
   // 5. collaborative robot (UR5 numbers)
-  { const g = pedestal(4), D1 = 0.089159, A2 = -0.425, A3 = -0.39225, D4 = 0.10915, D5 = 0.09465, D6 = 0.0823;
+  { const g = pedestal(6), D1 = 0.089159, A2 = -0.425, A3 = -0.39225, D4 = 0.10915, D5 = 0.09465, D6 = 0.0823;
     const UR = [{ th: ['q1', (q) => q[0]], d: ['d', D1], a: ['0', 0], al: ['90', 90] }, { th: ['q2', (q) => q[1]], d: ['0', 0], a: ['a', A2], al: ['0', 0] }, { th: ['q3', (q) => q[2]], d: ['0', 0], a: ['a', A3], al: ['0', 0] },
       { th: ['q4', (q) => q[3]], d: ['d', D4], a: ['0', 0], al: ['90', 90] }, { th: ['q5', (q) => q[4]], d: ['d', D5], a: ['0', 0], al: ['-90', -90] }, { th: ['q6', (q) => q[5]], d: ['d', D6], a: ['0', 0], al: ['0', 0] }];
     const a = DHArm.build(THREE, UR, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.045, baseR: 0.1, sizes: [{ r: 0.065, l: 0.12 }, { r: 0.065, l: 0.12 }, { r: 0.058, l: 0.11 }, { r: 0.042, l: 0.09 }, { r: 0.042, l: 0.09 }, { r: 0.042, l: 0.08 }] });
     a.root.scale.setScalar(1.0); a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
-    models.push({ i: 4, update: (t) => a.setPose([60 * Math.sin(t * 0.5), -90 + 25 * Math.sin(t * 0.8), 90 + 30 * Math.sin(t * 0.7 + 1), -90 + 40 * Math.sin(t * 0.9), -90 + 30 * Math.sin(t * 1.1), 120 * Math.sin(t * 1.2)]) }); }
+    models.push({ i: 6, update: (t) => a.setPose([60 * Math.sin(t * 0.5), -90 + 25 * Math.sin(t * 0.8), 90 + 30 * Math.sin(t * 0.7 + 1), -90 + 40 * Math.sin(t * 0.9), -90 + 30 * Math.sin(t * 1.1), 120 * Math.sin(t * 1.2)]) }); }
   // 6. Delta robot (the closed-form inverse kinematics of its page)
-  { const g = pedestal(5), RB = 0.16, RE = 0.05, L = 0.28, LL = 0.55, W = 0.07, R = RB - RE, PHI = [0, 120, 240].map((d) => d * D2R_), S = 1.3, H = 0.74;
+  { const g = pedestal(8), RB = 0.16, RE = 0.05, L = 0.28, LL = 0.55, W = 0.07, R = RB - RE, PHI = [0, 120, 240].map((d) => d * D2R_), S = 1.3, H = 0.74;
     const body = new THREE.Group(); body.position.y = galY; body.scale.setScalar(S); g.add(body);
     const plate = bx(0.8, 0.03, 0.8, mDark); plate.position.y = H + 0.1; body.add(plate);
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const p = bx(0.03, H + 0.1, 0.03, mDark); p.position.set(sx * 0.37, (H + 0.1) / 2, sz * 0.37); body.add(p); }
@@ -518,30 +566,59 @@ if (renderer) {
     const eff = cy(RE + 0.012, 0.02, mBlue, 24); body.add(eff);
     const ik = (P) => PHI.map((ph) => { const c = Math.cos(ph), s = Math.sin(ph), x0 = c * P[0] + s * P[1], y0 = -s * P[0] + c * P[1], z0 = P[2]; const A = -2 * L * (x0 - R), B = 2 * L * z0, C = -((x0 - R) ** 2 + y0 * y0 + z0 * z0 + L * L - LL * LL), m = Math.hypot(A, B); if (Math.abs(C) > m) return 0.3;
       const t0 = Math.atan2(B, A), d = Math.acos(C / m), w = (t) => Math.atan2(Math.sin(t), Math.cos(t)); return [w(t0 + d), w(t0 - d)].sort((p, q) => Math.cos(q) - Math.cos(p))[0]; });
-    models.push({ i: 5, update: (t) => {
+    models.push({ i: 8, update: (t) => {
       const P = [0.14 * Math.cos(t * 1.2), 0.14 * Math.sin(t * 1.2), -0.5 + 0.07 * Math.sin(t * 2.4)], th = ik(P);
       for (let i = 0; i < 3; i++) { const c = Math.cos(PHI[i]), s = Math.sin(PHI[i]), ra = [c, s, 0], ta = [-s, c, 0], B = [RB * c, RB * s, 0], rad = RB + L * Math.cos(th[i]), J = [rad * c, rad * s, -L * Math.sin(th[i])];
         const E = [P[0] + RE * c, P[1] + RE * s, P[2]], add = (p, q, k) => [p[0] + q[0] * k, p[1] + q[1] * k, p[2] + q[2] * k], Ja = add(J, ta, -W / 2), Jb = add(J, ta, W / 2), Ea = add(E, ta, -W / 2), Eb = add(E, ta, W / 2), lg = legs[i];
         setRod(lg.up, Wp(B), Wp(J)); setRod(lg.cr, Wp(Ja), Wp(Jb)); setRod(lg.eb, Wp(Ea), Wp(Eb)); setRod(lg.f1, Wp(Ja), Wp(Ea)); setRod(lg.f2, Wp(Jb), Wp(Eb)); }
       eff.position.copy(Wp(P)); } }); shadowed(body); }
   // 7. Mobile robot, differential drive, drawing its path
-  { const g = pedestal(6), bot = new THREE.Group(); bot.position.y = galY; g.add(bot);
+  { const g = pedestal(10), bot = new THREE.Group(); bot.position.y = galY; g.add(bot);
     const body = bx(0.46, 0.1, 0.32, mLink); body.position.y = 0.12; const top = cy(0.07, 0.07, mOr, 24); top.position.set(0.1, 0.2, 0); const lid = cy(0.035, 0.03, mDark, 20); lid.position.set(0.1, 0.25, 0);
     const wl = [-1, 1].map((s) => { const w = cy(0.075, 0.05, mDark, 28); w.rotation.x = Math.PI / 2; w.position.set(0, 0.075, s * 0.19); bot.add(w); return w; });
     const caster = new THREE.Mesh(new THREE.SphereGeometry(0.035, 14, 10), mDark); caster.position.set(-0.17, 0.035, 0); bot.add(body, top, lid, caster); shadowed(bot);
     const N = 160, pos = new Float32Array(N * 3), tg = new THREE.BufferGeometry(); tg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const trail = new THREE.Line(tg, new THREE.LineBasicMaterial({ color: '#2f6bff' })); trail.position.y = galY + 0.01; g.add(trail);
     let n = 0, last = -1;
-    models.push({ i: 6, update: (t) => { const w = t * 0.55, x = 0.46 * Math.sin(w), z = 0.46 * Math.sin(2 * w) * 0.8, dx = 0.46 * Math.cos(w), dz = 0.74 * Math.cos(2 * w) * 0.8;
+    models.push({ i: 10, update: (t) => { const w = t * 0.55, x = 0.46 * Math.sin(w), z = 0.46 * Math.sin(2 * w) * 0.8, dx = 0.46 * Math.cos(w), dz = 0.74 * Math.cos(2 * w) * 0.8;
       bot.position.set(x, galY, z); bot.rotation.y = -Math.atan2(dz, dx); wl.forEach((m, k) => { m.rotation.y = t * 6 * (k ? 1.1 : 0.9); });
       if (Math.floor(t * 30) !== last) { last = Math.floor(t * 30); if (n < N) n++; for (let k = (n - 1) * 3; k >= 3; k--) pos[k] = pos[k - 3]; pos[0] = x; pos[1] = 0; pos[2] = z; tg.attributes.position.needsUpdate = true; tg.setDrawRange(0, n); } } }); }
   // 8. Mecanum wheel
-  { const g = pedestal(7), w = new THREE.Group(); w.position.set(0, galY + 0.6, 0); g.add(w); const rim = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.05, 16, 56), mDark); w.add(rim);
+  { const g = pedestal(11), w = new THREE.Group(); w.position.set(0, galY + 0.6, 0); g.add(w); const rim = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.05, 16, 56), mDark); w.add(rim);
     const hub = cy(0.12, 0.16, mLink, 28); hub.rotation.x = Math.PI / 2; w.add(hub); for (let k = 0; k < 6; k++) { const sp = bx(0.34, 0.03, 0.03, mLink); sp.position.set(0.19 * Math.cos(k * 1.0472), 0.19 * Math.sin(k * 1.0472), 0); sp.rotation.z = k * 1.0472; w.add(sp); }
     for (let k = 0; k < 12; k++) { const a = k * Math.PI / 6, r = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.15, 4, 12), mOr), tvec = new THREE.Vector3(-Math.sin(a), Math.cos(a), 0), dirv = tvec.clone().multiplyScalar(Math.SQRT1_2).add(new THREE.Vector3(0, 0, Math.SQRT1_2));
       r.position.set(0.44 * Math.cos(a), 0.44 * Math.sin(a), 0); r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dirv); w.add(r); }
     const fork = new THREE.Group(); g.add(fork); fork.position.y = galY; for (const s of [-1, 1]) { const f = bx(0.05, 1.2, 0.05, mDark); f.position.set(0, 0.6, s * 0.14); fork.add(f); } const bar = bx(0.06, 0.06, 0.34, mDark); bar.position.set(0, 1.18, 0); fork.add(bar);
-    g.rotation.y = -0.5; shadowed(g); models.push({ i: 7, update: (t) => { w.rotation.z = -t * 0.9; } }); }
+    g.rotation.y = -0.5; shadowed(g); models.push({ i: 11, update: (t) => { w.rotation.z = -t * 0.9; } }); }
 
+
+  // 3. cylindrical robot (same DH table as its page): a column that turns, a carriage that goes up, an arm that comes out
+  { const g = pedestal(2), CY = [{ th: ['q1', (q) => q[0]], d: ['h', 0.3], a: ['0', 0], al: ['0', 0] }, { th: ['-90', -90], d: ['q2', (q) => q[1]], a: ['0', 0], al: ['-90', -90] }, { th: ['0', 0], d: ['q3', (q) => q[2]], a: ['0', 0], al: ['0', 0] }];
+    const a = DHArm.build(THREE, CY, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.025, baseR: 0.16, sizes: [{ r: 0.08, l: 0.12 }, { r: 0.06, l: 0.1 }, { r: 0.04, l: 0.1 }] });
+    const col = cy(0.05, 0.85, mDark, 24); col.position.y = 0.72; const body = new THREE.Group(); body.add(a.root, col); body.position.y = galY; g.add(shadowed(body)); galLinks.push(a.materials.link);
+    models.push({ i: 2, update: (t) => a.setPose([-20 + 35 * Math.sin(t * 0.5), 0.45 + 0.25 * Math.sin(t * 0.8), 0.5 + 0.2 * Math.sin(t * 1.1 + 1)]) }); }
+  // 4. spherical (polar) robot: two angles and a telescopic arm
+  { const g = pedestal(3), SP = [{ th: ['q1', (q) => q[0]], d: ['h', 0.4], a: ['0', 0], al: ['90', 90] }, { th: ['q2', (q) => q[1] + 90], d: ['0', 0], a: ['0', 0], al: ['90', 90] }, { th: ['0', 0], d: ['q3', (q) => q[2]], a: ['0', 0], al: ['0', 0] }];
+    const a = DHArm.build(THREE, SP, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.025, baseR: 0.16, sizes: [{ r: 0.09, l: 0.14 }, { r: 0.07, l: 0.16 }, { r: 0.045, l: 0.12 }] });
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.36, 24), mDark); ped.position.y = 0.2; const body = new THREE.Group(); body.add(a.root, ped); body.position.y = galY; g.add(shadowed(body)); galLinks.push(a.materials.link);
+    models.push({ i: 3, update: (t) => a.setPose([70 * Math.sin(t * 0.45), 15 + 25 * Math.sin(t * 0.7), 0.55 + 0.25 * Math.sin(t * 1.0 + 1)]) }); }
+  // 8. 7-axis redundant robot (KUKA LBR iiwa geometry): the elbow swivels
+  { const g = pedestal(7), IW = [[-90, 0.34], [90, 0], [90, 0.4], [-90, 0], [-90, 0.4], [90, 0], [0, 0.126]].map(([al, d], k) => ({ th: ['q', (q) => q[k]], d: ['d', d], a: ['0', 0], al: ['al', al] }));
+    const a = DHArm.build(THREE, IW, { link: '#d8d8d8', joint: '#ff9f43', cap: '#222222', lr: 0.04, baseR: 0.13, sizes: [{ r: 0.075, l: 0.12 }, { r: 0.072, l: 0.13 }, { r: 0.065, l: 0.11 }, { r: 0.065, l: 0.12 }, { r: 0.055, l: 0.1 }, { r: 0.05, l: 0.1 }, { r: 0.04, l: 0.05 }] });
+    a.root.position.y = galY; g.add(shadowed(a.root)); galLinks.push(a.materials.link);
+    models.push({ i: 7, update: (t) => a.setPose([30 * Math.sin(t * 0.4), 40 + 15 * Math.sin(t * 0.6), 70 * Math.sin(t * 0.7), -80 + 15 * Math.sin(t * 0.9), 40 * Math.sin(t * 0.8 + 1), 60, 90 * Math.sin(t)]) }); }
+  // 10. hexapod (Gough-Stewart platform): six legs move a platform
+  { const g = pedestal(9), body = new THREE.Group(), D = D2R_, A = [], Bp = []; body.position.y = galY; g.add(body);
+    for (let k = 0; k < 3; k++) for (const s of [-1, 1]) { const tb = (k * 120 + s * 12) * D, tp = (k * 120 + s * 45) * D; A.push(new THREE.Vector3(0.5 * Math.cos(tb), 0.05, -0.5 * Math.sin(tb))); Bp.push(new THREE.Vector3(0.3 * Math.cos(tp), 0, -0.3 * Math.sin(tp))); }
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.58, 0.05, 6), mDark); base.position.y = 0.025; base.rotation.y = Math.PI / 6; body.add(base);
+    const plat = new THREE.Group(); body.add(plat); const top = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.035, 6), mOr); top.rotation.y = Math.PI / 6; plat.add(top); const seat = bx(0.22, 0.12, 0.18, mBlue); seat.position.y = 0.08; plat.add(seat);
+    const rod = (r, m) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 1, 14), m); body.add(o); return o; };
+    const legs = A.map(() => ({ lo: rod(0.03, mDark), hi: rod(0.017, mLink) }));
+    const set = (o, p, q, len) => { const d = q.clone().sub(p), n = d.length(); o.position.copy(p).addScaledVector(d, (len || n) / (2 * n)); o.scale.set(1, len || n, 1); o.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); };
+    const e = new THREE.Euler(), B = new THREE.Vector3();
+    models.push({ i: 9, update: (t) => { plat.position.set(0.06 * Math.sin(t * 0.7), 0.62 + 0.05 * Math.sin(t * 1.1), 0.06 * Math.cos(t * 0.9)); e.set(0.15 * Math.sin(t * 0.8), 0.25 * Math.sin(t * 0.5), 0.15 * Math.cos(t * 0.9)); plat.rotation.copy(e); plat.updateMatrix();
+      legs.forEach((l, k) => { B.copy(Bp[k]).applyMatrix4(plat.matrix); set(l.lo, A[k], B, 0.32); set(l.hi, A[k].clone().lerp(B, 0.3), B); }); } }); shadowed(body); }
+  // the pedestals in the order of the row (the robots above were not built in that order)
+  gal.children.sort((p, q) => p.userData.slot - q.userData.slot);
 
   // same size for every robot: measure each model once, then scale it to fit the same box (the pedestal keeps its size)
   gal.children.forEach((g, i) => {
@@ -572,7 +649,7 @@ if (renderer) {
   // state
   const q = NEUTRAL.slice(), qGoal = NEUTRAL.slice(); let lastIK = { posErr: 0, p: [0.5, 0, 0.5] };
   const DESK = () => innerWidth > 900;
-  const GL = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => [0.12 + FIT_H / 2, 4.4, i % 2 ? -1 : 1]);          // the same framing for every robot
+  const GL = Array.from({ length: GAL_N }, (_, i) => i).map((i) => [0.12 + FIT_H / 2, 4.4, i % 2 ? -1 : 1]);          // the same framing for every robot
   const KF = [   // camera: position, look-at, shift of the robot to the right (desktop)
     { p: [1.0, 0.9, 2.7], l: [0, 0.62, 0], s: 0 },
     { p: [2.1, 1.2, 2.6], l: [0.1, 0.68, 0], s: 0.55 },
