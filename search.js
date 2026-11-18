@@ -4,7 +4,7 @@
   var RA = window.RA = window.RA || {};
   var FR = (RA.lang === 'fr'), LG = FR ? 1 : 0;
   var L = function (en, fr) { return FR ? fr : en; };
-  var here = (location.pathname.split('/').pop() || 'index').replace(/\.html$/, '') || 'index';
+  var here = RA.page || 'index';
 
   // same length as the text, so a match found in the normalised text can be highlighted in the original one
   function norm(s) {

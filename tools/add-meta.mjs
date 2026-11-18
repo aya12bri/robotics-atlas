@@ -51,17 +51,69 @@ const DESC = {
   'anatomy-quadrotor.html': '3D anatomy of a quadrotor drone that really flies: motors, ESC, flight controller, battery and sensors, with an X-ray mode.',
   'anatomy-humanoid.html': '3D anatomy of a humanoid robot that really walks: gait, leg kinematics, balance, actuators and battery, with an X-ray mode.'
 };
+const DESC_FR = {
+  'index.html': 'Un atlas illustré des types de robots : tâches, schémas cinématiques, tables DH et modèles 3D interactifs, avec des cours gratuits en français.',
+  'learn.html': 'Douze leçons courtes de robotique : liaisons, repères, tables DH, cinématique, commande et IA, chacune avec une question et des exemples 3D en direct.',
+  'learn-maths.html': 'Un bras à 2 axes à partir de zéro : les angles, la table DH et les lois du mouvement, pas à pas avec des exemples interactifs.',
+  'learn-model.html': 'Le cours complet de modélisation des robots : repères, paramètres DH et DHM, modèles géométriques direct et inverse, avec un bras 3D en direct.',
+  'learn-singularities.html': 'Les singularités et la jacobienne expliquées avec un robot en direct : pourquoi certaines poses perdent des mouvements et comment les robots les évitent.',
+  'learn-control.html': 'Dynamique, actionneurs et commande des bras robotiques : couples, moteurs, boucles PID et trajectoires, avec des exemples interactifs.',
+  'learn-intelligence.html': 'Comment les robots perçoivent, planifient et décident : capteurs, vision, planification de trajectoire et IA, expliqués pas à pas.',
+  'learn-world.html': 'Les robots dans le monde réel : où sont utilisés les robots industriels, collaboratifs, mobiles et humanoïdes, les grands fabricants, et comment en choisir un.',
+  'learn-mobile.html': 'Robots mobiles à roues, partie 1 : les maths à partir de zéro, toutes les roues et motorisations (différentielle, voiture, omni, Mecanum, swerve), contraintes, CIR, manœuvrabilité et holonomie.',
+  'learn-mobile-pro.html': 'Robots mobiles à roues, partie 2 : commande du mouvement, suivi de trajectoire, planification, étalonnage de l\'odométrie, filtre de Kalman, dimensionnement des moteurs, ROS 2, sécurité, examen et TP.',
+  'learn-mathkit.html': 'Les maths de la robotique, un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations homogènes, DH standard et modifié (DHM), dérivées, probabilités et quaternions, avec exercices corrigés.',
+  'learn-armlab.html': 'Coder un bras robotique en Python : modèle direct, moteur DH, modèle inverse exact et numérique, trajectoires, un vrai bras à 3 servos avec un Arduino, un examen et cinq TP.',
+  'learn-advanced.html': 'Robotique avancée niveau Master : robots parallèles (Delta, Stewart), LQR, commande prédictive, robots à pattes et ZMP, quadrirotors, vision en pratique et apprentissage par renforcement.',
+  'learn-ros.html': 'ROS 2 à partir de zéro : nœuds, topics, vos premiers nœuds Python, services, actions, fichiers launch, tf2, URDF, simulation, Nav2, MoveIt 2 et un premier projet complet.',
+  'certificate.html': 'Vos certificats Robotics Atlas : terminez un cours et obtenez un certificat à votre nom, à imprimer ou à enregistrer en PDF. Sauvegardez ou restaurez votre progression.',
+  'glossary.html': 'Le glossaire de la robotique : tous les mots de tous les cours au même endroit, avec leur sens en français et en anglais et la leçon qui les explique.',
+  'revision.html': 'Fiches de révision imprimables de tous les cours de robotique : l\'essentiel de chaque leçon, les formules principales et les termes clés, à imprimer ou en PDF.',
+  'sensors.html': 'Un banc d\'essai des capteurs en direct : codeur, IMU (dérive du gyroscope, bruit de l\'accéléromètre, filtre complémentaire), lidar 2D, distorsion de caméra et stéréo, télémètre à ultrasons.',
+  'exam.html': 'Les examens finaux des cours de robotique : 12 questions corrigées par cours, avec explications, et un examen blanc chronométré ; réussissez-les pour obtenir les certificats.',
+  'sandbox.html': 'Un bac à sable de programmation : programmez un robot SCARA ou 6 axes en 3D (mouvements linéaires et articulaires, pince, boucles), réussissez trois missions et exportez le programme dans le style RAPID d\'ABB ou KRL de KUKA.',
+  'projects.html': 'Trois projets de robotique guidés : un bras à 2 servos sur Arduino, un suiveur de ligne PID et un robot mobile ROS 2 avec lidar, avec pièces, prix, câblage, code et tests.',
+  'about.html': 'À propos de Robotics Atlas : ce que propose le site, comment les cours sont faits, les sources, la confidentialité et comment signaler une erreur.',
+  'review.html': 'Révisions espacées de robotique : les questions reviennent après 1, 3, 7, 16 et 35 jours jusqu\'à ce que vous les sachiez.',
+  'build.html': 'Un atelier 3D pratique : choisissez un robot, découvrez ses pièces, assemblez-le, comprenez ses liaisons et ses degrés de liberté, faites-le bouger et voyez comment son mouvement est calculé.',
+  'arm.html': 'Modèle 3D interactif d\'un bras robotique à 3 axes : bougez chaque articulation, voyez le schéma cinématique, la table DH et la jacobienne.',
+  'gantry.html': 'Robot cartésien (portique) 3D interactif à trois axes linéaires : cinématique, espace de travail et prise-dépose.',
+  'scara.html': 'Robot SCARA 3D interactif : modèle inverse analytique, table DH et démonstration de prise-dépose.',
+  'articulated.html': 'Modèle 3D interactif d\'un robot industriel 6 axes à poignet sphérique : tables DH, modèle inverse et prise-dépose.',
+  'cobot.html': 'Modèle 3D interactif d\'un robot collaboratif de type UR5 : paramètres réels, poignet déporté, limitation d\'effort et prise-dépose.',
+  'delta.html': 'Robot Delta (parallèle) 3D interactif : trois bras et parallélogrammes, modèle inverse et démonstration de prise-dépose rapide.',
+  'mobile.html': 'Robot mobile à entraînement différentiel en 3D interactif : vitesses des roues, rayon de virage, odométrie et programmes à exécuter.',
+  'wheels.html': 'Les roues et motorisations des robots mobiles : roues fixes, folles, omni, Mecanum et sphériques, configurations, capteurs et un simulateur.',
+  'anatomy.html': 'L\'intérieur d\'un robot industriel 6 axes en 3D : articulations, moteurs, réducteurs, armoire de commande et câbles, avec un mode rayons X.',
+  'anatomy-scara.html': 'Anatomie 3D d\'un robot SCARA : ses articulations, moteurs, réducteurs et sa commande, avec un mode rayons X.',
+  'anatomy-cobot.html': 'Anatomie 3D d\'un robot collaboratif : articulations, moteurs, freins, capteurs et commande, avec un mode rayons X.',
+  'anatomy-delta.html': 'Anatomie 3D d\'un robot Delta : moteurs, bras, parallélogrammes et plateforme, avec un mode rayons X.',
+  'anatomy-gantry.html': 'Anatomie 3D d\'un portique cartésien : rails, courroies, moteurs et effecteur, avec un mode rayons X.',
+  'anatomy-mobile.html': 'Anatomie 3D d\'un robot mobile à entraînement différentiel : roues, moteurs, batterie, capteurs et commande, avec un mode rayons X.',
+  'anatomy-wheels.html': 'Anatomie 3D de sept types de roues : fixe, folle, orientable, omni, Mecanum, sphérique et chenille, avec un mode rayons X.',
+  'anatomy-drives.html': 'Anatomie 3D de huit configurations de robots mobiles : différentielle, Ackermann, omni, Mecanum et d\'autres.',
+  'anatomy-stewart.html': 'Anatomie 3D d\'une plateforme de Stewart : six jambes, actionneurs et liaisons, avec un mode rayons X.',
+  'anatomy-quadrotor.html': 'Anatomie 3D d\'un drone quadrirotor qui vole vraiment : moteurs, ESC, contrôleur de vol, batterie et capteurs, avec un mode rayons X.',
+  'anatomy-humanoid.html': 'Anatomie 3D d\'un robot humanoïde qui marche vraiment : marche, cinématique des jambes, équilibre, actionneurs et batterie, avec un mode rayons X.'
+};
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+// every page has a French twin made by build-fr.mjs (learn.html -> learn-fr.html), except the 404 and offline pages
 const pages = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html').sort();
 const url = (f) => (f === 'index.html' ? SITE + '/' : SITE + '/' + f.replace(/\.html$/, ''));
+const isFr = (f) => /-fr\.html$/.test(f), enOf = (f) => f.replace(/-fr\.html$/, '.html'), frOf = (f) => f.replace(/\.html$/, '-fr.html');
+const twin = (f) => (isFr(f) || pages.includes(frOf(f)));
 for (const f of pages) {
-  const file = path.join(root, f); let h = fs.readFileSync(file, 'utf8');
+  const file = path.join(root, f); let h = fs.readFileSync(file, 'utf8'), fr = isFr(f);
   h = h.replace(/ *<!-- seo -->[\s\S]*?<!-- \/seo -->\n/, '');
+  h = h.replace(/<html\b([^>]*)>/, (all, a) => `<html lang="${fr ? 'fr' : 'en'}"${a.replace(/\slang="[^"]*"/, '')}>`);
   const title = (h.match(/<title>([^<]*)<\/title>/) || [])[1]; if (!title) { console.log('no title:', f); continue; }
-  const own = h.match(/<meta name="description" content="([^"]*)"/), desc = own ? own[1] : DESC[f]; if (!desc) { console.log('no description:', f); continue; }
+  const own = h.match(/<meta name="description" content="([^"]*)"/);
+  const desc = fr ? DESC_FR[enOf(f)] : own ? own[1] : DESC[f]; if (!desc) { console.log('no description:', f); continue; }
+  if (fr && own) h = h.replace(own[0], `<meta name="description" content="${esc(desc)}"`);
+  const alt = twin(f) ? [`<link rel="alternate" hreflang="en" href="${url(enOf(f))}" />`, `<link rel="alternate" hreflang="fr" href="${url(fr ? f : frOf(f))}" />`, `<link rel="alternate" hreflang="x-default" href="${url(enOf(f))}" />`] : [];
   const tags = [
     own ? null : `<meta name="description" content="${esc(desc)}" />`,
-    `<link rel="canonical" href="${url(f)}" />`,
+    `<link rel="canonical" href="${url(f)}" />`, ...alt, `<meta property="og:locale" content="${fr ? 'fr_FR' : 'en_US'}" />`,
     /rel="icon"/.test(h) ? null : '<link rel="icon" type="image/svg+xml" href="/logo.svg" />',
     `<meta property="og:type" content="website" />`, `<meta property="og:site_name" content="${NAME}" />`,
     `<meta property="og:title" content="${esc(title)}" />`, `<meta property="og:description" content="${esc(desc)}" />`,
@@ -73,7 +125,8 @@ for (const f of pages) {
   h = h.replace(/(<title>[^<]*<\/title>\n)/, `$1    <!-- seo -->\n${tags.map((t) => '    ' + t + '\n').join('')}    <!-- /seo -->\n`);
   fs.writeFileSync(file, h);
 }
-const urls = pages.filter((f) => f !== 'offline.html').map((f) => `  <url><loc>${url(f)}</loc></url>`).join('\n');
-fs.writeFileSync(path.join(root, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+const urls = pages.filter((f) => f !== 'offline.html').map((f) => `  <url><loc>${url(f)}</loc>` +
+  (twin(f) ? `<xhtml:link rel="alternate" hreflang="en" href="${url(enOf(f))}"/><xhtml:link rel="alternate" hreflang="fr" href="${url(isFr(f) ? f : frOf(f))}"/>` : '') + '</url>').join('\n');
+fs.writeFileSync(path.join(root, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
 fs.writeFileSync(path.join(root, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
 console.log('pages', pages.length);
