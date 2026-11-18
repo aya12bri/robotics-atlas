@@ -12,28 +12,28 @@ reset();
 const FAMILIES = [
   ['ser', ['Serial arms', 'Bras série'], ['One chain of joints from the base to the tool: they pick, place, weld and assemble.', 'Une seule chaîne d\'articulations de la base à l\'outil : ils prennent, posent, soudent et assemblent.'], [
     [['3-axis arm', 'Bras 3 axes'], 'R-R-R', ['The simplest arm that reaches a point in space.', 'Le bras le plus simple qui atteint un point de l\'espace.'], 'arm.html', null, 'robot-arm'],
-    [['Cartesian gantry', 'Robot cartésien'], 'P-P-P', ['Three straight axes X, Y, Z: simple, precise, can be huge.', 'Trois axes droits X, Y, Z : simple, précis, peut être immense.'], 'gantry.html', 'anatomy-gantry.html', 'anatomy-gantry'],
-    [['Cylindrical robot', 'Robot cylindrique'], 'R-P-P', ['A column that turns, a carriage that goes up, an arm that comes out.', 'Une colonne qui tourne, un chariot qui monte, un bras qui sort.'], 'cylindrical.html', null, 'robot-cylindrical'],
-    [['Spherical (polar) robot', 'Robot sphérique (polaire)'], 'R-R-P', ['Two angles and a telescopic arm: the very first industrial robot.', 'Deux angles et un bras télescopique : le tout premier robot industriel.'], 'spherical.html', null, 'robot-spherical'],
+    [['Gantry', 'Cartésien'], 'P-P-P', ['Three straight axes X, Y, Z: simple, precise, can be huge.', 'Trois axes droits X, Y, Z : simple, précis, peut être immense.'], 'gantry.html', 'anatomy-gantry.html', 'anatomy-gantry'],
+    [['Cylindrical', 'Cylindrique'], 'R-P-P', ['A column that turns, a carriage that goes up, an arm that comes out.', 'Une colonne qui tourne, un chariot qui monte, un bras qui sort.'], 'cylindrical.html', null, 'robot-cylindrical'],
+    [['Spherical', 'Sphérique'], 'R-R-P', ['Two angles and a telescopic arm: the very first industrial robot.', 'Deux angles et un bras télescopique : le tout premier robot industriel.'], 'spherical.html', null, 'robot-spherical'],
     [['SCARA', 'SCARA'], 'R-R-P-R', ['Very fast for assembling small parts on a table.', 'Très rapide pour assembler de petites pièces sur une table.'], 'scara.html', 'anatomy-scara.html', 'anatomy-scara'],
-    [['6-axis industrial robot', 'Robot industriel 6 axes'], '6 × R', ['The arm of car factories: strong, fast, inside a cage.', 'Le bras des usines automobiles : fort, rapide, dans une cage.'], 'articulated.html', 'anatomy.html', 'anatomy'],
-    [['Collaborative robot', 'Robot collaboratif'], '6 × R', ['A gentle arm that works next to people, without a cage.', 'Un bras doux qui travaille à côté des personnes, sans cage.'], 'cobot.html', 'anatomy-cobot.html', 'anatomy-cobot'],
-    [['7-axis redundant robot', 'Robot redondant 7 axes'], '7 × R', ['One joint too many, on purpose: the elbow moves, the tool stays still.', 'Une articulation de trop, exprès : le coude bouge, l\'outil reste immobile.'], 'redundant.html', null, 'robot-redundant']]],
-  ['par', ['Parallel robots', 'Robots parallèles'], ['Several chains hold the same platform: light, stiff and very fast.', 'Plusieurs chaînes tiennent la même plateforme : légers, rigides et très rapides.'], [
-    [['Delta robot', 'Robot Delta'], ['Parallel', 'Parallèle'], ['Picks hundreds of chocolates per minute.', 'Prend des centaines de chocolats par minute.'], 'delta.html', 'anatomy-delta.html', 'anatomy-delta'],
-    [['Hexapod (Stewart platform)', 'Hexapode (plateforme de Stewart)'], '6-UPS', ['Six legs move a platform in 6 directions: flight simulators.', 'Six jambes bougent une plateforme dans 6 directions : simulateurs de vol.'], 'hexapod.html', 'anatomy-stewart.html', 'anatomy-stewart']]],
-  ['mob', ['Mobile robots', 'Robots mobiles'], ['Robots that move around on wheels.', 'Des robots qui se déplacent sur des roues.'], [
+    [['6-axis', '6 axes'], '6 × R', ['The arm of car factories: strong, fast, inside a cage.', 'Le bras des usines automobiles : fort, rapide, dans une cage.'], 'articulated.html', 'anatomy.html', 'anatomy'],
+    [['Cobot', 'Cobot'], '6 × R', ['A gentle arm that works next to people, without a cage.', 'Un bras doux qui travaille à côté des personnes, sans cage.'], 'cobot.html', 'anatomy-cobot.html', 'anatomy-cobot'],
+    [['7-axis', '7 axes'], '7 × R', ['One joint too many, on purpose: the elbow moves, the tool stays still.', 'Une articulation de trop, exprès : le coude bouge, l\'outil reste immobile.'], 'redundant.html', null, 'robot-redundant']]],
+  ['par', ['Parallel', 'Parallèles'], ['Several chains hold the same platform: light, stiff and very fast.', 'Plusieurs chaînes tiennent la même plateforme : légers, rigides et très rapides.'], [
+    [['Delta', 'Delta'], ['Parallel', 'Parallèle'], ['Picks hundreds of chocolates per minute.', 'Prend des centaines de chocolats par minute.'], 'delta.html', 'anatomy-delta.html', 'anatomy-delta'],
+    [['Hexapod', 'Hexapode'], '6-UPS', ['Six legs move a platform in 6 directions: flight simulators.', 'Six jambes bougent une plateforme dans 6 directions : simulateurs de vol.'], 'hexapod.html', 'anatomy-stewart.html', 'anatomy-stewart']]],
+  ['mob', ['Mobile', 'Mobiles'], ['Robots that move around on wheels.', 'Des robots qui se déplacent sur des roues.'], [
     [['Mobile robot', 'Robot mobile'], ['2 wheels', '2 roues'], ['Two motor wheels: it goes forward and turns.', 'Deux roues motrices : il avance et tourne.'], 'mobile.html', 'anatomy-mobile.html', 'anatomy-mobile'],
     [['Wheels', 'Roues'], ['7 types', '7 types'], ['From the simple wheel to the omni and Mecanum wheel.', 'De la roue simple à la roue omni et Mecanum.'], 'wheels.html', 'anatomy-wheels.html', 'anatomy-wheels'],
-    [['Drive configurations', 'Configurations de motorisation'], ['8 layouts', '8 configurations'], ['Drive 8 different robots yourself.', 'Conduisez vous-même 8 robots différents.'], null, 'anatomy-drives.html', 'anatomy-drives']]],
-  ['leg', ['Robots that walk and fly', 'Robots qui marchent et qui volent'], ['Legs and propellers: the most demanding balance.', 'Des jambes et des hélices : l\'équilibre le plus difficile.'], [
+    [['Drives', 'Motorisations'], ['8 layouts', '8 configurations'], ['Drive 8 different robots yourself.', 'Conduisez vous-même 8 robots différents.'], null, 'anatomy-drives.html', 'anatomy-drives']]],
+  ['leg', ['Walk and fly', 'Marchent et volent'], ['Legs and propellers: the most demanding balance.', 'Des jambes et des hélices : l\'équilibre le plus difficile.'], [
     [['Humanoid', 'Humanoïde'], ['it walks', 'il marche'], ['Walks on two legs and keeps its balance.', 'Marche sur deux jambes et garde son équilibre.'], null, 'anatomy-humanoid.html', 'anatomy-humanoid'],
-    [['Quadrotor', 'Quadrirotor'], ['it flies', 'il vole'], ['Four propellers: it flies, tilts and turns.', 'Quatre hélices : il vole, s\'incline et tourne.'], null, 'anatomy-quadrotor.html', 'anatomy-quadrotor']]]
+    [['Drone', 'Drone'], ['it flies', 'il vole'], ['Four propellers: it flies, tilts and turns.', 'Quatre hélices : il vole, s\'incline et tourne.'], null, 'anatomy-quadrotor.html', 'anatomy-quadrotor']]]
 ];
 const t = (x) => (Array.isArray(x) ? tx(x[0], x[1]) : tx(x));
 const card = ([n, k, d, page, anat, img]) => {
   const main = page || anat;
-  const btns = (page ? `<a class="btn sm" href="${page}">${tx('Interactive model', 'Modèle interactif')}</a>` : '') + (anat ? `<a class="btn sm ghost" href="${anat}">${tx('3D anatomy', 'Anatomie 3D')}</a>` : '');
+  const btns = (page ? `<a class="btn sm" href="${page}">${tx('Model', 'Modèle')}</a>` : '') + (anat ? `<a class="btn sm ghost" href="${anat}">${tx('Anatomy', 'Anatomie')}</a>` : '');
   return `<div class="anat-card rcat-card"><a class="anat-img" href="${main}" tabindex="-1" aria-hidden="true"><img class="th-light" src="thumbs/${img}.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><img class="th-dark" src="thumbs/${img}-dark.jpg" alt="" width="670" height="500" loading="lazy" decoding="async"><i>${t(k)}</i></a><b><a href="${main}">${t(n)}</a></b><em>${t(d)}</em><span class="rcat-btns">${btns}</span></div>`;
 };
 const total = FAMILIES.reduce((a, f) => a + f[3].length, 0);
@@ -41,9 +41,9 @@ const html = `<!-- anatomy-home -->
         <div class="anat-home rcat" id="robots">
           <span id="inside"></span>
           <h3>${tx('All the robots, by family', 'Tous les robots, par famille')}</h3>
-          <p>${tx('Each robot once, with its two pages: the interactive model (joints, kinematic diagram, DH table, models) and the 3D anatomy (motors, gearboxes and cables, in X-ray).', 'Chaque robot une seule fois, avec ses deux pages : le modèle interactif (articulations, schéma cinématique, tableau DH, modèles) et l\'anatomie 3D (moteurs, réducteurs et câbles, en rayons X).')}</p>
+          <p>${tx('Model: the interactive robot (joints, kinematic diagram, DH table). Anatomy: inside the robot in 3D (motors, gearboxes, cables).', 'Modèle : le robot interactif (articulations, schéma cinématique, tableau DH). Anatomie : l\'intérieur du robot en 3D (moteurs, réducteurs, câbles).')}</p>
           <div class="anat-filter" role="group" aria-label="${tx('Type of robot', 'Type de robot')}"><button type="button" data-f="all" aria-pressed="true">${tx('All', 'Tous')} <i>${total}</i></button>${FAMILIES.map(([id, name, , list]) => `<button type="button" data-f="${id}" aria-pressed="false">${t(name)} <i>${list.length}</i></button>`).join('')}</div>
-          ${FAMILIES.map(([id, name, d, list]) => `<section class="anat-group rcat-group" data-type="${id}"><div class="anat-gh"><h4>${t(name)}</h4><span>${t(d)}</span></div><div class="anat-grid">${list.map(card).join('')}</div></section>`).join('\n          ')}
+          ${FAMILIES.map(([id, name, d, list]) => `<section class="anat-group rcat-group" data-type="${id}"><div class="anat-gh"><h4>${t(name)}</h4><span>${t(d)}</span></div><div class="anat-grid rcat-row">${list.map(card).join('')}</div></section>`).join('\n          ')}
         </div>
           <script>document.querySelectorAll('.anat-filter button').forEach((b) => b.addEventListener('click', () => { const f = b.dataset.f; document.querySelectorAll('.anat-filter button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); document.querySelectorAll('.anat-group').forEach((g) => { g.hidden = f !== 'all' && g.dataset.type !== f; }); }));</script>
         <!-- /anatomy-home -->

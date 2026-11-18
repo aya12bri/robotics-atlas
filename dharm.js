@@ -14,11 +14,13 @@ const DHArm = (function () {
   // Frame {0} is the base. The robot is built in its own Z-up frame, then turned to the Y-up scene.
   // ---------------------------------------------------------------------------------------------
   function build(THREE, rows, look) {
+    // painted metal: satin links, glossier joint covers, dark machined caps and base
     const mat = (color, rough, metal) => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal });
-    const matLink = mat(look.link, 0.45, 0.2);
-    const matJoint = mat(look.joint, 0.35, 0.35);
-    const matCap = mat(look.cap, 0.5, 0.1);
-    const matBase = mat('#4a4a4a', 0.6, 0.3); matBase.userData.raKeep = true;   // the base keeps its dark grey in dark mode (nav.js, RA.darkParts)
+    const matLink = mat(look.link, 0.38, 0.15);
+    const matJoint = mat(look.joint, 0.3, 0.2);
+    const matCap = mat(look.cap, 0.45, 0.5);
+    const matBase = mat('#4a4a4a', 0.5, 0.45); matBase.userData.raKeep = true;   // the base keeps its dark grey in dark mode (nav.js, RA.darkParts)
+    const matSteel = mat('#b9c0c8', 0.25, 0.85);
 
     const root = new THREE.Group();                       // Y-up wrapper: this is what you add to the scene
     const zup = new THREE.Group();
@@ -27,43 +29,57 @@ const DHArm = (function () {
     const g0 = new THREE.Group();                         // frame {0}
     zup.add(g0);
 
-    const ped = new THREE.CylinderGeometry(look.baseR, look.baseR * 1.1, 0.04, 40);
-    ped.rotateX(Math.PI / 2);
-    ped.translate(0, 0, 0.02);
-    g0.add(new THREE.Mesh(ped, matBase));
+    // a solid of revolution around z, from a profile [radius, height] (LatheGeometry turns around y)
+    const lathe = (pts, seg) => { const g = new THREE.LatheGeometry(pts.map(([r, h]) => new THREE.Vector2(r, h)), seg || 40); g.rotateX(Math.PI / 2); return g; };
+    // the base: a stepped, chamfered plinth with six bolts
+    const R = look.baseR;
+    g0.add(new THREE.Mesh(lathe([[0, 0], [R * 1.18, 0], [R * 1.18, 0.012], [R * 1.1, 0.024], [R * 0.98, 0.03], [R * 0.95, 0.05], [R * 0.82, 0.058], [0, 0.058]], 56), matBase));
+    for (let k = 0; k < 6; k++) {
+      const b = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.06, R * 0.06, 0.008, 12), matSteel);
+      b.rotation.x = Math.PI / 2; b.position.set(R * 1.04 * Math.cos(k * Math.PI / 3), R * 1.04 * Math.sin(k * Math.PI / 3), 0.026); g0.add(b);
+    }
 
-    const frames = [g0], R = [], D = [], dBars = [], aBars = [];
+    const frames = [g0], Rg_ = [], D = [], dBars = [], aBars = [];
     rows.forEach((row, i) => {
       const parent = frames[i];
       const Rg = new THREE.Group(); parent.add(Rg);       // turns by theta, around the z axis of the previous frame
       const Dg = new THREE.Group(); Rg.add(Dg);           // moves by d along z
       const Gi = new THREE.Group(); Dg.add(Gi);           // moves by a along x, turns by alpha around x: this is frame {i+1}
 
-      const s = look.sizes[i];                            // joint housing: a cylinder along the joint axis
-      const jg = new THREE.CylinderGeometry(s.r, s.r, s.l, 28);
-      jg.rotateX(Math.PI / 2);
-      Rg.add(new THREE.Mesh(jg, matJoint));
-      const cap = new THREE.Mesh(new THREE.BoxGeometry(s.r * 0.5, s.r * 0.5, s.l * 1.08), matCap);   // shows the angle
-      cap.position.x = s.r * 0.95;
-      Rg.add(cap);
+      // the joint housing: a drum with chamfered edges, a dark cap at each end and a thin band that shows the angle
+      const s = look.sizes[i], r = s.r, l = s.l, c = Math.min(r, l) * 0.16;
+      Rg.add(new THREE.Mesh(lathe([[0, -l / 2], [r - c, -l / 2], [r, -l / 2 + c], [r, l / 2 - c], [r - c, l / 2], [0, l / 2]]), matJoint));
+      for (const e of [-1, 1]) {
+        const cap = new THREE.Mesh(lathe([[0, 0], [r * 0.78, 0], [r * 0.72, e * 0.012], [0, e * 0.012]].map(([a, b]) => [a, b + e * l / 2])), matCap);
+        Rg.add(cap);
+      }
+      const band = new THREE.Mesh(new THREE.BoxGeometry(r * 0.32, r * 0.16, l * 0.9), matCap);   // shows the angle
+      band.position.x = r * 0.97;
+      Rg.add(band);
 
-      const dg = new THREE.CylinderGeometry(look.lr, look.lr, 1, 20);   // link along z (length d)
-      dg.rotateX(Math.PI / 2);
-      dg.translate(0, 0, 0.5);
-      const dBar = new THREE.Group(); dBar.add(new THREE.Mesh(dg, matLink)); parent.add(dBar);
+      // the links: slightly tapered tubes, thicker at the joint they leave, with a collar at each end
+      const lr = look.lr;
+      const tube = (axis) => {
+        const g = new THREE.Group();
+        const tg = new THREE.CylinderGeometry(lr * 0.86, lr, 1, 28);    // y from -0.5 (thick) to 0.5 (thin)
+        tg.translate(0, 0.5, 0);
+        if (axis === 'z') tg.rotateX(Math.PI / 2); else tg.rotateZ(-Math.PI / 2);
+        g.add(new THREE.Mesh(tg, matLink));
+        return g;
+      };
+      const dBar = tube('z'); parent.add(dBar);
+      const aBar = tube('x'); Dg.add(aBar);
 
-      const ag = new THREE.CylinderGeometry(look.lr, look.lr, 1, 20);   // link along x (length a)
-      ag.rotateZ(Math.PI / 2);
-      ag.translate(0.5, 0, 0);
-      const aBar = new THREE.Group(); aBar.add(new THREE.Mesh(ag, matLink)); Dg.add(aBar);
-
-      R.push(Rg); D.push(Dg); dBars.push(dBar); aBars.push(aBar); frames.push(Gi);
+      Rg_.push(Rg); D.push(Dg); dBars.push(dBar); aBars.push(aBar); frames.push(Gi);
     });
+    // the tool flange: a small steel disc on the last frame
+    const fl = new THREE.Mesh(new THREE.CylinderGeometry(look.lr * 1.15, look.lr * 1.15, 0.012, 28), matSteel);
+    fl.rotation.x = Math.PI / 2; fl.position.z = -0.006; frames[rows.length].add(fl);
 
     function setPose(q) {
       rows.forEach((row, i) => {
         const d = cell(row.d, q), a = cell(row.a, q);
-        R[i].rotation.z = cell(row.th, q) * D2R;
+        Rg_[i].rotation.z = cell(row.th, q) * D2R;
         D[i].position.z = d;
         frames[i + 1].position.x = a;
         frames[i + 1].rotation.x = cell(row.al, q) * D2R;
@@ -72,7 +88,7 @@ const DHArm = (function () {
       });
       root.updateMatrixWorld(true);
     }
-    return { root, frames, rot: R, setPose, materials: { link: matLink, joint: matJoint, cap: matCap } };
+    return { root, frames, rot: Rg_, setPose, materials: { link: matLink, joint: matJoint, cap: matCap } };
   }
 
   // ---------------------------------------------------------------------------------------------

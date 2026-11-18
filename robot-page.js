@@ -6,6 +6,7 @@
 // Revolute joints are in degrees, prismatic joints in metres (their sliders are in cm).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { studio } from './studio3d.js';
 
 const R = window.ROBOT;
 const FR = (window.RA && RA.lang === 'fr') || /-fr(\.html)?$/.test(location.pathname);
@@ -61,6 +62,7 @@ const resize = () => { const w = box.clientWidth, h = box.clientHeight; renderer
 window.addEventListener('resize', resize);
 let visible = true;
 new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(box);
+studio(THREE, renderer, scene);
 renderer.setAnimationLoop(() => { if (!visible) return; if (R.tick) R.tick(); orbit.update(); renderer.render(scene, camera); });
 
 // ================= diagram =================

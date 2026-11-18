@@ -143,6 +143,7 @@
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { studio } from './studio3d.js';
 
       // ================= 3D scene =================
       const box = document.getElementById('view');
@@ -297,6 +298,7 @@
         { label: 'q3 · elbow (R)',         min: -135, max: 135, step: 1, value: 60,  unit: '°' }
       ], (v) => { q = v; update(); });
 
+      studio(THREE, renderer, scene);
       renderer.setAnimationLoop(() => {
         orbit.update();
         renderer.render(scene, camera);

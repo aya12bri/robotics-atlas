@@ -221,6 +221,7 @@
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { studio } from './studio3d.js';
 
       // ================= DH and DHM tables =================
       // A cell is [ "symbol shown", number or function of q ].  q = [q1 ... q6] in degrees
@@ -526,6 +527,7 @@
         (v) => { q = v; update(); });
 
       let lastTime = performance.now();
+      studio(THREE, renderer, scene);
       renderer.setAnimationLoop((now) => {
         const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;
