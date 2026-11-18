@@ -9,32 +9,32 @@
 
   // ---------------------------------------------------------------- pages (one line per robot)
   const ROBOTS = [
-    ['arm.html',        { en: '3-DOF arm',                fr: 'Bras 3 axes' },              'R-R-R'],
-    ['gantry.html',     { en: 'Cartesian gantry',         fr: 'Robot cartésien' },          'P-P-P'],
-    ['cylindrical.html',{ en: 'Cylindrical robot',        fr: 'Robot cylindrique' },        'R-P-P'],
-    ['spherical.html',  { en: 'Spherical (polar) robot',  fr: 'Robot sphérique (polaire)' }, 'R-R-P'],
-    ['scara.html',      { en: 'SCARA',                    fr: 'SCARA' },                    'R-R-P-R'],
-    ['articulated.html',{ en: '6-axis industrial robot',  fr: 'Robot industriel 6 axes' },  '6 × R'],
-    ['cobot.html',      { en: 'Collaborative robot (UR5)',fr: 'Robot collaboratif (UR5)' }, '6 × R'],
-    ['redundant.html',  { en: '7-axis redundant robot',   fr: 'Robot redondant 7 axes' },   '7 × R'],
-    ['delta.html',      { en: 'Delta robot',              fr: 'Robot Delta' },              'parallel / parallèle'],
-    ['hexapod.html',    { en: 'Hexapod (Stewart platform)', fr: 'Hexapode (plateforme de Stewart)' }, '6-UPS'],
-    ['mobile.html',     { en: 'Mobile robot',             fr: 'Robot mobile' },             '2 wheels / 2 roues'],
-    ['wheels.html',     { en: 'Wheels and mobile bases',  fr: 'Roues et bases mobiles' },   '—']
+    ['arm.html',        { en: '3-axis arm',   fr: 'Bras 3 axes' },   'R-R-R'],
+    ['gantry.html',     { en: 'Gantry',       fr: 'Cartésien' },     'P-P-P'],
+    ['cylindrical.html',{ en: 'Cylindrical',  fr: 'Cylindrique' },   'R-P-P'],
+    ['spherical.html',  { en: 'Spherical',    fr: 'Sphérique' },     'R-R-P'],
+    ['scara.html',      { en: 'SCARA',        fr: 'SCARA' },         'R-R-P-R'],
+    ['articulated.html',{ en: '6-axis robot', fr: 'Robot 6 axes' },  '6 × R'],
+    ['cobot.html',      { en: 'Cobot',        fr: 'Cobot' },         '6 × R'],
+    ['redundant.html',  { en: '7-axis robot', fr: 'Robot 7 axes' },  '7 × R'],
+    ['delta.html',      { en: 'Delta',        fr: 'Delta' },         'parallel / parallèle'],
+    ['hexapod.html',    { en: 'Hexapod',      fr: 'Hexapode' },      '6-UPS'],
+    ['mobile.html',     { en: 'Mobile robot', fr: 'Robot mobile' },  '2 wheels / 2 roues'],
+    ['wheels.html',     { en: 'Wheels',       fr: 'Roues' },         '—']
   ];
   // the 3D "anatomy" pages (in the menu, not in the previous / next pager)
   const ANATOMY = [
-    ['anatomy.html',         { en: '6-axis industrial robot',  fr: 'Robot industriel 6 axes' }],
-    ['anatomy-scara.html',   { en: 'SCARA',                    fr: 'SCARA' }],
-    ['anatomy-cobot.html',   { en: 'Collaborative robot',      fr: 'Robot collaboratif' }],
-    ['anatomy-delta.html',   { en: 'Delta robot',              fr: 'Robot Delta' }],
-    ['anatomy-gantry.html',  { en: 'Cartesian gantry',         fr: 'Robot cartésien' }],
-    ['anatomy-mobile.html',  { en: 'Mobile robot',             fr: 'Robot mobile' }],
-    ['anatomy-wheels.html',  { en: 'Wheels',                   fr: 'Roues' }],
-    ['anatomy-drives.html',  { en: 'Drive configurations',     fr: 'Configurations de motorisation' }],
-    ['anatomy-stewart.html', { en: 'Stewart platform',         fr: 'Plateforme de Stewart' }],
-    ['anatomy-quadrotor.html', { en: 'Quadrotor',               fr: 'Quadrirotor' }],
-    ['anatomy-humanoid.html', { en: 'Humanoid',                 fr: 'Humanoïde' }]
+    ['anatomy.html',         { en: '6-axis robot', fr: 'Robot 6 axes' }],
+    ['anatomy-scara.html',   { en: 'SCARA',        fr: 'SCARA' }],
+    ['anatomy-cobot.html',   { en: 'Cobot',        fr: 'Cobot' }],
+    ['anatomy-delta.html',   { en: 'Delta',        fr: 'Delta' }],
+    ['anatomy-gantry.html',  { en: 'Gantry',       fr: 'Cartésien' }],
+    ['anatomy-mobile.html',  { en: 'Mobile robot', fr: 'Robot mobile' }],
+    ['anatomy-wheels.html',  { en: 'Wheels',       fr: 'Roues' }],
+    ['anatomy-drives.html',  { en: 'Drives',       fr: 'Motorisations' }],
+    ['anatomy-stewart.html', { en: 'Hexapod',      fr: 'Hexapode' }],
+    ['anatomy-quadrotor.html', { en: 'Drone',      fr: 'Drone' }],
+    ['anatomy-humanoid.html', { en: 'Humanoid',    fr: 'Humanoïde' }]
   ];
   // the groups of links of the footer: the robots by family, the tools, my space
   const ROBOT_FAMILIES = [
@@ -451,7 +451,7 @@
       (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
       '<div class="nav-r">' +
       (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
-      ROBOTS.map(([h, n, k]) => link(h, `${n[lang]} <small>${k}</small>`)).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
+      ROBOTS.map(([h, n, k]) => { const t = k.split(' / ')[lang === 'fr' && k.includes(' / ') ? 1 : 0]; return link(h, `${n[lang]}${t === '—' ? '' : ` <small>${t}</small>`}`); }).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
       `<button class="icon-btn search-btn" type="button" aria-label="${ui.search}" title="${ui.search}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>` +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +

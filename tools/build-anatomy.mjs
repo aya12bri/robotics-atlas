@@ -11,7 +11,7 @@ const ALLCOL = ['#2f6bff', '#2e9e5b', '#ff9f43', '#8a5cf6', '#ff5a5f', '#1fb5c9'
 const ROBOTS = {
   six: {
     file: 'anatomy', robotPage: 'articulated', before: '<h2>The spherical wrist</h2>', cols: ALLCOL,
-    title: ['Anatomy of a 6-axis robot (3D)', 'Anatomie d\'un robot 6 axes (3D)'], back: ['6-axis robot page', 'Page du robot 6 axes'],
+    title: ['Anatomy of a 6-axis robot (3D)', 'Anatomie d\'un robot 6 axes (3D)'], short: ['6-axis robot', 'Robot 6 axes'], back: ['6-axis robot page', 'Page du robot 6 axes'],
     special: ['Wrist singularity (J5 = 0)', 'Singularité de poignet (J5 = 0)'],
     joints: [
       ['Base rotation', 'Rotation de la base', 'Turns the whole robot around its vertical axis. Its motor and gearbox sit in the base.', 'Fait tourner tout le robot autour de son axe vertical. Son moteur et son réducteur sont dans la base.'],
@@ -31,7 +31,7 @@ const ROBOTS = {
   },
   scara: {
     file: 'anatomy-scara', robotPage: 'scara', before: '<h2>Forward kinematics of a SCARA</h2>', cols: [ALLCOL[0], ALLCOL[1], ALLCOL[3], ALLCOL[5]],
-    title: ['Anatomy of a SCARA robot (3D)', 'Anatomie d\'un robot SCARA (3D)'], back: ['SCARA page', 'Page du SCARA'],
+    title: ['Anatomy of a SCARA robot (3D)', 'Anatomie d\'un robot SCARA (3D)'], short: ['SCARA', 'SCARA'], back: ['SCARA page', 'Page du SCARA'],
     special: ['Arm stretched (J2 = 0)', 'Bras tendu (J2 = 0)'],
     joints: [
       ['Base rotation', 'Rotation de la base', 'Turns the whole arm around the vertical column. The motor and the gearbox are in the column.', 'Fait tourner tout le bras autour de la colonne verticale. Le moteur et le réducteur sont dans la colonne.'],
@@ -49,7 +49,7 @@ const ROBOTS = {
   },
   cobot: {
     file: 'anatomy-cobot', robotPage: 'cobot', before: '<h2>What is special about this DH table?</h2>', cols: ALLCOL,
-    title: ['Anatomy of a cobot (3D)', 'Anatomie d\'un cobot (3D)'], back: ['Cobot page', 'Page du cobot'],
+    title: ['Anatomy of a cobot (3D)', 'Anatomie d\'un cobot (3D)'], short: ['Cobot', 'Cobot'], back: ['Cobot page', 'Page du cobot'],
     special: ['Wrist singularity (J5 = 0)', 'Singularité de poignet (J5 = 0)'],
     joints: [
       ['Base', 'Base', 'Turns the whole robot around its vertical axis.', 'Fait tourner tout le robot autour de son axe vertical.'],
@@ -69,7 +69,7 @@ const ROBOTS = {
   },
   delta: {
     file: 'anatomy-delta', robotPage: 'delta', before: '<h2>Serial robot or parallel robot?</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
-    title: ['Anatomy of a Delta robot (3D)', 'Anatomie d\'un robot Delta (3D)'], back: ['Delta robot page', 'Page du robot Delta'],
+    title: ['Anatomy of a Delta robot (3D)', 'Anatomie d\'un robot Delta (3D)'], short: ['Delta', 'Delta'], back: ['Delta robot page', 'Page du robot Delta'],
     special: ['Centre the effector (equal angles)', 'Centrer l\'effecteur (angles égaux)'],
     note: ['The motor angles θ are measured as on the Delta page: 0° when the upper arm is horizontal, positive downward. The effector position is computed live from the three angles (forward kinematics). The model is simplified: the real inside depends on the make.', 'Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l\'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
     joints: [
@@ -89,7 +89,7 @@ const ROBOTS = {
   },
   gantry: {
     file: 'anatomy-gantry', robotPage: 'gantry', before: '<h2>Forward kinematics of a gantry</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
-    title: ['Anatomy of a Cartesian gantry (3D)', 'Anatomie d\'un robot cartésien (3D)'], back: ['Cartesian gantry page', 'Page du robot cartésien'],
+    title: ['Anatomy of a Cartesian gantry (3D)', 'Anatomie d\'un robot cartésien (3D)'], short: ['Gantry', 'Cartésien'], back: ['Cartesian gantry page', 'Page du robot cartésien'],
     special: ['Far corner of the workspace', 'Coin opposé de l\'espace de travail'],
     note: ['The three travels are in cm as on the gantry page: the tool position is simply (q1, q2, height). The three joints are prismatic (P): there is no angle. The model is simplified: the real inside depends on the make.', 'Les trois courses sont en cm comme sur la page du robot cartésien : la position de l\'outil est simplement (q1, q2, hauteur). Les trois liaisons sont prismatiques (P) : il n\'y a aucun angle. Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
     joints: [
@@ -109,7 +109,7 @@ const ROBOTS = {
   },
   wheels: {
     file: 'anatomy-wheels', robotPage: 'wheels', before: '<h2>2. Drive configurations (configurations de motorisation)</h2>', cols: [...ALLCOL, '#f1c40f'], labels: ['1', '2', '3', '4', '5', '6', '7'],
-    title: ['Anatomy of the wheels (3D)', 'Anatomie des roues (3D)'], back: ['Wheels page', 'Page des roues'],
+    title: ['Anatomy of the wheels (3D)', 'Anatomie des roues (3D)'], short: ['Wheels', 'Roues'], back: ['Wheels page', 'Page des roues'],
     special: ['Push sideways (castor and steering at 90°)', 'Pousser de côté (roue folle et orientation à 90°)'],
     note: ['The seven wheel types stand in a row at the same scale. The first slider sets the rolling speed of all the wheels (and of the track), the second swivels the castor, the third steers the driven wheel. The model is simplified: see the lab above on the wheels page to watch how each wheel behaves when pushed.', 'Les sept types de roues sont alignés à la même échelle. Le premier curseur règle la vitesse de rotation de toutes les roues (et de la chenille), le deuxième fait pivoter la roue folle, le troisième oriente la roue motrice. Le modèle est simplifié : voir le laboratoire plus haut sur la page des roues pour observer le comportement de chaque roue quand on la pousse.'],
     joints: [
@@ -131,7 +131,7 @@ const ROBOTS = {
   },
   drives: {
     file: 'anatomy-drives', robotPage: 'wheels', link: ['See the drive configurations in 3D →', 'Voir les configurations de motorisation en 3D →'], before: '<h2>3. Drive four robots yourself</h2>', cols: [...ALLCOL, '#f1c40f', '#e67e22'], panel: true,
-    title: ['Anatomy of the drive configurations (3D)', 'Anatomie des configurations de motorisation (3D)'], back: ['Wheels page', 'Page des roues'],
+    title: ['Anatomy of the drive configurations (3D)', 'Anatomie des configurations de motorisation (3D)'], short: ['Drives', 'Motorisations'], back: ['Wheels page', 'Page des roues'],
     special: ['Slide sideways (vy only)', 'Glisser de côté (vy seul)'],
     note: ['The wheel speeds are computed live from the three commands (vx forward, vy to the left, ω turning left) with the inverse kinematics of each configuration, and the robot drives for real; the orange line is its path. A configuration that cannot do a motion (a sideways slide, for example) ignores it and says so. The model is simplified: wheel radius 0.07 m, see the wheels page for the equations.', 'Les vitesses des roues sont calculées en direct à partir des trois commandes (vx vers l\'avant, vy vers la gauche, ω de rotation vers la gauche) avec la cinématique inverse de chaque configuration, et le robot roule pour de vrai ; la ligne orange est son chemin. Une configuration qui ne peut pas faire un mouvement (un glissement latéral, par exemple) l\'ignore et le dit. Le modèle est simplifié : rayon de roue 0,07 m, voir la page des roues pour les équations.'],
     cmd: ['Command of the robot', 'Commande du robot', 'Choose how the robot body must move; the wheels follow. Then pick a configuration below to compare.', 'Choisissez comment le corps du robot doit bouger ; les roues suivent. Puis choisissez une configuration ci-dessous pour comparer.', ['vx (forward)', 'vx (avant)'], ['vy (to the left)', 'vy (vers la gauche)'], ['ω (turn left)', 'ω (tourner à gauche)']],
@@ -154,7 +154,7 @@ const ROBOTS = {
   },
   stewart: {
     file: 'anatomy-stewart', robotPage: null, backHref: 'learn-singularities.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
-    title: ['Anatomy of a Stewart platform (3D)', 'Anatomie d\'une plateforme de Stewart (3D)'], back: ['Singularities course', 'Cours sur les singularités'],
+    title: ['Anatomy of a Stewart platform (3D)', 'Anatomie d\'une plateforme de Stewart (3D)'], short: ['Hexapod', 'Hexapode'], back: ['Singularities course', 'Cours sur les singularités'],
     special: ['Tilt the platform (roll 15°, pitch 10°)', 'Incliner la plateforme (roulis 15°, tangage 10°)'],
     note: ['The six leg lengths are computed live from the pose of the platform (inverse kinematics: one simple formula per leg, the distance between the base joint and the platform joint). A leg turns red when it leaves its stroke (550 to 950 mm here) and the pose is then not reachable. Angles are roll (about the forward axis), pitch and yaw. The model is simplified: the real inside depends on the make. Stewart platforms also have singular poses (see lesson 8 of the course on singularities).', 'Les six longueurs de vérins sont calculées en direct à partir de la pose de la plateforme (cinématique inverse : une formule simple par vérin, la distance entre la rotule de la base et celle de la plateforme). Un vérin devient rouge quand il sort de sa course (550 à 950 mm ici) et la pose n\'est alors pas atteignable. Les angles sont le roulis (autour de l\'axe avant), le tangage et le lacet. Le modèle est simplifié : l\'intérieur réel dépend de la marque. Les plateformes de Stewart ont aussi des poses singulières (voir la leçon 8 du cours sur les singularités).'],
     cmd: ['Pose of the platform', 'Pose de la plateforme', 'Six numbers place the platform in space; the six legs follow.', 'Six nombres placent la plateforme dans l\'espace ; les six vérins suivent.', ['x (right)', 'x (droite)'], ['y (forward)', 'y (avant)'], ['z (up)', 'z (haut)'], ['roll', 'roulis'], ['pitch', 'tangage'], ['yaw', 'lacet']],
@@ -175,7 +175,7 @@ const ROBOTS = {
   },
   quadrotor: {
     file: 'anatomy-quadrotor', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
-    title: ['Anatomy of a quadrotor (3D)', 'Anatomie d\'un quadrirotor (3D)'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
+    title: ['Anatomy of a quadrotor (3D)', 'Anatomie d\'un quadrirotor (3D)'], short: ['Drone', 'Drone'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Motor 1 failure on / off', 'Panne du moteur 1 on / off'],
     note: ['The drone really flies: a rigid-body simulation (mass 1.2 kg, thrust-to-weight ratio 2) with a flight controller and a mixer that turns your four commands into the four motor thrusts. Roll and pitch are target angles: to go sideways the drone has to tilt first, because it is underactuated (6 degrees of freedom, 4 motors). The two blue propellers turn one way and the two white ones the other way, so that their reaction torques cancel; the yaw command makes them unequal. The model is simplified.', 'Le drone vole vraiment : une simulation de corps rigide (masse 1,2 kg, rapport poussée/poids 2) avec un contrôleur de vol et un mélangeur qui transforme vos quatre commandes en poussées des quatre moteurs. Roulis et tangage sont des angles visés : pour aller de côté le drone doit d\'abord s\'incliner, car il est sous-actionné (6 degrés de liberté, 4 moteurs). Les deux hélices bleues tournent dans un sens et les deux blanches dans l\'autre, pour que leurs couples de réaction s\'annulent ; la commande de lacet les rend inégales. Le modèle est simplifié.'],
     cmd: ['Pilot commands', 'Commandes du pilote', 'Move the sliders like the sticks of a remote control. At zero the drone hovers where it is.', 'Bougez les curseurs comme les manches d\'une télécommande. À zéro le drone fait du sur-place.', ['climb', 'montée'], ['roll (right)', 'roulis (droite)'], ['pitch (forward)', 'tangage (avant)'], ['yaw rate', 'vitesse de lacet']],
@@ -196,7 +196,7 @@ const ROBOTS = {
   },
   humanoid: {
     file: 'anatomy-humanoid', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
-    title: ['Anatomy of a humanoid robot (3D)', 'Anatomie d\'un robot humanoïde (3D)'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
+    title: ['Anatomy of a humanoid robot (3D)', 'Anatomie d\'un robot humanoïde (3D)'], short: ['Humanoid', 'Humanoïde'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Walk on / off', 'Marche on / off'],
     note: ['The humanoid really walks: a gait generator moves each foot (backwards under the body while it is on the ground, forwards in the air) and the two-link inverse kinematics of the leg finds the hip and knee angles that put the ankle there; the ankle then keeps the foot flat. When it stands, the hips move so that the centre of mass (computed from the mass of every part) stays over the feet: crouch and raise an arm to see it. When it walks, the centre of mass leaves the support area at each step, so the balance is dynamic, a controlled fall; real humanoids add feedback from the IMU and the force sensors (ZMP or model predictive control). The model is simplified: the real inside depends on the make.', 'Le humanoïde marche vraiment : un générateur de marche déplace chaque pied (vers l\'arrière sous le corps tant qu\'il est au sol, vers l\'avant en l\'air) et la cinématique inverse à deux segments de la jambe trouve les angles de hanche et de genou qui placent la cheville là ; la cheville garde ensuite le pied à plat. Debout, les hanches se déplacent pour que le centre de masse (calculé à partir de la masse de chaque pièce) reste au-dessus des pieds : accroupissez-vous et levez un bras pour le voir. Quand il marche, le centre de masse sort de la surface d\'appui à chaque pas, donc l\'équilibre est dynamique, une chute contrôlée ; les vrais humanoïdes ajoutent un retour de la centrale inertielle et des capteurs de force (ZMP ou commande prédictive). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
     cmd: ['Pose and walking', 'Pose et marche', 'Move the sliders to crouch, twist the waist, raise the arms or turn the head. Press Walk to make it walk; the pace slider sets the step length and the rhythm.', 'Bougez les curseurs pour vous accroupir, tourner la taille, lever les bras ou tourner la tête. Appuyez sur Marche pour le faire marcher ; le curseur d\'allure règle la longueur des pas et le rythme.', ['crouch', 'accroupi'], ['waist twist', 'torsion de la taille'], ['arms raise', 'bras levés'], ['head turn', 'tête tournée'], ['walking pace', 'allure de marche']],
@@ -217,7 +217,7 @@ const ROBOTS = {
   },
   mobile: {
     file: 'anatomy-mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
-    title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], back: ['Mobile robot page', 'Page du robot mobile'],
+    title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], short: ['Mobile robot', 'Robot mobile'], back: ['Mobile robot page', 'Page du robot mobile'],
     special: ['Spin on the spot', 'Tourner sur place'],
     note: ['The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.', 'Les vitesses des roues sont en rad/s : v = r (ωG + ωD) / 2 et ω = r (ωD − ωG) / L, avec r = 0,07 m et L = 0,40 m comme sur la page du robot mobile. La ligne orange est le chemin parcouru par le robot (odométrie). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
     joints: [
@@ -347,7 +347,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="${key}">
-    <h1>${tx(...R.title)}</h1>
+    <h1>${R.short ? `${tx(...R.short)} <span class="h1tag">${tx('3D anatomy', 'anatomie 3D')}</span>` : tx(...R.title)}</h1>
     <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
     <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
     <div class="andef"><b>${tx('Definition', 'Définition')}</b><p>${tx(...DEFS[key])}</p></div>

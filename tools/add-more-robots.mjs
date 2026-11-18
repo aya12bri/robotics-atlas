@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 const PAIRS = [
+  ['3-axis arm', 'Bras 3 axes'], ['Gantry', 'Cartésien'], ['Cylindrical', 'Cylindrique'], ['Spherical', 'Sphérique'], ['6-axis robot', 'Robot 6 axes'], ['Cobot', 'Cobot'], ['7-axis robot', 'Robot 7 axes'], ['Delta', 'Delta'], ['Hexapod', 'Hexapode'], ['Mobile robot', 'Robot mobile'], ['Wheels and drives', 'Roues et motorisations'],
   ['Cylindrical robot', 'Robot cylindrique'], ['Spherical (polar) robot', 'Robot sphérique (polaire)'], ['7-axis redundant robot', 'Robot redondant 7 axes'], ['Hexapod (Stewart platform)', 'Hexapode (plateforme de Stewart)'],
   ['<span class="notation">R-P-P</span>3 degrees of freedom, cylindrical coordinates', '<span class="notation">R-P-P</span>3 degrés de liberté, coordonnées cylindriques'],
   ['<span class="notation">R-R-P</span>3 degrees of freedom, spherical coordinates', '<span class="notation">R-R-P</span>3 degrés de liberté, coordonnées sphériques'],

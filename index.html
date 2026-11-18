@@ -97,7 +97,7 @@
           <div class="gal-cards" id="galCards">
           <article class="panel card fade on" data-i="0">
         <p class="step">1 / 12</p>
-        <h2>3-DOF robot arm</h2>
+        <h2>3-axis arm</h2>
         <p class="rtag"><span class="notation">R-R-R</span>3 degrees of freedom, serial arm</p>
         <p>The simplest arm that can reach a point in space. The best place to learn frames, DH tables and the Jacobian.</p>
         <dl><dt>Used in</dt><dd>Teaching, light pick and place, small lab automation.</dd><dt>End effectors</dt><dd>Pinch gripper, suction cup, pen or light tool.</dd></dl>
@@ -105,7 +105,7 @@
       </article>
           <article class="panel card fade" data-i="1">
         <p class="step">2 / 12</p>
-        <h2>Cartesian gantry</h2>
+        <h2>Gantry</h2>
         <p class="rtag"><span class="notation">P-P-P</span>3 degrees of freedom, three sliding axes</p>
         <p>Three sliding axes at right angles (x, y, z), like a 3D printer or a CNC machine.</p>
         <dl><dt>Used in</dt><dd>CNC machines, 3D printers, warehouse picking, large pick and place, laboratory handling.</dd><dt>End effectors</dt><dd>Pinch gripper, suction cup, spindle, print head, camera.</dd></dl>
@@ -113,7 +113,7 @@
       </article>
           <article class="panel card fade" data-i="2">
         <p class="step">3 / 12</p>
-        <h2>Cylindrical robot</h2>
+        <h2>Cylindrical</h2>
         <p class="rtag"><span class="notation">R-P-P</span>3 degrees of freedom, cylindrical coordinates</p>
         <p>A column that turns, a carriage that goes up and an arm that comes out: an angle, a height and a radius.</p>
         <dl><dt>Used in</dt><dd>Machine tending, die casting, clean rooms, wafer handling, simple assembly.</dd><dt>End effectors</dt><dd>Gripper or vacuum cup pointing outwards.</dd></dl>
@@ -121,7 +121,7 @@
       </article>
           <article class="panel card fade" data-i="3">
         <p class="step">4 / 12</p>
-        <h2>Spherical (polar) robot</h2>
+        <h2>Spherical</h2>
         <p class="rtag"><span class="notation">R-R-P</span>3 degrees of freedom, spherical coordinates</p>
         <p>Two angles and a telescopic arm, like the Unimate, the very first industrial robot (1961).</p>
         <dl><dt>Used in</dt><dd>Spot welding, forging, loading presses, pointing telescopes and antennas.</dd><dt>End effectors</dt><dd>Welding gun, gripper for hot parts.</dd></dl>
@@ -137,7 +137,7 @@
       </article>
           <article class="panel card fade" data-i="5">
         <p class="step">6 / 12</p>
-        <h2>6-axis industrial robot</h2>
+        <h2>6-axis robot</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, serial arm</p>
         <p>The classic robot of the car factory: any position, any orientation, thanks to its spherical wrist.</p>
         <dl><dt>Used in</dt><dd>Welding, painting, machine tending, palletizing, assembly.</dd><dt>End effectors</dt><dd>Gripper, vacuum, welding torch, paint gun, tool changer.</dd></dl>
@@ -145,7 +145,7 @@
       </article>
           <article class="panel card fade" data-i="6">
         <p class="step">7 / 12</p>
-        <h2>Collaborative robot (UR5)</h2>
+        <h2>Cobot</h2>
         <p class="rtag"><span class="notation">6 × R</span>6 degrees of freedom, works next to people</p>
         <p>Real UR5 numbers, an offset wrist and force limiting: a robot that can work without a fence.</p>
         <dl><dt>Used in</dt><dd>Small batches, screwdriving, packing, inspection, laboratories.</dd><dt>End effectors</dt><dd>Electric pinch gripper, soft gripper, screwdriver, camera.</dd></dl>
@@ -153,7 +153,7 @@
       </article>
           <article class="panel card fade" data-i="7">
         <p class="step">8 / 12</p>
-        <h2>7-axis redundant robot</h2>
+        <h2>7-axis robot</h2>
         <p class="rtag"><span class="notation">7 × R</span>7 degrees of freedom, one more than needed</p>
         <p>Like a human arm: for one pose of the tool the elbow can still move, to avoid obstacles and joint limits.</p>
         <dl><dt>Used in</dt><dd>Collaborative and medical robots (KUKA LBR iiwa, Franka), research, space arms.</dd><dt>End effectors</dt><dd>Gripper, screwdriver, surgical instrument, camera.</dd></dl>
@@ -161,7 +161,7 @@
       </article>
           <article class="panel card fade" data-i="8">
         <p class="step">9 / 12</p>
-        <h2>Delta robot</h2>
+        <h2>Delta</h2>
         <p class="rtag"><span class="notation">3 × R</span>parallel robot, 3 arms and 1 optional rotation</p>
         <p>Three light arms and parallelograms hold a small platform: extremely fast, but a small workspace.</p>
         <dl><dt>Used in</dt><dd>Food, pharma and electronics packing on conveyors, more than 100 picks per minute.</dd><dt>End effectors</dt><dd>Vacuum cups, soft fingers, pinch gripper.</dd></dl>
@@ -169,7 +169,7 @@
       </article>
           <article class="panel card fade" data-i="9">
         <p class="step">10 / 12</p>
-        <h2>Hexapod (Stewart platform)</h2>
+        <h2>Hexapod</h2>
         <p class="rtag"><span class="notation">6-UPS</span>6 degrees of freedom, fully parallel</p>
         <p>Six legs that change length move a platform in its six directions: very stiff and precise.</p>
         <dl><dt>Used in</dt><dd>Flight simulators, vibration tables, telescope mirrors, precision positioning.</dd><dt>End effectors</dt><dd>The platform itself: a cockpit, a mirror, a part to machine.</dd></dl>
@@ -177,7 +177,7 @@
       </article>
           <article class="panel card fade" data-i="10">
         <p class="step">11 / 12</p>
-        <h2>Mobile robot (differential drive)</h2>
+        <h2>Mobile robot</h2>
         <p class="rtag"><span class="notation">2 wheels</span>mobile robot, x, y and heading</p>
         <p>A robot that moves around instead of reaching: wheel speeds, turning circle, odometry and programs.</p>
         <dl><dt>Used in</dt><dd>Warehouses, hospitals, factories, cleaning, delivery.</dd><dt>End effectors</dt><dd>Usually none (it carries things); a mobile manipulator adds an arm.</dd></dl>
@@ -185,7 +185,7 @@
       </article>
           <article class="panel card fade" data-i="11">
         <p class="step">12 / 12</p>
-        <h2>Wheels and mobile bases</h2>
+        <h2>Wheels and drives</h2>
         <p class="rtag"><span class="notation">5 wheels</span>reference and drive simulator</p>
         <p>Fixed, castor, omni, Mecanum and spherical wheels; differential, Ackermann, 3-omni and Mecanum drives; sensors and navigation.</p>
         <dl><dt>Used in</dt><dd>Choosing the right base for an AGV or an AMR.</dd><dt>End effectors</dt><dd>None: this page is about the base.</dd></dl>
