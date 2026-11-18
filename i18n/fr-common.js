@@ -123,6 +123,12 @@ RA.add({
  "172gtkfcq6": "Niveau professionnel : commande, planification, étalonnage, EKF, dimensionnement, ROS 2, sécurité, examen et TP",
  "2c3vfnfuuvh": "Téléopération, cobotique, architectures, sécurité",
  "1qe3jf726eq": "Maître-esclave en 3D (TD1, TD2), variables d'onde, comanipulation, architecture PAT, marquage CE",
+ "1j0h2mso0k0": "Fusion de données et filtre de Kalman",
+ "uf0h5wkpri": "Capteurs, covariance, meilleur estimateur linéaire, Kalman et EKF en 3D, balises UWB, fusion multicapteur",
+ "19jsr78y35m": "Transmissions mécaniques et préhenseurs",
+ "1tvabk3vvpz": "Courroies, engrenages, vis, trains planétaires et harmonic drives en 3D, dimensionner une articulation, préhenseurs",
+ "j0xpace5te": "Espaces de travail, modes de déplacement et robots parallèles",
+ "8qdgpis4xv": "Espaces articulaire et opérationnel, espace de travail, MoveL / MoveJ, aspects, redondance, cinq barres, 3-RPR, singularités",
  "19vx26vb6n7": "12 leçons courtes, environ 50 minutes au total. Lisez-les dans l'ordre, répondez à la question de fin de chaque leçon, puis cochez-la. Votre progression est enregistrée dans ce navigateur et apparaît dans le parcours de la page d'accueil. Quand vous avez fini, des cours plus longs vont plus loin (voir les cartes ci-dessus) : maths, modélisation complète, singularités, commande, perception et IA, et le monde réel.",
  "2bkljlnfmeh": "Aller au cours sur les singularités →"
 });

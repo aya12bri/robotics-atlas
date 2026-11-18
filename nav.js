@@ -503,6 +503,24 @@
       const at = art.querySelector('details.quiz, .lquiz, .exs, label.lesson-done');
       if (at) at.before(p); else art.appendChild(p);
     });
+    // course pages: at the end of each lesson, the lessons of the other courses that prepare it and that go further (links-data.js)
+    if (document.querySelector('article.lesson[id]')) {
+      const showLinks = () => {
+        const DATA = window.RA_LINKS || {}, fr = lang === 'fr', pg = here.replace(/\.html$/, '');
+        const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        const item = (x) => `<li><a href="${x.u.replace('#', '.html#')}"><b>${esc(x.c[+fr])}</b> · ${fr ? 'leçon' : 'lesson'} ${esc(x.n)}${fr ? ' : ' : ': '}${esc(x.t[+fr])}</a><span>${esc(x.w[+fr])}</span></li>`;
+        document.querySelectorAll('article.lesson[id]').forEach((art) => {
+          const L = DATA[pg + '#' + art.id]; if (!L || art.querySelector('.xlinks')) return;
+          const box = document.createElement('aside'); box.className = 'xlinks ra-own';
+          box.innerHTML = `<div class="xl-t">${fr ? '🔗 Liens avec les autres cours' : '🔗 Links with the other courses'}</div>` +
+            (L.pre.length ? `<div class="xl-h">${fr ? 'À revoir d\'abord si besoin' : 'Revise first if needed'}</div><ul>${L.pre.map(item).join('')}</ul>` : '') +
+            (L.next.length ? `<div class="xl-h">${fr ? 'Pour aller plus loin' : 'To go further'}</div><ul>${L.next.map(item).join('')}</ul>` : '');
+          const at = art.querySelector('details.quiz, .lquiz, label.lesson-done');
+          if (at) at.before(box); else art.appendChild(box);
+        });
+      };
+      if (window.RA_LINKS) showLinks(); else { const s = document.createElement('script'); s.src = 'links-data.js'; s.onload = showLinks; document.head.appendChild(s); }
+    }
     // course glossaries: a link to the general glossary, filtered on this course
     const gl = document.querySelector('section.gloss > p');
     if (gl) {
@@ -638,7 +656,7 @@
 
   // ---------------------------------------------------------------- if the 3D engine cannot be loaded, say so (and offer a reload) instead of leaving empty boxes
   function watch3d() {
-    const needs = document.querySelector('script[type="importmap"]'); if (!needs) return;
+    const needs = document.querySelector('script[type="importmap"]'); if (!needs || document.body.classList.contains('learn')) return;   // course pages load three only when a 3D lab is opened
     const fail = () => {
       if (document.getElementById('err3d')) return;
       const b = document.createElement('div'); b.id = 'err3d'; b.className = 'err3d'; b.setAttribute('role', 'alert');

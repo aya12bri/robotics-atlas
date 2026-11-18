@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data fusion and the Kalman filter</title>
+    <!-- seo -->
+    <meta name="description" content="Data fusion and the Kalman filter: sensors of autonomous navigation, covariance and confidence ellipses, the best linear estimator, the Kalman filter and the EKF in 3D labs, UWB beacons and multi-sensor fusion." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/learn-kalman" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/learn-kalman" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/learn-kalman-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/learn-kalman" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Data fusion and the Kalman filter" />
+    <meta property="og:description" content="Data fusion and the Kalman filter: sensors of autonomous navigation, covariance and confidence ellipses, the best linear estimator, the Kalman filter and the EKF in 3D labs, UWB beacons and multi-sensor fusion." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/learn-kalman" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }</script>
+  <script src="nav.js" defer></script></head>
+  <body class="learn">
+    <h1>Data fusion and the Kalman filter</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn.html" style="color:#ff9f43">The basics</a></p>
+    <p class="lead">How a robot combines imperfect sensors and a model of its motion to know where it is, and how sure it is. From covariance and confidence ellipses to the Kalman filter, its extended version (EKF), UWB localisation and multimodal fusion, with labs in 3D.</p>
+    <nav class="courses" aria-label="Courses"><a class="course" href="learn.html" data-prefix="lesson-" data-total="12" data-key="learn"><b>Foundations</b><span>12 short lessons: the ideas behind every robot</span><em class="cnt"></em></a><a class="course" href="learn-mathkit.html" data-prefix="mk-" data-total="11" data-key="mk"><b>The maths of robotics</b><span>One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability, quaternions</span><em class="cnt"></em></a><a class="course" href="learn-maths.html" data-prefix="maths-" data-total="8" data-key="maths"><b>Maths and motion, step by step</b><span>Applied: the 2-axis arm from A to Z, its direct and inverse models, its motion laws</span><em class="cnt"></em></a><a class="course" href="learn-model.html" data-prefix="model-" data-total="11" data-key="model"><b>Robot modelling, full course</b><span>Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics</span><em class="cnt"></em></a><a class="course" href="learn-singularities.html" data-prefix="sing-" data-total="8" data-key="sing"><b>Singularities and the Jacobian</b><span>Speeds, forces, lost directions, gimbal lock, redundancy</span><em class="cnt"></em></a><a class="course" href="learn-control.html" data-prefix="ctrl-" data-total="12" data-key="ctrl"><b>Dynamics, actuators and control</b><span>Motors, sensors, PID, computed torque, force control, trajectories</span><em class="cnt"></em></a><a class="course" href="learn-intelligence.html" data-prefix="ai-" data-total="9" data-key="ai"><b>Perception, planning and AI</b><span>Vision, Kalman, SLAM, A*, RRT, learning, multi-robot</span><em class="cnt"></em></a><a class="course" href="learn-world.html" data-prefix="world-" data-total="9" data-key="world"><b>Robots in the real world</b><span>Every robot family, grippers, electronics, ROS, safety, careers</span><em class="cnt"></em></a><a class="course" href="learn-armlab.html" data-prefix="lab-" data-total="6" data-key="armlab"><b>Code a robot arm in Python</b><span>FK, a DH engine, exact and numerical IK, trajectories, a real servo arm, exam and labs</span><em class="cnt"></em></a><a class="course" href="learn-advanced.html" data-prefix="adv-" data-total="8" data-key="adv"><b>Advanced robotics (Master)</b><span>Parallel robots, LQR, MPC, legged and aerial robots, vision in practice, reinforcement learning, grasping in practice</span><em class="cnt"></em></a><a class="course" href="learn-ros.html" data-prefix="ros-" data-total="9" data-key="ros"><b>ROS 2 from zero</b><span>Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project</span><em class="cnt"></em></a><a class="course" href="learn-mobile.html" data-prefix="wmr-" data-total="10" data-key="wmr"><b>Wheeled mobile robots, part 1</b><span>How a robot rolls: maths from zero, every wheel and drive, constraints, ICR, maneuverability, holonomy</span><em class="cnt"></em></a><a class="course" href="learn-mobile-pro.html" data-prefix="wmr-" data-total="10" data-start="11" data-key="wmrpro"><b>Wheeled mobile robots, part 2</b><span>Professional level: control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs</span><em class="cnt"></em></a><a class="course" href="learn-teleop.html" data-prefix="tel-" data-total="12" data-key="tel"><b>Teleoperation, cobotics, architectures, safety</b><span>Master-slave in 3D (TD1, TD2), wave variables, co-manipulation, PAT architecture, CE marking</span><em class="cnt"></em></a><a class="course current" href="learn-kalman.html" data-prefix="kf-" data-total="8" data-key="kf"><b>Data fusion and the Kalman filter</b><span>Sensors, covariance, best linear estimator, Kalman and EKF in 3D, UWB beacons, multi-sensor fusion</span><em class="cnt"></em></a><a class="course" href="learn-transmission.html" data-prefix="tr-" data-total="8" data-key="tr"><b>Mechanical transmissions and grippers</b><span>Belts, gears, screws, planetary and harmonic drives in 3D, sizing a joint, grippers</span><em class="cnt"></em></a><a class="course" href="learn-parallel.html" data-prefix="par-" data-total="6" data-key="par"><b>Workspaces, motion modes and parallel robots</b><span>Joint and operational spaces, workspace, MoveL / MoveJ, aspects, redundancy, five-bar, 3-RPR, singularities</span><em class="cnt"></em></a></nav>
+    <section class="intro">
+<div class="box idea"><div class="bt">How to use this course</div><div class="bb"><p>Every lesson starts with <strong>one sentence</strong> that says the idea without maths, then explains it step by step, then gives the formulas and a lab. Beginners can read the sentences and play with the labs; Master students will find the proofs and the exercises of the tutorials (DC motor, room temperature, pendulum, multilateration, multimodal fusion). Prerequisites: matrices and a little probability (see the links at the end of each lesson).</p></div></div>
+    </section>
+
+    <div class="learn-layout">
+      <aside class="lesson-nav" id="lessonNav" aria-label="Checklist"></aside>
+      <div class="lessons">
+
+        <article class="lesson" id="l1" data-id="kf-1">
+          <header class="lesson-head"><span class="num">1</span><h2>Why fuse data? Sensors for autonomous navigation</h2><span class="time">15 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what data fusion is for, the sensors of drones, mobile robots and cars, why no sensor is enough alone, the families of estimation methods, and the practical problems (calibration, biases, rates, faults).</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>Data fusion combines several imperfect sensors and a model of motion to get one estimate of the state of a robot that is better than any sensor alone — and it also says how sure it is.</p></div></div>
+<h4>1.1 The problem: autonomous navigation</h4>
+<p>A drone (UAV), an autonomous mobile robot (AMR) or a self-driving car must know at every instant its <strong>state</strong>: position, speed, orientation (up to 6D). Safety requires <strong>redundancy</strong>: several sensors measure the same thing in different ways, so that one failure does not blind the robot.</p>
+<figure class="figure"><svg viewBox="0 0 690 310" class="fig" role="img" aria-hidden="true"><defs><marker id="tA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-axis)"/></marker><marker id="tB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-b)"/></marker><marker id="tO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-o)"/></marker><marker id="tG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-g)"/></marker><marker id="tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-r)"/></marker><marker id="tY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-y)"/></marker></defs><rect x="10" y="14" width="190" height="40" rx="10" style="fill:var(--f-p);fill-opacity:0.22;stroke:var(--f-p);stroke-width:2"/><text x="105" y="30" text-anchor="middle" style="font-weight:700">IMU</text><text x="105" y="49" text-anchor="middle" class="sm" style="fill:var(--f-axis)">100–1000 Hz, drifts</text><line x1="202" y1="34" x2="318" y2="168" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="10" y="64" width="190" height="40" rx="10" style="fill:var(--f-g);fill-opacity:0.22;stroke:var(--f-g);stroke-width:2"/><text x="105" y="80" text-anchor="middle" style="font-weight:700">GNSS</text><text x="105" y="99" text-anchor="middle" class="sm" style="fill:var(--f-axis)">1–10 Hz, m to cm</text><line x1="202" y1="84" x2="318" y2="168" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="10" y="114" width="190" height="40" rx="10" style="fill:var(--f-o);fill-opacity:0.22;stroke:var(--f-o);stroke-width:2"/><text x="105" y="130" text-anchor="middle" style="font-weight:700">Wheel encoders</text><text x="105" y="149" text-anchor="middle" class="sm" style="fill:var(--f-axis)">100 Hz, slip</text><line x1="202" y1="134" x2="318" y2="168" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="10" y="164" width="190" height="40" rx="10" style="fill:var(--f-b);fill-opacity:0.22;stroke:var(--f-b);stroke-width:2"/><text x="105" y="180" text-anchor="middle" style="font-weight:700">Lidar / UWB</text><text x="105" y="199" text-anchor="middle" class="sm" style="fill:var(--f-axis)">10–50 Hz, cm</text><line x1="202" y1="184" x2="318" y2="168" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="10" y="214" width="190" height="40" rx="10" style="fill:var(--f-y);fill-opacity:0.22;stroke:var(--f-y);stroke-width:2"/><text x="105" y="230" text-anchor="middle" style="font-weight:700">Camera</text><text x="105" y="249" text-anchor="middle" class="sm" style="fill:var(--f-axis)">30 Hz, rich, slow</text><line x1="202" y1="234" x2="318" y2="168" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="10" y="264" width="190" height="40" rx="10" style="fill:var(--f-r);fill-opacity:0.22;stroke:var(--f-r);stroke-width:2"/><text x="105" y="280" text-anchor="middle" style="font-weight:700">Barometer, compass</text><text x="105" y="299" text-anchor="middle" class="sm" style="fill:var(--f-axis)">height, heading</text><line x1="202" y1="284" x2="318" y2="168" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="320" y="128" width="150" height="80" rx="10" style="fill:var(--f-b);fill-opacity:0.3;stroke:var(--f-b);stroke-width:2"/><text x="395" y="164" text-anchor="middle" style="font-weight:700">Fusion filter</text><text x="395" y="183" text-anchor="middle" class="sm" style="fill:var(--f-axis)">Kalman, EKF…</text><line x1="472" y1="168" x2="518" y2="168" style="stroke:var(--f-axis);stroke-width:2.2" marker-end="url(#tA)"/><rect x="520" y="118" width="160" height="100" rx="10" style="fill:var(--f-g);fill-opacity:0.22;stroke:var(--f-g);stroke-width:2"/><text x="600" y="164" text-anchor="middle" style="font-weight:700">Best estimate</text><text x="600" y="183" text-anchor="middle" class="sm" style="fill:var(--f-axis)">x̂ and its covariance Γ</text><text x="600" y="250" text-anchor="middle" class="sm" style="fill:var(--f-axis)">position, speed, heading… and how sure we are</text></svg></figure>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Sensor</th><th class="left">What it measures</th><th class="left">Weak point</th></tr><tr><td class="left">IMU: accelerometers, gyroscopes, magnetometers</td><td class="left">acceleration (gravity + own acceleration), rotation speed, Earth magnetic field, in the body frame</td><td class="left">integration drifts; magnetic disturbances</td></tr><tr><td class="left">GNSS (GPS, Galileo, GLONASS, BeiDou)</td><td class="left">position from pseudo-ranges (multilateration)</td><td class="left">outdoors only, multipath, a few metres without corrections</td></tr><tr><td class="left">Barometer, Pitot tube</td><td class="left">altitude, air speed</td><td class="left">weather, wind</td></tr><tr><td class="left">Lidar (time of flight)</td><td class="left">distances to landmarks and obstacles</td><td class="left">glass, rain, cost</td></tr><tr><td class="left">UWB radio (ultra wide band)</td><td class="left">distance by time of flight (TOF), angle of arrival (AOA), differences of time or phase (TDOA, PDOA)</td><td class="left">needs installed anchors, multipath</td></tr><tr><td class="left">Wheel encoders</td><td class="left">wheel rotation → odometry</td><td class="left">slip, drift</td></tr><tr><td class="left">Cameras (RGB, depth, event)</td><td class="left">images, depth by IR, time of flight or stereo, visual SLAM</td><td class="left">light, texture, heavy computing</td></tr></table></div>
+<h4>1.2 Three families of methods</h4>
+<ul><li><strong>Filtering</strong>: Kalman filter (linear), extended Kalman filter (EKF), complementary filter, unscented Kalman filter (UKF), invariant Kalman filter, particle filter. Recursive and fast: the subject of this course.</li><li><strong>Nonlinear optimisation</strong>: maximum a posteriori over a window of past states (Bayesian networks, factor graphs, iSAM with incremental updates): the standard of visual-inertial and GNSS-inertial-vision fusion.</li><li><strong>Learning</strong>: model-free, data-driven (deep networks, LSTM), for example to estimate depth or to correct the drift of an IMU.</li></ul>
+<h4>1.3 What makes it hard in practice</h4>
+<ul><li><strong>Calibration</strong>: biases that change with time and temperature, misalignment between IMU and camera.</li><li><strong>Observability</strong>: can the sensors really tell us every component of the state? (a compass alone never gives the position).</li><li><strong>Asynchronous sampling</strong>: an IMU at 400 Hz, a GNSS at 5 Hz, a camera at 30 Hz with a delay.</li><li><strong>Resilience</strong>: detect a faulty sensor, switch, keep running (fault tolerance).</li></ul>
+<div class="box example"><div class="bt">Try the sensors first</div><div class="bb"><p>The <a href="sensors.html#imu">sensor test bench</a> shows the drift of a gyro, the noise of an accelerometer and the errors of a GNSS receiver live: the same imperfections this course will fuse away.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>data fusion</li><li>state estimation</li><li>redundancy</li><li>IMU</li><li>UWB: TOF, AOA, TDOA</li><li>observability</li><li>asynchronous sampling</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Fusion = several imperfect sensors + a model of motion → one estimate and its uncertainty.</li><li>IMU (fast, drifts), GNSS (absolute, outdoors), encoders (slip), lidar/UWB (distances), cameras (rich, slow).</li><li>Methods: filtering (KF, EKF, UKF, particles), optimisation (MAP, factor graphs), learning.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-1"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-1-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">An IMU runs at 400 Hz, a GNSS at 5 Hz. How many IMU samples between two GNSS fixes?</p><div class="numin" data-ans="80" data-tol="0.1" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>400 / 5 = <b>80</b>: the filter predicts 80 times between two corrections.</p></details>
+</div>
+<div class="ex" data-id="kf-1-2" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">2</span></div>
+<p class="q">Which sensor measures gravity plus the own acceleration?</p><ol class="opts" type="A"><li data-ok="1">The accelerometer</li><li>The gyroscope</li><li>The magnetometer</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The <b>accelerometer</b>: that is why it gives the tilt when the robot is still.</p></details>
+</div>
+<div class="ex" data-id="kf-1-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">A gyro bias of 0.1 °/s is integrated for 10 minutes. Heading error (°)?</p><div class="numin" data-ans="60" data-tol="0.5" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>0.1 × 600 = <b>60°</b>: why a gyro must be fused with an absolute heading.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Why does a robot need several sensors for the same quantity?</p><p class="a">Each one has weak points (drift, noise, blind spots); combined they are better and one failure does not blind the robot (redundancy).</p></li><li><p class="q">Name the three families of estimation methods.</p><p class="a">Filtering (Kalman, EKF, UKF, particles…), nonlinear optimisation (MAP, factor graphs), learning.</p></li><li><p class="q">What does an accelerometer measure exactly?</p><p class="a">The projection of gravity plus the own acceleration on its axes, in the body frame.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l2" data-id="kf-2">
+          <header class="lesson-head"><span class="num">2</span><h2>Random vectors, covariance and confidence ellipses</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>mean and covariance of random vectors, whiteness, the properties of covariance matrices, the confidence ellipse and the χ² law, and how a linear map transforms a covariance: Γy = A Γx Aᵀ + Γα.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>A covariance matrix says how much each component of an uncertain vector varies, and how the components vary together; it draws an ellipse of uncertainty.</p></div></div>
+<h4>2.1 Mean, variations, covariance</h4>
+<p>For random vectors <b>x</b> ∈ ℝⁿ and <b>y</b> ∈ ℝᵐ, the means are x̄ = E(x), ȳ = E(y) and the variations x̃ = x − x̄, ỹ = y − ȳ. The <strong>covariance matrix</strong> is the mean of the products of the variations:</p>
+<p class="eq">Γ<sub>xy</sub> = E(x̃ ỹᵀ) = E((x − x̄)(y − ȳ)ᵀ) &emsp;&emsp; Γ<sub>x</sub> = Γ<sub>xx</sub> = E(x̃ x̃ᵀ)</p>
+<p>On the diagonal of Γ<sub>x</sub>: the variances σᵢ² of each component. Off the diagonal: the covariances, which say if two components tend to move together. A vector is <strong>white</strong> if its components are independent: Γ<sub>x</sub> is then diagonal. In Matlab or Python: subtract the mean of the samples, then average the products (<code>G_xy = mean(xtilde .* ytilde)</code>).</p>
+<div class="box warn"><div class="bt">Uncorrelated is not independent</div><div class="bb"><p>Points on a ring (x = ρ sin θ, y = ρ cos θ) have a zero covariance, yet x and y are strongly linked: knowing x gives two possible y. The covariance only sees <em>linear</em> links.</p></div></div>
+<h4>2.2 Properties of a covariance matrix</h4>
+<ul><li>It is <strong>symmetric and positive</strong>: its eigenvalues are real and ≥ 0.</li><li><strong>Decomposition</strong>: Γ = R D Rᵀ, R a rotation (the eigenvectors), D diagonal (the eigenvalues).</li><li><strong>Square root</strong>: Γ<sup>½</sup> = R D<sup>½</sup> Rᵀ, itself a covariance matrix.</li><li><strong>Order</strong>: Γ₁ ≤ Γ₂ means Γ₂ − Γ₁ is positive: Γ₁ is “more precise” in every direction.</li></ul>
+<h4>2.3 The confidence ellipse</h4>
+<figure class="figure"><svg viewBox="0 0 620 300" class="fig" role="img" aria-hidden="true"><defs><marker id="tA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-axis)"/></marker><marker id="tB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-b)"/></marker><marker id="tO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-o)"/></marker><marker id="tG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-g)"/></marker><marker id="tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-r)"/></marker><marker id="tY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-y)"/></marker></defs><line x1="40" y1="150" x2="580" y2="150" style="stroke:var(--f-grid)"/><line x1="300" y1="20" x2="300" y2="280" style="stroke:var(--f-grid)"/><path d="M454.1,78.2L456.2,84.7L456.9,91.9L456.0,99.7L453.7,107.9L449.8,116.5L444.5,125.5L437.9,134.7L429.9,144.1L420.6,153.5L410.2,162.8L398.7,172.1L386.3,181.1L373.0,189.9L359.1,198.2L344.5,206.1L329.6,213.4L314.3,220.2L299.0,226.2L283.6,231.6L268.4,236.1L253.5,239.8L239.0,242.7L225.1,244.6L212.0,245.7L199.7,245.8L188.3,245.0L178.1,243.3L169.0,240.7L161.1,237.2L154.7,232.8L149.6,227.7L145.9,221.8L143.8,215.3L143.1,208.1L144.0,200.3L146.3,192.1L150.2,183.5L155.5,174.5L162.1,165.3L170.1,155.9L179.4,146.5L189.8,137.2L201.3,127.9L213.7,118.9L227.0,110.1L240.9,101.8L255.5,93.9L270.4,86.6L285.7,79.8L301.0,73.8L316.4,68.4L331.6,63.9L346.5,60.2L361.0,57.3L374.9,55.4L388.0,54.3L400.3,54.2L411.7,55.0L421.9,56.7L431.0,59.3L438.9,62.8L445.3,67.2L450.4,72.3L454.1,78.2" style="fill:var(--f-y);fill-opacity:0.12;stroke:var(--f-y);stroke-width:2.5"/><line x1="300" y1="150" x2="454.0723237962305" y2="78.1548955040811" style="stroke:var(--f-g);stroke-width:2.2" marker-end="url(#tG)"/><line x1="300" y1="150" x2="270.416721678151" y2="86.55845490743451" style="stroke:var(--f-p);stroke-width:2.2" marker-end="url(#tA)"/><text x="464.0723237962305" y="72.1548955040811" text-anchor="start" style="fill:var(--f-g)">a √λ₁</text><text x="278.416721678151" y="80.55845490743451" text-anchor="start" style="fill:var(--f-p)">a √λ₂</text><circle cx="300" cy="150" r="5" style="fill:var(--f-r)"/><text x="290" y="172" text-anchor="middle" style="fill:var(--f-r)">x̄</text><text x="310" y="290" text-anchor="middle" class="sm" style="fill:var(--f-axis)">axes = eigenvectors of Γ, half-lengths a√λ, a = √(−2 ln(1 − η))</text></svg></figure>
+<p>For a Gaussian vector w of mean w̄ and covariance Γ<sub>w</sub>, the set (w − w̄)ᵀ Γ<sub>w</sub>⁻¹ (w − w̄) ≤ a² is an ellipse: the image of the unit disk by w = w̄ + a Γ<sub>w</sub><sup>½</sup> s. The quantity sᵀs follows a <strong>χ² law with 2 degrees of freedom</strong>, so the probability to be inside is η = 1 − e<sup>−a²/2</sup>, hence:</p>
+<p class="eq"><i>a</i> = √(−2 ln(1 − η)) &emsp;&emsp; η = 90 % → a = 2.15 &emsp; η = 95 % → a = 2.45 &emsp; η = 99 % → a = 3.03</p>
+<div class="widget" data-widget="kf-gauss3d"></div>
+<h4>2.4 How a linear map moves the uncertainty</h4>
+<p>If y = A x + α + b, with A and b known, x and α independent and α centred, then:</p>
+<p class="eq">ȳ = A x̄ + b &emsp;&emsp; Γ<sub>y</sub> = A Γ<sub>x</sub> Aᵀ + Γ<sub>α</sub></p>
+<p>This single line is the heart of the prediction step of the Kalman filter. It also tells how to <strong>generate</strong> any Gaussian vector: take a white unit vector s (x̄ = 0, Γ = I), then y = Γ<sub>y</sub><sup>½</sup> s + ȳ has the mean ȳ and the covariance Γ<sub>y</sub>.</p>
+<div class="box example"><div class="bt">Worked example</div><div class="bb"><p>x has Γ<sub>x</sub> = I (σ = 1 on each axis) and y = A x with A = [2 0 ; 0 1]. Then Γ<sub>y</sub> = A I Aᵀ = [4 0 ; 0 1]: the standard deviation of y₁ is 2. With A a rotation of 45°, Γ<sub>y</sub> = I: a circle stays a circle when it turns.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>random vector</li><li>covariance matrix</li><li>white vector</li><li>eigenvalues, eigenvectors</li><li>confidence ellipse</li><li>χ² law</li><li>Γy = A Γx Aᵀ + Γα</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Γx = E((x − x̄)(x − x̄)ᵀ): symmetric, positive; Γ = R D Rᵀ (eigenvectors, eigenvalues).</li><li>Confidence ellipse: half-axes a√λᵢ along the eigenvectors, a = √(−2 ln(1 − η)) in 2D.</li><li>y = A x + α + b ⇒ ȳ = A x̄ + b, Γy = A Γx Aᵀ + Γα.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-2"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-2-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Value of a for a 95 % ellipse in 2D?</p><div class="numin" data-ans="2.448" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>a = √(−2 ln 0.05) ≈ <b>2.45</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-2-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Γ = [4 0 ; 0 1], η = 90 % (a = 2.15). Length of the long half-axis?</p><div class="numin" data-ans="4.3" data-tol="0.03" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>a √λ₁ = 2.15 × √4 = <b>4.3</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-2-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">y = A x + α with A = [1 1 ; 0 1], Γx = I, Γα = 0.5 I. First diagonal term of Γy?</p><div class="numin" data-ans="2.5" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>A Aᵀ = [2 1 ; 1 1].</p></details><details class="sol"><summary>Solution</summary><p>A I Aᵀ = [2 1 ; 1 1], plus 0.5 I: <b>2.5</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does a zero covariance between two components mean, and what does it not mean?</p><p class="a">No linear link; it does not mean independence (the ring example).</p></li><li><p class="q">Which a gives a 99 % ellipse in 2D?</p><p class="a">a = √(−2 ln 0.01) ≈ 3.03.</p></li><li><p class="q">y = 3x + α with Γx = 2 and Γα = 1. Γy?</p><p class="a">3 × 2 × 3 + 1 = 19.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l3" data-id="kf-3">
+          <header class="lesson-head"><span class="num">3</span><h2>The best linear estimator: unbiased and orthogonal</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>what an unbiased orthogonal estimator is, why it is unique and the best of all linear estimators, the five formulas for y = C x + β, and two worked examples: a DC motor and an over-determined linear system.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>Knowing y, the best linear guess of x moves the prior guess x̄ in the direction of the surprise y − ȳ, with a gain K = Γxy Γy⁻¹ that weighs how much y really tells about x.</p></div></div>
+<h4>3.1 Unbiased and orthogonal</h4>
+<p>A <strong>linear estimator</strong> of x from y is x̂ = K y + b. Its error is ε = x̂ − x. It is <strong>unbiased</strong> if E(ε) = 0 (no systematic error), <strong>orthogonal</strong> if E(ε ỹᵀ) = 0 (the error has nothing left in common with the measurement: everything y could tell has been used).</p>
+<p class="eq">x̂ = x̄ + K (y − ȳ) &emsp;&emsp; K = Γ<sub>xy</sub> Γ<sub>y</sub>⁻¹ &emsp;&emsp; Γ<sub>ε</sub> = Γ<sub>x</sub> − K Γ<sub>yx</sub></p>
+<p>Proof in three lines: unbiased ⇒ b = x̄ − K ȳ, so ε = K ỹ − x̃; orthogonal ⇒ E((K ỹ − x̃) ỹᵀ) = K Γ<sub>y</sub> − Γ<sub>xy</sub> = 0 ⇒ K = Γ<sub>xy</sub> Γ<sub>y</sub>⁻¹. And it is the <strong>best</strong>: any other gain K₀ + Δ adds the positive term Δ Γ<sub>y</sub> Δᵀ to the error covariance.</p>
+<h4>3.2 The case y = C x + β</h4>
+<p>When the measurement is a linear function of x plus a centred noise β uncorrelated with x, Γ<sub>xy</sub> = Γ<sub>x</sub> Cᵀ and Γ<sub>y</sub> = C Γ<sub>x</sub> Cᵀ + Γ<sub>β</sub>. The five formulas to remember:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"></th><th class="left">Formula</th><th class="left">Name</th></tr><tr><td class="left">(i)</td><td class="left">x̂ = x̄ + K ỹ</td><td class="left">estimate</td></tr><tr><td class="left">(ii)</td><td class="left">Γε = Γx − K C Γx</td><td class="left">error covariance</td></tr><tr><td class="left">(iii)</td><td class="left">ỹ = y − C x̄</td><td class="left">innovation</td></tr><tr><td class="left">(iv)</td><td class="left">Γy = C Γx Cᵀ + Γβ</td><td class="left">innovation covariance</td></tr><tr><td class="left">(v)</td><td class="left">K = Γx Cᵀ Γy⁻¹</td><td class="left">Kalman gain</td></tr></table></div>
+<div class="box example"><div class="bt">Worked example: the DC motor</div><div class="bb"><p>The speed obeys Ω = x₁ U + x₂ T<sub>r</sub> (U voltage, T<sub>r</sub> load torque). Five tests give (U, T<sub>r</sub>, Ω) = (4, 0, 5), (10, 1, 10), (10, 5, 8), (13, 5, 14), (15, 3, 17); measurement variance 9; a priori x ≈ (1, −1) with variance 4. Each row of C is (U, T<sub>r</sub>). The formulas give <strong>x̂ = (1.21, −0.58)</strong> and Γε = [0.061 −0.166 ; −0.166 0.598]: x₁ is known within ±0.25, x₂ only within ±0.77 (the tests vary T<sub>r</sub> little).</p></div></div>
+<div class="widget" data-widget="kf-est"></div>
+<div class="box example"><div class="bt">Worked example: three equations, two unknowns</div><div class="bb"><p>2x₁ + 3x₂ = 8, 3x₁ + 2x₂ = 7, x₁ − x₂ = 0, the first one twice as accurate (Γβ = diag(1, 4, 4)), and a vague prior x̄ = 0, Γx = 1000 I. The estimator makes a weighted compromise: <strong>x̂ = (1.311, 1.755)</strong>, Γε = [0.728 −0.515 ; −0.515 0.462]. It is weighted least squares, with an uncertainty.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>linear estimator</li><li>unbiased</li><li>orthogonal</li><li>innovation</li><li>Kalman gain</li><li>error covariance</li><li>weighted least squares</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>x̂ = x̄ + K (y − ȳ), K = Γxy Γy⁻¹, Γε = Γx − K Γyx: unique, unbiased, orthogonal, the best linear estimator.</li><li>For y = C x + β: ỹ = y − C x̄, Γy = C Γx Cᵀ + Γβ, K = Γx Cᵀ Γy⁻¹, Γε = Γx − K C Γx.</li><li>DC motor: x̂ = (1.21, −0.58). Over-determined system: x̂ = (1.311, 1.755).</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-3"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-3-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Scalar: prior x̄ = 10, Γx = 9, measurement y = 16 of x with Γβ = 9 (C = 1). Estimate x̂?</p><div class="numin" data-ans="13" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>K = 9 / 18 = 0.5, x̂ = 10 + 0.5 × 6 = <b>13</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-3-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Same, with Γβ = 1 (a precise sensor). Estimate x̂?</p><div class="numin" data-ans="15.4" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>K = 9 / 10 = 0.9, x̂ = 10 + 0.9 × 6 = <b>15.4</b>: closer to the precise measurement.</p></details>
+</div>
+<div class="ex" data-id="kf-3-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">In the DC motor example, why is x₂ less precise than x₁?</p><ol class="opts" type="A"><li data-ok="1">The load torque varies little in the tests, so the data say little about x₂</li><li>x₂ is negative</li><li>The prior on x₂ is better</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>T<sub>r</sub> ∈ [0, 5] while U ∈ [4, 15]: the columns of C weigh x₁ much more.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does “orthogonal” mean for an estimator?</p><p class="a">The error is uncorrelated with the measurement: E(ε ỹᵀ) = 0, all the information of y has been used.</p></li><li><p class="q">Write the Kalman gain for y = C x + β.</p><p class="a">K = Γx Cᵀ (C Γx Cᵀ + Γβ)⁻¹.</p></li><li><p class="q">Scalar case: Γx = 4, C = 1, Γβ = 4. K and Γε?</p><p class="a">K = 4 / 8 = 0.5, Γε = 4 − 0.5 × 4 = 2: halfway between prior and measurement, half the variance.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l4" data-id="kf-4">
+          <header class="lesson-head"><span class="num">4</span><h2>The Kalman filter: predict, then correct</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the state model, the two steps of the filter and their seven equations, what the filter stores, its code in a few lines, and why it gives the same result as the batch estimator on the DC motor.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>The Kalman filter applies the best linear estimator again and again: the model predicts where the state goes (and the uncertainty grows), then each measurement corrects it (and the uncertainty shrinks).</p></div></div>
+<h4>4.1 The model</h4>
+<p class="eq">x<sub>k+1</sub> = A<sub>k</sub> x<sub>k</sub> + u<sub>k</sub> + α<sub>k</sub> &emsp;&emsp; y<sub>k</sub> = C<sub>k</sub> x<sub>k</sub> + β<sub>k</sub></p>
+<p>α<sub>k</sub> (process noise, covariance Γα: what the model ignores) and β<sub>k</sub> (measurement noise, Γβ) are Gaussian, independent of each other and <strong>white in time</strong> (independent from one instant to the next). x̂<sub>k|k−1</sub> reads “the estimate of x at time k knowing the measurements up to k − 1”.</p>
+<figure class="figure"><svg viewBox="0 0 690 290" class="fig" role="img" aria-hidden="true"><defs><marker id="tA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-axis)"/></marker><marker id="tB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-b)"/></marker><marker id="tO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-o)"/></marker><marker id="tG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-g)"/></marker><marker id="tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-r)"/></marker><marker id="tY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-y)"/></marker></defs><rect x="20" y="40" width="300" height="110" rx="10" style="fill:var(--f-b);fill-opacity:0.22;stroke:var(--f-b);stroke-width:2"/><text x="170" y="100" text-anchor="middle" style="font-weight:700">1 · Prediction (the model)</text><text x="170" y="112" text-anchor="middle" class="sm" style="fill:var(--f-ink)">x̂ₖ₊₁|ₖ = Aₖ x̂ₖ|ₖ + uₖ</text><text x="170" y="132" text-anchor="middle" class="sm" style="fill:var(--f-ink)">Γₖ₊₁|ₖ = Aₖ Γₖ|ₖ Aₖᵀ + Γα</text><rect x="370" y="40" width="300" height="110" rx="10" style="fill:var(--f-g);fill-opacity:0.22;stroke:var(--f-g);stroke-width:2"/><text x="520" y="100" text-anchor="middle" style="font-weight:700">2 · Correction (the measurement)</text><text x="520" y="106" text-anchor="middle" class="sm" style="fill:var(--f-ink)">ỹ = y − C x̂ , S = C Γ Cᵀ + Γβ</text><text x="520" y="124" text-anchor="middle" class="sm" style="fill:var(--f-ink)">K = Γ Cᵀ S⁻¹</text><text x="520" y="142" text-anchor="middle" class="sm" style="fill:var(--f-ink)">x̂ ← x̂ + K ỹ , Γ ← (I − K C) Γ</text><path d="M320,70 C345,70 345,70 368,70" style="fill:none;stroke:var(--f-axis);stroke-width:2.2" marker-end="url(#tA)"/><path d="M520,152 C520,230 170,230 170,152" style="fill:none;stroke:var(--f-axis);stroke-width:2.2" marker-end="url(#tA)"/><text x="345" y="222" text-anchor="middle" class="sm" style="fill:var(--f-axis)">k ← k + 1: the corrected estimate becomes the start of the next prediction</text><text x="170" y="30" text-anchor="middle" class="sm" style="fill:var(--f-r)">uncertainty grows</text><text x="520" y="30" text-anchor="middle" class="sm" style="fill:var(--f-g)">uncertainty shrinks</text><line x1="470" y1="268" x2="470" y2="186" style="stroke:var(--f-o);stroke-width:2.2" marker-end="url(#tO)"/><text x="470" y="284" text-anchor="middle" class="sm" style="fill:var(--f-o)">measurement yₖ arrives</text></svg></figure>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Step</th><th class="left">Equation</th><th class="left">Name</th></tr><tr><td class="left">Correction</td><td class="left">ỹₖ = yₖ − Cₖ x̂ₖ|ₖ₋₁</td><td class="left">innovation</td></tr><tr><td class="left"></td><td class="left">Sₖ = Cₖ Γₖ|ₖ₋₁ Cₖᵀ + Γβ</td><td class="left">innovation covariance</td></tr><tr><td class="left"></td><td class="left">Kₖ = Γₖ|ₖ₋₁ Cₖᵀ Sₖ⁻¹</td><td class="left">Kalman gain</td></tr><tr><td class="left"></td><td class="left">x̂ₖ|ₖ = x̂ₖ|ₖ₋₁ + Kₖ ỹₖ</td><td class="left">corrected estimate</td></tr><tr><td class="left"></td><td class="left">Γₖ|ₖ = (I − Kₖ Cₖ) Γₖ|ₖ₋₁</td><td class="left">corrected covariance</td></tr><tr><td class="left">Prediction</td><td class="left">x̂ₖ₊₁|ₖ = Aₖ x̂ₖ|ₖ + uₖ</td><td class="left">predicted estimate</td></tr><tr><td class="left"></td><td class="left">Γₖ₊₁|ₖ = Aₖ Γₖ|ₖ Aₖᵀ + Γα</td><td class="left">predicted covariance</td></tr></table></div>
+<div class="widget" data-widget="kf-bells"></div>
+<h4>4.2 The code</h4>
+<p>The filter only stores x̂<sub>k+1|k</sub> and Γ<sub>k+1|k</sub>; everything else is computed on the fly. The same function in Matlab (as in the course) and in Python:</p>
+<pre class="code"><code>function [x1,G1]=kalman(x0,G0,u,y,G_alpha,G_beta,A,C)
+  S=C*G0*C'+G_beta;  K=G0*C'*inv(S);  y_tilde=y-C*x0;
+  xup=x0+K*y_tilde;  Gup=G0-K*C*G0;          % correction
+  x1=A*xup+u;        G1=A*Gup*A'+G_alpha;    % prediction
+end</code></pre>
+<pre class="code"><code>import numpy as np
+def kalman(x0, G0, u, y, Ga, Gb, A, C):
+    S = C @ G0 @ C.T + Gb
+    K = G0 @ C.T @ np.linalg.inv(S)
+    xup = x0 + K @ (y - C @ x0)
+    Gup = (np.eye(len(x0)) - K @ C) @ G0
+    return A @ xup + u, A @ Gup @ A.T + Ga</code></pre>
+<div class="box example"><div class="bt">The DC motor, one measurement at a time</div><div class="bb"><p>Take A = I, u = 0, Γα = 0 (the parameters do not change) and C<sub>k</sub> = (U(k), T<sub>r</sub>(k)): feeding the five tests one by one gives exactly the result of the batch estimator of lesson 3. With Γα = 0 and A = I, the Kalman filter <strong>is</strong> the recursive form of the linear estimator. Use the lab of lesson 3, button “Add the next measurement”, to see it.</p></div></div>
+<div class="box warn"><div class="bt">A numerical safeguard</div><div class="bb"><p>With rounding errors Γ<sub>k|k</sub> can lose its positivity. A more robust form (Joseph form) is Γ<sub>k|k</sub> = (I − K C) Γ (I − K C)ᵀ + K Γβ Kᵀ, always symmetric positive.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>state model</li><li>process noise Γα</li><li>measurement noise Γβ</li><li>prediction, correction</li><li>innovation covariance</li><li>white in time</li><li>Joseph form</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Model: x<sub>k+1</sub> = A x<sub>k</sub> + u + α, y = C x + β, noises white, Gaussian, independent.</li><li>Correction: ỹ, S, K, x̂ ← x̂ + K ỹ, Γ ← (I − K C) Γ. Prediction: x̂ ← A x̂ + u, Γ ← A Γ Aᵀ + Γα.</li><li>With A = I, Γα = 0 the filter is the recursive form of the batch estimator.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-4"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-4-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Scalar: Γ<sub>k|k</sub> = 1, A = 1, Γα = 0.5. Predicted variance?</p><div class="numin" data-ans="1.5" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>1 × 1 × 1 + 0.5 = <b>1.5</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-4-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Then a measurement with Γβ = 1.5 (C = 1). Gain K?</p><div class="numin" data-ans="0.5" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>K = 1.5 / (1.5 + 1.5) = <b>0.5</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-4-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">A position-speed state x = (p, v), step Δt = 0.1 s. Matrix A?</p><ol class="opts" type="A"><li data-ok="1">[1 0.1 ; 0 1]</li><li>[1 0 ; 0.1 1]</li><li>[0.1 1 ; 0 1]</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>p⁺ = p + Δt v, v⁺ = v: <b>A = [1 Δt ; 0 1]</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What happens to the uncertainty in the prediction step, and why?</p><p class="a">It grows: Γ = A Γ Aᵀ + Γα adds what the model ignores.</p></li><li><p class="q">What does the filter keep from one step to the next?</p><p class="a">Only the predicted estimate x̂ₖ₊₁|ₖ and its covariance Γₖ₊₁|ₖ.</p></li><li><p class="q">Scalar filter: predicted variance 3, measurement variance 1. Gain and corrected variance?</p><p class="a">K = 3 / 4 = 0.75; Γ = (1 − 0.75) × 3 = 0.75.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l5" data-id="kf-5">
+          <header class="lesson-head"><span class="num">5</span><h2>The asymptotic filter: tuning Γα and Γβ</h2><span class="time">20 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the steady state of the Kalman filter on the temperature of a room, the formulas of Γ∞ and K∞, what happens when Γα or Γβ goes to zero, how to tune a filter, the whiteness of the innovation and the 99 % confidence ellipsoid.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>After a while the gain of a Kalman filter stops changing: it settles on a value that only depends on the ratio between how fast the state moves (Γα) and how noisy the sensor is (Γβ).</p></div></div>
+<h4>5.1 The temperature of a room</h4>
+<p class="eq">x<sub>k+1</sub> = x<sub>k</sub> + α<sub>k</sub> &emsp;&emsp; y<sub>k</sub> = x<sub>k</sub> + β<sub>k</sub></p>
+<p>Here A = C = 1. One step of the filter (correction then prediction) gives the recursion of the predicted variance:</p>
+<p class="eq">x̂<sub>k+1|k</sub> = x̂<sub>k|k−1</sub> + K<sub>k</sub> (y<sub>k</sub> − x̂<sub>k|k−1</sub>) &emsp; K<sub>k</sub> = Γ<sub>k|k−1</sub> / (Γ<sub>k|k−1</sub> + Γβ) &emsp; Γ<sub>k+1|k</sub> = Γ<sub>k|k−1</sub> Γβ / (Γ<sub>k|k−1</sub> + Γβ) + Γα</p>
+<p>When k is large, Γ<sub>k+1|k</sub> = Γ<sub>k|k−1</sub> = Γ∞. Solving Γ∞ = Γ∞Γβ / (Γ∞ + Γβ) + Γα gives Γ∞² − Γα Γ∞ − Γα Γβ = 0, so:</p>
+<p class="eq">Γ∞ = (Γα + √(Γα² + 4 Γα Γβ)) / 2 &emsp;&emsp; K∞ = Γ∞ / (Γ∞ + Γβ) &emsp;&emsp; precision: Γ∞ Γβ / (Γ∞ + Γβ)</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Case</th><th class="left">Result</th><th class="left">Meaning</th></tr><tr><td class="left">Γα → 0</td><td class="left">Γ∞ → 0, K∞ → 0</td><td class="left">the temperature does not move: the filter ends up ignoring new measurements and averages all of them</td></tr><tr><td class="left">Γβ → 0</td><td class="left">Γ∞ → Γα, K∞ → 1</td><td class="left">the thermometer is perfect: the filter copies the measurement</td></tr><tr><td class="left">Γα = Γβ</td><td class="left">Γ∞ = 1.618 Γα, K∞ = 0.618</td><td class="left">a balanced compromise… and the golden ratio!</td></tr></table></div>
+<div class="widget" data-widget="kf-1d"></div>
+<h4>5.2 Tuning a filter in practice</h4>
+<ul><li><strong>Γβ</strong> comes from the datasheet or from a test: leave the sensor still and compute the variance of its readings.</li><li><strong>Γα</strong> is the honest price of the simplifications of the model; it is the real tuning knob: too small → the filter is slow and can diverge if the model is wrong; too large → it follows the noise.</li><li><strong>Check</strong>: the innovation ỹ<sub>k</sub> of a well-tuned filter is <strong>white</strong> (no correlation in time) with covariance S<sub>k</sub>; the normalised innovation ỹᵀ S⁻¹ ỹ should average the size of y.</li></ul>
+<div class="box example"><div class="bt">A 99 % confidence ellipsoid</div><div class="bb"><p>At time k the state is inside {x : (x − x̂<sub>k|k</sub>)ᵀ Γ<sub>k|k</sub>⁻¹ (x − x̂<sub>k|k</sub>) ≤ a²} with a² the 99 % quantile of the χ² law with n degrees of freedom: 9.21 for n = 2, 11.34 for n = 3. In 2D, a = √(−2 ln 0.01) = 3.03.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>asymptotic (steady-state) Kalman filter</li><li>Riccati equation</li><li>filter tuning</li><li>innovation whiteness</li><li>confidence ellipsoid</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Room temperature: Γ∞ = (Γα + √(Γα² + 4ΓαΓβ)) / 2, K∞ = Γ∞ / (Γ∞ + Γβ).</li><li>Γα → 0: K → 0 (average); Γβ → 0: K → 1 (copy); Γα = Γβ: K = 0.618.</li><li>Tune Γβ from the sensor, Γα as the price of the model; check that the innovation is white.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-5"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-5-1" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">1</span></div>
+<p class="q">Γα = 2, Γβ = 4. Γ∞?</p><div class="numin" data-ans="4" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>(2 + √(4 + 32)) / 2 = (2 + 6) / 2 = <b>4</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-5-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Same case: K∞?</p><div class="numin" data-ans="0.5" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>4 / (4 + 4) = <b>0.5</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-5-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Γα = Γβ = 1. Precision of the corrected estimate Γ∞Γβ / (Γ∞ + Γβ)?</p><div class="numin" data-ans="0.618" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>Γ∞ = 1.618: 1.618 / 2.618 = <b>0.618</b> (the golden ratio again).</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Γα = 1, Γβ = 2. Γ∞ and K∞?</p><p class="a">Γ∞ = (1 + √(1 + 8)) / 2 = 2, K∞ = 2 / 4 = 0.5.</p></li><li><p class="q">Your filter follows every jump of a noisy sensor. Which knob, and which way?</p><p class="a">Lower Γα (or raise Γβ): the gain drops, the filter trusts the model more.</p></li><li><p class="q">How can you check that a filter is well tuned?</p><p class="a">Its innovation must be white with the covariance S predicted by the filter.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l6" data-id="kf-6">
+          <header class="lesson-head"><span class="num">6</span><h2>The extended Kalman filter (EKF)</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how to apply Kalman to a nonlinear model by linearising it around the estimate, the equations of the EKF, the example of the simple pendulum seen by a gyrometer, and why the EKF is no longer optimal.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>Real models are curved; the EKF replaces the curve by its tangent at the current estimate and runs the ordinary Kalman filter on it, step after step.</p></div></div>
+<h4>6.1 Linearise around the estimate</h4>
+<p class="eq">x<sub>k+1</sub> = f(x<sub>k</sub>, u<sub>k</sub>) + α<sub>k</sub> &emsp;&emsp; y<sub>k</sub> = g(x<sub>k</sub>) + β<sub>k</sub></p>
+<figure class="figure"><svg viewBox="0 0 640 300" class="fig" role="img" aria-hidden="true"><defs><marker id="tA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-axis)"/></marker><marker id="tB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-b)"/></marker><marker id="tO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-o)"/></marker><marker id="tG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-g)"/></marker><marker id="tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-r)"/></marker><marker id="tY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-y)"/></marker></defs><line x1="60" y1="150" x2="590" y2="150" style="stroke:var(--f-grid)"/><path d="M78.0,222.8L86.1,226.4L94.1,229.7L102.2,232.6L110.3,235.0L118.3,236.9L126.4,238.4L134.5,239.4L142.5,239.9L150.6,240.0L158.7,239.5L166.7,238.6L174.8,237.2L182.9,235.3L190.9,233.0L199.0,230.2L207.1,227.0L215.1,223.4L223.2,219.4L231.3,215.0L239.3,210.2L247.4,205.2L255.5,199.8L263.5,194.2L271.6,188.3L279.7,182.3L287.7,176.0L295.8,169.6L303.9,163.2L311.9,156.6L320.0,150.0L328.1,143.4L336.1,136.8L344.2,130.4L352.3,124.0L360.3,117.7L368.4,111.7L376.5,105.8L384.5,100.2L392.6,94.8L400.7,89.8L408.7,85.0L416.8,80.6L424.9,76.6L432.9,73.0L441.0,69.8L449.1,67.0L457.1,64.7L465.2,62.8L473.3,61.4L481.3,60.5L489.4,60.0L497.5,60.1L505.5,60.6L513.6,61.6L521.7,63.1L529.7,65.0L537.8,67.4L545.9,70.3L553.9,73.6L562.0,77.2" style="fill:none;stroke:var(--f-b);stroke-width:3"/><line x1="243" y1="188.39052374645334" x2="551" y2="-4.349707449237741" style="stroke:var(--f-o);stroke-width:2.5;stroke-dasharray:7 5"/><circle cx="397" cy="92.0204081486078" r="6" style="fill:var(--f-r)"/><text x="409" y="114.0204081486078" text-anchor="start" style="fill:var(--f-r)">x̂</text><text x="130" y="60" text-anchor="start" style="fill:var(--f-b)">real function g(x)</text><text x="450" y="40" text-anchor="start" class="sm" style="fill:var(--f-o)">tangent: g(x̂) + C (x − x̂)</text><text x="320" y="270" text-anchor="middle" class="sm" style="fill:var(--f-axis)">Close to x̂ the tangent is a good copy of the curve; far away it is not: the EKF works if the error stays small.</text><text x="320" y="290" text-anchor="middle" class="sm" style="fill:var(--f-axis)">C = dg/dx at x̂ (the Jacobian)</text></svg></figure>
+<p>Near x̂, f(x) ≈ f(x̂) + A (x − x̂) and g(x) ≈ g(x̂) + C (x − x̂), with the <strong>Jacobians</strong> A<sub>k</sub> = ∂f/∂x at (x̂<sub>k|k</sub>, u<sub>k</sub>) and C<sub>k</sub> = ∂g/∂x at x̂<sub>k|k−1</sub>. The linear filter applied to this tangent model simplifies into:</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left"></th><th class="left">EKF</th></tr><tr><td class="left">Prediction</td><td class="left">x̂ₖ₊₁|ₖ = f(x̂ₖ|ₖ, uₖ) ,  Γₖ₊₁|ₖ = Aₖ Γₖ|ₖ Aₖᵀ + Γα</td></tr><tr><td class="left">Innovation</td><td class="left">z̃ₖ = yₖ − g(x̂ₖ|ₖ₋₁) ,  Sₖ = Cₖ Γₖ|ₖ₋₁ Cₖᵀ + Γβ</td></tr><tr><td class="left">Correction</td><td class="left">Kₖ = Γₖ|ₖ₋₁ Cₖᵀ Sₖ⁻¹ ,  x̂ₖ|ₖ = x̂ₖ|ₖ₋₁ + Kₖ z̃ₖ ,  Γₖ|ₖ = (I − Kₖ Cₖ) Γₖ|ₖ₋₁</td></tr></table></div>
+<p>Notice: the <em>estimate</em> uses the true nonlinear functions f and g; only the <em>covariances</em> use the Jacobians.</p>
+<h4>6.2 Example: the simple pendulum</h4>
+<p>In normalised form, x₁ is the angle and x₂ the rotation speed: ẋ₁ = x₂, ẋ₂ = −sin x₁ + u (u known). A gyrometer measures x₂ every 0.01 s with a noise σ = 0.1 rad/s. Euler’s method (δ = 0.01 s) gives the discrete model and its Jacobian:</p>
+<p class="eq">x₁⁺ = x₁ + δ x₂ &emsp; x₂⁺ = x₂ + δ(−sin x₁ + u) &emsp;&emsp; A = [1 δ ; −δ cos x̂₁ 1] &emsp; C = [0 1] &emsp; Γβ = 0.01</p>
+<div class="widget" data-widget="kf-pend3d"></div>
+<p>The gyrometer never measures the angle, yet the filter finds it: the dynamics link them (the acceleration −sin x₁ depends on the angle). We say the angle is <strong>observable</strong> through the model.</p>
+<div class="box warn"><div class="bt">Is the EKF still the best unbiased orthogonal estimator?</div><div class="bb"><p>No. The linearisation is an approximation: the estimate can be biased, the covariance can be too optimistic, and if the initial error is large (outside the zone where the tangent is a good copy), the filter can diverge. Remedies: a good initialisation, a larger Γα, the unscented filter (UKF) or a particle filter for strong nonlinearities.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>extended Kalman filter (EKF)</li><li>linearisation</li><li>Jacobian</li><li>Euler discretisation</li><li>observable state</li><li>divergence</li><li>UKF, particle filter</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>EKF: predict with f, correct with g; covariances with the Jacobians A = ∂f/∂x, C = ∂g/∂x at the estimate.</li><li>Pendulum: A = [1 δ ; −δ cos x̂₁ 1], C = [0 1]: the angle is found from the gyro through the dynamics.</li><li>Not optimal any more: bias, optimistic covariance, divergence if the initial error is large.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-6"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-6-1" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">1</span></div>
+<p class="q">Pendulum, δ = 0.01, x̂₁ = 0. Lower-left term of A?</p><div class="numin" data-ans="-0.01" data-tol="0.0005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>−δ cos 0 = <b>−0.01</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-6-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">g(x) = x² measured near x̂ = 3. Jacobian C?</p><div class="numin" data-ans="6" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>dg/dx = 2x = <b>6</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-6-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">What does the EKF use to compute the predicted estimate?</p><ol class="opts" type="A"><li data-ok="1">The true nonlinear f(x̂, u)</li><li>A x̂ only</li><li>The measurement</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>x̂ₖ₊₁|ₖ = <b>f(x̂ₖ|ₖ, uₖ)</b>; A is only used for the covariance.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">In the EKF, where are the Jacobians used, and where the true functions?</p><p class="a">True f and g for the estimate and the innovation; Jacobians A and C for the covariances and the gain.</p></li><li><p class="q">Pendulum: derivative of x₂ + δ(−sin x₁ + u) with respect to x₁?</p><p class="a">−δ cos x₁.</p></li><li><p class="q">Why can an EKF diverge?</p><p class="a">If the error is too large, the tangent is a bad copy of the model: the gain and covariance are wrong and the error grows.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l7" data-id="kf-7">
+          <header class="lesson-head"><span class="num">7</span><h2>Localising a robot by multilateration (UWB)</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the kinematic model of a mobile robot in discrete time, the distance measurement to a beacon and its Jacobian, the data needed to run the EKF, and why the heading becomes observable when the robot moves.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>Beacons at known places measure their distance to the robot; the EKF mixes these distances with the wheel speeds to know the position and the heading at every instant.</p></div></div>
+<figure class="figure"><svg viewBox="0 0 640 315" class="fig" role="img" aria-hidden="true"><defs><marker id="tA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-axis)"/></marker><marker id="tB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-b)"/></marker><marker id="tO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-o)"/></marker><marker id="tG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-g)"/></marker><marker id="tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-r)"/></marker><marker id="tY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-y)"/></marker></defs><circle cx="110" cy="230" r="205.9" style="fill:none;stroke:var(--f-b);stroke-width:1.8;stroke-dasharray:6 5;opacity:0.8"/><circle cx="110" cy="230" r="9" style="fill:var(--f-y)"/><text x="110" y="258" text-anchor="middle" style="fill:var(--f-y);font-weight:700">B1</text><line x1="110" y1="230" x2="312" y2="190" style="stroke:var(--f-y);stroke-width:1.4"/><text x="219" y="210" text-anchor="start" class="sm" style="fill:var(--f-y)">d1</text><circle cx="520" cy="230" r="211.8" style="fill:none;stroke:var(--f-b);stroke-width:1.8;stroke-dasharray:6 5;opacity:0.8"/><circle cx="520" cy="230" r="9" style="fill:var(--f-y)"/><text x="520" y="258" text-anchor="middle" style="fill:var(--f-y);font-weight:700">B2</text><line x1="520" y1="230" x2="312" y2="190" style="stroke:var(--f-y);stroke-width:1.4"/><text x="424" y="210" text-anchor="start" class="sm" style="fill:var(--f-y)">d2</text><circle cx="320" cy="40" r="150.2" style="fill:none;stroke:var(--f-b);stroke-width:1.8;stroke-dasharray:6 5;opacity:0.8"/><circle cx="320" cy="40" r="9" style="fill:var(--f-y)"/><text x="320" y="68" text-anchor="middle" style="fill:var(--f-y);font-weight:700">B3</text><line x1="320" y1="40" x2="312" y2="190" style="stroke:var(--f-y);stroke-width:1.4"/><text x="324" y="115" text-anchor="start" class="sm" style="fill:var(--f-y)">d3</text><rect x="298" y="180" width="28" height="20" rx="4" style="fill:var(--f-o)"/><text x="334" y="176" text-anchor="start" style="fill:var(--f-o);font-weight:700">robot</text><text x="320" y="300" text-anchor="middle" class="sm" style="fill:var(--f-axis)">one distance → a circle; two → two points; three → one point (in the plane)</text></svg></figure>
+<h4>7.1 The model</h4>
+<p>The robot (x, y, θ) moves with a known translation speed u and rotation speed ω: ẋ = u cos θ, ẏ = u sin θ, θ̇ = ω. With Euler’s method and the step Δt:</p>
+<p class="eq">x<sub>k+1</sub> = x<sub>k</sub> + Δt u<sub>k</sub> cos θ<sub>k</sub> &emsp; y<sub>k+1</sub> = y<sub>k</sub> + Δt u<sub>k</sub> sin θ<sub>k</sub> &emsp; θ<sub>k+1</sub> = θ<sub>k</sub> + Δt ω<sub>k</sub></p>
+<p class="eq">A<sub>k</sub> = [1 0 −Δt u sin θ̂ ; 0 1 Δt u cos θ̂ ; 0 0 1]</p>
+<h4>7.2 The measurement</h4>
+<p>A UWB anchor B<sub>i</sub> = (x<sub>bi</sub>, y<sub>bi</sub>) measures the time of flight, hence the distance, every 20 ms with a variance of 25·10⁻⁴ m² (σ = 5 cm):</p>
+<p class="eq">d<sub>i</sub> = √((x − x<sub>bi</sub>)² + (y − y<sub>bi</sub>)²) &emsp;&emsp; C<sub>i</sub> = [ (x̂ − x<sub>bi</sub>)/d̂<sub>i</sub> &nbsp; (ŷ − y<sub>bi</sub>)/d̂<sub>i</sub> &nbsp; 0 ]</p>
+<p>The row C<sub>i</sub> is the unit vector from the beacon to the robot: a distance only corrects the position <em>along</em> this line. Its last term is 0: a distance says nothing directly about θ. Yet θ is <strong>observable through the motion</strong>: if θ is wrong, the predicted positions drift sideways and the distances correct them, which corrects θ through the correlations of Γ.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Data needed to run the EKF</th><th class="left">Here</th></tr><tr><td class="left">positions of the beacons</td><td class="left">measured once, precisely</td></tr><tr><td class="left">inputs u, ω and their noise</td><td class="left">from the wheel encoders → Γα</td></tr><tr><td class="left">measurement variance</td><td class="left">Γβ = 25·10⁻⁴ m² per distance</td></tr><tr><td class="left">step Δt</td><td class="left">20 ms</td></tr><tr><td class="left">initial x̂₀ and Γ₀</td><td class="left">a rough guess with a large Γ₀</td></tr></table></div>
+<div class="widget" data-widget="kf-uwb3d"></div>
+<div class="box idea"><div class="bt">Process the distances one by one</div><div class="bb"><p>When the noises of the beacons are independent, the three distances can be used as three successive scalar corrections: no matrix inversion, and a beacon that drops out is simply skipped. It is how the lab works.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>multilateration</li><li>time of flight (TOF)</li><li>UWB anchor</li><li>unicycle model</li><li>measurement Jacobian</li><li>sequential correction</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Unicycle: x⁺ = x + Δt u cos θ, y⁺ = y + Δt u sin θ, θ⁺ = θ + Δt ω.</li><li>Distance to beacon i: C = ((x̂ − xᵢ)/d̂, (ŷ − yᵢ)/d̂, 0): corrects along the line beacon → robot.</li><li>θ is observable through the motion; 3 non-aligned beacons fix the position.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-7"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-7-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">UWB at 20 ms. Measurements per second per beacon?</p><div class="numin" data-ans="50" data-tol="0.1" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>1 / 0.02 = <b>50</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-7-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Variance 25·10⁻⁴ m². Standard deviation in cm?</p><div class="numin" data-ans="5" data-tol="0.05" data-unit="cm"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>√(25·10⁻⁴) = 0.05 m = <b>5 cm</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-7-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">Robot estimated at (6, 8), beacon at (0, 0). First term of the row C?</p><div class="numin" data-ans="0.6" data-tol="0.005" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>d̂ = 10, (6 − 0) / 10 = <b>0.6</b>.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">How many distances do you need to fix a position in the plane, and why?</p><p class="a">Three (not aligned): one gives a circle, two give two points, three remove the ambiguity.</p></li><li><p class="q">Robot at (3, 4), beacon at (0, 0). Row C of this distance?</p><p class="a">d = 5, C = (0.6, 0.8, 0).</p></li><li><p class="q">Distances do not contain θ. How does the filter find the heading?</p><p class="a">Through the motion: a wrong θ makes the predicted path drift; the distance corrections propagate to θ through the covariance.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="7"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l8" data-id="kf-8">
+          <header class="lesson-head"><span class="num">8</span><h2>Multimodal fusion: several sensors, several rates</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how to fuse a compass, angulation, TDOA and odometry, the measurement equations and Jacobians of each, which modality sees which part of the state, how to handle sensors that do not work at the same rate, and centralised against distributed fusion.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>Each sensor gives a partial view; the filter predicts at the rate of the fastest source and adds every measurement at the moment it arrives, so that together they see the whole state.</p></div></div>
+<h4>8.1 The three modalities</h4>
+<p>The robot follows x<sub>k+1</sub> = x<sub>k</sub> + u cos θ, y<sub>k+1</sub> = y<sub>k</sub> + u sin θ, θ<sub>k+1</sub> = θ<sub>k</sub> + v (u, v from the odometry every 200 ms, not perfectly known: add a process noise). Four beacons: B₁ (−10, −10), B₂ (10, −10), B₃ (10, 10), B₄ (−10, 10) m.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Modality</th><th class="left">Measures</th><th class="left">Every</th><th class="left">Variance</th><th class="left">Row of C</th><th class="left">Sees</th></tr><tr><td class="left">M · compass (IMU)</td><td class="left">θ</td><td class="left">200 ms</td><td class="left">4·10⁻⁴ rad²</td><td class="left">(0, 0, 1)</td><td class="left">the heading only</td></tr><tr><td class="left">B · angulation</td><td class="left">bearing of beacon l: γ = atan2(y<sub>l</sub> − y, x<sub>l</sub> − x) − θ</td><td class="left">600 ms</td><td class="left">3.8·10⁻² rad²</td><td class="left">(Δy/q, −Δx/q, −1)</td><td class="left">position <b>and</b> heading (≥ 2 beacons)</td></tr><tr><td class="left">T · TDOA</td><td class="left">Δd(i, j) = d(M, Bᵢ) − d(M, Bⱼ)</td><td class="left">400 ms</td><td class="left">10⁻² m²</td><td class="left">difference of the two unit vectors, 0</td><td class="left">the position only (≥ 3 beacons)</td></tr></table></div>
+<p>(Δx, Δy = beacon − robot, q = Δx² + Δy². TDOA needs no clock on the robot: only the difference of the times of arrival counts, which is why it is used with UWB and GNSS.)</p>
+<h4>8.2 Different rates: predict at the base rate, correct when it arrives</h4>
+<ol><li>Choose a base step (here 200 ms, the rate of the odometry) and predict at every step.</li><li>At each step, correct with every measurement that arrived during the step (compass every step, TDOA every 2 steps, angulation every 3 steps), one after the other.</li><li>If a measurement arrives late (a camera with 100 ms of processing), correct the state of the moment it was taken (keep a short history), or at least add its delay to its noise.</li></ol>
+<div class="widget" data-widget="kf-multi"></div>
+<h4>8.3 Centralised or distributed</h4>
+<figure class="figure"><svg viewBox="0 0 690 260" class="fig" role="img" aria-hidden="true"><defs><marker id="tA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-axis)"/></marker><marker id="tB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-b)"/></marker><marker id="tO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-o)"/></marker><marker id="tG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-g)"/></marker><marker id="tR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-r)"/></marker><marker id="tY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--f-y)"/></marker></defs><text x="160" y="22" text-anchor="middle" style="fill:var(--f-ink);font-weight:700">Centralised</text><rect x="20" y="40" width="90" height="40" rx="10" style="fill:var(--f-p);fill-opacity:0.22;stroke:var(--f-p);stroke-width:2"/><text x="65" y="65" text-anchor="middle" style="font-weight:700">M</text><line x1="110" y1="60" x2="188" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="20" y="100" width="90" height="40" rx="10" style="fill:var(--f-y);fill-opacity:0.22;stroke:var(--f-y);stroke-width:2"/><text x="65" y="125" text-anchor="middle" style="font-weight:700">B</text><line x1="110" y1="120" x2="188" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="20" y="160" width="90" height="40" rx="10" style="fill:var(--f-g);fill-opacity:0.22;stroke:var(--f-g);stroke-width:2"/><text x="65" y="185" text-anchor="middle" style="font-weight:700">T</text><line x1="110" y1="180" x2="188" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="190" y="95" width="120" height="50" rx="10" style="fill:var(--f-b);fill-opacity:0.22;stroke:var(--f-b);stroke-width:2"/><text x="250" y="125" text-anchor="middle" style="font-weight:700">one filter</text><text x="160" y="240" text-anchor="middle" class="sm" style="fill:var(--f-axis)">every raw measurement goes to one filter</text><text x="510" y="22" text-anchor="middle" style="fill:var(--f-ink);font-weight:700">Distributed</text><rect x="370" y="40" width="60" height="40" rx="10" style="fill:var(--f-p);fill-opacity:0.22;stroke:var(--f-p);stroke-width:2"/><text x="400" y="65" text-anchor="middle" style="font-weight:700">M</text><line x1="430" y1="60" x2="458" y2="60" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="460" y="40" width="90" height="40" rx="10" style="fill:var(--f-b);fill-opacity:0.22;stroke:var(--f-b);stroke-width:2"/><text x="505" y="65" text-anchor="middle" style="font-weight:700">filter 1</text><line x1="550" y1="60" x2="588" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="370" y="100" width="60" height="40" rx="10" style="fill:var(--f-y);fill-opacity:0.22;stroke:var(--f-y);stroke-width:2"/><text x="400" y="125" text-anchor="middle" style="font-weight:700">B</text><line x1="430" y1="120" x2="458" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="460" y="100" width="90" height="40" rx="10" style="fill:var(--f-b);fill-opacity:0.22;stroke:var(--f-b);stroke-width:2"/><text x="505" y="125" text-anchor="middle" style="font-weight:700">filter 2</text><line x1="550" y1="120" x2="588" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="370" y="160" width="60" height="40" rx="10" style="fill:var(--f-g);fill-opacity:0.22;stroke:var(--f-g);stroke-width:2"/><text x="400" y="185" text-anchor="middle" style="font-weight:700">T</text><line x1="430" y1="180" x2="458" y2="180" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="460" y="160" width="90" height="40" rx="10" style="fill:var(--f-b);fill-opacity:0.22;stroke:var(--f-b);stroke-width:2"/><text x="505" y="185" text-anchor="middle" style="font-weight:700">filter 3</text><line x1="550" y1="180" x2="588" y2="120" style="stroke:var(--f-axis);stroke-width:1.6" marker-end="url(#tA)"/><rect x="590" y="95" width="90" height="50" rx="10" style="fill:var(--f-g);fill-opacity:0.22;stroke:var(--f-g);stroke-width:2"/><text x="635" y="125" text-anchor="middle" style="font-weight:700">fusion</text><text x="520" y="240" text-anchor="middle" class="sm" style="fill:var(--f-axis)">local filters, then their estimates are fused</text></svg></figure>
+<p>In a <strong>centralised</strong> filter (the lab), every raw measurement enters one filter: optimal, but everything depends on one computer. In a <strong>distributed</strong> implementation, each modality runs its own local filter; a fusion centre combines the local estimates. For two independent estimates (x₁, Γ₁) and (x₂, Γ₂) of the same state:</p>
+<p class="eq">Γ = (Γ₁⁻¹ + Γ₂⁻¹)⁻¹ &emsp;&emsp; x̂ = Γ (Γ₁⁻¹ x₁ + Γ₂⁻¹ x₂)</p>
+<div class="box warn"><div class="bt">Beware of the common information</div><div class="bb"><p>The local filters share the same odometry, so their errors are <strong>correlated</strong>: the formula above would then be too optimistic. Fusion centres use the information form with the common prediction removed, or the covariance intersection, which stays safe when the correlation is unknown.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>multimodal fusion</li><li>angulation (angle of arrival)</li><li>TDOA</li><li>asynchronous measurements</li><li>centralised, distributed fusion</li><li>covariance intersection</li></ul>
+          <!-- BEGIN practice -->
+          <div class="box key"><div class="bt">The essentials</div><div class="bb"><ul><li>Compass sees θ; angulation sees x, y, θ; TDOA sees x, y; odometry predicts.</li><li>Different rates: predict at the base rate, correct with each measurement when it arrives.</li><li>Distributed fusion: Γ = (Γ₁⁻¹ + Γ₂⁻¹)⁻¹ if independent; otherwise remove the common part or use covariance intersection.</li></ul></div></div>
+          
+          <section class="exs" data-for="kf-8"><h3>Worked exercises</h3><p class="exnote">Do each exercise on paper first, then type your answer (a small error is accepted) or pick an option. Open the hint if you are stuck, then read the solution: every step is explained.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="kf-8-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">Base step 200 ms, angulation every 600 ms. One angulation every how many steps?</p><div class="numin" data-ans="3" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>600 / 200 = <b>3</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-8-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Fuse two independent estimates: x₁ = 10 (variance 1) and x₂ = 13 (variance 2). Fused x̂?</p><div class="numin" data-ans="11" data-tol="0.01" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Weights 1/Γ: 1 and 0.5.</p></details><details class="sol"><summary>Solution</summary><p>Γ = (1 + 0.5)⁻¹ = 2/3; x̂ = 2/3 × (10 + 13/2) = <b>11</b>.</p></details>
+</div>
+<div class="ex" data-id="kf-8-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">Only the compass is on. What happens to the position uncertainty?</p><ol class="opts" type="A"><li data-ok="1">It grows without limit: the position is not observed</li><li>It stays constant</li><li>It goes to zero</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><p>The compass corrects θ only; the position integrates the odometry errors.</p></details>
+</div>
+</section>
+          <!-- END practice -->
+<details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">Which modality alone recovers the whole state (x, y, θ)?</p><p class="a">Angulation (bearings relative to the robot, at least 2 beacons); the compass gives θ only, TDOA the position only.</p></li><li><p class="q">Odometry every 200 ms, TDOA every 400 ms: when do you correct with the TDOA?</p><p class="a">Every second prediction step, right after the prediction of that step.</p></li><li><p class="q">Two independent estimates of the same quantity, variances 4 and 4. Fused variance?</p><p class="a">(1/4 + 1/4)⁻¹ = 2.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="8"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+        <section class="gloss">
+          <h2>Glossary</h2>
+          <p>All the words of the course in one place.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Data fusion</td><td class="left">Combining several sources (sensors, models) into one better estimate.</td></tr><tr><td class="left">Covariance matrix</td><td class="left">Γ = E((x − x̄)(x − x̄)ᵀ): the variances on the diagonal, the joint variations off it.</td></tr><tr><td class="left">Confidence ellipse</td><td class="left">The region that contains the state with a given probability; axes = eigenvectors of Γ.</td></tr><tr><td class="left">Unbiased orthogonal estimator</td><td class="left">x̂ = x̄ + Γxy Γy⁻¹ (y − ȳ): the best linear estimator.</td></tr><tr><td class="left">Innovation</td><td class="left">The surprise of a measurement: ỹ = y − C x̂.</td></tr><tr><td class="left">Kalman gain K</td><td class="left">K = Γ Cᵀ S⁻¹: how much of the innovation is used to correct the estimate.</td></tr><tr><td class="left">Process noise Γα</td><td class="left">What the model of motion ignores; the main tuning knob.</td></tr><tr><td class="left">Measurement noise Γβ</td><td class="left">The variance of the sensor errors.</td></tr><tr><td class="left">Asymptotic Kalman filter</td><td class="left">The filter once its gain and covariance have stopped changing.</td></tr><tr><td class="left">Extended Kalman filter (EKF)</td><td class="left">The Kalman filter applied to a nonlinear model linearised around the estimate.</td></tr><tr><td class="left">Observability</td><td class="left">Whether the measurements, through the model, allow every component of the state to be found.</td></tr><tr><td class="left">Multilateration</td><td class="left">Finding a position from distances to known points.</td></tr><tr><td class="left">TDOA</td><td class="left">Time difference of arrival: a difference of distances to two beacons.</td></tr><tr><td class="left">Covariance intersection</td><td class="left">A safe way to fuse two estimates whose correlation is unknown.</td></tr></table></div>
+        </section>
+
+        <section class="finish">
+          <h2>You can now build the estimator of a real robot!</h2>
+          <p>Next: robot_localization in ROS 2 (an EKF and a UKF ready to use), the book Probabilistic Robotics (Thrun, Burgard, Fox), and the SLAM lesson of the perception course.</p>
+          <p class="cta"><a class="btn" href="index.html#road">Back to the roadmap →</a> <a class="btn ghost" href="index.html#road">Home page</a></p>
+        </section>
+      </div>
+    </div>
+    <script src="learn-more-widgets.js" defer></script>
+    <script src="lab3d.js" defer></script>
+    <script src="labkit.js" defer></script>
+    <script src="learn-kf-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+  var PREFIX = 'kf-', KEY = 'kf';
+  var no = function (el) { return +el.id.slice(1); }, lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el) { var k = no(el); return '<li><a href="#l' + k + '" data-i="' + k + '"><span class="n">' + k + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  function paint() {
+    var done = 0;
+    lessons.forEach(function (el) { var k = no(el), ok = P().get(PREFIX + k); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + k + '"]').parentNode.classList.toggle('done', ok); });
+    document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
+    document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
+    var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total, s = +(a.dataset.start || 1); for (var i = s; i < s + t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+  }
+  document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
+  window.addEventListener('ra-progress', paint); paint();
+  function spy() { var m = window.scrollY + window.innerHeight * 0.3, cur = 1; lessons.forEach(function (el, i) { if (el.offsetTop <= m) cur = i + 1; }); [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i + 1 === cur); }); }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+});
+    </script>
+    <script src="learn-mobile-widgets.js" defer></script>
+  </body>
+</html>

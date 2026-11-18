@@ -1684,3 +1684,20 @@ html.rs-open { overflow: hidden; }
 .tw-why { margin: 0.5rem 0 0; font-size: 0.86rem; max-width: none; } .tw-why.ok { color: var(--good); } .tw-why.no { color: var(--bad); }
 .tw-score { font-weight: 600; margin: 0.6rem 0 0; }
 @media (max-width: 900px) { .tw-grid { grid-template-columns: 1fr; } }
+/* ---------- shared 3D labs (lab3d.js) ---------- */
+.l3d { position: relative; }
+.l3d canvas { display: block; width: 100% !important; border-radius: 12px; border: 1px solid var(--border); cursor: grab; touch-action: none; }
+.l3d-hint { position: absolute; right: 0.6rem; bottom: 0.5rem; font: 0.72rem var(--mono); color: #fff; background: rgba(10, 15, 24, 0.6); padding: 0.15rem 0.5rem; border-radius: 999px; pointer-events: none; }
+.tw-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+@media (max-width: 640px) { .tw-two { grid-template-columns: 1fr; } }
+/* links with the other courses (nav.js, links-data.js) */
+.xlinks { margin: 1.2rem 0; padding: 0.8rem 1rem 0.6rem; border-radius: 12px; border: 1px solid var(--border); border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--bg)); }
+.xlinks .xl-t { font-weight: 700; margin-bottom: 0.3rem; }
+.xlinks .xl-h { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0.5rem 0 0.2rem; }
+.xlinks ul { list-style: none; margin: 0; padding: 0; }
+.xlinks li { padding: 0.3rem 0; border-top: 1px solid var(--line); }
+.xlinks li:first-child { border-top: 0; }
+.xlinks li a { display: block; text-decoration: none; color: var(--text); }
+.xlinks li a b { color: var(--accent); }
+.xlinks li a:hover, .xlinks li a:focus-visible { text-decoration: underline; }
+.xlinks li span { display: block; font-size: 0.88rem; color: var(--muted); }
