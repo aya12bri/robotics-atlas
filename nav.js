@@ -606,18 +606,12 @@
         kids.slice(ih, ic + 1).forEach((el) => side.appendChild(el));
       }
     }
-    // robot pages: three tabs instead of one long page. 1. the robot in 3D (view and joints), 2. kinematics and models
-    // (from the kinematic diagram to the result), 3. uses and inside (where it is used, the real components, the operations)
-    const firstKin = [...body.children].find((el) => el.tagName === 'H2' && !el.closest('.stage-side'));
-    const usesAt = body.querySelector(':scope > .robot');
-    if (view && firstKin && usesAt && [...body.children].indexOf(usesAt) > [...body.children].indexOf(firstKin)) {
-      const kids = [...body.children], start = kids.indexOf(body.querySelector(':scope > .stage') || view);
+    // long pages in three tabs. starts: the three body children where the tabs begin; T: their names; IDS: their addresses
+    const makeTabs = (starts, T, IDS) => {
+      const kids = [...body.children], at = starts.map((el) => kids.indexOf(el));
       const skip = (el) => /^(SCRIPT|STYLE|HEADER|FOOTER)$/.test(el.tagName) || el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top');
-      const T = lang === 'fr' ? ['Le robot en 3D', 'Cinématique et modèles', 'Usages et intérieur'] : ['The robot in 3D', 'Kinematics and models', 'Uses and inside'];
-      const IDS = ['robot', 'kinematics', 'uses'];
-      const panes = IDS.map((id, k) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; d.setAttribute('role', 'tabpanel'); d.setAttribute('aria-labelledby', 'tabbtn-' + id); return d; });
-      const iK = kids.indexOf(firstKin), iU = kids.indexOf(usesAt);
-      kids.forEach((el, i) => { if (i < start || skip(el)) return; panes[i < iK ? 0 : i < iU ? 1 : 2].appendChild(el); });
+      const panes = IDS.map((id) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; d.setAttribute('role', 'tabpanel'); d.setAttribute('aria-labelledby', 'tabbtn-' + id); return d; });
+      kids.forEach((el, i) => { if (i < at[0] || skip(el)) return; panes[i < at[1] ? 0 : i < at[2] ? 1 : 2].appendChild(el); });
       const bar = document.createElement('div'); bar.className = 'rtabs ra-own'; bar.setAttribute('role', 'tablist');
       bar.innerHTML = IDS.map((id, k) => `<button type="button" role="tab" id="tabbtn-${id}" aria-controls="tab-${id}" aria-selected="false"><b>${k + 1}</b> ${T[k]}</button>`).join('');
       const anchor = h1.nextElementSibling && h1.nextElementSibling.classList.contains('crumbs') ? h1.nextElementSibling : h1;
@@ -631,11 +625,24 @@
       };
       bar.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; const k = [...bar.children].indexOf(b); show(k, true); history.replaceState(null, '', '#' + IDS[k]); });
       bar.addEventListener('keydown', (e) => { const k = [...bar.children].findIndex((b) => b.getAttribute('aria-selected') === 'true'), d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; const n = (k + d + 3) % 3; show(n); bar.children[n].focus(); history.replaceState(null, '', '#' + IDS[n]); });
-      // the tab of the address: #kinematics, #uses, or the tab that holds the element the address points to
+      // the tab of the address: one of IDS, or the tab that holds the element the address points to
       const h = decodeURIComponent(location.hash.slice(1)), byId = IDS.indexOf(h), el = h && document.getElementById(h);
       show(byId >= 0 ? byId : el ? Math.max(0, panes.findIndex((p) => p.contains(el))) : 0);
       // links to a section of another tab open that tab first
       document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a) return; const t = document.getElementById(a.getAttribute('href').slice(1)); const k = t ? panes.findIndex((p) => p.contains(t)) : -1; if (k >= 0 && panes[k].hidden) show(k); }, true);
+    };
+    const fr = lang === 'fr', bodyH2 = [...body.children].filter((el) => el.tagName === 'H2' && !el.closest('.stage-side'));
+    // robot pages: 1. the robot in 3D (view and joints), 2. kinematics and models (from the kinematic diagram to the result),
+    // 3. uses and inside (where it is used, the real components, the operations)
+    const usesAt = body.querySelector(':scope > .robot');
+    if (h1 && view && bodyH2[0] && usesAt && [...body.children].indexOf(usesAt) > [...body.children].indexOf(bodyH2[0])) {
+      makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], usesAt], fr ? ['Le robot en 3D', 'Cinématique et modèles', 'Usages et intérieur'] : ['The robot in 3D', 'Kinematics and models', 'Uses and inside'], ['robot', 'kinematics', 'uses']);
+    }
+    // 3D anatomy pages: 1. the robot in 3D (the model, X-ray, the axes), 2. inside each joint, 3. all the components
+    const anat = body.querySelector(':scope > .anat');
+    if (h1 && anat && bodyH2.length >= 2 && !body.querySelector('.rtabs')) {
+      const first = body.querySelector(':scope > p.lead') || anat;
+      makeTabs([first, bodyH2[0], bodyH2[1]], fr ? ['Le robot en 3D', 'Dans chaque articulation', 'Tous les composants'] : ['The robot in 3D', 'Inside each joint', 'All the components'], ['robot', 'joints', 'components']);
     }
     // chips that jump to each section
     const heads = [...body.querySelectorAll('h2')].filter((h) => !h.closest('.stage-side') && !h.closest('.robot') && h.textContent.trim());
