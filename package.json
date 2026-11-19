@@ -1,0 +1,8 @@
+{
+  "name": "robotics-atlas",
+  "private": true,
+  "type": "module",
+  "description": "Robotics Atlas: a static site plus a small Worker for /api/* (lesson feedback and the AI tutor). Cloudflare installs these and publishes with: npx wrangler deploy",
+  "dependencies": { "@anthropic-ai/sdk": "1.10.0" },
+  "devDependencies": { "wrangler": "4.165.0" }
+}

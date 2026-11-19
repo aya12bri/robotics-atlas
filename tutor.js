@@ -75,7 +75,8 @@
       sugg.hidden = hist.length > 0;
     }
     var fail = function (code) {
-      return code === 429 ? L('You have reached the limit of questions for today. Come back tomorrow!', 'Vous avez atteint la limite de questions pour aujourd\'hui. Revenez demain !')
+      return code === 'minute' ? L('Many questions in a short time: wait one minute, then ask again.', 'Beaucoup de questions en peu de temps : attendez une minute, puis reposez votre question.')
+        : code === 429 ? L('You have reached the limit of questions for today. Come back tomorrow!', 'Vous avez atteint la limite de questions pour aujourd\'hui. Revenez demain !')
         : code === 'offline' ? L('You are offline: the tutor needs the internet.', 'Vous êtes hors ligne : le tuteur a besoin d\'internet.')
         : code === 'refusal' ? L('I cannot help with this question. Ask me about the lesson.', 'Je ne peux pas aider pour cette question. Posez-moi une question sur la leçon.')
         : L('The tutor is not available right now. Try again in a moment.', 'Le tuteur n\'est pas disponible pour le moment. Réessayez dans un instant.');
@@ -95,7 +96,8 @@
       if (!navigator.onLine) return done('offline');
       fetch('/api/tutor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: PAGE, lesson: lesson, lang: FR() ? 'fr' : 'en', question: q, history: past }) })
         .then(function (r) {
-          if (!r.ok || !r.body || !/text\/plain/.test(r.headers.get('content-type') || '')) return done(r.status === 429 ? 429 : 'down');
+          if (r.status === 429) return r.text().then(function (m) { done(/minute/.test(m) ? 'minute' : 429); });
+          if (!r.ok || !r.body || !/text\/plain/.test(r.headers.get('content-type') || '')) return done('down');
           var rd = r.body.getReader(), dec = new TextDecoder();
           var pump = function () {
             return rd.read().then(function (c) {

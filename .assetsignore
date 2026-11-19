@@ -7,3 +7,5 @@ skills-lock.json
 wrangler.jsonc
 node_modules
 tools
+package.json
+package-lock.json
