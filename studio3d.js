@@ -48,7 +48,7 @@ export function studio(THREE, renderer, scene, opt = {}) {
     if (o.isMesh && !o.isInstancedMesh) {
       const flat = o.geometry && o.geometry.type === 'PlaneGeometry';
       // the floor keeps its own colour (no reflection), so the tile lines of the grid stay visible on it
-      [].concat(o.material || []).forEach((m) => { if (m && 'envMapIntensity' in m) m.envMapIntensity = flat ? 0 : env; });
+      [].concat(o.material || []).forEach((m) => { if (m && 'envMapIntensity' in m) m.envMapIntensity = flat ? 0 : m.userData.noEnv ? 0.15 : env; });
       o.receiveShadow = true;
       o.castShadow = !flat && !o.userData.noShadow;
       if (!flat) box.expandByObject(o);

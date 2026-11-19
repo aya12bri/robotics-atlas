@@ -285,7 +285,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
       }
 
       const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
-      const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
+      const grey = new THREE.MeshStandardMaterial({ color: '#7b8592', roughness: 0.8, metalness: 0.05 }); grey.userData.noEnv = true;   // a plain grey chassis (the studio light made the light grey look white)
       const black = new THREE.MeshStandardMaterial({ color: '#222a33' }); black.userData.raKeep = true;   // wheels: they stay black in dark mode
 
       // The robot is built in its own frame: x forward, y up, and z towards its RIGHT side

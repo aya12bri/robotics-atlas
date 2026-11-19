@@ -25,27 +25,110 @@
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
   <script src="nav.js" defer></script></head>
-  <body>
-    <h1>Practise</h1>
-    <p class="lead">Every hands-on tool of the site in one place. Start with the beginner ones; each card says the level and the time it takes.</p>
-    <section class="pr-group">
-      <h2>Try and play</h2>
-      <p>In the browser, nothing to install: move, program and test.</p>
-      <div class="pr-grid">
-        <a class="pr-card" href="build.html" style="--c:#2f6bff"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5l4 4M4 20l5.5-1.5L19 9l-4-4-9.5 9.5z"/><path d="M12.5 7.5l4 4"/></svg></span><span class="pr-tx"><b>Build your first robot</b><span>Choose a robot, assemble it in 3D, move it and see how its joints work.</span><small><i class="pr-lv l1"><b></b><b></b><b></b></i> <em>Beginner</em> · 20 min</small></span></a>
-        <a class="pr-card" href="sandbox.html" style="--c:#6d5dfc"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span><span class="pr-tx"><b>Programming sandbox</b><span>Program a SCARA or a 6-axis robot in 3D: moves, loops, pick and place.</span><small><i class="pr-lv l2"><b></b><b></b><b></b></i> <em>Intermediate</em> · 30 min</small></span></a>
-        <a class="pr-card" href="sensors.html" style="--c:#2e9e5b"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg></span><span class="pr-tx"><b>Sensor test bench</b><span>Encoder, IMU, lidar, camera and ultrasonic sensor, live: see what each one measures and how it fails.</span><small><i class="pr-lv l2"><b></b><b></b><b></b></i> <em>Intermediate</em> · 30 min</small></span></a>
-        <a class="pr-card" href="wheels.html#wlab" style="--c:#f5963a"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4v5.5M12 14.5V20M4 12h5.5M14.5 12H20"/></svg></span><span class="pr-tx"><b>Wheel lab</b><span>Push each wheel type in 3D: fixed, castor, steered, omni, Mecanum, ball and tracks.</span><small><i class="pr-lv l1"><b></b><b></b><b></b></i> <em>Beginner</em> · 15 min</small></span></a>
-        <a class="pr-card" href="anatomy-drives.html" style="--c:#1fb5c9"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="10" rx="2"/><path d="M3 9v6M21 9v6M9 7V5M15 7V5"/><circle cx="12" cy="12" r="1.6"/></svg></span><span class="pr-tx"><b>Drive 8 mobile robots</b><span>Differential, Ackermann, omni, Mecanum and more: drive each one with the keyboard.</span><small><i class="pr-lv l2"><b></b><b></b><b></b></i> <em>Intermediate</em> · 20 min</small></span></a>
-        <a class="pr-card" href="articulated.html#uses" style="--c:#ff5a5f"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20V10l4 3V10l4 3V6l4 3v11"/></svg></span><span class="pr-tx"><b>Industrial operations in 3D</b><span>Watch a robot palletise, pack, label and inspect, in a cell with its safety fence.</span><small><i class="pr-lv l1"><b></b><b></b><b></b></i> <em>Beginner</em> · 15 min</small></span></a>
+  <body class="practice">
+    <header class="px-hero">
+      <span class="px-kicker">Hands-on</span>
+      <h1>Practise</h1>
+      <p class="lead">Learn robotics by doing: build a robot, program it, drive it, then code a real one. Every tool runs in the browser.</p>
+      <ol class="px-steps">
+        <li><a href="#discover"><b>1</b><span>Discover by playing</span><small>3 <em>tools</em></small></a></li>
+        <li><a href="#program"><b>2</b><span>Program and measure</span><small>3 <em>tools</em></small></a></li>
+        <li><a href="#make"><b>3</b><span>Code and make</span><small>2 <em>tools</em></small></a></li>
+      </ol>
+      <p class="px-facts"><span>8 <em>tools</em></span><span>free</span><span>nothing to install</span><span>beginner to advanced</span></p>
+    </header>
+    <section class="px-step" id="discover">
+      <div class="px-head"><span class="px-num">01</span><div><h2>Discover by playing</h2><p>Nothing to install and nothing to know: move robots in 3D and see how they work.</p></div></div>
+      <div class="px-grid">
+        <a class="px-card px-feat" href="build.html" style="--c:#2f6bff">
+          <span class="px-img"><img class="th-light" src="thumbs/practice-build.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/practice-build-dark.jpg" alt="" width="640" height="400" decoding="async"></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5l4 4M4 20l5.5-1.5L19 9l-4-4-9.5 9.5z"/><path d="M12.5 7.5l4 4"/></svg></span><span class="px-meta"><i class="pr-lv l1"><b></b><b></b><b></b></i><em>Beginner</em><span>20 min</span></span></span>
+            <b class="px-t">Build your first robot</b>
+            <span class="px-d">Choose a robot, assemble it in 3D piece by piece, move each joint and see what it does. The best place to start.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+        <a class="px-card" href="wheels.html#wlab" style="--c:#f5963a">
+          <span class="px-img"><img class="th-light" src="thumbs/practice-wheels.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/practice-wheels-dark.jpg" alt="" width="640" height="400" decoding="async"></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4v5.5M12 14.5V20M4 12h5.5M14.5 12H20"/></svg></span><span class="px-meta"><i class="pr-lv l1"><b></b><b></b><b></b></i><em>Beginner</em><span>15 min</span></span></span>
+            <b class="px-t">Wheel lab</b>
+            <span class="px-d">Push each wheel type in 3D: fixed, castor, steered, omni, Mecanum, ball and tracks.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+        <a class="px-card" href="articulated.html#uses" style="--c:#ff5a5f">
+          <span class="px-img"><img class="th-light" src="thumbs/practice-ops.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/practice-ops-dark.jpg" alt="" width="640" height="400" decoding="async"></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20V10l4 3V10l4 3V6l4 3v11"/></svg></span><span class="px-meta"><i class="pr-lv l1"><b></b><b></b><b></b></i><em>Beginner</em><span>15 min</span></span></span>
+            <b class="px-t">Industrial operations in 3D</b>
+            <span class="px-d">Watch a robot palletise, pack, label and inspect, in a cell with its safety fence.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
       </div>
     </section>
-    <section class="pr-group">
-      <h2>Code and make</h2>
-      <p>Real code and real robots, step by step.</p>
-      <div class="pr-grid">
-        <a class="pr-card" href="learn-armlab.html" style="--c:#8a5cf6"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4 0-4 1.6-4 3v2h4.5v1H6c-2 0-3 1.4-3 3.5S4 16 6 16h2v-2.5C8 12 9 11 10.5 11h3c1.4 0 2.5-1 2.5-2.5V6c0-1.6-1.4-3-4-3z"/><path d="M12 21c4 0 4-1.6 4-3v-2h-4.5v-1H18c2 0 3-1.4 3-3.5S20 8 18 8h-2v2.5c0 1.5-1 2.5-2.5 2.5h-3C9.1 13 8 14 8 15.5V18c0 1.6 1.4 3 4 3z"/></svg></span><span class="pr-tx"><b>Code a robot arm in Python</b><span>Forward and inverse models, a DH engine, trajectories, then a real servo arm.</span><small><i class="pr-lv l2"><b></b><b></b><b></b></i> <em>Intermediate</em> · 2 h 30</small></span></a>
-        <a class="pr-card" href="projects.html" style="--c:#e0a100"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M9 7V5h6v2M4 12h16"/></svg></span><span class="pr-tx"><b>Guided projects</b><span>A servo arm, a line follower and a ROS 2 mobile robot: parts, prices, wiring, code and tests.</span><small><i class="pr-lv l3"><b></b><b></b><b></b></i> <em>Advanced</em> · 10 h</small></span></a>
+    <section class="px-step" id="program">
+      <div class="px-head"><span class="px-num">02</span><div><h2>Program and measure</h2><p>Give orders to a robot, drive it, and see what its sensors really measure.</p></div></div>
+      <div class="px-grid">
+        <a class="px-card" href="sandbox.html" style="--c:#6d5dfc">
+          <span class="px-img"><img class="th-light" src="thumbs/practice-sandbox.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/practice-sandbox-dark.jpg" alt="" width="640" height="400" decoding="async"></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermediate</em><span>30 min</span></span></span>
+            <b class="px-t">Programming sandbox</b>
+            <span class="px-d">Program a SCARA or a 6-axis robot in 3D: moves, loops, pick and place.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+        <a class="px-card" href="sensors.html" style="--c:#2e9e5b">
+          <span class="px-img"><img class="th-light" src="thumbs/practice-sensors.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/practice-sensors-dark.jpg" alt="" width="640" height="400" decoding="async"></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.2"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg></span><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermediate</em><span>30 min</span></span></span>
+            <b class="px-t">Sensor test bench</b>
+            <span class="px-d">Encoder, IMU, lidar, camera and ultrasonic sensor, live: see what each one measures and how it fails.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+        <a class="px-card" href="anatomy-drives.html" style="--c:#1fb5c9">
+          <span class="px-img"><img class="th-light" src="thumbs/practice-drives.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/practice-drives-dark.jpg" alt="" width="640" height="400" decoding="async"></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="10" rx="2"/><path d="M3 9v6M21 9v6M9 7V5M15 7V5"/><circle cx="12" cy="12" r="1.6"/></svg></span><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermediate</em><span>20 min</span></span></span>
+            <b class="px-t">Drive 8 mobile robots</b>
+            <span class="px-d">Differential, Ackermann, omni, Mecanum and more: drive each one with the keyboard.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+      </div>
+    </section>
+    <section class="px-step" id="make">
+      <div class="px-head"><span class="px-num">03</span><div><h2>Code and make</h2><p>Real code and real robots, step by step, up to a finished project.</p></div></div>
+      <div class="px-grid two">
+        <a class="px-card" href="learn-armlab.html" style="--c:#8a5cf6">
+          <span class="px-img"><span class="px-code" aria-hidden="true"><i></i><i></i><i></i><code><s>import</s> numpy <s>as</s> np
+
+<s>def</s> <u>fk</u>(q1, q2):
+    x = L1*np.cos(q1) + L2*np.cos(q1+q2)
+    y = L1*np.sin(q1) + L2*np.sin(q1+q2)
+    <s>return</s> x, y
+
+arm.<u>move_to</u>(0.25, 0.10)</code></span></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4 0-4 1.6-4 3v2h4.5v1H6c-2 0-3 1.4-3 3.5S4 16 6 16h2v-2.5C8 12 9 11 10.5 11h3c1.4 0 2.5-1 2.5-2.5V6c0-1.6-1.4-3-4-3z"/><path d="M12 21c4 0 4-1.6 4-3v-2h-4.5v-1H18c2 0 3-1.4 3-3.5S20 8 18 8h-2v2.5c0 1.5-1 2.5-2.5 2.5h-3C9.1 13 8 14 8 15.5V18c0 1.6 1.4 3 4 3z"/></svg></span><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermediate</em><span>2 h 30</span></span></span>
+            <b class="px-t">Code a robot arm in Python</b>
+            <span class="px-d">Forward and inverse models, a DH engine, trajectories, then a real servo arm.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
+        <a class="px-card" href="projects.html" style="--c:#e0a100">
+          <span class="px-img"><span class="px-duo"><img class="th-light" src="thumbs/robot-arm.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/robot-arm-dark.jpg" alt="" width="640" height="400" decoding="async"></span><span class="px-duo"><img class="th-light" src="thumbs/anatomy-mobile.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/anatomy-mobile-dark.jpg" alt="" width="640" height="400" decoding="async"></span></span>
+          <span class="px-body">
+            <span class="px-top"><span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"/><path d="M9 7V5h6v2M4 12h16"/></svg></span><span class="px-meta"><i class="pr-lv l3"><b></b><b></b><b></b></i><em>Advanced</em><span>10 h</span></span></span>
+            <b class="px-t">Guided projects</b>
+            <span class="px-d">A servo arm, a line follower and a ROS 2 mobile robot: parts, prices, wiring, code and tests.</span>
+            <span class="px-go"><em>Open</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>
       </div>
     </section>
   </body>
