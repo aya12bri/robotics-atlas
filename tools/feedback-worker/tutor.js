@@ -10,7 +10,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 
 const MODEL = 'claude-haiku-5-5';            // the backup model; change this line for claude-sonnet-5-5 or claude-opus-5-5
-const GEMINI = 'gemini-flash-latest';        // the main model (Google's alias for its latest Flash model); the variable GEMINI_MODEL overrides it
+// the main models, tried in this order until one answers (a model can have no free quota, or not exist any more);
+// the variable GEMINI_MODEL (one name, or several separated by commas) replaces this list
+const GEMINIS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+const geminiList = (env) => (env.GEMINI_MODEL ? env.GEMINI_MODEL.split(',').map((s) => s.trim()).filter(Boolean) : GEMINIS);
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta';
 const text = (s, status = 200, extra = {}) => new Response(s, { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 
@@ -79,14 +82,20 @@ export async function tutorStatus(env, url) {
     try { const m = await new Anthropic({ apiKey: env.ANTHROPIC_API_KEY }).models.retrieve(MODEL); out.api = `ok: the key works and ${m.id} is available`; }
     catch (e) { out.api = `error ${e.status || ''}: ${(e.error && e.error.error && e.error.error.message) || e.message}`; }
   } else out.api = 'no key: add the secret ANTHROPIC_API_KEY in Cloudflare (Settings → Variables and Secrets)';
-  const gm = env.GEMINI_MODEL || GEMINI;
-  out.gemini_model = gm;
+  // Gemini: a real (tiny) question to each model of the list, to see which one answers and what Google says otherwise
   if (env.GEMINI_API_KEY) {
-    try {
-      const r = await fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${gm}`, { headers: { 'x-goog-api-key': env.GEMINI_API_KEY } });
-      const j = await r.json().catch(() => ({}));
-      out.gemini = r.ok ? `ok: the key works and ${j.name || gm} is available (the daily free quota is not checked here)` : `error ${r.status}: ${(j.error && j.error.message) || r.statusText}`;
-    } catch (e) { out.gemini = 'error: ' + e.message; }
+    if (env.TUTOR_LIMIT && !(await env.TUTOR_LIMIT.limit({ key: 'status' })).success) out.gemini = 'checked too often: try again in a minute';
+    else {
+      out.gemini = {};
+      for (const m of geminiList(env)) {
+        try {
+          const r = await fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${m}:generateContent`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'Say OK.' }] }], generationConfig: { maxOutputTokens: 20 } }) });
+          const j = await r.json().catch(() => ({}));
+          out.gemini[m] = r.ok ? 'ok: it answers' : `error ${r.status}: ${((j.error && j.error.message) || r.statusText).slice(0, 220)}`;
+        } catch (e) { out.gemini[m] = 'error: ' + e.message; }
+      }
+    }
   } else out.gemini = 'no key: add the secret GEMINI_API_KEY in Cloudflare (Settings → Variables and Secrets)';
   out.order = 'Gemini first, then Claude if Gemini fails';
   out.note = 'The Claude credit balance is not checked here: see platform.claude.com → Settings → Billing.';
@@ -95,26 +104,30 @@ export async function tutorStatus(env, url) {
 
 // Gemini, streamed: yields the text pieces; throws (with .status) before the first piece when it cannot answer
 async function* askGemini(env, system, history, question) {
-  const model = env.GEMINI_MODEL || GEMINI;
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
   // a lesson explanation does not need the model's long "thinking" before it writes: ask for none (or the least),
   // and give up on Gemini (Claude answers instead) if nothing has arrived after FIRST_WORDS_MS
   const FIRST_WORDS_MS = 25000, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), FIRST_WORDS_MS);
-  const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
+  const call = (model, thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
     method: 'POST', signal: ctl.signal,
     headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
     body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
   });
-  let r;
+  const errText = async (r) => { const raw = await r.text().catch(() => ''); try { return JSON.parse(raw).error.message || raw; } catch (x) { return raw; } };
+  let r = null; const fails = [];
   try {
-    r = await call({ thinkingBudget: 0 });                              // Flash 2.x: no thinking
-    if (r.status === 400) r = await call({ thinkingLevel: 'minimal' });  // newer Flash models: the least thinking
-    if (r.status === 400) r = await call(null);                         // the model's own default
-  } catch (e) { clearTimeout(timer); const x = new Error('gemini: no answer in time'); x.status = 'timeout'; throw x; }
-  if (!r.ok || !r.body) {
+    for (const model of geminiList(env)) {
+      r = await call(model, { thinkingBudget: 0 });                              // Flash 2.x: no thinking
+      if (r.status === 400) r = await call(model, { thinkingLevel: 'minimal' });  // newer Flash models: the least thinking
+      if (r.status === 400) r = await call(model, null);                         // the model's own default
+      if (r.ok && r.body) break;
+      fails.push(`${model} ${r.status} ${(await errText(r)).slice(0, 90)}`);
+      if (![403, 404, 429, 500, 503].includes(r.status)) break;                  // a quota, a missing model, a busy server: try the next one
+    }
+  } catch (e) { clearTimeout(timer); const x = new Error('gemini: no answer in time ' + fails.join(' / ')); x.status = 'timeout'; throw x; }
+  if (!r || !r.ok || !r.body) {
     clearTimeout(timer);
-    const raw = await r.text().catch(() => ''); let msg = raw; try { msg = JSON.parse(raw).error.message || raw; } catch (x) { /* not JSON */ }
-    const e = new Error(`gemini ${r.status} ${msg.slice(0, 300)}`); e.status = r.status; throw e;
+    const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = r ? r.status : 0; throw e;
   }
   const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', any = false, why = '';
   for (;;) {

@@ -1888,22 +1888,20 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 @media (min-width: 1001px) { .px-feat { grid-row: span 2; flex-direction: column; } .px-feat .px-img { flex: 1; min-height: 0; aspect-ratio: auto; } .px-feat .px-body { flex: none; padding: 1.3rem 1.4rem 1.4rem; } .px-feat .px-ic { margin-top: -2.6rem; border: 3px solid var(--surface); } }
 
 /* ── AI tutor: a small robot on the side of the course pages (tutor.js) ── */
-.rbot { --lt: #6f42dc; position: fixed; right: 1rem; bottom: 4.1rem; z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; pointer-events: none; font-family: var(--font); }
+.rbot { --lt: #1f56d6; position: fixed; right: 1rem; bottom: 4.1rem; z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; pointer-events: none; font-family: var(--font); }
 .rbot > * { pointer-events: auto; }
 .rbot svg { background: none; border: 0; border-radius: 0; padding: 0; margin: 0; box-shadow: none; max-width: none; }
-.rbot .rb-btn { width: 4.1rem; height: 4.1rem; min-height: 0; padding: 0.3rem; border: 0; border-radius: 50%; cursor: pointer; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--lt) 22%, var(--surface)), var(--surface) 70%); box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--lt) 55%, transparent), 0 0 0 1px color-mix(in srgb, var(--lt) 35%, var(--border)); transition: transform 0.2s; animation: rbfloat 3.2s ease-in-out infinite; }
+.rbot .rb-face { display: block; width: 100%; height: 100%; background: url(thumbs/tutor-robot.webp) 0 0 / 1100% 100% no-repeat; }
+.rbot .rb-btn { width: 4.9rem; height: 4.9rem; min-height: 0; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: none; box-shadow: none; filter: drop-shadow(0 10px 10px rgba(25, 30, 40, 0.35)); transition: transform 0.2s; animation: rbfloat 3.2s ease-in-out infinite; }
 .rbot .rb-btn:hover { transform: translateY(-3px) scale(1.04); }
 .rbot .rb-btn:focus-visible { outline: 3px solid var(--lt); outline-offset: 3px; }
-.rbot .rb-btn svg { width: 100%; height: 100%; display: block; }
 .rbot.open .rb-btn { animation: none; }
-.rbot .rb-eyes { transform-origin: 32px 27px; animation: rbblink 4.5s infinite; }
-.rbot .rb-ant { animation: rbglow 1.8s ease-in-out infinite; }
-.rbot.talk .rb-btn { animation: rbwave 1.2s ease-in-out 2, rbfloat 3.2s ease-in-out 2.4s infinite; }
+.rbot .rb-btn .rb-face { animation: rbblink 5s step-end infinite; }
+.rbot.talk .rb-btn .rb-face { animation: rbblink 5s step-end infinite, rbwave 1.2s step-end 2; }   /* the last one wins while it runs */
 @keyframes rbfloat { 50% { transform: translateY(-5px); } }
-@keyframes rbblink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-@keyframes rbglow { 50% { opacity: 0.45; } }
-@keyframes rbwave { 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
-@media (prefers-reduced-motion: reduce) { .rbot .rb-btn, .rbot .rb-eyes, .rbot .rb-ant, .rbot.talk .rb-btn { animation: none; } }
+@keyframes rbblink { 0% { background-position-x: 0%; } 93% { background-position-x: 10%; } 94.5% { background-position-x: 20%; } 96% { background-position-x: 10%; } 97.5% { background-position-x: 0%; } }
+@keyframes rbwave { 0% { background-position-x: 30%; } 12.5% { background-position-x: 40%; } 25% { background-position-x: 50%; } 37.5% { background-position-x: 60%; } 50% { background-position-x: 70%; } 62.5% { background-position-x: 80%; } 75% { background-position-x: 90%; } 87.5% { background-position-x: 100%; } 100% { background-position-x: 0%; } }
+@media (prefers-reduced-motion: reduce) { .rbot .rb-btn, .rbot .rb-btn .rb-face, .rbot.talk .rb-btn .rb-face { animation: none; } }
 .rbot .rb-bubble { position: relative; display: flex; align-items: center; gap: 0.2rem; margin-right: 0.4rem; padding: 0.15rem 0.3rem 0.15rem 0.2rem; border-radius: 16px 16px 4px 16px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--lt) 45%, var(--border)); box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.45); animation: rbpop 0.35s cubic-bezier(.2, 1.4, .4, 1); }
 .rbot .rb-bubble[hidden] { display: none; }
 @keyframes rbpop { from { opacity: 0; transform: translateY(8px) scale(0.9); } }
@@ -1912,12 +1910,12 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .rbot .rb-x:hover { background: var(--surface-2); color: var(--text); }
 .rbot .rb-panel { width: min(24.5rem, calc(100vw - 2rem)); height: min(36rem, calc(100vh - 15rem)); display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; background: var(--surface); border: 1px solid color-mix(in srgb, var(--lt) 35%, var(--border)); box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.55); animation: rbpop 0.25s ease-out; }
 .rbot .rb-panel[hidden] { display: none; }
-.rbot .rb-head { display: flex; align-items: center; gap: 0.65rem; padding: 0.7rem 0.75rem 0.7rem 0.85rem; color: #fff; background: linear-gradient(120deg, var(--lt), #4f7bff); }
+.rbot .rb-head { display: flex; align-items: center; gap: 0.65rem; padding: 0.7rem 0.75rem 0.7rem 0.85rem; color: #fff; background: linear-gradient(120deg, var(--lt), #3d7bff); }
 .rbot .rb-head > div { flex: 1; min-width: 0; line-height: 1.25; }
 .rbot .rb-head b { display: block; font-size: 1rem; }
 .rbot .rb-head small { display: block; font-size: 0.78rem; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rbot .rb-mini { flex: none; width: 2.3rem; height: 2.3rem; border-radius: 50%; background: rgba(255, 255, 255, 0.92); padding: 0.15rem; }
-.rbot .rb-mini svg, .rbot .rb-av svg { width: 100%; height: 100%; display: block; }
+
 .rbot .rb-close { flex: none; width: 2rem; height: 2rem; min-height: 0; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.16); color: #fff; font-size: 1.25rem; line-height: 1; cursor: pointer; }
 .rbot .rb-close:hover { background: rgba(255, 255, 255, 0.3); }
 .rbot .rb-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.7rem; padding: 0.9rem 0.8rem 0.4rem; overscroll-behavior: contain; background: color-mix(in srgb, var(--bg) 30%, var(--surface)); }
@@ -1952,7 +1950,7 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .rbot .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (max-width: 600px) {
   .rbot { right: 0.6rem; bottom: 3.9rem; }
-  .rbot .rb-btn { width: 3.4rem; height: 3.4rem; }
+  .rbot .rb-btn { width: 4rem; height: 4rem; }
   .rbot.open { left: 0.5rem; right: 0.5rem; }
   .rbot .rb-panel { width: 100%; height: calc(100vh - 14.5rem); height: calc(100dvh - 14.5rem); }
 }
