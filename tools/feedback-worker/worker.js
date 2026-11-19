@@ -1,8 +1,9 @@
-// feedback-worker — receives the "Was this lesson clear?" votes of Robotics Atlas (lesson-quiz.js) and stores them in
-// Workers KV. It is deployed as its own small Worker on the route  <your domain>/api/*  (see README.md next to it),
-// so the static site itself is not changed. Anonymous: no cookie, no IP address is stored.
+// feedback-worker — the small API of Robotics Atlas, deployed as its own Worker on the route  <your domain>/api/*
+// (see README.md next to it), so the static site itself is not changed. Anonymous: no cookie, no IP address is stored.
 //   POST /api/feedback          { page, lesson, vote: 1 | -1, lang: 'en' | 'fr', comment? }   → 204
 //   GET  /api/feedback/summary  header  Authorization: Bearer <SUMMARY_TOKEN>                  → JSON totals + comments
+//   POST /api/tutor             { page, lesson, lang, question, history? }                    → the answer, streamed as plain text
+import { tutor } from './tutor.js';
 const json = (o, status = 200) => new Response(JSON.stringify(o, null, 1), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
 
 export default {
@@ -38,6 +39,7 @@ export default {
       totals.sort((a, b) => (a.up / Math.max(1, a.up + a.down)) - (b.up / Math.max(1, b.up + b.down)));   // least clear first
       return json({ totals, comments: comments.sort((a, b) => b.day.localeCompare(a.day)).slice(0, 200) });
     }
+    if (url.pathname === '/api/tutor' && req.method === 'POST') return tutor(req, env, url);
     return json({ error: 'not found' }, 404);
   }
 };

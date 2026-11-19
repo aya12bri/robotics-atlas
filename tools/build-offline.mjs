@@ -30,7 +30,7 @@ for (const f of files) {
   SIZES['/' + f] = buf.length; SIZE += buf.length;
 }
 // stored at the first visit: the home page, the offline page and everything the pages share
-const CORE = ['/index.html', '/offline.html', '/certificate.html', '/style.css', '/nav.js', '/helpers.js', '/dharm.js', '/lesson-quiz.js',
+const CORE = ['/index.html', '/offline.html', '/certificate.html', '/style.css', '/nav.js', '/helpers.js', '/dharm.js', '/lesson-quiz.js', '/tutor.js',
   '/search.js', '/search-index.js', '/courses.js', '/certificate.js', '/logo.svg', '/manifest.webmanifest',
   '/i18n/fr-common.js', '/i18n/fr-index.js', '/vendor/three.module.min.js', '/vendor/addons/controls/OrbitControls.js']
   .concat(Object.keys(FILES).filter((k) => k.startsWith('/icons/') || k.startsWith('/thumbs/anatomy')));

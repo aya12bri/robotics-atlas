@@ -129,6 +129,7 @@
     lessons.forEach(function (art) { var d = art.querySelector('details.quiz'); if (d) quiz(d, art); });
     pager(lessons);
     oneAtATime(lessons);
+    var t = document.createElement('script'); t.src = 'tutor.js'; document.body.append(t);   // "Ask the tutor" (tutor.js), after the feedback blocks exist
   }
 
   // only one lesson is shown at a time; "next lesson", the checklist and #lN links switch the lesson
