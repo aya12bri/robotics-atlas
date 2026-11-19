@@ -1,6 +1,7 @@
-// sensors.js — the sensor test bench (sensors.html): six live benches that show what real sensors measure,
+// sensors.js — the sensor test bench (sensors.html): ten live benches that show what real sensors measure,
 // with their resolution, noise, bias and blind spots: encoder, IMU (gyroscope + accelerometer), 2D lidar,
-// camera and stereo depth, ultrasonic range finder, GNSS receiver (satellites, DOP, multipath, SBAS, RTK, fusion).
+// camera and stereo depth, ultrasonic range finder, GNSS receiver (satellites, DOP, multipath, SBAS, RTK, fusion),
+// force sensor (strain gauge), infrared distance sensor (triangulation), magnetometer (compass), limit switch (bounce).
 // Each bench has a challenge; under the benches, a guide to choose a sensor for a need.
 // Everything is simulated in the browser (no library).
 (function () {
@@ -102,7 +103,11 @@
       { id: 'lidar', t: L('2D lidar', 'Lidar 2D'), d: L('What a laser scanner sees in a room: noise, resolution, glass and black objects.', 'Ce qu\'un scanner laser voit dans une pièce : bruit, résolution, verre et objets noirs.') },
       { id: 'camera', t: L('Camera and stereo', 'Caméra et stéréo'), d: L('Lens distortion, and why stereo depth gets worse with the square of the distance.', 'La distorsion de l\'objectif, et pourquoi la profondeur stéréo se dégrade avec le carré de la distance.') },
       { id: 'sonar', t: L('Ultrasonic', 'Ultrasons'), d: L('A wide cone, walls that do not answer, and the temperature that changes the distance.', 'Un cône large, des murs qui ne répondent pas, et la température qui change la distance.') },
-      { id: 'gnss', t: L('GNSS (GPS…)', 'GNSS (GPS…)'), d: L('Satellites, buildings that hide and reflect them, SBAS and RTK corrections, and the fusion with odometry.', 'Les satellites, les immeubles qui les cachent et les réfléchissent, les corrections SBAS et RTK, et la fusion avec l\'odométrie.') }
+      { id: 'gnss', t: L('GNSS (GPS…)', 'GNSS (GPS…)'), d: L('Satellites, buildings that hide and reflect them, SBAS and RTK corrections, and the fusion with odometry.', 'Les satellites, les immeubles qui les cachent et les réfléchissent, les corrections SBAS et RTK, et la fusion avec l\'odométrie.') },
+      { id: 'force', t: L('Force sensor', 'Capteur d\'effort'), d: L('A strain gauge: noise, temperature drift, filtering and overload.', 'Une jauge de contrainte : bruit, dérive en température, filtrage et surcharge.') },
+      { id: 'ir', t: L('Infrared distance', 'Distance infrarouge'), d: L('Triangulation: a curve that is not a line, and a trap when the object is too close.', 'La triangulation : une courbe qui n\'est pas une droite, et un piège quand l\'objet est trop près.') },
+      { id: 'mag', t: L('Magnetometer (compass)', 'Magnétomètre (boussole)'), d: L('North from the Earth\'s field, and why it needs calibrating near motors and steel.', 'Le nord grâce au champ terrestre, et pourquoi il faut l\'étalonner près des moteurs et de l\'acier.') },
+      { id: 'switch', t: L('Limit switch', 'Fin de course'), d: L('A contact that bounces: why one press can count as five, and how to debounce it.', 'Un contact qui rebondit : pourquoi un appui peut compter pour cinq, et comment l\'anti-rebondir.') }
     ];
     main.innerHTML = '<h1>' + L('Sensor test bench', 'Banc d\'essai des capteurs') + '</h1>' +
       '<p class="lead">' + L('Every sensor lies a little: it has a resolution, noise, a bias, and blind spots. Turn the knobs and watch what a robot really measures, then read the numbers that engineers use to choose a sensor.', 'Tout capteur ment un peu : il a une résolution, du bruit, un biais et des angles morts. Tournez les boutons et regardez ce qu\'un robot mesure vraiment, puis lisez les chiffres que les ingénieurs utilisent pour choisir un capteur.') + '</p>' +
@@ -641,6 +646,198 @@
       return { start: function () { last = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(frameLoop); }, stop: function () { cancelAnimationFrame(raf); }, redraw: function () { sky.fit(); map.fit(); ech.fit(); paint(); } };
     };
 
+    // ================================================================== 7. force sensor (strain gauge load cell)
+    MAKERS.force = function (sec) {
+      var F = frame(sec, L('Force sensor (strain gauge load cell)', 'Capteur d\'effort (cellule de charge à jauges)'), L('A metal beam bends a little under the load; strain gauges glued on it change their resistance, and a bridge and an amplifier turn this into a voltage. The signal is tiny, so it is noisy, it drifts with the temperature, and a filter that removes the noise also slows the answer down.', 'Une poutre en métal plie un peu sous la charge ; des jauges de contrainte collées dessus changent de résistance, et un pont et un amplificateur transforment cela en tension. Le signal est minuscule : il est bruité, il dérive avec la température, et un filtre qui enlève le bruit ralentit aussi la réponse.'));
+      var beam = canvas(F.view, 0.36), cv = canvas(F.view, 0.46);
+      var mass = slider(F.ctl, { label: L('Load (kg)', 'Charge (kg)'), min: 0, max: 60, value: 20, map: function (v) { return v / 10; }, dec: 1 });
+      var noise = slider(F.ctl, { label: L('Noise σ (g)', 'Bruit σ (g)'), min: 1, max: 30, value: 10 });
+      var filt = slider(F.ctl, { label: L('Filter response time τ (s)', 'Temps de réponse du filtre τ (s)'), min: 0, max: 100, value: 5, map: function (v) { return v / 100; }, dec: 2 });
+      var temp = slider(F.ctl, { label: L('Temperature (°C)', 'Température (°C)'), min: 0, max: 50, value: 20 });
+      var comp = check(F.ctl, L('Temperature compensation', 'Compensation de température'), false, function () {});
+      var out = readouts(F.side);
+      var ch = challenge(F.side, 'force', L('With a noise of 10 g, set the filter so that the filtered reading shakes by less than 2 g while it still answers in less than 0.5 s.', 'Avec un bruit de 10 g, réglez le filtre pour que la mesure filtrée tremble de moins de 2 g tout en répondant en moins de 0,5 s.'));
+      notes(F.notes, [
+        L('Bridge output: V = k · F (a few mV for the full load) &emsp; Filter: y ← y + α (x − y)', 'Sortie du pont : V = k · F (quelques mV pour la pleine charge) &emsp; Filtre : y ← y + α (x − y)'),
+        L('Noise after the filter: σ_f = σ · √(α / (2 − α)) &emsp; Response time: τ = −T / ln(1 − α)', 'Bruit après le filtre : σ_f = σ · √(α / (2 − α)) &emsp; Temps de réponse : τ = −T / ln(1 − α)')],
+        [L('Tare (zero) the sensor when nothing touches it: the offset changes from day to day.', 'Faites la tare (le zéro) quand rien ne touche le capteur : le décalage change d\'un jour à l\'autre.'),
+          L('Never go beyond the rated load: the beam bends for good and the sensor is ruined (here 5 kg, so the reading is clipped).', 'Ne dépassez jamais la charge nominale : la poutre plie définitivement et le capteur est perdu (ici 5 kg, la mesure est écrêtée).'),
+          L('A 6-axis force/torque sensor at the wrist of a cobot lets it feel a contact and stop.', 'Un capteur d\'effort 6 axes au poignet d\'un cobot lui permet de sentir un contact et de s\'arrêter.')]);
+      var r = rng(7), dt = 0.01, hist = [], t = 0, y = null, raf = 0, last = 0, acc = 0;
+      function alpha() { return filt.get() <= 0 ? 1 : 1 - Math.exp(-dt / filt.get()); }   // a first-order low-pass filter with the time constant τ
+      function step() {
+        var m = mass.get() * 1000, drift = comp.checked ? 0 : (temp.get() - 20) * 6;   // g: 6 g per degree away from 20 °C
+        var raw = Math.min(5000, m) + drift + noise.get() * gauss(r);
+        y = y === null ? raw : y + alpha() * (raw - y); t += dt; hist.push([t, m, raw, y]); while (hist.length && hist[0][0] < t - 8) hist.shift();
+      }
+      function paint() {
+        // the beam that bends, with its gauges and the weight
+        clear(beam); var x = beam.x, W = beam.w, H = beam.h, m = mass.get(), bend = Math.min(m, 5) / 5 * H * 0.14 + (m > 5 ? H * 0.05 : 0);
+        x.fillStyle = C.axis; x.fillRect(30, H * 0.25, 26, H * 0.55);
+        x.strokeStyle = m > 5 ? C.r : C.ink; x.lineWidth = 16; x.beginPath(); x.moveTo(56, H * 0.38); x.quadraticCurveTo(W * 0.45, H * 0.38, W * 0.7, H * 0.38 + bend); x.stroke();
+        x.fillStyle = C.o; x.fillRect(W * 0.28, H * 0.38 - 12, 34, 5); x.fillRect(W * 0.28, H * 0.38 + 7 + bend * 0.15, 34, 5);
+        text(beam, L('gauges', 'jauges'), W * 0.28 + 17, H * 0.38 - 18, C.o, 11, 'center');
+        x.strokeStyle = C.axis; x.lineWidth = 2; x.beginPath(); x.moveTo(W * 0.7, H * 0.38 + bend); x.lineTo(W * 0.7, H * 0.62 + bend); x.stroke();
+        var s = 18 + 16 * Math.sqrt(m); x.fillStyle = C.b; x.fillRect(W * 0.7 - s / 2, H * 0.62 + bend, s, s * 0.7); text(beam, num(m, 1) + ' kg', W * 0.7, H * 0.62 + bend + s * 0.35 + 4, '#fff', 11, 'center', true);
+        if (m > 5) text(beam, L('overload: the beam is bent for good', 'surcharge : la poutre est pliée définitivement'), W - 10, 18, C.r, 12, 'right', true);
+        // the time chart
+        clear(cv); var pad = 30 + 3 * noise.get(), lo = Math.min.apply(null, hist.map(function (h) { return Math.min(h[1], h[3]); })) - pad, hi = Math.max.apply(null, hist.map(function (h) { return Math.max(h[1], h[3]); })) + pad;
+        chart(cv, { x0: Math.max(0, t - 8), x1: Math.max(8, t), y0: lo, y1: hi, xl: L('time (s)', 'temps (s)'), yl: L('grams', 'grammes'), series: [
+          { pts: hist.map(function (h) { return [h[0], h[2]]; }), col: C.mute, w: 1, label: L('raw signal', 'signal brut') },
+          { pts: hist.map(function (h) { return [h[0], h[3]]; }), col: C.o, w: 2.5, label: L('filtered', 'filtré') },
+          { pts: hist.map(function (h) { return [h[0], h[1]]; }), col: C.g, w: 1.5, dash: [6, 4], label: L('true load', 'charge réelle') }] });
+        var a = alpha(), sf = noise.get() * Math.sqrt(a / (2 - a)), tau = filt.get(), drift = comp.checked ? 0 : (temp.get() - 20) * 6;
+        out([
+          [L('True load', 'Charge réelle'), num(mass.get() * 9.81, 2) + ' N'],
+          [L('Filtered reading', 'Mesure filtrée'), num(y / 1000 * 9.81, 2) + ' N', mass.get() > 5 ? 'bad' : ''],
+          [L('Shaking after the filter', 'Tremblement après filtre'), '± ' + num(sf, 1) + ' g'],
+          [L('Response time τ', 'Temps de réponse τ'), num(tau, 2) + ' s', tau > 0.5 ? 'bad' : ''],
+          [L('Temperature drift', 'Dérive de température'), num(drift, 0) + ' g', Math.abs(drift) > 20 ? 'bad' : '']
+        ]);
+        ch(noise.get() === 10 && sf < 2 && tau < 0.5);
+      }
+      function frameLoop(now) { var d = last ? Math.min(0.1, (now - last) / 1000) : 0; last = now; var n = Math.round(d / dt); while (n-- > 0) step(); acc += d; if (acc > 0.05) { acc = 0; paint(); } raf = requestAnimationFrame(frameLoop); }
+      for (var k = 0; k < 300; k++) step(); paint();
+      return { start: function () { last = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(frameLoop); }, stop: function () { cancelAnimationFrame(raf); }, redraw: function () { beam.fit(); cv.fit(); paint(); } };
+    };
+
+    // ================================================================== 8. infrared distance sensor (triangulation)
+    MAKERS.ir = function (sec) {
+      var F = frame(sec, L('Infrared distance sensor (triangulation)', 'Capteur de distance infrarouge (triangulation)'), L('An infrared LED lights a spot on the object; a lens sends the reflected light onto a position-sensitive detector. The farther the object, the closer the spot lands to the centre: the angle gives the distance. The output voltage is not proportional to the distance, and below the minimum distance the curve goes back down: the sensor then reads much too far.', 'Une LED infrarouge éclaire un point sur l\'objet ; une lentille envoie la lumière renvoyée sur un détecteur de position. Plus l\'objet est loin, plus le point arrive près du centre : l\'angle donne la distance. La tension de sortie n\'est pas proportionnelle à la distance, et sous la distance minimale la courbe redescend : le capteur lit alors beaucoup trop loin.'));
+      var geo = canvas(F.view, 0.34), cv = canvas(F.view, 0.46);
+      var dist = slider(F.ctl, { label: L('Real distance (cm)', 'Distance réelle (cm)'), min: 2, max: 100, value: 30 });
+      var surf = seg(F.ctl, L('Surface', 'Surface'), [['white', L('White', 'Blanche')], ['black', L('Black', 'Noire')], ['glass', L('Glass', 'Vitre')]], 'white', draw);
+      var sun = slider(F.ctl, { label: L('Sunlight (%)', 'Soleil (%)'), min: 0, max: 100, value: 0, on: draw });
+      dist.input.addEventListener('input', draw);
+      var out = readouts(F.side);
+      var ch = challenge(F.side, 'ir', L('Find a distance where the object is too close: the sensor then reads more than 5 cm too far.', 'Trouvez une distance où l\'objet est trop près : le capteur lit alors plus de 5 cm trop loin.'));
+      notes(F.notes, [
+        L('Output (far side, d ≥ 8 cm): V ≈ 27 / (d + 0.42) volts (d in cm), so d ≈ 27 / V − 0.42', 'Sortie (côté loin, d ≥ 8 cm) : V ≈ 27 / (d + 0,42) volts (d en cm), donc d ≈ 27 / V − 0,42'),
+        L('Triangulation: d = f · b / x (b: distance LED–lens, f: focal length, x: spot position)', 'Triangulation : d = f · b / x (b : distance LED–lentille, f : focale, x : position du point)')],
+        [L('Mount the sensor at least 8 to 10 cm back from the edge of the robot: an object can then never be inside the dead zone.', 'Montez le capteur à au moins 8 à 10 cm en retrait du bord du robot : un objet ne peut alors jamais être dans la zone morte.'),
+          L('The colour changes the signal strength but hardly the angle: triangulation works on black too, until the signal is too weak.', 'La couleur change la force du signal mais presque pas l\'angle : la triangulation marche aussi sur du noir, jusqu\'à ce que le signal soit trop faible.'),
+          L('Small and cheap, it is ideal to detect the edge of a table or to follow a wall at short range.', 'Petit et bon marché, il est idéal pour détecter le bord d\'une table ou suivre un mur de près.')]);
+      var r = rng(11);
+      var V = function (d) { return d >= 7 ? 27 / (d + 0.42) : 27 / 7.42 * (0.35 + 0.65 * d / 7); };   // the real curve rises up to 7 cm, then falls
+      function draw() {
+        var d = dist.get(), s = surf.get(), sn = sun.get() / 100, k = s === 'black' ? 0.25 : s === 'glass' ? 0 : 1;
+        var noiseV = (0.01 + 0.25 * sn) / Math.max(k, 0.05), v = k ? V(d) + noiseV * gauss(r) * 0.4 : 0.25 + 0.2 * sn * Math.abs(gauss(r));
+        var meas = v > 0.3 ? Math.max(0, 27 / v - 0.42) : null, ok = meas !== null && Math.abs(meas - d) < 0.1 * d + 2;
+        // the geometry: emitter, lens, object, detector spot
+        clear(geo); var x = geo.x, W = geo.w, H = geo.h, sx = 40, sc = (W - 90) / 100, ox = sx + 20 + d * sc;
+        x.fillStyle = C.box; x.fillRect(sx - 18, H * 0.2, 40, H * 0.6);
+        x.fillStyle = C.r; x.beginPath(); x.arc(sx + 12, H * 0.32, 6, 0, 7); x.fill(); x.fillStyle = C.b; x.fillRect(sx + 8, H * 0.6, 10, 16);
+        x.fillStyle = s === 'black' ? '#111' : s === 'glass' ? 'rgba(120,190,255,0.35)' : '#f2f2f2'; x.strokeStyle = C.axis; x.lineWidth = 1; x.fillRect(ox, H * 0.12, 12, H * 0.76); x.strokeRect(ox, H * 0.12, 12, H * 0.76);
+        x.strokeStyle = C.r; x.lineWidth = 2; x.beginPath(); x.moveTo(sx + 12, H * 0.32); x.lineTo(ox, H * 0.32); x.stroke();
+        if (k) { x.globalAlpha = 0.4 + 0.6 * k; x.beginPath(); x.moveTo(ox, H * 0.32); x.lineTo(sx + 13, H * 0.66); x.stroke(); x.globalAlpha = 1; }
+        if (sn > 0) { x.fillStyle = C.y; x.globalAlpha = 0.25 * sn + 0.05; x.fillRect(0, 0, W, H); x.globalAlpha = 1; text(geo, '☀', W - 20, 24, C.y, 20, 'right'); }
+        text(geo, num(d, 0) + ' cm', (sx + ox) / 2, H * 0.32 - 8, C.ink, 11, 'center');
+        if (d < 7) text(geo, L('too close: dead zone', 'trop près : zone morte'), W - 12, H - 10, C.r, 12, 'right', true);
+        // the curve
+        clear(cv); var pts = []; for (var dd = 2; dd <= 100; dd += 1) pts.push([dd, V(dd)]);
+        var g = chart(cv, { x0: 0, x1: 100, y0: 0, y1: 4, xl: L('distance (cm)', 'distance (cm)'), yl: L('output voltage (V)', 'tension de sortie (V)'), series: [{ pts: pts, col: C.b, w: 2, label: L('sensor curve', 'courbe du capteur') }] });
+        x = cv.x; x.fillStyle = C.r; x.globalAlpha = 0.12; x.fillRect(g.X(0), g.A.t, g.X(7) - g.X(0), g.A.b - g.A.t); x.globalAlpha = 1;
+        x.fillStyle = C.o; x.beginPath(); x.arc(g.X(d), g.Y(Math.max(0, Math.min(4, v))), 6, 0, 7); x.fill();
+        if (meas !== null && meas <= 100) { x.strokeStyle = C.o; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(g.X(d), g.Y(v)); x.lineTo(g.X(meas), g.Y(v)); x.stroke(); x.setLineDash([]); x.strokeStyle = C.g; x.beginPath(); x.arc(g.X(meas), g.Y(v), 6, 0, 7); x.stroke(); }
+        out([
+          [L('Real distance', 'Distance réelle'), num(d, 0) + ' cm'],
+          [L('Output voltage', 'Tension de sortie'), num(v, 2) + ' V'],
+          [L('Distance read by the robot', 'Distance lue par le robot'), meas === null ? L('no echo', 'pas de retour') : num(meas, 1) + ' cm', ok ? '' : 'bad'],
+          [L('Error', 'Erreur'), meas === null ? '—' : num(meas - d, 1) + ' cm', ok ? '' : 'bad']
+        ]);
+        ch(meas !== null && d < 7 && meas - d > 5);
+      }
+      draw();
+      return { redraw: function () { geo.fit(); cv.fit(); draw(); } };
+    };
+
+    // ================================================================== 9. magnetometer (compass)
+    MAKERS.mag = function (sec) {
+      var F = frame(sec, L('Magnetometer (electronic compass)', 'Magnétomètre (boussole électronique)'), L('A magnetometer measures the Earth\'s magnetic field (about 48 µT) along its axes; the direction of the horizontal field gives the north. When the robot turns on the spot, the readings should draw a circle centred on zero. The magnets of the motors and the steel of the robot shift the circle (hard iron) and squash it into an ellipse (soft iron): without calibration the heading is wrong.', 'Un magnétomètre mesure le champ magnétique terrestre (environ 48 µT) selon ses axes ; la direction du champ horizontal donne le nord. Quand le robot tourne sur place, les mesures devraient dessiner un cercle centré sur zéro. Les aimants des moteurs et l\'acier du robot décalent le cercle (fer dur) et l\'écrasent en ellipse (fer doux) : sans étalonnage, le cap est faux.'));
+      var row = document.createElement('div'); row.className = 'sb-view sb-two'; F.view.appendChild(row);
+      var pl = canvas(row, 1), rose = canvas(row, 1);
+      var head = slider(F.ctl, { label: L('True heading of the robot (°)', 'Cap réel du robot (°)'), min: 0, max: 359, value: 60, on: draw });
+      var hard = slider(F.ctl, { label: L('Hard iron offset (µT)', 'Décalage fer dur (µT)'), min: 0, max: 40, value: 20, on: draw });
+      var soft = slider(F.ctl, { label: L('Soft iron squash (%)', 'Écrasement fer doux (%)'), min: 0, max: 40, value: 15, on: draw });
+      var motor = slider(F.ctl, { label: L('Motor current nearby (A)', 'Courant moteur à côté (A)'), min: 0, max: 10, value: 0, on: draw });
+      var cal = check(F.ctl, L('Calibrated (turned once on the spot)', 'Étalonné (un tour sur place)'), false, draw);
+      var out = readouts(F.side);
+      var ch = challenge(F.side, 'mag', L('With a hard iron offset of 20 µT and no motor current, make the heading error smaller than 2°.', 'Avec un décalage fer dur de 20 µT et sans courant moteur, rendez l\'erreur de cap inférieure à 2°.'));
+      notes(F.notes, [
+        L('Heading: ψ = atan2(−m_y, m_x) &emsp; Calibration: m = S⁻¹ (raw − b) (b: hard iron, S: soft iron)', 'Cap : ψ = atan2(−m_y, m_x) &emsp; Étalonnage : m = S⁻¹ (brut − b) (b : fer dur, S : fer doux)')],
+        [L('Calibrate on the robot, with everything mounted: turn it once on the spot and fit the ellipse to the points.', 'Étalonnez sur le robot, tout monté : faites-lui faire un tour sur place et ajustez l\'ellipse aux points.'),
+          L('A motor current makes its own field: put the magnetometer far from the motors and the cables, often on a mast.', 'Un courant moteur crée son propre champ : placez le magnétomètre loin des moteurs et des câbles, souvent sur un mât.'),
+          L('Indoors, steel beams bend the field: drones and robots fuse the compass with the gyroscope of the IMU.', 'En intérieur, les poutres en acier tordent le champ : drones et robots fusionnent la boussole avec le gyroscope de la centrale inertielle.')]);
+      var B = 48, deg = Math.PI / 180;
+      function raw(psi, cur) { var mx = B * Math.cos(psi), my = -B * Math.sin(psi), sq = 1 - soft.get() / 100, h = hard.get(); return [mx * 1 + h * 0.8 + cur * 2.2, my * sq + h * 0.6 + cur * 1.4]; }
+      function fix(m) { if (!cal.checked) return m; var sq = 1 - soft.get() / 100, h = hard.get(); return [m[0] - h * 0.8, (m[1] - h * 0.6) / sq]; }
+      function draw() {
+        var psi = head.get() * deg, cur = motor.get(), m = raw(psi, cur), f = fix(m), est = ((Math.atan2(-f[1], f[0]) / deg) % 360 + 360) % 360, err = ((est - head.get() + 540) % 360) - 180;
+        clear(pl); var x = pl.x, W = pl.w, H = pl.h, c = W / 2, sc = (W / 2 - 20) / 90;
+        x.strokeStyle = C.grid; x.lineWidth = 1; x.beginPath(); x.moveTo(c, 10); x.lineTo(c, H - 10); x.moveTo(10, c); x.lineTo(W - 10, c); x.stroke();
+        x.strokeStyle = C.g; x.setLineDash([5, 5]); x.beginPath(); x.arc(c, c, B * sc, 0, 7); x.stroke(); x.setLineDash([]);
+        for (var a = 0; a < 360; a += 6) { var p = fix(raw(a * deg, cur)); x.fillStyle = cal.checked ? C.b : C.o; x.fillRect(c + p[0] * sc - 2, c - p[1] * sc - 2, 4, 4); }
+        x.fillStyle = C.r; x.beginPath(); x.arc(c + f[0] * sc, c - f[1] * sc, 6, 0, 7); x.fill();
+        text(pl, L('readings during one turn', 'mesures pendant un tour'), 12, 18, C.axis, 11); text(pl, L('ideal circle', 'cercle idéal'), 12, H - 10, C.g, 11);
+        // the compass rose: true heading and measured heading
+        clear(rose); x = rose.x; W = rose.w; H = rose.h; c = W / 2; var R = W / 2 - 26;
+        x.strokeStyle = C.axis; x.lineWidth = 2; x.beginPath(); x.arc(c, c, R, 0, 7); x.stroke();
+        ['N', 'E', 'S', 'O'].forEach(function (n, k) { var a = k * Math.PI / 2; text(rose, FR || n !== 'O' ? n : 'W', c + Math.sin(a) * (R + 13), c - Math.cos(a) * (R + 13) + 4, C.axis, 12, 'center', true); });
+        var arrow = function (deg2, col, w) { var a = deg2 * deg; x.strokeStyle = col; x.lineWidth = w; x.beginPath(); x.moveTo(c, c); x.lineTo(c + Math.sin(a) * R * 0.85, c - Math.cos(a) * R * 0.85); x.stroke(); };
+        arrow(head.get(), C.g, 4); arrow(est, C.r, 3);
+        text(rose, L('true', 'réel'), 12, 18, C.g, 11, 'left', true); text(rose, L('measured', 'mesuré'), 12, 34, C.r, 11, 'left', true);
+        out([
+          [L('True heading', 'Cap réel'), num(head.get(), 0) + '°'],
+          [L('Measured heading', 'Cap mesuré'), num(est, 0) + '°'],
+          [L('Heading error', 'Erreur de cap'), num(err, 1) + '°', Math.abs(err) > 3 ? 'bad' : ''],
+          [L('Field strength', 'Intensité du champ'), num(Math.hypot(f[0], f[1]), 0) + ' µT', Math.abs(Math.hypot(f[0], f[1]) - B) > 8 ? 'bad' : '']
+        ]);
+        ch(hard.get() === 20 && cur === 0 && Math.abs(err) < 2);
+      }
+      draw();
+      return { redraw: function () { pl.fit(); rose.fit(); draw(); } };
+    };
+
+    // ================================================================== 10. limit switch (contact bounce)
+    MAKERS.switch = function (sec) {
+      var F = frame(sec, L('Limit switch and bumper (contact bounce)', 'Fin de course et pare-chocs (rebonds du contact)'), L('A mechanical contact does not close cleanly: the metal blades bounce for a few milliseconds. A microcontroller reads its input thousands of times per second, so it sees several presses instead of one. Debouncing waits until the signal has been stable for a while; it costs a small delay.', 'Un contact mécanique ne se ferme pas proprement : les lames métalliques rebondissent pendant quelques millisecondes. Un microcontrôleur lit son entrée des milliers de fois par seconde, il voit donc plusieurs appuis au lieu d\'un. L\'anti-rebond attend que le signal soit stable un moment ; cela coûte un petit retard.'));
+      var cv = canvas(F.view, 0.5);
+      var bounce = slider(F.ctl, { label: L('Bounce duration (ms)', 'Durée des rebonds (ms)'), min: 1, max: 10, value: 5, on: draw });
+      var deb = slider(F.ctl, { label: L('Debounce time (ms)', 'Temps d\'anti-rebond (ms)'), min: 0, max: 20, value: 0, on: draw });
+      var press = document.createElement('button'); press.type = 'button'; press.className = 'btn sm'; press.textContent = L('Press again', 'Appuyer à nouveau'); F.ctl.appendChild(press);
+      var out = readouts(F.side);
+      var ch = challenge(F.side, 'switch', L('With 5 ms of bounce, count exactly one press, with the smallest delay you can.', 'Avec 5 ms de rebonds, comptez exactement un appui, avec le plus petit retard possible.'));
+      notes(F.notes, [
+        L('Software debounce: the output changes only when the input has kept the same value for t_d', 'Anti-rebond logiciel : la sortie ne change que si l\'entrée a gardé la même valeur pendant t_d'),
+        L('Hardware debounce: an RC filter (τ = R·C ≈ 5 ms) and a Schmitt trigger input', 'Anti-rebond matériel : un filtre RC (τ = R·C ≈ 5 ms) et une entrée à trigger de Schmitt')],
+        [L('A home switch gives the zero of an axis at start-up: it must be read cleanly, often at low speed.', 'Un capteur de prise d\'origine donne le zéro d\'un axe au démarrage : il doit être lu proprement, souvent à petite vitesse.'),
+          L('Safety switches (doors, bumpers) are wired normally closed: a cut wire then reads as "pressed" and stops the robot.', 'Les contacts de sécurité (portes, pare-chocs) sont câblés normalement fermés : un fil coupé est alors lu comme « appuyé » et arrête le robot.'),
+          L('An optical or inductive switch has no blades, so no bounce, and it does not wear.', 'Un détecteur optique ou inductif n\'a pas de lames, donc pas de rebonds, et il ne s\'use pas.')]);
+      var seed = 3;
+      press.addEventListener('click', function () { seed++; draw(); });
+      function draw() {
+        var r = rng(seed), b = bounce.get(), td = deb.get(), T0 = 3, end = T0 + b, edges = [];
+        // the raw signal: toggles at random times during the bounce, then stays closed
+        var tt = T0, st = 1; edges.push(T0); while (true) { tt += 0.15 + r() * 0.9 * (1 - (tt - T0) / (b + 0.01)) + 0.05; if (tt >= end) break; st = 1 - st; edges.push(tt); }
+        if (edges.length % 2 === 0) edges.push(end);                       // it ends closed
+        var at = function (t) { var v = 0; edges.forEach(function (e) { if (t >= e) v = 1 - v; }); return v; };
+        var N = 600, tMax = 30, raw = [], db = [], out1 = 0, since = 0, last = 0, rises = 0, drises = 0, tOut = null;
+        for (var i = 0; i <= N; i++) { var t = i * tMax / N, v = at(t); if (v !== last) { if (v) rises++; last = v; since = t; } if (v !== out1 && t - since >= td) { out1 = v; if (v) { drises++; if (tOut === null) tOut = t; } } raw.push([t, v]); db.push([t, out1]); }
+        clear(cv);
+        chart(cv, { x0: 0, x1: tMax, y0: -0.4, y1: 2.6, xl: L('time (ms)', 'temps (ms)'), series: [
+          { pts: raw.map(function (p) { return [p[0], p[1] + 1.4]; }), col: C.o, w: 2, label: L('contact read by the input', 'contact lu par l\'entrée') },
+          { pts: db.map(function (p) { return [p[0], p[1]]; }), col: C.g, w: 2.5, label: L('after debounce', 'après anti-rebond') }] });
+        out([
+          [L('Presses seen without debounce', 'Appuis vus sans anti-rebond'), String(rises), rises > 1 ? 'bad' : ''],
+          [L('Presses seen after debounce', 'Appuis vus après anti-rebond'), String(drises), drises !== 1 ? 'bad' : ''],
+          [L('Delay added', 'Retard ajouté'), tOut === null ? '—' : num(tOut - T0, 1) + ' ms']
+        ]);
+        ch(b === 5 && drises === 1 && td <= 6);
+      }
+      draw();
+      return { redraw: function () { cv.fit(); draw(); } };
+    };
+
     // ------------------------------------------------------------------ which sensor for which need
     (function guide() {
       var G = main.querySelector('.sb-guide');
@@ -651,7 +848,11 @@
         ['gnss', 'GNSS', L('Position on Earth', 'Position sur la Terre'), L('worldwide', 'mondiale'), L('2 to 5 m · 1 m SBAS · 2 cm RTK', '2 à 5 m · 1 m SBAS · 2 cm RTK'), L('€10 to €50 · RTK €150 to €500', '10 à 50 € · RTK 150 à 500 €'), L('outdoors only', 'extérieur seulement'), L('buildings, trees, tunnels: hidden or reflected satellites', 'immeubles, arbres, tunnels : satellites cachés ou réfléchis')],
         ['lidar', L('2D lidar', 'Lidar 2D'), L('Distances all around, in one plane', 'Distances tout autour, dans un plan'), L('0.1 to 30 m', '0,1 à 30 m'), L('1 to 3 cm', '1 à 3 cm'), L('€100 to €1 000', '100 à 1 000 €'), L('indoors (outdoors with care)', 'intérieur (extérieur avec précaution)'), L('glass, black objects, obstacles above or below the plane', 'verre, objets noirs, obstacles au-dessus ou sous le plan')],
         ['camera', L('Camera / stereo', 'Caméra / stéréo'), L('Image, colours, objects; depth with two cameras', 'Image, couleurs, objets ; profondeur avec deux caméras'), L('0.3 to 20 m', '0,3 à 20 m'), L('depth error grows with Z²', 'erreur de profondeur en Z²'), L('€20 to €500', '20 à 500 €'), L('everywhere, with light', 'partout, avec de la lumière'), L('darkness, glare, surfaces without texture', 'obscurité, éblouissement, surfaces sans texture')],
-        ['sonar', L('Ultrasonic', 'Ultrasons'), L('One distance, in a wide cone', 'Une distance, dans un cône large'), L('0.02 to 4 m', '0,02 à 4 m'), L('1 cm (plus temperature)', '1 cm (plus la température)'), L('€1 to €30', '1 à 30 €'), L('everywhere', 'partout'), L('inclined walls send no echo; soft materials absorb', 'les murs inclinés ne renvoient rien ; les matières molles absorbent')]
+        ['sonar', L('Ultrasonic', 'Ultrasons'), L('One distance, in a wide cone', 'Une distance, dans un cône large'), L('0.02 to 4 m', '0,02 à 4 m'), L('1 cm (plus temperature)', '1 cm (plus la température)'), L('€1 to €30', '1 à 30 €'), L('everywhere', 'partout'), L('inclined walls send no echo; soft materials absorb', 'les murs inclinés ne renvoient rien ; les matières molles absorbent')],
+        ['force', L('Force sensor', 'Capteur d\'effort'), L('Force or torque: gripping, contact, weighing', 'Force ou couple : serrage, contact, pesée'), L('0.1 N to 10 kN', '0,1 N à 10 kN'), L('0.05 to 0.5 % of full scale', '0,05 à 0,5 % de la pleine échelle'), L('€5 load cell · €3 000 6-axis', '5 € la cellule · 3 000 € en 6 axes'), L('grippers, cobot wrists, scales', 'pinces, poignets de cobots, balances'), L('temperature drift and overload', 'dérive en température et surcharge')],
+        ['ir', L('Infrared distance', 'Distance infrarouge'), L('One distance, on a small spot', 'Une distance, sur un petit point'), L('10 to 80 cm', '10 à 80 cm'), L('1 to 5 % (not linear)', '1 à 5 % (non linéaire)'), L('€5 to €15', '5 à 15 €'), L('indoors: table edges, walls', 'en intérieur : bords de table, murs'), L('too close it reads too far; glass and sunlight', 'trop près il lit trop loin ; vitres et soleil')],
+        ['mag', L('Magnetometer', 'Magnétomètre'), L('Heading from the Earth\'s field', 'Le cap grâce au champ terrestre'), '—', L('1° to 5° once calibrated', '1° à 5° une fois étalonné'), L('€1 to €10', '1 à 10 €'), L('outdoors, drones, with the IMU', 'en extérieur, drones, avec l\'IMU'), L('motors and steel nearby: calibrate', 'moteurs et acier à côté : étalonner')],
+        ['switch', L('Limit switch / bumper', 'Fin de course / pare-chocs'), L('A contact: yes or no', 'Un contact : oui ou non'), L('contact', 'contact'), L('repeatable to 0.01 mm (homing)', 'répétable à 0,01 mm (prise d\'origine)'), L('€1 to €20', '1 à 20 €'), L('axis ends, homing, bumpers', 'fins d\'axes, prise d\'origine, pare-chocs'), L('contact bounce: debounce it', 'rebonds du contact : anti-rebond')]
       ];
       var NEEDS = [
         [L('Control a motor or a joint', 'Commander un moteur ou une articulation'), ['encoder'], L('An encoder on each motor: it gives the angle and the speed the controller needs, many times per second.', 'Un encodeur sur chaque moteur : il donne l\'angle et la vitesse dont l\'asservissement a besoin, des centaines de fois par seconde.')],
@@ -659,7 +860,11 @@
         [L('Find its way outdoors (field, road, park)', 'Se repérer en extérieur (champ, route, parc)'), ['gnss', 'imu', 'encoder'], L('GNSS for the absolute position (RTK for centimetres), fused with the odometry and the IMU to fill the gaps under trees and between buildings.', 'Le GNSS pour la position absolue (RTK pour le centimètre), fusionné avec l\'odométrie et l\'IMU pour boucher les trous sous les arbres et entre les immeubles.')],
         [L('Map a building and find its way in it', 'Cartographier un bâtiment et s\'y repérer'), ['lidar', 'encoder', 'imu'], L('A 2D lidar for SLAM, helped by the odometry and the IMU; no GNSS indoors.', 'Un lidar 2D pour le SLAM, aidé par l\'odométrie et l\'IMU ; pas de GNSS en intérieur.')],
         [L('Avoid obstacles cheaply', 'Éviter les obstacles à petit prix'), ['sonar', 'lidar'], L('A ring of ultrasonic sensors (fired one after the other) catches glass and close obstacles; a lidar if the budget allows.', 'Une ceinture de capteurs à ultrasons (qui émettent l\'un après l\'autre) attrape le verre et les obstacles proches ; un lidar si le budget le permet.')],
-        [L('Recognise and grasp objects', 'Reconnaître et saisir des objets'), ['camera'], L('A camera for recognition, a stereo or depth camera for the distance at short range.', 'Une caméra pour la reconnaissance, une caméra stéréo ou de profondeur pour la distance à courte portée.')]
+        [L('Recognise and grasp objects', 'Reconnaître et saisir des objets'), ['camera'], L('A camera for recognition, a stereo or depth camera for the distance at short range.', 'Une caméra pour la reconnaissance, une caméra stéréo ou de profondeur pour la distance à courte portée.')],
+        [L('Grip without crushing, feel a contact', 'Saisir sans écraser, sentir un contact'), ['force', 'switch'], L('A force sensor in the gripper or the wrist sets the gripping force and feels a collision; a switch or a bumper gives a sure yes or no.', 'Un capteur d\'effort dans la pince ou le poignet règle la force de serrage et sent une collision ; un contact ou un pare-chocs donne un oui ou non sûr.')],
+        [L('Know its heading outdoors', 'Connaître son cap en extérieur'), ['mag', 'imu', 'gnss'], L('A calibrated magnetometer gives the north, the gyroscope smooths it, and GNSS corrects the drift when the robot moves.', 'Un magnétomètre étalonné donne le nord, le gyroscope le lisse, et le GNSS corrige la dérive quand le robot avance.')],
+        [L('Detect a table edge or follow a wall', 'Détecter le bord d\'une table ou suivre un mur'), ['ir', 'sonar'], L('Small infrared sensors pointed down or to the side, mounted back from the edge so that nothing gets into their dead zone.', 'De petits capteurs infrarouges tournés vers le bas ou sur le côté, montés en retrait du bord pour que rien n\'entre dans leur zone morte.')],
+        [L('Find the zero of an axis at start-up', 'Trouver le zéro d\'un axe au démarrage'), ['switch', 'encoder'], L('A home switch, approached slowly and debounced, then the encoder counts from there.', 'Un capteur de prise d\'origine, approché lentement et anti-rebondi, puis l\'encodeur compte à partir de là.')]
       ];
       var name = {}; ROWS.forEach(function (r) { name[r[0]] = r[1]; });
       G.innerHTML = '<h2 id="sbGuideT">' + L('Which sensor for which need?', 'Quel capteur pour quel besoin ?') + '</h2>' +

@@ -39,7 +39,7 @@ const OWN_FR = {
   'review.html': ['Mes révisions', 'Répétition espacée : les questions manquées reviennent après 1, 3, 7, 16 et 35 jours, jusqu\'à ce que vous les sachiez.'],
   'revision.html': ['Fiches de révision', 'Une fiche imprimable par cours : l\'essentiel de chaque leçon, les formules et les termes clés.'],
   'sandbox.html': ['Bac à sable de programmation', 'Écrivez un petit programme et regardez un robot SCARA ou 6 axes l\'exécuter en 3D : mouvements linéaires et articulaires, pince, boucles, et un export dans un style industriel.'],
-  'sensors.html': ['Banc d\'essai des capteurs', 'Chaque capteur ment un peu : essayez un codeur, une IMU, un lidar, une caméra, un capteur à ultrasons et un récepteur GNSS, et voyez leur résolution, leur bruit, leur dérive et leurs angles morts.']
+  'sensors.html': ['Banc d\'essai des capteurs', 'Chaque capteur ment un peu : essayez un codeur, une IMU, un lidar, une caméra, un capteur à ultrasons, un récepteur GNSS, un capteur d\'effort, un capteur infrarouge, une boussole et un fin de course, et voyez leur résolution, leur bruit, leur dérive et leurs angles morts.']
 };
 // a small server: the page asked for is served with its scripts switched off, every other file as it is
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp' };

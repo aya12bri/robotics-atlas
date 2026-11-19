@@ -25,7 +25,7 @@ RA.add({
  "f1l7152yo4": "Bac à sable de programmation",
  "1r06qppmx2o": "Programmez un SCARA ou un robot 6 axes en 3D : déplacements, boucles, prise et dépose.",
  "unmsqsdmht": "Banc d'essai des capteurs",
- "1vr0enf6xzi": "Codeur, centrale inertielle, lidar, caméra et ultrason, en direct : voyez ce que chacun mesure et comment il se trompe.",
+ "xjfe2jtm2m": "Dix capteurs en direct : codeur, centrale inertielle, lidar, caméra, ultrason, GNSS, effort, infrarouge, boussole et fin de course. Voyez ce que chacun mesure et comment il se trompe.",
  "4bsnxi0ak6": "Conduire 8 robots mobiles",
  "14gfkwlsj09": "Différentiel, Ackermann, omni, Mecanum et d'autres : conduisez chacun au clavier.",
  "pcwt206u70": "Du vrai code et de vrais robots, étape par étape, jusqu'à un projet terminé.",
