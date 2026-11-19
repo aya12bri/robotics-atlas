@@ -216,7 +216,7 @@ const ROBOTS = {
     ]
   },
   quadruped: {
-    file: 'anatomy-quadruped', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'], noSys: true,
+    file: 'anatomy-quadruped', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a quadruped robot (3D)', 'Anatomie d\'un robot quadrupède (3D)'], short: ['Quadruped', 'Quadrupède'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Trot on / off', 'Trot on / off'],
     note: ['The quadruped really trots: the legs go in two diagonal pairs (front left with rear right, then front right with rear left). For each leg, a small inverse kinematics finds the three angles (abduction, hip, knee) that put the foot where the gait wants it, even when you tilt the body. The model is simplified; real robots such as Spot or ANYmal add force control in every joint.', 'Le quadrupède trotte vraiment : les pattes avancent par deux paires en diagonale (avant gauche avec arrière droite, puis avant droite avec arrière gauche). Pour chaque patte, une petite cinématique inverse trouve les trois angles (abduction, hanche, genou) qui posent le pied là où la marche le veut, même quand vous inclinez le corps. Le modèle est simplifié ; les vrais robots comme Spot ou ANYmal ajoutent une commande en effort dans chaque articulation.'],
@@ -236,7 +236,7 @@ const ROBOTS = {
     ]
   },
   auv: {
-    file: 'anatomy-auv', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'], noSys: true,
+    file: 'anatomy-auv', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of an underwater robot (3D)', 'Anatomie d\'un robot sous-marin (3D)'], short: ['Underwater robot', 'Robot sous-marin'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Turn to the right', 'Virer à droite'],
     note: ['The underwater robot really moves: the propeller pushes it forward, the rudders turn it and the elevators tilt its nose to dive or climb. Like a plane, the fins only work when the vehicle moves through the water. The model is simplified.', 'Le robot sous-marin se déplace vraiment : l\'hélice le pousse vers l\'avant, les gouvernes de direction le font tourner et les gouvernes de profondeur inclinent son nez pour plonger ou remonter. Comme pour un avion, les gouvernes n\'agissent que si le véhicule avance dans l\'eau. Le modèle est simplifié.'],
@@ -371,7 +371,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     ${P(...(R.note || NOTE))}
 ${R.noSys ? '' : `    <h2>${tx('All the components, from A to Z', 'Tous les composants, de A à Z')}</h2>
     <p>${tx('First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.', 'D\'abord le robot entier, avec un numéro sur chaque composant à l\'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c\'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.')}</p>
-    <div class="sysdemo" data-robot="${key}" data-set="${({ cobot: 'cobot', wheels: 'mobile', drives: 'mobile', mobile: 'mobile', humanoid: 'humanoid', quadrotor: 'drone' })[key] || 'arm'}"></div>`}
+    <div class="sysdemo" data-robot="${key}" data-set="${({ cobot: 'cobot', wheels: 'mobile', drives: 'mobile', mobile: 'mobile', humanoid: 'humanoid', quadrotor: 'drone', quadruped: 'quadruped', auv: 'auv' })[key] || 'arm'}"></div>`}
     <script type="module" src="anatomy.js"></script>
     ${R.noSys ? '' : '<script type="module" src="system-demo.js"></script>'}
   </body>

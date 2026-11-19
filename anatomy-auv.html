@@ -59,8 +59,10 @@
     <h2>What is inside each joint?</h2>
     <ul><li><strong>No cable, no pilot</strong>: an AUV (autonomous underwater vehicle) follows its mission alone, unlike an ROV, which is driven by a pilot through a cable from a ship.</li><li><strong>Navigation without GPS</strong>: it adds up the speed of the DVL and the turns of the IMU (dead reckoning, corrected by a Kalman filter), and comes back to the surface now and then to get a GPS fix.</li><li><strong>Uses</strong>: mapping the sea floor, inspecting pipelines and cables, searching for wrecks, studying the ocean.</li></ul>
     <p>The underwater robot really moves: the propeller pushes it forward, the rudders turn it and the elevators tilt its nose to dive or climb. Like a plane, the fins only work when the vehicle moves through the water. The model is simplified.</p>
-
+    <h2>All the components, from A to Z</h2>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="auv" data-set="auv"></div>
     <script type="module" src="anatomy.js"></script>
-    
+    <script type="module" src="system-demo.js"></script>
   </body>
 </html>

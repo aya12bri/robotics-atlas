@@ -194,6 +194,8 @@ SETS.humanoid = { parts: SETS.mobile.parts.map((p) => (p[0] === 'track' ? ['mot3
   wires: SETS.mobile.wires.map((w) => w.map((x) => (x === 'track' ? 'mot3' : x === 'wheel' ? 'fsr' : x === 'gps' ? 'ft' : x))).concat([['driver', 'mot3', 'mot']]) };
 SETS.drone = { parts: SETS.mobile.parts.filter((p) => !['bumper', 'track', 'hobby', 'cyl'].includes(p[0])).map((p) => (p[0] === 'wheel' ? ['prop', p[1], p[2]] : p[0] === 'driver' ? ['esc', p[1], p[2]] : p)),
   wires: SETS.mobile.wires.filter((w) => !w.some((x) => ['bumper', 'track', 'hobby'].includes(x))).map((w) => w.map((x) => (x === 'wheel' ? 'prop' : x === 'driver' ? 'esc' : x))).concat([['esc', 'prop', 'mot']]) };
+SETS.quadruped = { parts: SETS.humanoid.parts.filter((p) => !['hobby', 'stepper', 'cyl', 'bumper'].includes(p[0])), wires: SETS.humanoid.wires.filter((w) => !w.some((x) => ['hobby', 'stepper', 'cyl', 'bumper'].includes(x))) };
+SETS.auv = { parts: SETS.drone.parts.filter((p) => !['lidar', 'scanner', 'dc', 'planet'].includes(p[0])), wires: SETS.drone.wires.filter((w) => !w.some((x) => ['lidar', 'scanner', 'dc', 'planet'].includes(x))).concat([['enc', 'esc', 'fb']]) };
 SETS.cobot = { parts: SETS.arm.parts.map((p) => (p[0] === 'curtain' ? ['scanner', p[1], p[2]] : p)).concat([['jtq', 2.1, 0.3]]), wires: SETS.arm.wires.map((w) => w.map((x) => (x === 'curtain' ? 'scanner' : x))).concat([['jtq', 'srelay', 'safe']]) };
 const WIRE = { sig: ['#1aa0c8', L('sensor signals', 'signaux capteurs')], bus: ['#f1c40f', L('network / fieldbus', 'réseau / bus de terrain')], pow: ['#e5484d', L('power', 'alimentation')],
   mot: ['#ff8a2a', L('motor current', 'courant moteur')], fb: ['#30c67c', L('encoder feedback', 'retour codeur')], mech: ['#9aa5b1', L('mechanical link', 'liaison mécanique')], safe: ['#111111', L('safety loop', 'boucle de sécurité')] };
@@ -228,6 +230,33 @@ function droneModel() {
   const S = (x, y, z) => V(x, y, z);   // slots are in the model's own coordinates (its scale is applied by localToWorld)
   return { g, slots: { center: S(0, 0.13, 0), top: S(0, 0.2, 0), mast: S(0, 0.29, -0.06), front: S(0, 0.05, 0.15), bottom: S(0, 0.08, 0), arm: S(0.18, 0.13, 0.18), motor: S(0.31, 0.15, 0.31), prop: S(0.31, 0.2, -0.31) } };
 }
+function quadrupedModel() {                                     // a robot dog: body, cameras front and back, four legs with the knee pointing backwards
+  const g = new THREE.Group(), O = C.orange, D = C.dark;
+  g.add(bx(0.9, 0.16, 0.28, O, 0, 0.46)); g.add(bx(0.7, 0.03, 0.18, D, 0, 0.62));
+  for (const sx of [-1, 1]) { g.add(bx(0.05, 0.11, 0.22, C.black, sx * 0.46, 0.48)); for (const sz of [-1, 1]) g.add(cyX(0.015, 0.02, C.lens, sx * 0.48 - 0.01, 0.53, sz * 0.06)); }
+  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    const hip = V(sx * 0.34, 0.46, sz * 0.17), knee = V(sx * 0.34 - 0.1, 0.25, sz * 0.18), foot = V(sx * 0.34, 0.04, sz * 0.18);
+    g.add(cyZ(0.055, 0.08, D, hip.x, hip.y, hip.z - 0.04));
+    for (const [a, b, r, m] of [[hip, knee, 0.035, C.white], [knee, foot, 0.022, D]]) { const leg = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 1, 14), m), d = b.clone().sub(a); leg.position.copy(a).addScaledVector(d, 0.5); leg.scale.y = d.length(); leg.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); leg.castShadow = true; g.add(leg); }
+    const kj = new THREE.Mesh(new THREE.SphereGeometry(0.035, 14, 10), D); kj.position.copy(knee); g.add(kj);
+    const ft = new THREE.Mesh(new THREE.SphereGeometry(0.035, 14, 10), C.rubber); ft.position.copy(foot); g.add(ft);
+  }
+  return { g, slots: { front: V(0.47, 0.53, 0), chest: V(0.3, 0.5, 0.15), torso: V(0, 0.54, 0.15), back: V(-0.3, 0.62, 0), hip: V(0.34, 0.46, 0.22), knee: V(0.24, 0.25, 0.2), foot: V(0.34, 0.04, 0.2), base: V(0, 0.1, 0.3) } };
+}
+function auvModel() {                                            // an underwater robot resting on its cradles: hull, nose, tail, propeller, fins and mast
+  const g = new THREE.Group(), y = 0.3, R = 0.12;
+  for (const x of [-0.35, 0.35]) g.add(bx(0.08, y - R + 0.03, 0.3, C.dark, x, 0));
+  const hull = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 1.1, 36).rotateZ(Math.PI / 2), C.orange); hull.position.set(0, y, 0); g.add(hull);
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(R, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2).rotateZ(-Math.PI / 2), C.white); nose.position.set(0.55, y, 0); g.add(nose);
+  const tail = new THREE.Mesh(new THREE.CylinderGeometry(R, 0.04, 0.3, 36).rotateZ(-Math.PI / 2), C.white); tail.position.set(-0.7, y, 0); g.add(tail);
+  for (const x of [-0.25, 0.15]) g.add(cyX(R * 1.01, 0.025, C.dark, x, y, 0));
+  g.add(cyX(0.03, 0.01, C.lens, 0.67, y, 0));
+  const duct = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.012, 10, 32).rotateY(Math.PI / 2), C.dark); duct.position.set(-0.9, y, 0); g.add(duct);
+  for (let i = 0; i < 3; i++) { const b = bx(0.01, 0.07, 0.025, C.orange, -0.9, y - 0.035, 0); b.rotation.x = i * 2.094; g.add(b); }
+  for (const [dy, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) g.add(bx(0.1, dy ? 0.1 : 0.012, dz ? 0.1 : 0.012, C.dark, -0.72, y - (dy ? 0.05 : 0.006) + dy * 0.1, dz * 0.1));
+  g.add(cy(0.012, 0.15, C.dark, -0.25, y + R - 0.01, 0)); g.add(bx(0.05, 0.025, 0.03, C.white, -0.25, y + R + 0.13, 0));
+  return { g, slots: { front: V(0.66, y, 0), center: V(0, y, R + 0.01), hull: V(0.2, y + R, 0), mast: V(-0.25, y + R + 0.15, 0), bottom: V(0.3, y - R, 0.04), tail: V(-0.68, y, 0.06), prop: V(-0.9, y, 0) } };
+}
 function stewartModel() {
   const g = new THREE.Group(); g.add(cy(0.45, 0.06, C.dark)); g.add(cy(0.3, 0.05, C.orange, 0, 0.66));
   for (let i = 0; i < 6; i++) { const a = (Math.floor(i / 2) * 2 * Math.PI) / 3 + (i % 2 ? 0.3 : -0.3), b2 = (Math.floor(((i + 1) % 6) / 2) * 2 * Math.PI) / 3 + 1.05 * (i % 2 ? -1 : 1) * 0;
@@ -258,6 +287,8 @@ function makeRobot(key) {
   } else if (key === 'stewart') { ({ g, slots } = stewartModel()); }
   else if (key === 'humanoid') { ({ g, slots } = humanoidModel()); }
   else if (key === 'quadrotor') { ({ g, slots } = droneModel()); }
+  else if (key === 'quadruped') { ({ g, slots } = quadrupedModel()); }
+  else if (key === 'auv') { ({ g, slots } = auvModel()); }
   else { const a = makeAMR(0.9); g = new THREE.Group(); g.add(a); slots = { lidar: V(0.36, 0.34, 0), front: V(0.46, 0.18, 0), top: V(0, 0.35, 0), inside: V(0, 0.18, 0), wheel: V(0, 0.07, 0.3), side: V(0, 0.2, 0.32), bumper: V(0.46, 0.06, 0.1), back: V(-0.42, 0.25, 0) }; }
   g.traverse((m) => { if (m.isMesh) { m.castShadow = m.receiveShadow = true; } });
   return { g, slots };
@@ -273,6 +304,10 @@ const SLOT = {
   drone: { lidar: 'bottom', cam3d: 'front', us: 'bottom', imu: 'center', cam: 'front', prox: 'arm', gps: 'mast', ai: 'center', sbc: 'center', mcu: 'center', pcb: 'center', radio: 'center', router: 'pole', battery: 'top', esc: 'arm', heatsink: 'center', cables: 'arm',
     dc: 'motor', planet: 'motor', enc: 'motor', prop: 'prop', chassis: 'arm', enclosure: 'center', scanner: 'bottom', estop: 'desk', laptop: 'desk', pid: 'center', cyl: 'bottom' }
 };
+SLOT.quadruped = { lidar: 'front', cam3d: 'front', us: 'chest', imu: 'torso', cam: 'front', prox: 'chest', ft: 'foot', ai: 'back', sbc: 'back', mcu: 'torso', pcb: 'torso', radio: 'back', router: 'pole', battery: 'torso', driver: 'torso', heatsink: 'back', cables: 'hip',
+  dc: 'hip', planet: 'hip', enc: 'knee', fsr: 'foot', mot3: 'hip', chassis: 'torso', enclosure: 'torso', bumper: 'base', scanner: 'front', estop: 'back', laptop: 'desk', pid: 'torso', srelay: 'torso' };
+SLOT.auv = { cam3d: 'front', us: 'bottom', imu: 'center', cam: 'front', prox: 'front', gps: 'mast', ai: 'center', sbc: 'center', mcu: 'center', pcb: 'center', radio: 'mast', router: 'pole', battery: 'center', esc: 'tail', heatsink: 'center', cables: 'center',
+  dc: 'tail', planet: 'tail', enc: 'tail', prop: 'prop', chassis: 'hull', enclosure: 'hull', scanner: 'bottom', estop: 'desk', laptop: 'desk', pid: 'center', srelay: 'center' };
 SLOT.arm.srelay = 'cabinet'; SLOT.arm.jtq = 'j2'; SLOT.mobile.srelay = 'inside'; SLOT.humanoid.srelay = 'torso'; SLOT.drone.srelay = 'center';
 SLOT.cobot = SLOT.arm;
 const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dans les mains de l\'opératrice (pupitre de programmation)'), j1: L('axis 1, in the base', 'axe 1, dans la base'), j2: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), j3: L('the elbow (axis 3)', 'le coude (axe 3)'), wrist: L('the wrist', 'le poignet'), tool: L('the tool, at the end of the arm', 'l\'outil, au bout du bras'),
@@ -282,7 +317,8 @@ const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dan
   lidar: L('on top, at the front', 'en haut, à l\'avant'), front: L('on the front face', 'sur la face avant'), top: L('on the top deck', 'sur le plateau'), inside: L('inside the body', 'à l\'intérieur du châssis'), wheel: L('in the drive wheels', 'dans les roues motrices'),
   side: L('on the sides', 'sur les côtés'), bumper: L('all around, at the bottom', 'tout autour, en bas'), back: L('at the back', 'à l\'arrière'), head: L('in the head', 'dans la tête'), chest: L('in the chest', 'dans la poitrine'), torso: L('in the torso', 'dans le torse'),
   shoulder: L('in the shoulders and arms', 'dans les épaules et les bras'), hand: L('in the hands', 'dans les mains'), hip: L('in the hips and legs', 'dans les hanches et les jambes'), knee: L('in the knees', 'dans les genoux'), foot: L('under the feet', 'sous les pieds'),
-  center: L('in the centre body', 'dans le corps central'), mast: L('on the GPS mast', 'sur le mât GPS'), bottom: L('underneath', 'en dessous'), arm: L('in the arms', 'dans les bras'), motor: L('at the end of each arm', 'au bout de chaque bras'), prop: L('on top of each motor', 'sur chaque moteur') };
+  center: L('in the centre body', 'dans le corps central'), mast: L('on the GPS mast', 'sur le mât GPS'), bottom: L('underneath', 'en dessous'), arm: L('in the arms', 'dans les bras'), motor: L('at the end of each arm', 'au bout de chaque bras'), prop: L('on top of each motor', 'sur chaque moteur'),
+  tail: L('in the tail, behind the hull', 'dans la queue, derrière la coque'), hull: L('the watertight hull itself', 'la coque étanche elle-même') };
 
 // ---------------------------------------------------------------- "how it works": a few key components, laid out clearly, with big callout cards
 // [candidate ids (first one present is used), x, z on the bench, step of the loop it belongs to (0 = safety)]
@@ -295,7 +331,7 @@ const HOWSET = {
   mobile: [[['lidar'], -2.05, -1.05, 1], [['cam', 'cam3d'], -2.05, -0.3, 1], [['us'], -2.05, 0.4, 1], [['imu'], -2.05, 1.0, 1],
     [['sbc', 'ai'], -1.0, -1.0, 2], [['mcu'], -1.0, -0.2, 2], [['radio'], -1.0, 0.55, 2],
     [['battery'], 0.05, -1.0, 3], [['driver', 'esc'], 0.05, -0.15, 3],
-    [['mot3', 'dc'], 1.0, -0.75, 4], [['enc'], 1.0, -1.18, 5], [['planet'], 1.95, -0.75, 4], [['wheel', 'prop'], 1.95, 0.2, 4],
+    [['mot3', 'dc'], 1.0, -0.75, 4], [['enc'], 1.0, -1.18, 5], [['planet'], 1.95, -0.75, 4], [['wheel', 'prop', 'fsr'], 1.95, 0.2, 4],
     [['estop'], -1.0, 1.65, 0], [['bumper'], 0.05, 1.65, 0], [['scanner'], 1.0, 1.0, 0], [['srelay'], 1.95, 1.65, 0]]
 };
 const HOWTXT = {
@@ -337,6 +373,7 @@ const HOWTXT = {
   radio: [L('Wi-Fi / Bluetooth', 'Wi-Fi / Bluetooth'), L('Receives the missions from the fleet manager', 'Reçoit les missions du gestionnaire de flotte')],
   planet: [L('Gearbox', 'Réducteur'), L('Slows the motor down and makes it stronger', 'Ralentit le moteur et le rend plus fort')],
   wheel: [L('Drive wheel', 'Roue motrice'), L('Pushes on the floor: the robot moves', 'Pousse sur le sol : le robot avance')],
+  fsr: [L('Foot sensor', 'Capteur de pied'), L('Feels when the foot touches the ground', 'Sent quand le pied touche le sol')],
   robot: [L('The robot moves', 'Le robot bouge'), L('The result: a precise motion', 'Le résultat : un mouvement précis')]
 };
 
@@ -439,7 +476,7 @@ function mount(host) {
       [L('Camera on its stand', 'Caméra sur son support'), V(1.6, 1.42, -0.4)], [L('Light curtain (entrance of the cell)', 'Barrière immatérielle (entrée de la cellule)'), V(1.0, 1.0, 0.95)]]
     : [[L('Wi-Fi access point', 'Point d\'accès Wi-Fi'), V(-1.7, 1.55, -0.3)], [L('Supervision desk', 'Poste de supervision'), V(-1.6, 0.75, 0.6)]];
   // the operator, at real size next to the robot, with the teach pendant (a tablet for mobile robots)
-  const HUMAN = { six: 0.58, cobot: 0.6, scara: 0.72, delta: 0.75, gantry: 0.62, stewart: 0.7, humanoid: 0.95, quadrotor: 0.6, mobile: 1, wheels: 1, drives: 1 }[host.dataset.robot || 'six'] || 0.7;
+  const HUMAN = { six: 0.58, cobot: 0.6, scara: 0.72, delta: 0.75, gantry: 0.62, stewart: 0.7, humanoid: 0.95, quadrotor: 0.6, quadruped: 0.8, auv: 0.75, mobile: 1, wheels: 1, drives: 1 }[host.dataset.robot || 'six'] || 0.7;
   const oper = makePerson({ female: true, pendant: true, helmet: armSet }); oper.scale.setScalar(Math.min(1.25, HUMAN * robotG.scale.x)); oper.position.set(RC.x - (armSet ? 1.05 : 1.3), 0, RC.z + (armSet ? 0.3 : -0.45)); oper.rotation.y = Math.PI / 2; scene.add(oper);
   oper.updateMatrixWorld(true); const pendantW = oper.userData.pendant.getWorldPosition(V(0, 0, 0));
   const CELL = { cabinet: V(-1.6, 0.45, -0.08), panel: V(-1.6, 0.6, -0.08), desk: V(-1.6, 0.42, 0.6), conveyor: V(1.6, 0.33, 0.05), camstand: V(1.58, 1.28, -0.4), fence: V(1.0, 0.55, 0.95), pole: V(-1.7, 1.25, -0.24) };
@@ -468,7 +505,11 @@ function mount(host) {
   const HOW = (isCobot ? HOWSET.arm.concat([[['jtq'], 1.95, 1.05, 0]]) : HOWSET[isArm ? 'arm' : 'mobile']).map(([cands, x, z, step]) => { const id = cands.find((c) => objs[c]); return id ? { id, x: x * 0.74, z: z * 0.92, step } : null; }).filter(Boolean);   // kept in the middle of the bench, between the two columns of cards
   const robotAnchor = () => rcen.clone().add(V(0, rmax * 0.15, 0));
   HOW.push({ id: 'robot', step: 4, robot: true });
-  const TX = (id) => (isCobot && id === 'cabinet' ? HOWTXT.cobotcab : isCobot && id === 'drive' ? HOWTXT.cobotdrv : !isArm && id === 'enc' ? [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the wheel', 'Compte les tours de la roue')] : HOWTXT[id]);
+  const RK = host.dataset.robot, BYROBOT = {
+    quadruped: { mot3: [L('Leg motor', 'Moteur de patte'), L('Moves the hip and the knee', 'Fait bouger la hanche et le genou')], enc: [L('Encoder (in the joint)', 'Codeur (dans l\'articulation)'), L('Measures the angle of each joint', 'Mesure l\'angle de chaque articulation')] },
+    auv: { prop: [L('Thruster (motor + propeller)', 'Propulseur (moteur + hélice)'), L('Pushes the vehicle through the water', 'Pousse le véhicule dans l\'eau')], esc: [L('Motor controller', 'Contrôleur moteur'), L('Sends the current to the thruster', 'Envoie le courant au propulseur')], enc: [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the propeller', 'Compte les tours de l\'hélice')], us: [L('Sonar', 'Sonar'), L('Measures the distance with sound under water', 'Mesure la distance avec le son sous l\'eau')] }
+  };
+  const TX = (id) => ((BYROBOT[RK] || {})[id] || (isCobot && id === 'cabinet' ? HOWTXT.cobotcab : isCobot && id === 'drive' ? HOWTXT.cobotdrv : !isArm && id === 'enc' ? [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the wheel', 'Compte les tours de la roue')] : HOWTXT[id]));
   const howG = new THREE.Group(); scene.add(howG); howG.visible = false;
   const hp = (id) => { const h = HOW.find((q) => q.id === id); return h.robot ? V(RC.x, 0.012, -1.42) : V(h.x, 0.012, h.z); };
   const has = (id) => HOW.some((q) => q.id === id);
