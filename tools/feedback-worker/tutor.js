@@ -84,15 +84,30 @@ export async function tutorStatus(env, url) {
 async function* askGemini(env, system, history, question) {
   const model = env.GEMINI_MODEL || GEMINI;
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
-  const r = await fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
-    method: 'POST',
+  // a lesson explanation does not need the model's long "thinking" before it writes: ask for none (or the least),
+  // and give up on Gemini (Claude answers instead) if nothing has arrived after FIRST_WORDS_MS
+  const FIRST_WORDS_MS = 12000, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), FIRST_WORDS_MS);
+  const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
+    method: 'POST', signal: ctl.signal,
     headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000 } })
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
   });
-  if (!r.ok || !r.body) { const e = new Error(`gemini ${r.status}: ${(await r.text().catch(() => '')).slice(0, 300)}`); e.status = r.status; throw e; }
+  let r;
+  try {
+    r = await call({ thinkingBudget: 0 });                              // Flash 2.x: no thinking
+    if (r.status === 400) r = await call({ thinkingLevel: 'minimal' });  // newer Flash models: the least thinking
+    if (r.status === 400) r = await call(null);                         // the model's own default
+  } catch (e) { clearTimeout(timer); const x = new Error('gemini: no answer in time'); x.status = 'timeout'; throw x; }
+  if (!r.ok || !r.body) {
+    clearTimeout(timer);
+    const raw = await r.text().catch(() => ''); let msg = raw; try { msg = JSON.parse(raw).error.message || raw; } catch (x) { /* not JSON */ }
+    const e = new Error(`gemini ${r.status} ${msg.slice(0, 300)}`); e.status = r.status; throw e;
+  }
   const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', any = false, why = '';
   for (;;) {
-    const { done, value } = await rd.read(); if (done) break;
+    let step;
+    try { step = await rd.read(); } catch (e) { clearTimeout(timer); const x = new Error('gemini: no answer in time'); x.status = any ? 'cut' : 'timeout'; throw x; }
+    const { done, value } = step; if (done) break;
     buf += dec.decode(value, { stream: true });
     let i;
     while ((i = buf.indexOf('\n')) >= 0) {
@@ -102,9 +117,10 @@ async function* askGemini(env, system, history, question) {
       const c = j.candidates && j.candidates[0];
       if (c && c.finishReason) why = c.finishReason;
       const s = ((c && c.content && c.content.parts) || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('');
-      if (s) { any = true; yield s; }
+      if (s) { if (!any) clearTimeout(timer); any = true; yield s; }
     }
   }
+  clearTimeout(timer);
   if (!any) { const e = new Error('gemini: empty answer ' + why); e.status = why === 'SAFETY' ? 'refusal' : 'empty'; throw e; }
   if (why === 'MAX_TOKENS') yield ' …';
 }
@@ -141,14 +157,16 @@ export async function tutor(req, env, url) {
   const enc = new TextEncoder();
   const body = new ReadableStream({
     async start(ctrl) {
-      let started = false;
+      let started = false, gfail = '';
       // the first piece says which model answers ([[m:gemini]] or [[m:claude]]): the page shows it only in its test mode
-      const put = (s, who) => { if (!started) ctrl.enqueue(enc.encode(`[[m:${who}]]`)); started = true; ctrl.enqueue(enc.encode(s)); };
+      // (with Claude, also why Gemini did not answer: the page shows it in its test mode too)
+      const put = (s, who) => { if (!started) ctrl.enqueue(enc.encode(`[[m:${who}${who === 'claude' && gfail ? '|' + gfail : ''}]]`)); started = true; ctrl.enqueue(enc.encode(s)); };
       // 1. Gemini, the main model
       if (env.GEMINI_API_KEY) {
         try { for await (const s of askGemini(env, system, history, question)) put(s, 'gemini'); ctrl.close(); return; }
         catch (e) {
           console.log('tutor: gemini failed', e && e.status, e && e.message);
+          gfail = String((e && e.message) || 'error').replace(/^gemini:? ?/, '').replace(/[\[\]|\n\r]+/g, ' ').slice(0, 140);
           if (started) { ctrl.enqueue(enc.encode('\n\n[[error]]')); ctrl.close(); return; }   // it stopped in the middle: keep what it wrote
         }
       }

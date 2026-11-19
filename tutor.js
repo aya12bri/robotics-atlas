@@ -114,10 +114,12 @@
       bubbleMsg('user', '<p>' + esc(show || q) + '</p>');
       var out = bubbleMsg('assistant', '<span class="rb-dots" aria-label="' + esc(L('The tutor is writing', 'Le tuteur écrit')) + '"><i></i><i></i><i></i></span>');
       var past = hist.slice(-6).map(function (m) { return { role: m.role, text: m.text }; });
-      var acc = '', model = '';
+      var acc = '', model = '', why = '', t0 = Date.now(), first = 0;
       var done = function (err, why) {
         busy = false; send.disabled = false;
         if (err) { out.innerHTML = '<p class="rb-err">' + esc(fail(err)) + (why ? ' <small>(' + esc(why) + ')</small>' : '') + '</p>'; return; }
+        if (model && first) model += ' · ' + ((first - t0) / 1000).toFixed(1).replace('.', FR() ? ',' : '.') + ' s';   // time to the first words
+        if (model && why) model += ' · Gemini : ' + why;
         if (DEBUG && model) out.insertAdjacentHTML('beforeend', '<span class="rb-model">' + esc(model) + '</span>');
         hist.push({ role: 'user', text: q, show: show }, { role: 'assistant', text: acc, model: model }); store(KEY(art), JSON.stringify(hist.slice(-20)));
       };
@@ -131,15 +133,16 @@
           var pump = function () {
             return rd.read().then(function (c) {
               if (!c.done) acc += dec.decode(c.value, { stream: true });
-              var mm = /^\[\[m:(\w+)\]\]/.exec(acc);                     // the server says first which model answers
-              if (mm) { model = mm[1] === 'gemini' ? 'Gemini' : 'Claude'; acc = acc.slice(mm[0].length); }
+              var mm = /^\[\[m:(\w+)(?:\|([^\]]*))?\]\]/.exec(acc);     // the server says first which model answers (and why not Gemini)
+              if (mm) { model = mm[1] === 'gemini' ? 'Gemini' : 'Claude'; why = mm[2] || ''; acc = acc.slice(mm[0].length); }
               if (c.done) {
                 if (/\[\[refusal\]\]\s*$/.test(acc)) return done('refusal');
                 var em = /\[\[error ?(\d*)\]\]\s*$/.exec(acc);
                 if (em && acc.slice(0, em.index).trim().length < 2) return done('down', 'API ' + (em[1] || '?'));
                 acc = acc.replace(/\s*\[\[error ?\d*\]\]\s*$/, ' …'); out.innerHTML = md(acc); return done();
               }
-              if (/^\[\[m?:?\w*$/.test(acc)) return pump();                 // the model tag is not complete yet
+              if (/^\[\[(m(:[^\]]*)?)?$/.test(acc) || /^\[\[m:[^\]]*\]$/.test(acc)) return pump();                 // the model tag is not complete yet
+              if (!first && clean(acc).trim()) first = Date.now();
               var near = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
               out.innerHTML = md(clean(acc)) || out.innerHTML;
               if (near) log.scrollTop = log.scrollHeight;
