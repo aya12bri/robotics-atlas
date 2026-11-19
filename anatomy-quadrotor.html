@@ -33,7 +33,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="quadrotor" class="anatbox">
-    <h1>Drone <span class="h1tag">3D anatomy</span></h1>
+    <h1>Drone <span class="h1tag">4 rotors</span></h1>
     <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
     <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
     <div class="andef"><b>Definition</b><p>A <strong>quadrotor</strong> is a flying robot lifted by four propellers. Two turn clockwise and two counter-clockwise so that their reaction torques cancel. It has only four motors for six degrees of freedom (it is underactuated): to move sideways it must first tilt. A flight controller with an inertial unit keeps it stable hundreds of times per second.</p></div>
@@ -56,7 +56,19 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Sensors and payload</b></button><p>GPS and compass for position, barometer for altitude, and here a camera on a gimbal. Other drones carry lidars, sprayers or packages.</p></div>
       </div>
     </div>
-    <h2>What is inside each joint?</h2>
+<h2 class="part-kin">Kinematics and dynamics: 6 directions, 4 motors</h2>
+    <p>A drone moves in 6 directions (3 positions, 3 angles) but has only 4 motors: it is underactuated. It cannot push sideways directly: to go forward it first tilts, so that part of the thrust points forward. That is why its position and its attitude are controlled in two nested loops.</p>
+    <figure class="figure"><svg viewBox="0 0 360 200" class="fig" role="img" aria-hidden="true">
+        <line x1="60" y1="100" x2="300" y2="100" stroke="#1d2633" stroke-width="6" stroke-linecap="round"/><rect x="160" y="88" width="40" height="24" rx="6" fill="#2f6bff"/>
+        <ellipse cx="60" cy="90" rx="34" ry="6" fill="#8a99ae" opacity="0.6"/><ellipse cx="300" cy="90" rx="34" ry="6" fill="#8a99ae" opacity="0.6"/>
+        <line x1="60" y1="84" x2="60" y2="30" stroke="#ff9f43" stroke-width="3"/><polygon points="60,22 54,34 66,34" fill="#ff9f43"/><text x="70" y="40" fill="#ff9f43" font-size="15">T1</text>
+        <line x1="300" y1="84" x2="300" y2="30" stroke="#ff9f43" stroke-width="3"/><polygon points="300,22 294,34 306,34" fill="#ff9f43"/><text x="310" y="40" fill="#ff9f43" font-size="15">T3</text>
+        <line x1="180" y1="112" x2="180" y2="180" stroke="#e5484d" stroke-width="3"/><polygon points="180,188 174,176 186,176" fill="#e5484d"/><text x="190" y="176" fill="#e5484d" font-size="15">m g</text></svg></figure>
+    <p class="eq">Thrust of a propeller: T = k ω² &emsp; Hover: T₁ + T₂ + T₃ + T₄ = m g</p>
+    <p class="eq">Roll torque: τ_x = ℓ (T₄ − T₂) &emsp; Pitch: τ_y = ℓ (T₁ − T₃) &emsp; Yaw: τ_z = c (T₁ − T₂ + T₃ − T₄)</p>
+    <p>The mixer turns the 4 commands of the pilot or the autopilot (total thrust, roll, pitch, yaw) into the 4 motor speeds. Two propellers turn clockwise and two counter-clockwise, so their reaction torques cancel; making them unequal turns the drone on itself.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Loop</th><th class="left">Measures</th><th class="left">Commands</th><th class="left">Rate</th></tr><tr><td class="left">Attitude (inner)</td><td class="left">angles from the IMU</td><td class="left">torques → motors</td><td class="left">500 Hz – 8 kHz</td></tr><tr><td class="left">Position (outer)</td><td class="left">GNSS, camera, barometer</td><td class="left">tilt angles to reach</td><td class="left">10 – 50 Hz</td></tr></table></div>
+    <h2 class="part-in">What is inside each joint?</h2>
     <ul><li><strong>Flight control loops</strong>: an inner loop on the angular rates (about 1 kHz), then the attitude loop, then position and altitude; it is a cascade of PID loops like the ones of the control course.</li><li><strong>Mixer</strong>: the controller asks for a total thrust and three torques (roll, pitch, yaw); the mixer turns them into the four motor thrusts. Try the failure button: with one motor lost, three motors cannot give the four wanted values and the drone tumbles.</li><li><strong>State estimation</strong>: the IMU drifts, so the attitude comes from a filter (complementary or Kalman) that fuses the gyroscope, the accelerometer, the compass, and the GPS and barometer for position (perception course).</li><li><strong>Safety</strong>: return-to-home, geofences, failsafe when the radio link is lost, and the rules of the country for flying drones.</li></ul>
     <p>The drone really flies: a rigid-body simulation (mass 1.2 kg, thrust-to-weight ratio 2) with a flight controller and a mixer that turns your four commands into the four motor thrusts. Roll and pitch are target angles: to go sideways the drone has to tilt first, because it is underactuated (6 degrees of freedom, 4 motors). The two blue propellers turn one way and the two white ones the other way, so that their reaction torques cancel; the yaw command makes them unequal. The model is simplified.</p>
     <h2>All the components, from A to Z</h2>
@@ -68,5 +80,9 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Where are drones used?</h2>
+    <p>A drone carries a camera or a sensor high up, quickly and cheaply. Most professional drones fly a mission planned in advance, with a pilot who watches and can take over.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Where</th><th class="left">What it does there</th><th class="left">Examples</th></tr><tr><td class="left">Inspection</td><td class="left">bridges, power lines, wind turbines, roofs</td><td class="left">DJI Matrice, Skydio X10</td></tr><tr><td class="left">Mapping and surveying</td><td class="left">3D models of land and buildings (photogrammetry, lidar)</td><td class="left">RTK drones</td></tr><tr><td class="left">Agriculture</td><td class="left">watch the crops, spray exactly where needed</td><td class="left">DJI Agras</td></tr><tr><td class="left">Delivery</td><td class="left">medicines, blood, small parcels</td><td class="left">Zipline, Wing</td></tr><tr><td class="left">Rescue and film</td><td class="left">search for people with a thermal camera, film from the sky</td><td class="left">fire brigades, film crews</td></tr></table></div>
+    <ul><li><strong>Strengths</strong>: fast, sees from above, hovers in place, cheap to buy and to fly.</li><li><strong>Weaknesses</strong>: 20 to 40 minutes of flight, sensitive to wind and rain, strict flight rules.</li></ul>
   </body>
 </html>
