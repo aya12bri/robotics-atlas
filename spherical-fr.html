@@ -104,6 +104,15 @@ Modèle inverse (MGI) :  q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))
     </svg>
     <p>L'outil reste entre deux sphères centrées sur l'épaule (rayons q3 min et q3 max), entre l'inclinaison la plus basse et la plus haute de q2 : une <strong>coque sphérique épaisse</strong> coupée par deux cônes. Le volume croît comme le cube de la portée : un long bras télescopique couvre un espace énorme, mais chaque millimètre de jeu à l'épaule devient une grosse erreur à l'outil.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="spherical"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Où utilise-t-on un robot sphérique ?</h2>
       <p>Historiquement : soudage par points et fonderie sous pression (Unimate chez General Motors, 1961), forge, chargement de presses et de machines-outils. Aujourd'hui la structure survit dans les manipulateurs hydrauliques lourds, certains robots pédagogiques, et le pointage de télescopes, d'antennes, de caméras et de bras de radiothérapie (deux angles et une distance).</p>
@@ -113,10 +122,6 @@ Modèle inverse (MGI) :  q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="spherical"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -142,6 +147,7 @@ Modèle inverse (MGI) :  q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))
     <div class="opsdemo" data-robot="spherical"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
     <p class="try"><a href="learn-parallel-fr.html#l1">Cours : espace articulaire et espace opérationnel →</a></p>
 

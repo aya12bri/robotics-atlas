@@ -295,7 +295,7 @@ body::after { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 1
   .site-nav { grid-template-columns: auto 1fr; padding: 0.4rem 0.5rem 0.4rem 1rem; border-radius: 26px; }
   .brand { justify-self: start; }
   .nav-toggle { display: grid; }
-  .nav-r .dd { display: none; }
+  .nav-r .dd { display: none; } .nav-r .me-dd { display: flex; }
   .nav-l { display: none; grid-column: 1 / -1; grid-row: 2; flex-direction: column; align-items: stretch; padding: 0.3rem 0 0.4rem; }
   .site-nav.open .nav-l { display: flex; }
   .nav-l > a { padding: 0.65rem 0.9rem; }
@@ -1795,3 +1795,27 @@ h1 .h1tag { display: inline-block; vertical-align: middle; margin-left: 0.5rem; 
 .sysdemo.sys-tight .sys-hcard span { display: none; }
 .sysdemo.sys-tight .sys-hcard.on span, .sysdemo.sys-tight .sys-hcard.sel span, .sysdemo.sys-tight .sys-hcard:hover span { display: block; }
 @media (max-width: 1000px) { .sysdemo.sys-how-on .sys-flow { width: calc(100% - 20px); } }
+
+/* the list of courses, grouped by the six levels of the roadmap; each card shows its time and what to know before */
+.courses .courses-lv { grid-column: 1 / -1; margin: 0.6rem 0 -0.2rem; font: 600 0.78rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.courses .courses-lv:first-child { margin-top: 0; }
+.course .cmeta { display: block; margin-top: 0.25rem; font: 0.74rem var(--mono); color: var(--muted); }
+nav.courses.fold:not(.open) .courses-lv { display: none; }
+nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
+
+/* practice.html: every hands-on tool, as cards with an icon, the level and the time */
+.pr-group { margin: 1.4rem 0 2rem; } .pr-group > p { color: var(--muted); margin-top: -0.3rem; }
+.pr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 0.9rem; }
+.pr-card { display: flex; gap: 0.9rem; align-items: flex-start; padding: 1rem 1.1rem; border-radius: 16px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--text); text-decoration: none; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; }
+.pr-card:hover { transform: translateY(-2px); border-color: var(--c); box-shadow: 0 14px 30px -20px var(--c); }
+.pr-ic { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; color: #fff; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 80%, #fff), var(--c)); }
+.pr-ic svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pr-tx { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; } .pr-tx > b { font-family: var(--display); font-stretch: 85%; font-size: 1.12rem; }
+.pr-tx > span { color: var(--muted); font-size: 0.88rem; line-height: 1.45; } .pr-tx small { display: flex; align-items: center; gap: 0.35rem; font: 0.75rem var(--mono); color: var(--muted); } .pr-tx small em { font-style: normal; }
+.pr-lv { display: inline-flex; gap: 2px; } .pr-lv b { width: 5px; height: 10px; border-radius: 2px; background: color-mix(in srgb, var(--text) 22%, transparent); }
+.pr-lv.l1 b:nth-child(-n+1), .pr-lv.l2 b:nth-child(-n+2), .pr-lv.l3 b { background: var(--c); }
+/* "my space": a button at the top right with its own menu */
+.me-dd .dd-menu { min-width: 16rem; }
+.me-menu .me-prog { display: block; padding: 0 0.8rem 0.4rem; font: 0.78rem var(--mono); color: var(--accent); }
+.me-menu .dd-sep:first-child { margin-top: 0.2rem; border-top: 0; padding-top: 0.2rem; }
+@media (max-width: 900px) { .nav-r .me-dd { position: static; } .me-dd .dd-menu { left: 0.6rem; right: 0.6rem; min-width: 0; } }

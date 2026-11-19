@@ -25,6 +25,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
     </style>
@@ -82,13 +83,53 @@
     <pre class="matrix" id="matrix"></pre>
     <p>La dernière colonne est la position de l'outil dans le repère de base {0}.</p>
 
-    <p class="try"><a href="anatomy-gantry-fr.html">Voir en 3D, avec l'intérieur du robot →</a></p>
-
     <h2>Cinématique directe d'un robot cartésien</h2>
     <pre class="matrix">x0 = q3 + 0.15      (x0 pointe vers le BAS)
 y0 = q2             (en travers de la machine)
 z0 = q1             (le long des grands rails)</pre>
     <p>C'est la cinématique la plus simple de tous les robots : <strong>chaque liaison est directement une coordonnée</strong>. C'est pourquoi les robots cartésiens sont si faciles à programmer et si précis. Le repère {0} est placé de façon que son axe z suive le premier rail, d'où z0 = q1.</p>
+
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomie en 3D : chaque articulation et chaque pièce</h2>
+    <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
+    <div class="andef"><b>Définition</b><p>Un <strong>robot cartésien</strong> (portique) déplace son outil le long de trois axes rectilignes perpendiculaires, X, Y et Z, chacun étant une liaison glissière (prismatique). Sa cinématique est la plus simple de tous les robots : la position de l'outil est directement la position des trois axes. Il est rigide, précis et peut être très grand : imprimantes 3D, machines à commande numérique, palettisation.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">Rayons X (intérieur)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animer l'axe choisi</button>
+      <button id="anSpin" type="button" aria-pressed="false">Rotation automatique</button>
+      <button id="anWrist" type="button">Coin opposé de l'espace de travail</button>
+      <button id="anReset" type="button">Réinitialiser</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="gantry"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Axe X (le long des rails)</b></button><p>Tout le pont coulisse le long de deux rails parallèles, entraîné par un moteur et une courroie (ou une crémaillère). Une liaison prismatique (P).</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Axe Y (en travers)</b></button><p>Le chariot coulisse le long de la poutre du pont, en travers des rails.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Axe Z (vers le bas)</b></button><p>Une tige verticale, entraînée par une vis à billes, descend vers la pièce. L'outil est à son extrémité.</p><label class="ansl"><input type="range" step="1" aria-label="3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Bâti et rails (fixes)</b></button><p>Les montants et les rails portent tout. Leur rigidité décide de la précision. Le bâti est fixé au sol.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Pince</b></button><p>L'outil au bout de l'axe Z. Un robot cartésien ne peut pas l'orienter, sauf si l'on ajoute un quatrième axe rotatif.</p></div>
+      </div>
+    </div>
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Trois moteurs</strong> (servo ou pas à pas), un par axe, avec des <strong>courroies, une crémaillère ou des vis à billes</strong> qui transforment la rotation en mouvement droit (vus aux rayons X).</li><li><strong>Guidages linéaires</strong> : des rails avec des patins à recirculation de billes qui portent la charge et donnent un mouvement droit et rigide.</li><li><strong>Fins de course et prise d'origine</strong> : les codeurs incrémentaux ne connaissent pas la position à la mise sous tension, donc chaque axe va d'abord sur un contacteur.</li><li><strong>Chaînes porte-câbles</strong> qui guident les câbles des axes mobiles sans les casser.</li><li><strong>Contrôleur</strong> : souvent un automate ou une commande numérique dans une armoire à côté du bâti ; la même machine devient une imprimante 3D ou une fraiseuse quand l'outil change.</li></ul>
+    <p>Les trois courses sont en cm comme sur la page du robot cartésien : la position de l'outil est simplement (q1, q2, hauteur). Les trois liaisons sont prismatiques (P) : il n'y a aucun angle. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    <h2>Tous les composants, de A à Z</h2>
+    <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
+    <div class="sysdemo" data-robot="gantry" data-set="arm"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="gantry"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
 
     <div class="robot">
       <h2>Où utilise-t-on un robot cartésien ?</h2>
@@ -106,10 +147,6 @@ z0 = q1             (le long des grands rails)</pre>
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="gantry"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -135,6 +172,7 @@ z0 = q1             (le long des grands rails)</pre>
     <div class="opsdemo" data-robot="gantry"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

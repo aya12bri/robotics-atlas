@@ -24,6 +24,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
       .ik-box input[type=number] {
@@ -100,8 +101,6 @@
     </p>
     <p id="readout"></p>
 
-    <p class="try"><a href="anatomy-mobile.html">See it in 3D, with the inside of the robot →</a></p>
-
     <h2>Kinematic model</h2>
     <pre class="matrix">v = (vR + vL) / 2                  speed of the robot (m/s)
 ω = (vR − vL) / L                  turning speed (rad/s),  L = 0.40 m = distance between the wheels
@@ -137,6 +136,49 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <p>Where does this model come from, and what about tricycles, cars and omnidirectional robots? The course on wheeled mobile robots derives it from the constraints of the wheels, step by step, with a simulator for each drive and a controller to try.</p>
     <p class="try"><a href="learn-mobile.html">Take the course: wheeled mobile robots →</a></p>
 
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomy in 3D: every joint and every part</h2>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>differential-drive mobile robot</strong> moves on two driven wheels placed on the same axle, with a free castor for balance. It goes straight when the two wheels turn at the same speed, turns when they differ, and spins on the spot when they are opposite. Simple and cheap, it is the base of vacuum robots and of most warehouse robots (AMR).</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Spin on the spot</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="mobile"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Left wheel and motor</b></button><p>A gear motor turns the left wheel. The slider sets its speed (positive = forward). Its encoder measures the real speed.</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Right wheel and motor</b></button><p>Same on the right. If the right wheel is faster, the robot turns left; with opposite speeds it spins on the spot.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Caster wheel</b></button><p>A free ball or swivel wheel with no motor: a third support point so the robot does not tip over.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Lidar and sensors</b></button><p>The lidar (a rotating laser) measures distances all around to see obstacles and build a map. The front bumper and an IMU (gyroscope) complete the sensors.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Battery</b></button><p>The heaviest part: it sits low, between the wheels, to keep the robot stable. Its capacity sets the autonomy. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Controller</b></button><p>A microcontroller runs the fast loops (PID on the wheel speeds, using the encoders) and a small computer runs navigation and mapping. Seen in X-ray.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Two gear motors with encoders</strong>: the encoders measure each wheel speed for the PID loops and for the odometry (which drifts, see the course on perception).</li><li><strong>Caster</strong>: a free wheel, the third point of support.</li><li><strong>Battery</strong> placed low, and <strong>motor drivers</strong> (H-bridges) that turn the controller commands into motor current.</li><li><strong>Small computer</strong> (single-board) for navigation, mapping and communication, for example with ROS 2.</li><li><strong>Sensors</strong>: lidar for obstacles and maps, bumpers and cliff sensors for safety, IMU for the heading.</li></ul>
+    <p>The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="mobile" data-set="mobile"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="mobile"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Where is a mobile robot used?</h2>
       <p><strong>Warehouses and factories</strong> (AMR/AGV robots that carry boxes, shelves and pallets),
@@ -158,10 +200,6 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="mobile"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -187,6 +225,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <div class="opsdemo" data-robot="mobile"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

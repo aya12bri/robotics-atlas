@@ -13,9 +13,10 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright');
 const hasTwin = (f) => /^[a-z0-9-]+\.html$/.test(f) && !/^(404|offline)\.html$/.test(f) && !/-fr\.html$/.test(f);
-const pages = fs.readdirSync(root).filter(hasTwin).sort();
+const isStub = (f) => fs.readFileSync(path.join(root, f), 'utf8').includes('http-equiv="refresh"');   // old addresses that lead to another page (they have their own French twin)
+const all = fs.readdirSync(root).filter(hasTwin).sort(), pages = all.filter((f) => !isStub(f));
 // old twins of pages that no longer exist
-fs.readdirSync(root).filter((f) => /-fr\.html$/.test(f) && !pages.includes(f.replace(/-fr\.html$/, '.html'))).forEach((f) => { fs.unlinkSync(path.join(root, f)); console.log('removed', f); });
+fs.readdirSync(root).filter((f) => /-fr\.html$/.test(f) && !all.includes(f.replace(/-fr\.html$/, '.html'))).forEach((f) => { fs.unlinkSync(path.join(root, f)); console.log('removed', f); });
 
 // the scripts of the page are switched off while it is translated (only nav.js runs), and switched back on after
 const OFF = 'text/ra-off';

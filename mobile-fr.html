@@ -25,6 +25,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
       .ik-box input[type=number] {
@@ -92,8 +93,6 @@
     <p>Les deux petits rectangles sont les roues, et les flèches dessus montrent la vitesse de chaque roue. <span class="legend-x">x<sub>R</sub> rouge</span> pointe vers l'avant et <span class="legend-y">y<sub>R</sub> vert</span> pointe vers la gauche du robot. La ligne orange est le chemin parcouru. Le <strong>CIR</strong> (centre instantané de rotation) est le point autour duquel le robot tourne en ce moment.</p>
     <p id="readout"></p>
 
-    <p class="try"><a href="anatomy-mobile-fr.html">Voir en 3D, avec l'intérieur du robot →</a></p>
-
     <h2>Modèle cinématique</h2>
     <pre class="matrix">v = (vR + vL) / 2                  vitesse du robot (m/s)
 ω = (vR − vL) / L                  vitesse de rotation (rad/s),  L = 0,40 m = distance entre les roues
@@ -125,6 +124,49 @@ Inverse :   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <p>D'où vient ce modèle, et que dire des tricycles, des voitures et des robots omnidirectionnels ? Le cours sur les robots mobiles à roues le déduit des contraintes des roues, pas à pas, avec un simulateur pour chaque motorisation et un contrôleur à essayer.</p>
     <p class="try"><a href="learn-mobile-fr.html">Suivre le cours : robots mobiles à roues →</a></p>
 
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomie en 3D : chaque articulation et chaque pièce</h2>
+    <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
+    <div class="andef"><b>Définition</b><p>Un <strong>robot mobile à entraînement différentiel</strong> se déplace sur deux roues motrices placées sur le même axe, avec une roue folle pour l'équilibre. Il va droit quand les deux roues tournent à la même vitesse, tourne quand elles diffèrent, et pivote sur place quand elles sont opposées. Simple et bon marché, c'est la base des robots aspirateurs et de la plupart des robots d'entrepôt (AMR).</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">Rayons X (intérieur)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animer l'axe choisi</button>
+      <button id="anSpin" type="button" aria-pressed="false">Rotation automatique</button>
+      <button id="anWrist" type="button">Tourner sur place</button>
+      <button id="anReset" type="button">Réinitialiser</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="mobile"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Roue gauche et moteur</b></button><p>Un motoréducteur fait tourner la roue gauche. Le curseur règle sa vitesse (positif = vers l'avant). Son codeur mesure la vitesse réelle.</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Roue droite et moteur</b></button><p>Pareil à droite. Si la roue droite est plus rapide, le robot tourne à gauche ; avec des vitesses opposées il tourne sur place.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Roue folle</b></button><p>Une bille ou une roue pivotante libre, sans moteur : un troisième point d'appui pour que le robot ne bascule pas.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Lidar et capteurs</b></button><p>Le lidar (un laser rotatif) mesure les distances tout autour pour voir les obstacles et construire une carte. Le pare-chocs avant et une centrale inertielle (gyroscope) complètent les capteurs.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Batterie</b></button><p>La partie la plus lourde : elle est placée bas, entre les roues, pour garder le robot stable. Sa capacité fixe l'autonomie. Visible aux rayons X.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Contrôleur</b></button><p>Un microcontrôleur exécute les boucles rapides (PID sur les vitesses des roues, avec les codeurs) et un petit ordinateur exécute la navigation et la cartographie. Visible aux rayons X.</p></div>
+      </div>
+    </div>
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Deux motoréducteurs avec codeurs</strong> : les codeurs mesurent la vitesse de chaque roue pour les boucles PID et pour l'odométrie (qui dérive, voir le cours sur la perception).</li><li><strong>Roue folle</strong> : une roue libre, le troisième point d'appui.</li><li><strong>Batterie</strong> placée bas, et <strong>variateurs de moteurs</strong> (ponts en H) qui transforment les ordres du contrôleur en courant moteur.</li><li><strong>Petit ordinateur</strong> (monocarte) pour la navigation, la cartographie et la communication, par exemple avec ROS 2.</li><li><strong>Capteurs</strong> : lidar pour les obstacles et les cartes, pare-chocs et capteurs de vide pour la sécurité, centrale inertielle pour le cap.</li></ul>
+    <p>Les vitesses des roues sont en rad/s : v = r (ωG + ωD) / 2 et ω = r (ωD − ωG) / L, avec r = 0,07 m et L = 0,40 m comme sur la page du robot mobile. La ligne orange est le chemin parcouru par le robot (odométrie). Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    <h2>Tous les composants, de A à Z</h2>
+    <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
+    <div class="sysdemo" data-robot="mobile" data-set="mobile"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="mobile"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Où utilise-t-on un robot mobile ?</h2>
       <p><strong>Entrepôts et usines</strong> (robots AMR/AGV qui transportent des caisses, des étagères et des palettes), <strong>hôpitaux</strong> (livraison de repas et de médicaments), <strong>nettoyage</strong> (aspirateurs et robots laveurs de sol), <strong>inspection et sécurité</strong>, <strong>agriculture</strong> et <strong>livraison</strong> sur les trottoirs.</p>
@@ -140,10 +182,6 @@ Inverse :   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="mobile"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -169,6 +207,7 @@ Inverse :   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <div class="opsdemo" data-robot="mobile"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

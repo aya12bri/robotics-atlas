@@ -12,7 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 
 // pages in the order results of equal score are shown; the 404 page is not indexed
-const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && !f.endsWith('-fr.html') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'exam.html' && f !== 'sandbox.html' && f !== 'projects.html' && f !== 'review.html' && f !== 'about.html' && f !== 'offline.html')
+const PAGES = fs.readdirSync(root).filter((f) => f.endsWith('.html') && !f.endsWith('-fr.html') && !fs.readFileSync(path.join(root, f), 'utf8').includes('http-equiv="refresh"') && f !== '404.html' && f !== 'certificate.html' && f !== 'glossary.html' && f !== 'revision.html' && f !== 'sensors.html' && f !== 'exam.html' && f !== 'sandbox.html' && f !== 'projects.html' && f !== 'review.html' && f !== 'about.html' && f !== 'offline.html')
   .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 function rank(f) { return f === 'index.html' ? 0 : f.startsWith('learn') ? 1 : f.startsWith('anatomy') ? 3 : 2; }
 

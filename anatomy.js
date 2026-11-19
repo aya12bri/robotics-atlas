@@ -6,7 +6,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const FR = (window.RA && RA.lang) === 'fr', L = (en, fr) => (FR ? fr : en);
 const D2R = Math.PI / 180;
-const KIND = document.body.dataset.robot || 'six';
+const KIND = (document.getElementById('anatView') || document.body).dataset.robot || document.body.dataset.robot || 'six';
 const ALLCOL = ['#2f6bff', '#2e9e5b', '#ff9f43', '#8a5cf6', '#ff5a5f', '#1fb5c9'];
 const CFG = {
   six: { n: 6, col: ALLCOL, lim: [[-170, 170], [-100, 100], [-60, 140], [-180, 180], [-115, 115], [-180, 180]], home: [0, 30, 40, 0, -90, 0], unit: ['°', '°', '°', '°', '°', '°'],
@@ -936,15 +936,15 @@ function setXray(on) {
   xray = on; shells.forEach((m) => { m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; });
   scene.traverse((o) => { if (o.isMesh && shells.indexOf(o.material) >= 0) o.castShadow = !on; });
   inner.forEach((m) => { m.visible = on; }); light();
-  $('xrayBtn').classList.toggle('on', on); $('xrayBtn').setAttribute('aria-pressed', on);
+  $('anXray').classList.toggle('on', on); $('anXray').setAttribute('aria-pressed', on);
 }
-function syncBtn() { $('playBtn').classList.toggle('on', play); $('playBtn').setAttribute('aria-pressed', play); $('spinBtn').classList.toggle('on', spin); $('spinBtn').setAttribute('aria-pressed', spin); }
+function syncBtn() { $('anPlay').classList.toggle('on', play); $('anPlay').setAttribute('aria-pressed', play); $('anSpin').classList.toggle('on', spin); $('anSpin').setAttribute('aria-pressed', spin); }
 function setQ(i, v) { q[i] = v; if (sliders[i]) { sliders[i].value = v; sliders[i]._show(); } }
-$('xrayBtn').addEventListener('click', () => setXray(!xray));
-$('spinBtn').addEventListener('click', () => { spin = !spin; syncBtn(); });
-$('playBtn').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn && !CFG.panel && !CFG.cmd) select(0); syncBtn(); });
-$('resetBtn').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
-$('wristBtn').addEventListener('click', () => { if (pose.special) { pose.special(); return; } const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel && !CFG.cmd) select(sp[0][0]); play = false; syncBtn(); });
+$('anXray').addEventListener('click', () => setXray(!xray));
+$('anSpin').addEventListener('click', () => { spin = !spin; syncBtn(); });
+$('anPlay').addEventListener('click', () => { play = !play; t0 = performance.now(); if (play && sel < 0 && !CFG.playFn && !CFG.panel && !CFG.cmd) select(0); syncBtn(); });
+$('anReset').addEventListener('click', () => { CFG.home.forEach((v, i) => setQ(i, v)); if (pose.reset) pose.reset(); pose(); play = false; syncBtn(); camera.position.set(...CFG.cam); orbit.target.set(...CFG.target); });
+$('anWrist').addEventListener('click', () => { if (pose.special) { pose.special(); return; } const sp = Array.isArray(CFG.special[0]) ? CFG.special : [CFG.special]; sp.forEach(([i, v]) => setQ(i, v)); pose(); if (!CFG.panel && !CFG.cmd) select(sp[0][0]); play = false; syncBtn(); });
 
 // numbered tags sit on their part; when several land close together on screen they are pushed apart and joined to their part by a thin line
 const leaders = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

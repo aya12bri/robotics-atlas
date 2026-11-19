@@ -24,6 +24,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
       select, .xyz input {
@@ -163,8 +164,6 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
        That is why a fourth motor, a telescopic shaft inside one of the legs, is added when the product must be turned
        (the "tool rotation" slider).</p>
 
-    <p class="try"><a href="anatomy-delta.html">See it in 3D, with the inside of the robot →</a></p>
-
     <h2>Serial robot or parallel robot?</h2>
     <table class="dh">
       <tr><th></th><th>Serial (SCARA, 6-axis, cobot)</th><th>Parallel (Delta)</th></tr>
@@ -177,6 +176,48 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       <tr><td>Tool orientation</td><td>Free (6 axes)</td><td>Fixed, only 1 optional rotation</td></tr>
       <tr><td>Kinematics</td><td>Inverse: usually hard</td><td>Inverse: easy, forward: needs the 3 spheres</td></tr>
     </table>
+
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomy in 3D: every joint and every part</h2>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>Delta robot</strong> is a parallel robot: three arms driven by motors fixed on the base are linked to one small platform by parallelograms, which keep the platform always horizontal. Because the motors do not move, the moving parts are very light and the robot is extremely fast. It is used for high-speed pick and place of light objects (food, pharmacy, electronics).</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Centre the effector (equal angles)</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="delta"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Arm 1 (motor)</b></button><p>The motor, fixed on the top plate, swings the upper arm up and down. All three motors are fixed on the base: the moving parts are very light, which is why the Delta is so fast.</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Arm 2 (motor)</b></button><p>Same as arm 1, 120° further around the base. The three legs are solved independently.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Arm 3 (motor)</b></button><p>Same, at 240°. When the three motors turn together by the same angle, the effector goes straight up or down.</p><label class="ansl"><input type="range" step="1" aria-label="3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Parallelograms (passive)</b></button><p>Two parallel rods per arm, with ball joints at both ends. They keep the effector parallel to the top plate: it never tilts. These joints have no motor.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Effector</b></button><p>The small moving platform with the tool (here a suction cup). It has 3 degrees of freedom: x, y and z. An optional fourth motor in the centre can turn the tool.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Three servo motors with gearboxes</strong> on the top plate: they are fixed, so only the light arms move.</li><li><strong>Carbon-fibre arms and rods</strong>: very light, so accelerations of several g are possible and more than 100 picks per minute.</li><li><strong>Ball joints</strong> at the ends of the rods, held by springs: no play, so the effector stays rigid.</li><li><strong>Central telescopic shaft</strong> (optional, seen in X-ray): a fourth axis that turns the tool, driven by a motor on the top plate.</li><li><strong>Controller and camera</strong>: usually a vision system above the conveyor tells the robot where each product is.</li></ul>
+    <p>The motor angles θ are measured as on the Delta page: 0° when the upper arm is horizontal, positive downward. The effector position is computed live from the three angles (forward kinematics). The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="delta" data-set="arm"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="delta"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
 
     <div class="robot">
       <h2>Where is a Delta robot used?</h2>
@@ -199,10 +240,6 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="delta"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -228,6 +265,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
     <div class="opsdemo" data-robot="delta"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

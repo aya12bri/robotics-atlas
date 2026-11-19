@@ -21,8 +21,32 @@ export const CARDS = [
   { page: 'learn-parallel.html', key: 'par', prefix: 'par-', total: 6, t: ['Workspaces, motion modes and parallel robots', 'Espaces de travail, modes de déplacement et robots parallèles'], d: ['Joint and operational spaces, workspace, MoveL / MoveJ, aspects, redundancy, five-bar, 3-RPR, singularities', 'Espaces articulaire et opérationnel, espace de travail, MoveL / MoveJ, aspects, redondance, cinq barres, 3-RPR, singularités'] }
 ];
 
+// the six levels of the roadmap (index.html), the time each course takes and what to know before it
+export const LEVELS = [
+  [['Level 1 · Discover robotics', 'Niveau 1 · Découvrir la robotique'], ['learn']],
+  [['Level 2 · Mathematics for robotics', 'Niveau 2 · Mathématiques pour la robotique'], ['mk', 'maths']],
+  [['Level 3 · Robot kinematics', 'Niveau 3 · Cinématique des robots'], ['model', 'armlab', 'sing', 'par']],
+  [['Level 4 · Dynamics and control', 'Niveau 4 · Dynamique et commande'], ['ctrl', 'tr']],
+  [['Level 5 · Mobile robots', 'Niveau 5 · Robots mobiles'], ['wmr', 'wmrpro']],
+  [['Level 6 · Intelligent robotics and Master', 'Niveau 6 · Robotique intelligente et Master'], ['ros', 'ai', 'world', 'kf', 'adv', 'tel']]
+];
+const META = {
+  learn: [45, []], mk: [145, []], maths: [65, ['mk']], model: [200, ['learn', 'mk']], armlab: [150, ['learn', 'maths']], sing: [100, ['model']], par: [135, ['model']],
+  ctrl: [175, ['model']], tr: [170, ['learn']], wmr: [160, ['learn', 'mk']], wmrpro: [290, ['wmr']], ros: [115, ['learn']], ai: [115, ['mk']], world: [115, ['learn']],
+  kf: [180, ['mk']], adv: [150, ['model', 'ctrl']], tel: [240, ['ctrl']]
+};
+const dur = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') : ''}`);
+const byKey = (k) => CARDS.find((c) => c.key === k);
+// the line under each card: its time and what to know before it, in English and in French
+export const metaLine = (c) => {
+  const [m, pre] = META[c.key] || [0, []];
+  return [`≈ ${dur(m)} · ${pre.length ? 'Before: ' + pre.map((k) => byKey(k).t[0]).join(', ') : 'No prerequisite'}`, `≈ ${dur(m)} · ${pre.length ? 'Avant : ' + pre.map((k) => byKey(k).t[1]).join(', ') : 'Aucun prérequis'}`];
+};
+// every text of the list of courses, for the French dictionary (fr-common.js)
+export const CARD_PAIRS = [...CARDS.flatMap((c) => [c.t, c.d, metaLine(c)]), ...LEVELS.map((l) => l[0])];
+const card = (c, current) => `<a class="course${c.page === current ? ' current' : ''}" href="${c.page}" data-prefix="${c.prefix}" data-total="${c.total}"${c.start ? ` data-start="${c.start}"` : ''} data-key="${c.key}"><b>${tx(...c.t)}</b><span>${tx(...c.d)}</span><small class="cmeta">${tx(...metaLine(c))}</small><em class="cnt"></em></a>`;
 export const courseCards = (current) =>
-  `<nav class="courses" aria-label="Courses">${CARDS.map((c) => `<a class="course${c.page === current ? ' current' : ''}" href="${c.page}" data-prefix="${c.prefix}" data-total="${c.total}"${c.start ? ` data-start="${c.start}"` : ''} data-key="${c.key}"><b>${tx(...c.t)}</b><span>${tx(...c.d)}</span><em class="cnt"></em></a>`).join('')}</nav>`;
+  `<nav class="courses" aria-label="Courses">${LEVELS.map(([name, keys]) => `<h3 class="courses-lv">${tx(...name)}</h3>${keys.map((k) => card(byKey(k), current)).join('')}`).join('')}</nav>`;
 
 export const COURSES = [];
 for (const [file, page, key, prefix, total] of [['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 11], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 12], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['labs', 'learn-armlab.html', 'armlab', 'lab-', 6], ['adv', 'learn-advanced.html', 'adv', 'adv-', 8], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 10], ['mobile-pro', 'learn-mobile-pro.html', 'wmrpro', 'wmr-', 10], ['teleop', 'learn-teleop.html', 'tel', 'tel-', 12], ['kalman', 'learn-kalman.html', 'kf', 'kf-', 8], ['transmission', 'learn-transmission.html', 'tr', 'tr-', 8], ['parallel', 'learn-parallel.html', 'par', 'par-', 6]]) {

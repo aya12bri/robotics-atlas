@@ -24,6 +24,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 460px; border-radius: 6px; }
       .legs { width: 100%; max-width: 720px; }
@@ -91,6 +92,50 @@
     <p>Each leg speed is the platform velocity projected on the leg: l̇ᵢ = uᵢ · v + (Rbᵢ × uᵢ) · ω, with uᵢ the unit vector of the leg. The six lines form the 6 × 6 matrix J⁻¹ (this is the matrix A⁻¹B of the course, up to a sign). When it becomes singular, the platform gains a motion that the locked legs cannot stop: a <strong>parallel singularity</strong>. The indicator below measures how far we are from it (1 = perfect, 0 = singular).</p>
     <p id="sing"></p>
 
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomy in 3D: every joint and every part</h2>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>Stewart platform</strong> (hexapod) is a parallel robot with six legs of variable length between a fixed base and a moving platform. By changing the six lengths, the platform moves with 6 degrees of freedom: three translations and three rotations. It is very stiff and carries heavy loads in a small workspace: flight simulators, telescopes, precision positioning.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Tilt the platform (roll 15°, pitch 10°)</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="stewart"></div>
+      <div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">Pose of the platform</b><p>Six numbers place the platform in space; the six legs follow.</p><label class="ansl ansl3"><span>x (right)</span><input type="range" aria-label="q0"><output></output></label><label class="ansl ansl3"><span>y (forward)</span><input type="range" aria-label="q1"><output></output></label><label class="ansl ansl3"><span>z (up)</span><input type="range" aria-label="q2"><output></output></label><label class="ansl ansl3"><span>roll</span><input type="range" aria-label="q3"><output></output></label><label class="ansl ansl3"><span>pitch</span><input type="range" aria-label="q4"><output></output></label><label class="ansl ansl3"><span>yaw</span><input type="range" aria-label="q5"><output></output></label></div>
+        <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Base</b></button><p>The fixed frame, bolted to the floor. It carries the six actuators.</p></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Six linear actuators</b></button><p>Six legs whose length changes, each driven by a motor and a ball screw (electric) or by oil (hydraulic). Changing the six lengths moves the platform in all 6 degrees of freedom.</p></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Base joints (universal)</b></button><p>Each leg is held at the base by a universal joint (2 rotations), so that it can tilt in any direction.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Platform joints (spherical)</b></button><p>At the top each leg ends in a spherical joint (3 rotations). The legs come in pairs that share neighbouring points.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Moving platform</b></button><p>It carries the load. Its pose has 6 numbers: x, y, z, roll, pitch, yaw. It is very rigid because the six legs share the load.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Payload</b></button><p>A flight-simulator cabin, a telescope mirror, a machine tool or a surgical tool: the Stewart platform moves heavy loads with high precision.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Six electric actuators</strong>: each has a motor and a ball screw inside a sleeve (seen in X-ray); hydraulic versions use oil cylinders for very heavy loads such as flight simulators.</li><li><strong>Universal and spherical joints</strong>: low-friction joints without play, because any play shows directly in the platform pose.</li><li><strong>Encoders or linear sensors</strong> measure each leg length; the controller converts the wanted pose into six lengths (inverse kinematics) and runs six position loops.</li><li><strong>Forward kinematics is the hard direction</strong>: from six lengths to a pose needs an iterative solution, the opposite of a serial robot.</li></ul>
+    <p>The six leg lengths are computed live from the pose of the platform (inverse kinematics: one simple formula per leg, the distance between the base joint and the platform joint). A leg turns red when it leaves its stroke (550 to 950 mm here) and the pose is then not reachable. Angles are roll (about the forward axis), pitch and yaw. The model is simplified: the real inside depends on the make. Stewart platforms also have singular poses (see lesson 8 of the course on singularities).</p>
+    <h2>All the components, from A to Z</h2>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="stewart" data-set="arm"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="hexapod"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Where is a hexapod used?</h2>
       <p>Flight and driving simulators (the cockpit sits on the platform), earthquake and vibration test tables, precision positioning for optics, the secondary mirrors of telescopes and the alignment of particle accelerators (micrometre hexapods by PI, Symétrie), machining heads, and patient positioning in radiotherapy.</p>
@@ -98,10 +143,6 @@
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="hexapod"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -128,7 +169,7 @@
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
 
-    <p class="try"><a href="anatomy-stewart.html">See it in 3D, with the inside of the robot →</a></p>
+
     <p class="try"><a href="learn-parallel.html#l5">Course: parallel robots and Grübler's mobility →</a> · <a href="learn-parallel.html#l6">Models and singularities →</a></p>
 
     <script type="module">

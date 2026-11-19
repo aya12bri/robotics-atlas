@@ -112,6 +112,15 @@ Inverse model (MGI):   q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − h 
     </svg>
     <p>With q3 between r<sub>min</sub> and r<sub>max</sub> and q2 between its two stops, the tool sweeps a <strong>hollow cylinder</strong> (a thick tube), cut by the stops of q1 if the column cannot turn all the way round. The volume is the area of the ring times the stroke of q2: V = θ<sub>range</sub>/2 · (r<sub>max</sub>² − r<sub>min</sub>²) · stroke.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="cylindrical"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Where is a cylindrical robot used?</h2>
       <p>Loading and unloading machine tools and presses, die casting and forging, handling in clean rooms (wafers, glass), stacking, and simple assembly. The Versatran (1960), one of the first industrial robots, was cylindrical; today you meet the structure in wafer handlers, in tabletop teaching robots and in many “pick and place” units.</p>
@@ -121,10 +130,6 @@ Inverse model (MGI):   q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − h 
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="cylindrical"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -150,6 +155,7 @@ Inverse model (MGI):   q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − h 
     <div class="opsdemo" data-robot="cylindrical"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
     <p class="try"><a href="learn-parallel.html#l2">Course: from joint limits to the real workspace →</a></p>
 

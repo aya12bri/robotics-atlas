@@ -25,6 +25,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
       select {
@@ -122,10 +123,51 @@
     <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Axe</th><th class="left">Nom</th><th class="left">Mouvement</th><th class="left">Groupe</th></tr><tr><td class="left">J1</td><td class="left">Rotation de la base</td><td class="left">Fait tourner tout le robot autour de son axe vertical.</td><td class="left">Bras : position</td></tr><tr><td class="left">J2</td><td class="left">Épaule</td><td class="left">Incline le bras vers l'avant et vers l'arrière.</td><td class="left">Bras : position</td></tr><tr><td class="left">J3</td><td class="left">Coude</td><td class="left">Étend ou replie l'avant-bras.</td><td class="left">Bras : position</td></tr><tr><td class="left">J4</td><td class="left">Roulis du poignet</td><td class="left">Fait tourner l'ensemble du poignet autour de l'axe de l'avant-bras.</td><td class="left">Poignet : orientation</td></tr><tr><td class="left">J5</td><td class="left">Tangage du poignet</td><td class="left">Incline l'outil vers le haut et vers le bas.</td><td class="left">Poignet : orientation</td></tr><tr><td class="left">J6</td><td class="left">Rotation de l'outil</td><td class="left">Fait tourner l'outil ou la pince autour de son propre axe.</td><td class="left">Poignet : orientation</td></tr></tbody></table></div>
     <p>Quand J5 = 0, les axes J4 et J6 s'alignent : c'est la singularité de poignet (voir le cours sur les singularités).</p>
 
-    <p class="try"><a href="anatomy-fr.html">Voir en 3D, avec l'intérieur du robot →</a></p>
-
     <h2>Le poignet sphérique</h2>
     <p>Regardez le tableau : les lignes 4, 5 et 6 ont a = 0. Donc les axes des liaisons 4, 5 et 6 <strong>se croisent en un seul point</strong> : le centre du poignet. Les liaisons 1, 2 et 3 placent ce point (la position), et les liaisons 4, 5 et 6 font tourner l'outil autour de lui (l'orientation). C'est pourquoi presque tous les robots industriels ont cette forme.</p>
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomie en 3D : chaque articulation et chaque pièce</h2>
+    <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
+    <div class="andef"><b>Définition</b><p>Un <strong>robot industriel 6 axes</strong> (bras articulé) est une chaîne série de six articulations rotatives fixée sur une base. Les trois premières placent le poignet dans l'espace et les trois dernières orientent l'outil : il peut donc atteindre n'importe quelle position avec n'importe quelle orientation dans son espace de travail. C'est le robot le plus répandu dans les usines : soudage, peinture, manutention et chargement de machines.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">Rayons X (intérieur)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animer l'axe choisi</button>
+      <button id="anSpin" type="button" aria-pressed="false">Rotation automatique</button>
+      <button id="anWrist" type="button">Singularité de poignet (J5 = 0)</button>
+      <button id="anReset" type="button">Réinitialiser</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="six"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">J1</span><b>Rotation de la base</b></button><p>Fait tourner tout le robot autour de son axe vertical. Son moteur et son réducteur sont dans la base.</p><label class="ansl"><input type="range" step="1" aria-label="J1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">J2</span><b>Épaule</b></button><p>Incline le bras vers l'avant et vers l'arrière. Il porte le poids de tout le bras, donc il a le plus gros moteur.</p><label class="ansl"><input type="range" step="1" aria-label="J2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">J3</span><b>Coude</b></button><p>Étend ou replie l'avant-bras.</p><label class="ansl"><input type="range" step="1" aria-label="J3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">J4</span><b>Roulis du poignet</b></button><p>Fait tourner l'ensemble du poignet autour de l'axe de l'avant-bras.</p><label class="ansl"><input type="range" step="1" aria-label="J4"><output></output></label></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">J5</span><b>Tangage du poignet</b></button><p>Incline l'outil vers le haut et vers le bas. Quand J5 = 0, les axes J4 et J6 s'alignent : une singularité de poignet.</p><label class="ansl"><input type="range" step="1" aria-label="J5"><output></output></label></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">J6</span><b>Rotation de l'outil</b></button><p>Fait tourner la pince ou l'outil autour de son propre axe : il règle l'orientation finale de l'outil.</p><label class="ansl"><input type="range" step="1" aria-label="J6"><output></output></label></div>
+      </div>
+    </div>
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Servomoteur</strong> (sans balais) : tourne vite avec peu de couple.</li><li><strong>Réducteur</strong> (harmonique ou cycloïdal) : ralentit le moteur de 50 à 200 fois et multiplie le couple du même facteur.</li><li><strong>Codeur et frein</strong> : le codeur mesure l'angle ; le frein retient le bras quand le courant est coupé.</li><li><strong>Faisceau de câbles</strong> : l'énergie et les signaux passent dans les corps creux jusqu'au poignet et à l'outil.</li><li><strong>Contrôleur</strong> : l'ordinateur et les variateurs qui exécutent les boucles d'asservissement (dans la base ou dans une armoire à côté du robot).</li></ul>
+    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    <h2>Tous les composants, de A à Z</h2>
+    <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
+    <div class="sysdemo" data-robot="six" data-set="arm"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="articulated"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h3>À essayer : une singularité</h3>
       <p>Mettez <strong>q5 = 0</strong>. Maintenant les axes des liaisons 4 et 6 sont sur la même droite (choisissez <em>Afficher : repère {4} seul</em> et comparez z<sub>3</sub> et z<sub>5</sub>). Bougez q4, puis bougez q6 : l'outil tourne dans le même sens. Le robot a perdu un degré de liberté. C'est une <em>singularité de poignet</em>, que les programmeurs de robots évitent.</p>
@@ -155,10 +197,6 @@
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="articulated"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -184,6 +222,7 @@
     <div class="opsdemo" data-robot="articulated"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 
