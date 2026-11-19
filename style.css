@@ -1189,7 +1189,7 @@ svg#schema, svg#zoom, svg#arena, svg#sim { background: var(--fpanel) !important;
 .byr-cards button { display: grid; gap: 0.15rem; text-align: left; min-height: 0; padding: 0.75rem 0.85rem; border-radius: 12px; background: var(--bg); color: var(--text); border: 2px solid var(--border); font-weight: 400; }
 .byr-cards button:hover { border-color: var(--accent); } .byr-cards button.on { border-color: #6d5dfc; background: color-mix(in srgb, #6d5dfc 12%, var(--surface)); }
 .byr-cards strong { font-size: 1.08rem; } .byr-cards em { font-style: normal; font-size: 0.78rem; color: var(--accent); font-weight: 600; } .byr-cards small { color: var(--muted); font-size: 0.84rem; line-height: 1.4; }
-.byr-code { justify-self: start; font-family: var(--mono); font-size: 0.74rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.byr-code { justify-self: start; font-family: var(--mono); font-size: 0.74rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: color-mix(in srgb, var(--accent) 70%, var(--text)); }
 .byr-parts, .byr-joints { list-style: none; margin: 0.6rem 0; padding: 0; display: grid; gap: 0.4rem; }
 .byr-parts button { width: 100%; display: flex; gap: 0.6rem; align-items: flex-start; text-align: left; min-height: 0; padding: 0.5rem 0.65rem; border-radius: 10px; background: var(--bg); color: var(--text); border: 1.5px solid var(--border); font-weight: 400; }
 .byr-parts button b, .byr-joints li > b { flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.76rem; color: #fff; background: #6d5dfc; }
@@ -1824,7 +1824,7 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .ptabs { position: sticky; top: 4.35rem; z-index: 20; margin: 1.4rem 0 0; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .ptabs-in { display: flex; gap: 0.2rem; overflow-x: auto; scrollbar-width: none; } .ptabs-in::-webkit-scrollbar { display: none; }
 .ptabs a { position: relative; display: inline-flex; align-items: baseline; gap: 0.55rem; flex: none; padding: 0.95rem 1.25rem 0.85rem; color: var(--muted); font-family: var(--display); font-stretch: 88%; font-size: 1.12rem; font-weight: 700; letter-spacing: 0.005em; text-decoration: none; white-space: nowrap; transition: color 0.15s; }
-.ptabs a span { font: 500 0.72rem var(--mono); letter-spacing: 0.08em; color: color-mix(in srgb, var(--muted) 80%, transparent); }
+.ptabs a span { font: 500 0.72rem var(--mono); letter-spacing: 0.08em; color: var(--muted); }
 .ptabs a::after { content: ''; position: absolute; left: 0.8rem; right: 0.8rem; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: transparent; transition: background 0.15s; }
 .ptabs a:hover { color: var(--text); }
 .ptabs a.on { color: var(--text); } .ptabs a.on span { color: var(--accent); } .ptabs a.on::after { background: var(--accent); }
