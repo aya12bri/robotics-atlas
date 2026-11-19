@@ -47,7 +47,7 @@
     var root = document.createElement('div'); root.className = 'rbot ra-own';
     root.innerHTML =
       '<div class="rb-bubble" hidden><button type="button" class="rb-x" aria-label="' + esc(L('Hide', 'Masquer')) + '">×</button>' +
-        '<button type="button" class="rb-ask">' + L('Do you have any questions?', 'Vous avez une question ?') + '</button></div>' +
+        '<button type="button" class="rb-ask">' + L('Do you have any questions?', 'Avez-vous une question ?') + '</button></div>' +
       '<section class="rb-panel" role="dialog" aria-modal="false" hidden>' +
         '<header class="rb-head"><span class="rb-mini">' + ROBOT + '</span><div><b>' + L('AI tutor', 'Tuteur IA') + '</b><small class="rb-lesson"></small></div>' +
           '<button type="button" class="rb-close" aria-label="' + esc(L('Close', 'Fermer')) + '">×</button></header>' +
