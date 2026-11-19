@@ -166,11 +166,21 @@ async function* askGemini(env, system, history, question) {
     }
     left.forEach(stop);                                                   // the slower ones are stopped
     if (!win) continue;
-    clearTimeout(win.x.timer);                                            // the winner has no time limit any more
+    clearTimeout(win.x.timer);                                            // the winner has no limit for the whole answer…
     yield win.v.piece;
-    try { for await (const s of win.x.gen) yield s; }
-    catch (e) { const x = new Error('gemini: cut in the middle'); x.status = 'cut'; throw x; }   // keep what it wrote
-    return;
+    const IDLE_MS = +(env.GEMINI_IDLE_MS || 15000);                       // …but if it stops sending for IDLE_MS, give up
+    for (;;) {
+      let idle;
+      const step = await Promise.race([win.x.gen.next(), new Promise((res) => { idle = setTimeout(() => res('idle'), IDLE_MS); })])
+        .catch((e) => 'error');
+      clearTimeout(idle);
+      if (step === 'idle' || step === 'error') {
+        win.x.ctl.abort();
+        const x = new Error(`gemini: cut in the middle (${step === 'idle' ? 'nothing for ' + IDLE_MS / 1000 + ' s' : 'error'})`); x.status = 'cut'; throw x;   // keep what it wrote
+      }
+      if (step.done) return;
+      yield step.value;
+    }
   }
   const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = 'all'; throw e;
 }

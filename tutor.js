@@ -135,9 +135,11 @@
         .then(function (r) {
           if (r.status === 429) return r.text().then(function (m) { done(/minute/.test(m) ? 'minute' : 429); });
           if (!r.ok || !r.body || !/text\/plain/.test(r.headers.get('content-type') || '')) return r.text().then(function (m) { done('down', r.status + (/^[a-z :]{3,40}$/.test(m) ? ' · ' + m : '')); }, function () { done('down', String(r.status)); });
-          var rd = r.body.getReader(), dec = new TextDecoder();
+          var rd = r.body.getReader(), dec = new TextDecoder(), dog = 0, stalled = false;
           var pump = function () {
+            clearTimeout(dog); dog = setTimeout(function () { stalled = true; rd.cancel().catch(function () {}); }, 45000);   // nothing for 45 s: stop waiting
             return rd.read().then(function (c) {
+              if (c.done) { clearTimeout(dog); if (stalled) acc += '\n\n[[error]]'; }
               if (!c.done) acc += dec.decode(c.value, { stream: true });
               var mm = /^\[\[m:(\w+)(?:\|([^\]]*))?\]\]/.exec(acc);     // the server says first which model answers (and why not Gemini)
               if (mm) { model = mm[1] === 'gemini' ? 'Gemini' : 'Claude'; why = mm[2] || ''; acc = acc.slice(mm[0].length); }
@@ -145,7 +147,9 @@
                 if (/\[\[refusal\]\]\s*$/.test(acc)) return done('refusal');
                 var em = /\[\[error ?(\d*)\]\]\s*$/.exec(acc);
                 if (em && acc.slice(0, em.index).trim().length < 2) return done('down', 'API ' + (em[1] || '?'));
-                acc = acc.replace(/\s*\[\[error ?\d*\]\]\s*$/, ' …'); out.innerHTML = md(acc); return done();
+                var cut = !!em; acc = acc.replace(/\s*\[\[error ?\d*\]\]\s*$/, '').replace(/[\s*_`]+$/, '') + ' …';   // (no half-open bold at the end) out.innerHTML = md(acc);
+                if (cut) out.insertAdjacentHTML('beforeend', '<p class="rb-err">' + esc(L('(answer cut off: please ask again)', '(réponse interrompue : reposez votre question)')) + '</p>');
+                return done();
               }
               if (/^\[\[(m(:[^\]]*)?)?$/.test(acc) || /^\[\[m:[^\]]*\]$/.test(acc)) return pump();                 // the model tag is not complete yet
               if (!first && clean(acc).trim()) first = Date.now();
