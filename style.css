@@ -1795,3 +1795,10 @@ h1 .h1tag { display: inline-block; vertical-align: middle; margin-left: 0.5rem; 
 .sysdemo.sys-tight .sys-hcard span { display: none; }
 .sysdemo.sys-tight .sys-hcard.on span, .sysdemo.sys-tight .sys-hcard.sel span, .sysdemo.sys-tight .sys-hcard:hover span { display: block; }
 @media (max-width: 1000px) { .sysdemo.sys-how-on .sys-flow { width: calc(100% - 20px); } }
+
+/* the list of courses, grouped by the six levels of the roadmap; each card shows its time and what to know before */
+.courses .courses-lv { grid-column: 1 / -1; margin: 0.6rem 0 -0.2rem; font: 600 0.78rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.courses .courses-lv:first-child { margin-top: 0; }
+.course .cmeta { display: block; margin-top: 0.25rem; font: 0.74rem var(--mono); color: var(--muted); }
+nav.courses.fold:not(.open) .courses-lv { display: none; }
+nav.courses.fold:not(.open) .course.current .cmeta { display: none; }

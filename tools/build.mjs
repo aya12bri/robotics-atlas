@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { REG, SVGREG, reset, tx, CONFLICTS } from './lib.mjs';
-import { COURSES, courseCards, CARDS } from './courses.mjs';
+import { COURSES, courseCards, CARDS, CARD_PAIRS } from './courses.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
@@ -118,7 +118,7 @@ for (const c of COURSES) {
   bad += real.length;
 }
 // the course cards (shared by every course page) are translated once, in fr-common.js, between two markers
-const cardPairs = CARDS.flatMap((c) => [c.t, c.d]);
+const cardPairs = CARD_PAIRS;
 const ckeys = await page.evaluate((en) => en.map((s) => RA.hash(RA.norm(s))), cardPairs.map((p) => p[0]));
 const extra = {};
 const cdict = {}; cardPairs.forEach((p, i) => { cdict[ckeys[i]] = p[1]; });
