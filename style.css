@@ -1897,13 +1897,13 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .rbot .rb-btn:focus-visible { outline: 3px solid var(--lt); outline-offset: 3px; }
 .rbot.open .rb-btn { animation: none; }
 .rbot .rb-btn .rb-face { animation: rbblink 5s step-end infinite; }
-.rbot.wave .rb-btn .rb-face { animation: rbblink 5s step-end infinite, rbwave 1.2s step-end 2; }   /* the last one wins while it runs */
-.rbot.wave .rb-btn { animation: rbhop 0.6s ease-in-out 4; }                                    /* little hops while it waves */
-@keyframes rbhop { 0%, 100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-10px) rotate(-6deg); } 60% { transform: translateY(-3px) rotate(4deg); } }
+.rbot.wave .rb-btn .rb-face { animation: rbblink 5s step-end infinite, rbwave 1.2s step-end 3; }   /* the last one wins while it runs */
+.rbot.wave .rb-btn { animation: rbhop 0.9s cubic-bezier(.3, 0, .3, 1) 4; }                    /* it jumps while it waves */
+@keyframes rbhop { 0%, 100% { transform: translateY(0) scale(1, 1); } 12% { transform: translateY(2px) scale(1.06, 0.92); } 45% { transform: translateY(-22px) rotate(-7deg) scale(0.97, 1.04); } 70% { transform: translateY(-6px) rotate(5deg); } 88% { transform: translateY(1px) scale(1.04, 0.95); } }
 @keyframes rbfloat { 50% { transform: translateY(-5px); } }
 @keyframes rbblink { 0% { background-position-x: 0%; } 93% { background-position-x: 10%; } 94.5% { background-position-x: 20%; } 96% { background-position-x: 10%; } 97.5% { background-position-x: 0%; } }
 @keyframes rbwave { 0% { background-position-x: 30%; } 12.5% { background-position-x: 40%; } 25% { background-position-x: 50%; } 37.5% { background-position-x: 60%; } 50% { background-position-x: 70%; } 62.5% { background-position-x: 80%; } 75% { background-position-x: 90%; } 87.5% { background-position-x: 100%; } 100% { background-position-x: 0%; } }
-@media (prefers-reduced-motion: reduce) { .rbot .rb-btn, .rbot .rb-btn .rb-face, .rbot.wave .rb-btn, .rbot.wave .rb-btn .rb-face { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .rbot .rb-btn, .rbot.wave .rb-btn { animation: none; } }   /* no jumps or floating; the hand still waves (a small gesture) */
 .rbot .rb-bubble { position: relative; display: flex; align-items: center; gap: 0.2rem; margin-right: 0.4rem; padding: 0.15rem 0.3rem 0.15rem 0.2rem; border-radius: 16px 16px 4px 16px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--lt) 45%, var(--border)); box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.45); animation: rbpop 0.35s cubic-bezier(.2, 1.4, .4, 1); }
 .rbot .rb-bubble[hidden] { display: none; }
 @keyframes rbpop { from { opacity: 0; transform: translateY(8px) scale(0.9); } }

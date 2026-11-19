@@ -175,9 +175,10 @@
     ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); ask(ta.value); } });
     $('.rb-clear').onclick = function () { if (busy) return; store(KEY(cur), '[]'); paint(); ta.focus(); };
 
-    // to be noticed: the robot first waves hello (and hops a little), then its bubble says "Do you have any questions?".
-    // It does it a few seconds after the page opens, again later if nobody answered (twice at most), and on each new lesson.
-    var bubbleT = 0, againT = 0, waves = 0, OFF = 'ra-tutor-quiet', WAVE_MS = 2400;
+    // to be noticed: the robot jumps and waves hello, then its bubble says "Do you have any questions?". It starts soon
+    // after the page opens, then jumps and waves again every 15 s while nobody opened the chat; the bubble comes back
+    // with every third wave (three bubbles at most per page, counted again on each new lesson).
+    var bubbleT = 0, againT = 0, waves = 0, asked = 0, OFF = 'ra-tutor-quiet', WAVE_MS = 3600, EVERY = 15000;
     var quiet = function () { return store(OFF) === '1' || !panel.hidden; };
     function hideBubble() { clearTimeout(bubbleT); clearTimeout(againT); bubble.hidden = true; root.classList.remove('talk', 'wave'); }
     function showBubble(delay) {
@@ -185,26 +186,27 @@
       if (quiet()) return;
       bubbleT = setTimeout(function () {
         if (quiet()) return;
-        root.classList.add('wave'); waves++;                                        // 1. wave hello
+        root.classList.remove('wave'); void root.offsetWidth; root.classList.add('wave'); waves++;   // 1. jump and wave hello
         bubbleT = setTimeout(function () {
           root.classList.remove('wave');
           if (quiet()) return;
-          bubble.hidden = false; root.classList.add('talk');                        // 2. then ask
+          var ask = waves % 3 === 1 && asked < 3;
+          if (ask) { asked++; bubble.hidden = false; root.classList.add('talk'); }                    // 2. then ask
           bubbleT = setTimeout(function () {
             bubble.hidden = true; root.classList.remove('talk');
-            if (waves < 3) againT = setTimeout(function () { showBubble(0); }, 45000);   // 3. again later, if nobody answered
-          }, 9000);
+            againT = setTimeout(function () { showBubble(0); }, EVERY);                               // 3. again in a moment
+          }, ask ? 8000 : 0);
         }, WAVE_MS);
       }, delay);
     }
     $('.rb-x').onclick = function () { store(OFF, '1'); hideBubble(); };
-    showBubble(2500);
+    showBubble(1500);
 
     // the lesson on the screen changes (lesson-quiz.js shows one lesson at a time): follow it
     var seen = current();
     var mo = new MutationObserver(function () {
       var now = current(); if (now === seen) return; seen = now;
-      if (!panel.hidden && !busy) paint(); else if (panel.hidden) { cur = null; waves = 0; showBubble(1200); }
+      if (!panel.hidden && !busy) paint(); else if (panel.hidden) { cur = null; waves = 0; asked = 0; showBubble(1200); }
     });
     lessons.forEach(function (a) { mo.observe(a, { attributes: true, attributeFilter: ['hidden'] }); });
   }
