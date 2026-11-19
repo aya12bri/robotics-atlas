@@ -614,6 +614,60 @@
         body.insertBefore(stage, view); stage.append(main, side);
         kids.slice(iv, ih).forEach((el) => main.appendChild(el));
         kids.slice(ih, ic + 1).forEach((el) => side.appendChild(el));
+        // the description under the view becomes a framed card; it goes under the sliders when they leave room there
+        // (no empty space next to the view), otherwise it stays under the view. Decided again when the window changes.
+        const lead = main.querySelector('.lead');
+        if (lead) {
+          lead.classList.add('lead-card');
+          const place = () => {
+            if (!view.offsetHeight) return;                          // its tab is hidden: decided when it is shown
+            const twoCols = getComputedStyle(stage).gridTemplateColumns.split(' ').length > 1, inSide = lead.parentNode === side;
+            // the card's height in each column (narrower column: taller card), and the two columns without it
+            const h = lead.offsetHeight + 18, r = main.clientWidth / Math.max(1, side.clientWidth);
+            const inMainH = inSide ? h / r : h, inSideH = inSide ? h : h * r;
+            const M0 = main.offsetHeight - (inSide ? 0 : h), S0 = side.offsetHeight - (inSide ? h : 0);
+            // where it leaves the two columns closest in height (with a margin, so it does not jump back and forth)
+            const gapIfSide = Math.abs(M0 - (S0 + inSideH)), gapIfMain = Math.abs(M0 + inMainH - S0);
+            const want = twoCols && (inSide ? gapIfSide <= gapIfMain + 30 : gapIfSide < gapIfMain - 30);
+            if (want && !inSide) side.appendChild(lead); else if (!want && inSide) main.appendChild(lead);
+          };
+          const ro = new ResizeObserver(() => setTimeout(place, 0)); ro.observe(stage); ro.observe(view);   // sliders built, tab shown, window resized
+          setTimeout(place, 1500);
+        }
+        // when the sliders column is still much shorter than the 3D view, a card "Explore this robot" fills it: the other
+        // parts of the page, one line each, and the AI tutor
+        const more = document.createElement('nav'); more.className = 'stage-more ra-own';
+        const fr = lang === 'fr', DESC = {
+          kinematics: [fr ? 'Schéma cinématique, tables DH et calculs' : 'Kinematic diagram, DH tables and calculations', 'M4 18 L10 8 L16 14 L20 6'],
+          anatomy: [fr ? 'Chaque pièce du robot en 3D' : 'Every part of the robot in 3D', 'M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z M12 12 L20 7.5 M12 12 L4 7.5 M12 12 L12 21'],
+          inside: [fr ? 'Les vrais composants, pièce par pièce' : 'The real components, part by part', 'M4 7 H20 V17 H4 Z M8 7 V17 M12 10 H17 M12 14 H16'],
+          uses: [fr ? 'Où il travaille : forces et limites' : 'Where it works: strengths and limits', 'M4 20 V10 L9 13 V10 L14 13 V6 L20 9 V20 Z']
+        };
+        const fillMore = () => {
+          if (!view.offsetHeight || !more.isConnected && !getComputedStyle(stage).gridTemplateColumns.includes(' ')) return;
+          const tabs = [...document.querySelectorAll('.ptabs a[data-k]')].filter((a) => a.dataset.k !== '0' && DESC[a.getAttribute('href').slice(1)]);
+          if (!tabs.length) return;
+          if (!more.childElementCount) {
+            more.innerHTML = '<b>' + (fr ? 'Explorer ce robot' : 'Explore this robot') + '</b>' + tabs.map((t) => { const d = DESC[t.getAttribute('href').slice(1)];
+              return `<a href="${t.getAttribute('href')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d[1]}"/></svg><span><strong>${t.lastChild.textContent}</strong><small>${d[0]}</small></span></a>`; }).join('') +
+              '<button type="button" class="sm-tutor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 H19 V15 H10 L6 19 V15 H5 Z"/></svg><span><strong>' + (fr ? 'Une question ?' : 'A question?') + '</strong><small>' + (fr ? 'Le tuteur IA vous explique' : 'The AI tutor explains it to you') + '</small></span></button>';
+            more.querySelector('.sm-tutor').onclick = () => { const r = document.querySelector('.rb-btn'); if (r) r.click(); };
+            more.addEventListener('click', (e) => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); const t = document.querySelector(`.ptabs a[href="${a.getAttribute('href')}"]`); if (t) { t.click(); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+          }
+          // it must fit in the room left: the full card, else a compact one (titles only), else nothing
+          const twoCols = getComputedStyle(stage).gridTemplateColumns.split(' ').length > 1, shown = more.parentNode === side;
+          const gap = main.offsetHeight - (side.offsetHeight - (shown ? more.offsetHeight + 20 : 0)), slack = shown ? 60 : 30;
+          if (!twoCols || gap < 110) { if (shown) more.remove(); return; }
+          if (!shown) side.appendChild(more);
+          const fits = () => more.offsetHeight + 20 <= gap + slack;
+          more.classList.remove('compact', 'mini'); if (fits()) return;
+          more.classList.add('compact'); if (fits()) return;
+          more.classList.add('mini'); if (fits()) return;               // compact, without the tutor line
+          more.remove();
+        };
+        // checked again whenever the stage changes size (sliders built, tab shown, window resized), and twice after loading
+        const ro = new ResizeObserver(() => setTimeout(fillMore, 0)); ro.observe(stage); ro.observe(side); ro.observe(view);
+        setTimeout(fillMore, 1500); setTimeout(fillMore, 4000);
       }
     }
     // long pages in three parts, with a menu on the left that lists every title. starts: the three body children where the
