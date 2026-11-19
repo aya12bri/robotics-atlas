@@ -33,7 +33,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="quadruped" class="anatbox">
-    <h1>Quadruped <span class="h1tag">3D anatomy</span></h1>
+    <h1>Quadruped <span class="h1tag">4 legs</span></h1>
     <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
     <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
     <div class="andef"><b>Definition</b><p>A <strong>quadruped robot</strong> walks on four legs, like a dog. Each leg has three joints (sideways at the hip, forward at the hip, the knee), so 12 motors in all. On four legs it is stable standing still and it goes where wheels cannot: stairs, gravel, mud. Examples: Boston Dynamics Spot, ANYbotics ANYmal, Unitree Go2.</p></div>
@@ -56,7 +56,23 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Hip (sideways)</b></button><p>The abduction joint opens the leg sideways. It keeps the feet under the body when the body rolls, and lets the robot step sideways.</p></div>
       </div>
     </div>
-    <h2>What is inside each joint?</h2>
+<h2 class="part-kin">Kinematics: four legs of three joints</h2>
+    <p>Each leg is a small serial arm with 3 joints: abduction (the leg opens sideways), hip and knee. With the 6 degrees of freedom of the body, the robot has 18 coordinates to control, and 12 motors to do it. The feet on the ground close the loop: like a parallel robot, the body can move in all 6 directions while the feet stay still.</p>
+    <figure class="figure"><svg viewBox="0 0 360 260" class="fig" role="img" aria-hidden="true">
+  <line x1="40" y1="236" x2="320" y2="236" stroke="#8a99ae" stroke-width="2"/>
+  <circle cx="150" cy="40" r="9" fill="#2f6bff"/><line x1="150" y1="40" x2="110" y2="138" stroke="#ff9f43" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="110" cy="138" r="8" fill="#2f6bff"/><line x1="110" y1="138" x2="160" y2="228" stroke="#ff9f43" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="160" cy="228" r="7" fill="#1d2633"/>
+  <line x1="150" y1="40" x2="160" y2="228" stroke="#8a99ae" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <text x="104" y="34" fill="#2f6bff" font-size="14">hip</text><text x="58" y="142" fill="#2f6bff" font-size="14">knee</text><text x="172" y="232" fill="#1d2633" font-size="14">foot</text>
+  <text x="116" y="92" fill="#ff9f43" font-size="15">L1</text><text x="120" y="190" fill="#ff9f43" font-size="15">L2</text><text x="166" y="140" fill="#8a99ae" font-size="15">d</text></svg></figure>
+    <h3>Inverse kinematics of one leg</h3>
+    <p>First the abduction turns the plane of the leg so that it contains the foot; then, in that plane, hip and knee work like a two-link arm. On most quadrupeds the knee points backwards, so the second solution of the elbow is used.</p>
+    <p class="eq">Abduction: γ = atan2(z, −y) &emsp; Distance in the plane: d = √(x² + y² + z²) &emsp; Knee: cos(π − θ_k) = (L1² + L2² − d²) / (2 L1 L2)</p>
+    <h3>Gaits</h3>
+    <p>A gait says which legs move together. The duty factor is the part of the cycle each foot spends on the ground: above 0.5 at least two feet always touch the ground.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Gait</th><th class="left">Legs together</th><th class="left">Duty factor</th><th class="left">Use</th></tr><tr><td class="left">Walk</td><td class="left">one at a time</td><td class="left">0.75</td><td class="left">slow, always 3 feet down: stable on rough ground</td></tr><tr><td class="left">Trot</td><td class="left">diagonal pairs</td><td class="left">0.5</td><td class="left">the usual gait of robot dogs (this page)</td></tr><tr><td class="left">Pace</td><td class="left">same-side pairs</td><td class="left">0.5</td><td class="left">rare on robots: the body rolls</td></tr><tr><td class="left">Gallop / bound</td><td class="left">front pair, then rear pair</td><td class="left">< 0.5</td><td class="left">fast, with flight phases</td></tr></table></div>
+    <h2 class="part-in">What is inside each joint?</h2>
     <ul><li><strong>12 actuators</strong>: three per leg (abduction, hip, knee), each a brushless motor with a planetary gearbox, all placed in the body or at the hip so that the legs stay light.</li><li><strong>Balance</strong>: an IMU in the body, an encoder on every joint and the feeling of the feet; on 4 legs the robot is stable standing still, and when it trots two feet are always on the ground.</li><li><strong>Uses</strong>: inspection of factories, tunnels, oil rigs and power plants, carrying sensors where wheels cannot go (stairs, gravel, mud).</li></ul>
     <p>The quadruped really trots: the legs go in two diagonal pairs (front left with rear right, then front right with rear left). For each leg, a small inverse kinematics finds the three angles (abduction, hip, knee) that put the foot where the gait wants it, even when you tilt the body. The model is simplified; real robots such as Spot or ANYmal add force control in every joint.</p>
     <h2>All the components, from A to Z</h2>
@@ -68,5 +84,9 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Where are quadrupeds used?</h2>
+    <p>Robot dogs carry sensors where wheels cannot go: stairs, gravel, mud, cables on the floor. They are mostly used for inspection, often driven from far away or following a recorded route on their own.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Where</th><th class="left">What it does there</th><th class="left">Examples</th></tr><tr><td class="left">Industrial plants</td><td class="left">read gauges, measure heat and gas leaks, listen to machines</td><td class="left">Boston Dynamics Spot, ANYbotics ANYmal</td></tr><tr><td class="left">Construction sites</td><td class="left">scan the building every day and compare it with the plans</td><td class="left">Spot + 3D scanner</td></tr><tr><td class="left">Mines and tunnels</td><td class="left">map dark and dangerous places</td><td class="left">ANYmal X (ATEX)</td></tr><tr><td class="left">Rescue and security</td><td class="left">go first into collapsed or dangerous buildings</td><td class="left">police and fire brigades</td></tr><tr><td class="left">Research and teaching</td><td class="left">learn legged locomotion, reinforcement learning</td><td class="left">Unitree Go2, MIT Mini Cheetah</td></tr></table></div>
+    <ul><li><strong>Strengths</strong>: stable on 4 legs, climbs stairs and steps, carries 10 to 15 kg of sensors.</li><li><strong>Weaknesses</strong>: about 90 minutes of battery, slower and more fragile than a robot on wheels or tracks on flat ground.</li></ul>
   </body>
 </html>

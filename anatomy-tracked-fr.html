@@ -5,6 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Anatomie d'un robot à chenilles (3D)</title>
+    <!-- seo -->
+    <meta name="description" content="Anatomie 3D d'un robot à chenilles qui roule vraiment : chenilles, barbotins, galets, moteurs, capteurs et direction par glissement, avec un mode rayons X." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/anatomy-tracked-fr" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/anatomy-tracked" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/anatomy-tracked-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/anatomy-tracked" />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Anatomie d'un robot à chenilles (3D)" />
+    <meta property="og:description" content="Anatomie 3D d'un robot à chenilles qui roule vraiment : chenilles, barbotins, galets, moteurs, capteurs et direction par glissement, avec un mode rayons X." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/anatomy-tracked-fr" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="anatomy.css" />
     <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
@@ -15,7 +34,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="tracked" class="anatbox">
-    <h1>Robot à chenilles <span class="h1tag">anatomie 3D</span></h1>
+    <h1>Robot à chenilles <span class="h1tag">2 chenilles</span></h1>
     <p><a href="index-fr.html" style="color:#ff9f43">← Liste des robots</a> · <a href="learn-mobile-fr.html" style="color:#ff9f43">Cours Robots mobiles à roues</a></p>
     <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
     <div class="andef"><b>Définition</b><p>Un <strong>robot à chenilles</strong> se déplace sur deux chenilles, comme un petit char. Chaque chenille a son propre moteur, et le robot tourne en faisant aller une chenille plus vite que l'autre. Les chenilles répartissent le poids et accrochent les terrains difficiles : boue, sable, escaliers, gravats. Utilisé pour le secours, le déminage et l'inspection.</p></div>
@@ -38,7 +57,18 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Antenne radio</b></button><p>Envoie la vidéo à l'opérateur et reçoit les ordres : les robots de secours et d'inspection sont souvent pilotés de loin, hors de danger.</p></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
+<h2 class="part-kin">Cinématique : direction par glissement</h2>
+    <p>Un robot à chenilles se pilote comme un robot à entraînement différentiel : un moteur par côté, et il tourne en faisant aller un côté plus vite que l'autre. Mais une chenille touche le sol sur toute sa longueur : pour tourner, elle doit glisser de côté. Le robot tourne moins que ne le prévoit la formule des deux roues, et le virage réel dépend du sol.</p>
+    <figure class="figure"><svg viewBox="0 0 360 220" class="fig" role="img" aria-hidden="true">
+        <rect x="70" y="40" width="44" height="140" rx="20" fill="#1d2633"></rect><rect x="246" y="40" width="44" height="140" rx="20" fill="#1d2633"></rect><rect x="114" y="60" width="132" height="100" rx="10" fill="#ff9f43"></rect>
+        <line x1="92" y1="150" x2="92" y2="80" stroke="#2f6bff" stroke-width="4"></line><polygon points="92,70 85,84 99,84" fill="#2f6bff"></polygon><text x="40" y="112" fill="#2f6bff" font-size="15">v_L</text>
+        <line x1="268" y1="160" x2="268" y2="54" stroke="#2f6bff" stroke-width="4"></line><polygon points="268,44 261,58 275,58" fill="#2f6bff"></polygon><text x="296" y="112" fill="#2f6bff" font-size="15">v_R</text>
+        <line x1="92" y1="196" x2="268" y2="196" stroke="#8a99ae" stroke-width="1.5"></line><text x="172" y="214" fill="#8a99ae" font-size="14">B</text></svg></figure>
+    <p class="eq">v = (v_R + v_L) / 2   ω = (v_R − v_L) / B_eff   avec B_eff = χ · B, χ ≈ 1,2 à 2 (cela dépend du sol)</p>
+    <p>B_eff, la voie effective, se trouve par l'expérience : faites tourner le robot en rond et mesurez. Sur du béton, χ est petit ; sur l'herbe ou le sable, il est plus grand. Le modèle de cette page utilise χ = 1,25.</p>
+    <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Vitesses des chenilles</th><th class="left">Mouvement</th><th class="left">Rayon de virage</th></tr><tr><td class="left">v_L = v_R</td><td class="left">ligne droite</td><td class="left">∞</td></tr><tr><td class="left">v_L ≠ v_R</td><td class="left">virage, avec glissement</td><td class="left">R = B_eff (v_R + v_L) / (2 (v_R − v_L))</td></tr><tr><td class="left">v_L = −v_R</td><td class="left">tourne sur place</td><td class="left">0</td></tr></tbody></table></div>
+    <p>Comme les chenilles glissent, l'odométrie d'un robot à chenilles dérive bien plus qu'avec des roues : on la fusionne avec une centrale inertielle, un lidar ou une odométrie visuelle.</p>
+    <h2 class="part-in">Que contient chaque articulation ?</h2>
     <ul><li><strong>Deux moteurs, un par chenille</strong>, chacun avec un réducteur et un codeur : comme un robot à entraînement différentiel, mais les chenilles glissent quand il tourne, donc l'odométrie dérive davantage.</li><li><strong>Terrain difficile</strong> : faible pression sur le sol, escaliers et gravats ; certains robots ajoutent des bras à chenilles à l'avant pour franchir des obstacles plus hauts.</li><li><strong>Usages</strong> : secours, déminage, inspection de tunnels et de centrales nucléaires, agriculture et chantiers.</li></ul>
     <p>Le robot à chenilles roule vraiment : chaque chenille a son propre moteur, et le robot tourne en faisant aller une chenille plus vite que l'autre (direction par glissement). Les chenilles doivent glisser de côté pour tourner, donc il tourne moins qu'un robot à deux roues et consomme plus d'énergie ; c'est le prix pour passer sur un terrain difficile. Le modèle est simplifié.</p>
     <h2>Tous les composants, de A à Z</h2>
@@ -50,6 +80,10 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Où utilise-t-on les robots à chenilles ?</h2>
+    <p>Les chenilles répartissent le poids et accrochent les sols difficiles : les robots à chenilles vont là où des roues s'enfonceraient ou patineraient, souvent envoyés à la place d'une personne.</p>
+    <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Où</th><th class="left">Ce qu'il y fait</th><th class="left">Exemples</th></tr><tr><td class="left">Déminage</td><td class="left">approcher un colis suspect, l'ouvrir, le neutraliser</td><td class="left">Teledyne FLIR PackBot, Nexter Nerva</td></tr><tr><td class="left">Secours</td><td class="left">entrer dans des bâtiments effondrés, chercher des personnes</td><td class="left">équipes de secours</td></tr><tr><td class="left">Sites nucléaires et dangereux</td><td class="left">mesurer les radiations, porter des outils</td><td class="left">robots de Fukushima</td></tr><tr><td class="left">Agriculture</td><td class="left">désherber et travailler dans les champs sans tasser le sol</td><td class="left">Naïo Orio, AgXeed</td></tr><tr><td class="left">Chantiers et canalisations</td><td class="left">inspecter canalisations, tunnels et chantiers</td><td class="left">robots d'inspection de canalisations</td></tr></tbody></table></div>
+    <ul><li><strong>Points forts</strong> : passe la boue, le sable, les escaliers et les gravats, très stable, peut porter un bras et de lourdes charges.</li><li><strong>Points faibles</strong> : lent, consomme plus d'énergie pour tourner, use les chenilles et les sols, odométrie peu précise.</li></ul>
   
 
 </body>

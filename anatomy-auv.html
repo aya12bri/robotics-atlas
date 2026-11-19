@@ -33,7 +33,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="auv" class="anatbox">
-    <h1>Underwater robot <span class="h1tag">3D anatomy</span></h1>
+    <h1>Underwater robot <span class="h1tag">AUV</span></h1>
     <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
     <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
     <div class="andef"><b>Definition</b><p>An <strong>underwater robot</strong> (AUV, autonomous underwater vehicle) is a torpedo-shaped robot that dives alone, without a cable or a pilot. A propeller pushes it, fins steer it, and it finds its way without GPS with sonars and an inertial unit. It maps the sea floor and inspects pipelines and wrecks.</p></div>
@@ -56,7 +56,15 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Antenna and beacon</b></button><p>At the surface, the antenna gets a GPS position and sends the data by radio; under water, only sound carries messages (an acoustic modem). The flashing light helps to find it.</p></div>
       </div>
     </div>
-    <h2>What is inside each joint?</h2>
+<h2 class="part-kin">Kinematics: steering in water</h2>
+    <p>An underwater vehicle moves in 6 directions: surge (forward), sway (sideways), heave (up and down), roll, pitch and yaw. A torpedo-shaped AUV is like a plane: one propeller pushes it forward, and its fins turn the water flow into forces. It can only steer while it moves, and it cannot go sideways on its own.</p>
+    <p class="eq">ẋ = u cos ψ cos θ &emsp; ẏ = u sin ψ cos θ &emsp; ż = −u sin θ &emsp; (u: speed, ψ: heading, θ: pitch, z: up)</p>
+    <p class="eq">Turn rate ≈ (u / L) · K_δ · δ_rudder &emsp; Force of a fin: F = ½ ρ S C_L u² (it grows with the square of the speed)</p>
+    <h3>Buoyancy and depth</h3>
+    <p>An AUV is made a little lighter than water (slightly positive buoyancy): if the power fails, it floats back to the surface. To stay deep it uses its elevators while it moves; some gliders change their volume instead.</p>
+    <p class="eq">Archimedes: B = ρ g V &emsp; Pressure: p = p₀ + ρ g h ≈ 1 bar more every 10 m</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Vehicle</th><th class="left">How it moves</th><th class="left">Control</th></tr><tr><td class="left">AUV</td><td class="left">propeller and fins, like a plane</td><td class="left">alone, mission planned in advance</td></tr><tr><td class="left">ROV</td><td class="left">many thrusters: moves in every direction, hovers</td><td class="left">by a pilot, through a cable</td></tr><tr><td class="left">Glider</td><td class="left">changes its volume to sink and rise, wings make it glide</td><td class="left">alone, for weeks</td></tr></table></div>
+    <h2 class="part-in">What is inside each joint?</h2>
     <ul><li><strong>No cable, no pilot</strong>: an AUV (autonomous underwater vehicle) follows its mission alone, unlike an ROV, which is driven by a pilot through a cable from a ship.</li><li><strong>Navigation without GPS</strong>: it adds up the speed of the DVL and the turns of the IMU (dead reckoning, corrected by a Kalman filter), and comes back to the surface now and then to get a GPS fix.</li><li><strong>Uses</strong>: mapping the sea floor, inspecting pipelines and cables, searching for wrecks, studying the ocean.</li></ul>
     <p>The underwater robot really moves: the propeller pushes it forward, the rudders turn it and the elevators tilt its nose to dive or climb. Like a plane, the fins only work when the vehicle moves through the water. The model is simplified.</p>
     <h2>All the components, from A to Z</h2>
@@ -68,5 +76,9 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Where are underwater robots used?</h2>
+    <p>The sea is dark, deep and without GPS: robots go where divers cannot, for hours or weeks.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Where</th><th class="left">What it does there</th><th class="left">Examples</th></tr><tr><td class="left">Mapping the sea floor</td><td class="left">sonar maps for ports, cables and wind farms</td><td class="left">Kongsberg HUGIN, REMUS</td></tr><tr><td class="left">Pipelines and cables</td><td class="left">follow them and look for damage</td><td class="left">oil and energy industry</td></tr><tr><td class="left">Science</td><td class="left">measure temperature, salt, currents; study animals</td><td class="left">Argo floats, Slocum gliders</td></tr><tr><td class="left">Search</td><td class="left">find wrecks and lost planes</td><td class="left">the search for MH370</td></tr><tr><td class="left">Defence and safety</td><td class="left">detect mines, guard ports</td><td class="left">navies</td></tr></table></div>
+    <ul><li><strong>Strengths</strong>: works deep and for long, without a ship or a pilot, maps large areas.</li><li><strong>Weaknesses</strong>: no GPS or radio under water, so it navigates by dead reckoning; hard to communicate with (sound only, very slow).</li></ul>
   </body>
 </html>

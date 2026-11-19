@@ -33,7 +33,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="humanoid" class="anatbox">
-    <h1>Humanoid <span class="h1tag">3D anatomy</span></h1>
+    <h1>Humanoid <span class="h1tag">2 legs</span></h1>
     <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
     <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
     <div class="andef"><b>Definition</b><p>A <strong>humanoid robot</strong> has the shape of a human body: two legs, a torso, two arms with hands and a head, with about 20 to 50 joints. It is made to work in places and with tools designed for people. Its hardest problem is balance: when it walks it stands on one foot at a time and must keep its centre of mass under control at every instant.</p></div>
@@ -56,7 +56,24 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Battery and computer</b></button><p>The battery sits in the torso, in the middle of the body, and gives 1 to 2 hours of autonomy. The computer runs the balance loop (1 kHz) and, on a second board, vision and planning. Seen in X-ray.</p></div>
       </div>
     </div>
-    <h2>What is inside each joint?</h2>
+<h2 class="part-kin">Kinematics: two legs, a moving centre of mass</h2>
+    <p>A humanoid is a tree of chains: from the pelvis, two legs, a torso, two arms and a head, with 20 to 50 joints. When it walks, each leg is a serial arm whose base (the hip) moves and whose tool (the foot) must land at an exact place. The hard part is not the motion of the joints but the balance: the robot has to keep its weight above the feet.</p>
+    <h3>The leg as a two-link arm</h3>
+    <figure class="figure"><svg viewBox="0 0 360 260" class="fig" role="img" aria-hidden="true">
+  <line x1="40" y1="236" x2="320" y2="236" stroke="#8a99ae" stroke-width="2"/>
+  <circle cx="150" cy="40" r="9" fill="#2f6bff"/><line x1="150" y1="40" x2="195" y2="138" stroke="#ff9f43" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="195" cy="138" r="8" fill="#2f6bff"/><line x1="195" y1="138" x2="160" y2="228" stroke="#ff9f43" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="160" cy="228" r="7" fill="#1d2633"/>
+  <line x1="150" y1="40" x2="160" y2="228" stroke="#8a99ae" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <text x="104" y="34" fill="#2f6bff" font-size="14">hip</text><text x="206" y="142" fill="#2f6bff" font-size="14">knee</text><text x="172" y="232" fill="#1d2633" font-size="14">foot</text>
+  <text x="180" y="92" fill="#ff9f43" font-size="15">L1</text><text x="186" y="190" fill="#ff9f43" font-size="15">L2</text><text x="166" y="140" fill="#8a99ae" font-size="15">d</text></svg></figure>
+    <p>In the plane of the leg, the hip and the knee place the ankle like the shoulder and the elbow of a two-link arm. The distance d from the hip to the ankle fixes the knee angle; the direction of the ankle gives the hip angle.</p>
+    <p class="eq">Knee: cos(π − θ_knee) = (L1² + L2² − d²) / (2 L1 L2) &emsp; Hip: θ_hip = atan2(x, −y) + atan2(L2 sin θ_knee, L1 + L2 cos θ_knee)</p>
+    <h3>Balance: the centre of mass and the support polygon</h3>
+    <p>Standing still, the robot does not fall as long as the vertical through its centre of mass stays inside the support polygon, the area under and between the feet in contact with the floor. Walking fast, it is a controlled fall: the controller keeps the zero-moment point (ZMP), where the ground reaction acts, inside the foot on the ground.</p>
+    <p class="eq">Centre of mass: x_G = Σ mᵢ xᵢ / Σ mᵢ &emsp; Linear inverted pendulum: ẍ_G = (g / h) (x_G − x_ZMP)</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Phase of the step</th><th class="left">Feet on the ground</th><th class="left">What the controller does</th></tr><tr><td class="left">Double support</td><td class="left">2</td><td class="left">moves the weight from one foot to the other</td></tr><tr><td class="left">Single support</td><td class="left">1</td><td class="left">keeps the ZMP in the standing foot and swings the other leg</td></tr><tr><td class="left">Landing</td><td class="left">1 → 2</td><td class="left">absorbs the impact with the knee and the ankle</td></tr></table></div>
+    <h2 class="part-in">What is inside each joint?</h2>
     <ul><li><strong>About 30 actuators</strong>: a brushless motor with a harmonic or planetary gearbox at each joint, or an electric linear actuator (motor and ball screw) for the knee and the ankle. Hydraulic humanoids use oil instead.</li><li><strong>Sensors for balance</strong>: an IMU in the pelvis (attitude and acceleration), an encoder on every joint, and force and torque sensors in the feet that tell where the load is.</li><li><strong>Walking control</strong>: a footstep planner, a model of the body as an inverted pendulum (the centre of mass and the zero-moment point), then whole-body inverse kinematics and joint torque control at 1 kHz.</li><li><strong>Energy and heat</strong>: walking uses a lot of power even when standing still, because the leg motors have to hold the weight; the battery and the motors need cooling.</li></ul>
     <p>The humanoid really walks: a gait generator moves each foot (backwards under the body while it is on the ground, forwards in the air) and the two-link inverse kinematics of the leg finds the hip and knee angles that put the ankle there; the ankle then keeps the foot flat. When it stands, the hips move so that the centre of mass (computed from the mass of every part) stays over the feet: crouch and raise an arm to see it. When it walks, the centre of mass leaves the support area at each step, so the balance is dynamic, a controlled fall; real humanoids add feedback from the IMU and the force sensors (ZMP or model predictive control). The model is simplified: the real inside depends on the make.</p>
     <h2>All the components, from A to Z</h2>
@@ -68,5 +85,9 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Where are humanoids used?</h2>
+    <p>Humanoids are made to work in places built for people, with the same stairs, doors, tools and shelves. Most are still being tested, but the first ones now work in factories and warehouses.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Where</th><th class="left">What it does there</th><th class="left">Examples</th></tr><tr><td class="left">Car factories</td><td class="left">carry parts, feed the assembly line</td><td class="left">Figure 02, Apptronik Apollo</td></tr><tr><td class="left">Warehouses</td><td class="left">move totes from shelves to conveyors</td><td class="left">Agility Digit</td></tr><tr><td class="left">Research</td><td class="left">study walking, balance and manipulation</td><td class="left">Boston Dynamics Atlas, Unitree H1</td></tr><tr><td class="left">Disaster areas</td><td class="left">open valves, climb ladders, drive a vehicle</td><td class="left">DARPA Robotics Challenge</td></tr><tr><td class="left">Homes and care (future)</td><td class="left">help people at home, in hospitals</td><td class="left">Tesla Optimus, 1X NEO</td></tr></table></div>
+    <ul><li><strong>Strengths</strong>: goes everywhere a person goes, uses the same tools; two arms for real work.</li><li><strong>Weaknesses</strong>: complex and expensive, short battery life (1 to 2 h), balance always to control; a wheeled robot is simpler where the floor is flat.</li></ul>
   </body>
 </html>

@@ -33,7 +33,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="tracked" class="anatbox">
-    <h1>Tracked robot <span class="h1tag">3D anatomy</span></h1>
+    <h1>Tracked robot <span class="h1tag">2 tracks</span></h1>
     <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-mobile.html" style="color:#ff9f43">Wheeled mobile robots course</a></p>
     <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
     <div class="andef"><b>Definition</b><p>A <strong>tracked robot</strong> moves on two tracks, like a small tank. Each track is driven by its own motor, and the robot turns by running one track faster than the other. Tracks spread the weight and grip rough ground: mud, sand, stairs, rubble. Used for rescue, bomb disposal and inspection.</p></div>
@@ -56,7 +56,18 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Radio antenna</b></button><p>Sends the video to the operator and receives the orders: rescue and inspection robots are often driven from far away, out of danger.</p></div>
       </div>
     </div>
-    <h2>What is inside each joint?</h2>
+<h2 class="part-kin">Kinematics: skid steering</h2>
+    <p>A tracked robot is driven like a differential-drive robot: one motor per side, and it turns by running one side faster than the other. But a track touches the ground along its whole length, so to turn it has to slide sideways. The robot turns less than the formula of two wheels predicts, and the real turn depends on the ground.</p>
+    <figure class="figure"><svg viewBox="0 0 360 220" class="fig" role="img" aria-hidden="true">
+        <rect x="70" y="40" width="44" height="140" rx="20" fill="#1d2633"/><rect x="246" y="40" width="44" height="140" rx="20" fill="#1d2633"/><rect x="114" y="60" width="132" height="100" rx="10" fill="#ff9f43"/>
+        <line x1="92" y1="150" x2="92" y2="80" stroke="#2f6bff" stroke-width="4"/><polygon points="92,70 85,84 99,84" fill="#2f6bff"/><text x="40" y="112" fill="#2f6bff" font-size="15">v_L</text>
+        <line x1="268" y1="160" x2="268" y2="54" stroke="#2f6bff" stroke-width="4"/><polygon points="268,44 261,58 275,58" fill="#2f6bff"/><text x="296" y="112" fill="#2f6bff" font-size="15">v_R</text>
+        <line x1="92" y1="196" x2="268" y2="196" stroke="#8a99ae" stroke-width="1.5"/><text x="172" y="214" fill="#8a99ae" font-size="14">B</text></svg></figure>
+    <p class="eq">v = (v_R + v_L) / 2 &emsp; ω = (v_R − v_L) / B_eff &emsp; with B_eff = χ · B, χ ≈ 1.2 to 2 (it depends on the ground)</p>
+    <p>B_eff, the effective track width, is found by experiment: drive the robot in circles and measure. On concrete χ is small; on grass or sand it is larger. The page model uses χ = 1.25.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Track speeds</th><th class="left">Motion</th><th class="left">Turning radius</th></tr><tr><td class="left">v_L = v_R</td><td class="left">straight line</td><td class="left">∞</td></tr><tr><td class="left">v_L ≠ v_R</td><td class="left">turn, with slip</td><td class="left">R = B_eff (v_R + v_L) / (2 (v_R − v_L))</td></tr><tr><td class="left">v_L = −v_R</td><td class="left">turns on the spot</td><td class="left">0</td></tr></table></div>
+    <p>Because the tracks slip, the odometry of a tracked robot drifts much more than with wheels: it is fused with an IMU, a lidar or visual odometry.</p>
+    <h2 class="part-in">What is inside each joint?</h2>
     <ul><li><strong>Two motors, one per track</strong>, each with a gearbox and an encoder: like a differential-drive robot, but the tracks slip when it turns, so the odometry drifts more.</li><li><strong>Rough ground</strong>: low pressure on the ground, stairs and rubble; some robots add flippers at the front to climb higher obstacles.</li><li><strong>Uses</strong>: rescue, bomb disposal, inspection of tunnels and nuclear plants, agriculture and construction.</li></ul>
     <p>The tracked robot really drives: each track has its own motor, and the robot turns by running one track faster than the other (skid steering). The tracks have to slide sideways to turn, so it turns less than a robot on two wheels and uses more energy; that is the price for crossing rough ground. The model is simplified.</p>
     <h2>All the components, from A to Z</h2>
@@ -68,5 +79,9 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Where are tracked robots used?</h2>
+    <p>Tracks spread the weight and grip rough ground: tracked robots go where wheels would sink or slip, often sent in place of a person.</p>
+    <div class="cmp-wrap"><table class="dh "><tr><th class="left">Where</th><th class="left">What it does there</th><th class="left">Examples</th></tr><tr><td class="left">Bomb disposal</td><td class="left">approach a suspect package, open it, neutralise it</td><td class="left">Teledyne FLIR PackBot, Nexter Nerva</td></tr><tr><td class="left">Rescue</td><td class="left">enter collapsed buildings, look for people</td><td class="left">rescue teams</td></tr><tr><td class="left">Nuclear and dangerous sites</td><td class="left">measure radiation, carry tools</td><td class="left">Fukushima robots</td></tr><tr><td class="left">Agriculture</td><td class="left">weed and work in fields without packing the soil</td><td class="left">Naïo Orio, AgXeed</td></tr><tr><td class="left">Construction and pipes</td><td class="left">inspect pipes, tunnels and building sites</td><td class="left">pipe inspection crawlers</td></tr></table></div>
+    <ul><li><strong>Strengths</strong>: crosses mud, sand, stairs and rubble, very stable, can carry an arm and heavy loads.</li><li><strong>Weaknesses</strong>: slow, uses more energy to turn, wears the tracks and the floors, odometry not precise.</li></ul>
   </body>
 </html>

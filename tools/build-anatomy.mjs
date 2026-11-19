@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { REG, reset, tx, P, UL } from './lib.mjs';
+import { EXTRA } from './robot-extras.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 const ALLCOL = ['#2f6bff', '#2e9e5b', '#ff9f43', '#8a5cf6', '#ff5a5f', '#1fb5c9'];
@@ -174,7 +175,7 @@ const ROBOTS = {
     ]
   },
   quadrotor: {
-    file: 'anatomy-quadrotor', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-quadrotor', tag: ['4 rotors', '4 hélices'], robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a quadrotor (3D)', 'Anatomie d\'un quadrirotor (3D)'], short: ['Drone', 'Drone'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Motor 1 failure on / off', 'Panne du moteur 1 on / off'],
     note: ['The drone really flies: a rigid-body simulation (mass 1.2 kg, thrust-to-weight ratio 2) with a flight controller and a mixer that turns your four commands into the four motor thrusts. Roll and pitch are target angles: to go sideways the drone has to tilt first, because it is underactuated (6 degrees of freedom, 4 motors). The two blue propellers turn one way and the two white ones the other way, so that their reaction torques cancel; the yaw command makes them unequal. The model is simplified.', 'Le drone vole vraiment : une simulation de corps rigide (masse 1,2 kg, rapport poussée/poids 2) avec un contrôleur de vol et un mélangeur qui transforme vos quatre commandes en poussées des quatre moteurs. Roulis et tangage sont des angles visés : pour aller de côté le drone doit d\'abord s\'incliner, car il est sous-actionné (6 degrés de liberté, 4 moteurs). Les deux hélices bleues tournent dans un sens et les deux blanches dans l\'autre, pour que leurs couples de réaction s\'annulent ; la commande de lacet les rend inégales. Le modèle est simplifié.'],
@@ -195,7 +196,7 @@ const ROBOTS = {
     ]
   },
   humanoid: {
-    file: 'anatomy-humanoid', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-humanoid', tag: ['2 legs', '2 jambes'], robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a humanoid robot (3D)', 'Anatomie d\'un robot humanoïde (3D)'], short: ['Humanoid', 'Humanoïde'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Walk on / off', 'Marche on / off'],
     note: ['The humanoid really walks: a gait generator moves each foot (backwards under the body while it is on the ground, forwards in the air) and the two-link inverse kinematics of the leg finds the hip and knee angles that put the ankle there; the ankle then keeps the foot flat. When it stands, the hips move so that the centre of mass (computed from the mass of every part) stays over the feet: crouch and raise an arm to see it. When it walks, the centre of mass leaves the support area at each step, so the balance is dynamic, a controlled fall; real humanoids add feedback from the IMU and the force sensors (ZMP or model predictive control). The model is simplified: the real inside depends on the make.', 'Le humanoïde marche vraiment : un générateur de marche déplace chaque pied (vers l\'arrière sous le corps tant qu\'il est au sol, vers l\'avant en l\'air) et la cinématique inverse à deux segments de la jambe trouve les angles de hanche et de genou qui placent la cheville là ; la cheville garde ensuite le pied à plat. Debout, les hanches se déplacent pour que le centre de masse (calculé à partir de la masse de chaque pièce) reste au-dessus des pieds : accroupissez-vous et levez un bras pour le voir. Quand il marche, le centre de masse sort de la surface d\'appui à chaque pas, donc l\'équilibre est dynamique, une chute contrôlée ; les vrais humanoïdes ajoutent un retour de la centrale inertielle et des capteurs de force (ZMP ou commande prédictive). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
@@ -216,7 +217,7 @@ const ROBOTS = {
     ]
   },
   tracked: {
-    file: 'anatomy-tracked', robotPage: null, backHref: 'learn-mobile.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-tracked', tag: ['2 tracks', '2 chenilles'], robotPage: null, backHref: 'learn-mobile.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a tracked robot (3D)', 'Anatomie d\'un robot à chenilles (3D)'], short: ['Tracked robot', 'Robot à chenilles'], back: ['Wheeled mobile robots course', 'Cours Robots mobiles à roues'],
     special: ['Turn on the spot', 'Tourner sur place'],
     note: ['The tracked robot really drives: each track has its own motor, and the robot turns by running one track faster than the other (skid steering). The tracks have to slide sideways to turn, so it turns less than a robot on two wheels and uses more energy; that is the price for crossing rough ground. The model is simplified.', 'Le robot à chenilles roule vraiment : chaque chenille a son propre moteur, et le robot tourne en faisant aller une chenille plus vite que l\'autre (direction par glissement). Les chenilles doivent glisser de côté pour tourner, donc il tourne moins qu\'un robot à deux roues et consomme plus d\'énergie ; c\'est le prix pour passer sur un terrain difficile. Le modèle est simplifié.'],
@@ -236,7 +237,7 @@ const ROBOTS = {
     ]
   },
   quadruped: {
-    file: 'anatomy-quadruped', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-quadruped', tag: ['4 legs', '4 pattes'], robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a quadruped robot (3D)', 'Anatomie d\'un robot quadrupède (3D)'], short: ['Quadruped', 'Quadrupède'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Trot on / off', 'Trot on / off'],
     note: ['The quadruped really trots: the legs go in two diagonal pairs (front left with rear right, then front right with rear left). For each leg, a small inverse kinematics finds the three angles (abduction, hip, knee) that put the foot where the gait wants it, even when you tilt the body. The model is simplified; real robots such as Spot or ANYmal add force control in every joint.', 'Le quadrupède trotte vraiment : les pattes avancent par deux paires en diagonale (avant gauche avec arrière droite, puis avant droite avec arrière gauche). Pour chaque patte, une petite cinématique inverse trouve les trois angles (abduction, hanche, genou) qui posent le pied là où la marche le veut, même quand vous inclinez le corps. Le modèle est simplifié ; les vrais robots comme Spot ou ANYmal ajoutent une commande en effort dans chaque articulation.'],
@@ -256,7 +257,7 @@ const ROBOTS = {
     ]
   },
   auv: {
-    file: 'anatomy-auv', robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-auv', tag: ['AUV', 'AUV'], robotPage: null, backHref: 'learn-world.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of an underwater robot (3D)', 'Anatomie d\'un robot sous-marin (3D)'], short: ['Underwater robot', 'Robot sous-marin'], back: ['Robots in the real world course', 'Cours Les robots dans le monde réel'],
     special: ['Turn to the right', 'Virer à droite'],
     note: ['The underwater robot really moves: the propeller pushes it forward, the rudders turn it and the elevators tilt its nose to dive or climb. Like a plane, the fins only work when the vehicle moves through the water. The model is simplified.', 'Le robot sous-marin se déplace vraiment : l\'hélice le pousse vers l\'avant, les gouvernes de direction le font tourner et les gouvernes de profondeur inclinent son nez pour plonger ou remonter. Comme pour un avion, les gouvernes n\'agissent que si le véhicule avance dans l\'eau. Le modèle est simplifié.'],
@@ -370,7 +371,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="${key}" class="anatbox">
-    <h1>${R.short ? `${tx(...R.short)} <span class="h1tag">${tx('3D anatomy', 'anatomie 3D')}</span>` : tx(...R.title)}</h1>
+    <h1>${R.short ? `${tx(...R.short)} <span class="h1tag">${R.tag ? tx(...R.tag) : tx('3D anatomy', 'anatomie 3D')}</span>` : tx(...R.title)}</h1>
     <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
     <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
     <div class="andef"><b>${tx('Definition', 'Définition')}</b><p>${tx(...DEFS[key])}</p></div>
@@ -387,7 +388,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
         ${cards}
       </div>
     </div>
-    <h2>${tx('What is inside each joint?', 'Que contient chaque articulation ?')}</h2>
+${EXTRA[key] ? EXTRA[key].kin().join('\n    ') + '\n' : ''}    <h2${EXTRA[key] ? ' class="part-in"' : ''}>${tx('What is inside each joint?', 'Que contient chaque articulation ?')}</h2>
     ${UL(R.inside)}
     ${P(...(R.note || NOTE))}
 ${R.noSys ? '' : `    <h2>${tx('All the components, from A to Z', 'Tous les composants, de A à Z')}</h2>
@@ -399,7 +400,7 @@ ${R.noSys ? '' : `    <h2>${tx('All the components, from A to Z', 'Tous les comp
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     ${R.noSys ? '' : '<script type="module" src="system-demo.js"></script>'}
-  </body>
+${EXTRA[key] ? '    ' + EXTRA[key].apps().join('\n    ') + '\n' : ''}  </body>
 </html>
 `;
   fs.writeFileSync(path.join(root, R.file + '.html'), html);

@@ -5,6 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Anatomie d'un robot quadrupède (3D)</title>
+    <!-- seo -->
+    <meta name="description" content="Anatomie 3D d'un robot quadrupède qui trotte vraiment : 12 articulations, pattes, caméras, batterie et ordinateur, avec un mode rayons X." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped-fr" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped" />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Anatomie d'un robot quadrupède (3D)" />
+    <meta property="og:description" content="Anatomie 3D d'un robot quadrupède qui trotte vraiment : 12 articulations, pattes, caméras, batterie et ordinateur, avec un mode rayons X." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/anatomy-quadruped-fr" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="anatomy.css" />
     <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
@@ -15,7 +34,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="quadruped" class="anatbox">
-    <h1>Quadrupède <span class="h1tag">anatomie 3D</span></h1>
+    <h1>Quadrupède <span class="h1tag">4 pattes</span></h1>
     <p><a href="index-fr.html" style="color:#ff9f43">← Liste des robots</a> · <a href="learn-world-fr.html" style="color:#ff9f43">Cours Les robots dans le monde réel</a></p>
     <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
     <div class="andef"><b>Définition</b><p>Un <strong>robot quadrupède</strong> marche sur quatre pattes, comme un chien. Chaque patte a trois articulations (sur le côté à la hanche, vers l'avant à la hanche, le genou), donc 12 moteurs en tout. Sur quatre pattes il est stable à l'arrêt et il va là où les roues ne passent pas : escaliers, gravier, boue. Exemples : Spot de Boston Dynamics, ANYmal d'ANYbotics, Go2 d'Unitree.</p></div>
@@ -38,7 +57,23 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Hanche (sur le côté)</b></button><p>L'articulation d'abduction écarte la patte sur le côté. Elle garde les pieds sous le corps quand le corps roule, et permet de marcher en crabe.</p></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
+<h2 class="part-kin">Cinématique : quatre pattes de trois articulations</h2>
+    <p>Chaque patte est un petit bras série à 3 articulations : abduction (la patte s'écarte sur le côté), hanche et genou. Avec les 6 degrés de liberté du corps, le robot a 18 coordonnées à commander, et 12 moteurs pour le faire. Les pieds au sol ferment la boucle : comme un robot parallèle, le corps peut bouger dans les 6 directions pendant que les pieds restent immobiles.</p>
+    <figure class="figure"><svg viewBox="0 0 360 260" class="fig" role="img" aria-hidden="true">
+  <line x1="40" y1="236" x2="320" y2="236" stroke="#8a99ae" stroke-width="2"></line>
+  <circle cx="150" cy="40" r="9" fill="#2f6bff"></circle><line x1="150" y1="40" x2="110" y2="138" stroke="#ff9f43" stroke-width="10" stroke-linecap="round"></line>
+  <circle cx="110" cy="138" r="8" fill="#2f6bff"></circle><line x1="110" y1="138" x2="160" y2="228" stroke="#ff9f43" stroke-width="8" stroke-linecap="round"></line>
+  <circle cx="160" cy="228" r="7" fill="#1d2633"></circle>
+  <line x1="150" y1="40" x2="160" y2="228" stroke="#8a99ae" stroke-width="1.5" stroke-dasharray="5 5"></line>
+  <text x="104" y="34" fill="#2f6bff" font-size="14">hanche</text><text x="58" y="142" fill="#2f6bff" font-size="14">genou</text><text x="172" y="232" fill="#1d2633" font-size="14">pied</text>
+  <text x="116" y="92" fill="#ff9f43" font-size="15">L1</text><text x="120" y="190" fill="#ff9f43" font-size="15">L2</text><text x="166" y="140" fill="#8a99ae" font-size="15">d</text></svg></figure>
+    <h3>Cinématique inverse d'une patte</h3>
+    <p>D'abord l'abduction tourne le plan de la patte pour qu'il contienne le pied ; ensuite, dans ce plan, hanche et genou fonctionnent comme un bras à deux segments. Sur la plupart des quadrupèdes le genou pointe vers l'arrière : on prend donc la deuxième solution du coude.</p>
+    <p class="eq">Abduction : γ = atan2(z, −y)   Distance dans le plan : d = √(x² + y² + z²)   Genou : cos(π − θ_g) = (L1² + L2² − d²) / (2 L1 L2)</p>
+    <h3>Les allures</h3>
+    <p>Une allure dit quelles pattes bougent ensemble. Le facteur de service est la part du cycle que chaque pied passe au sol : au-dessus de 0,5, au moins deux pieds touchent toujours le sol.</p>
+    <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Allure</th><th class="left">Pattes ensemble</th><th class="left">Facteur de service</th><th class="left">Usage</th></tr><tr><td class="left">Pas</td><td class="left">une par une</td><td class="left">0.75</td><td class="left">lent, toujours 3 pieds au sol : stable en terrain difficile</td></tr><tr><td class="left">Trot</td><td class="left">paires en diagonale</td><td class="left">0.5</td><td class="left">l'allure habituelle des robots chiens (cette page)</td></tr><tr><td class="left">Amble</td><td class="left">paires du même côté</td><td class="left">0.5</td><td class="left">rare sur les robots : le corps roule</td></tr><tr><td class="left">Galop / bond</td><td class="left">paire avant, puis paire arrière</td><td class="left">&lt; 0,5</td><td class="left">rapide, avec des phases de vol</td></tr></tbody></table></div>
+    <h2 class="part-in">Que contient chaque articulation ?</h2>
     <ul><li><strong>12 actionneurs</strong> : trois par patte (abduction, hanche, genou), chacun un moteur sans balais avec un réducteur planétaire, tous placés dans le corps ou à la hanche pour que les pattes restent légères.</li><li><strong>Équilibre</strong> : une centrale inertielle dans le corps, un codeur sur chaque articulation et le ressenti des pieds ; sur 4 pattes le robot est stable à l'arrêt, et au trot deux pieds sont toujours au sol.</li><li><strong>Usages</strong> : inspection d'usines, de tunnels, de plateformes pétrolières et de centrales, transport de capteurs là où les roues ne passent pas (escaliers, gravier, boue).</li></ul>
     <p>Le quadrupède trotte vraiment : les pattes avancent par deux paires en diagonale (avant gauche avec arrière droite, puis avant droite avec arrière gauche). Pour chaque patte, une petite cinématique inverse trouve les trois angles (abduction, hanche, genou) qui posent le pied là où la marche le veut, même quand vous inclinez le corps. Le modèle est simplifié ; les vrais robots comme Spot ou ANYmal ajoutent une commande en effort dans chaque articulation.</p>
     <h2>Tous les composants, de A à Z</h2>
@@ -50,6 +85,10 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Où utilise-t-on les quadrupèdes ?</h2>
+    <p>Les robots chiens portent des capteurs là où les roues ne passent pas : escaliers, gravier, boue, câbles au sol. Ils servent surtout à l'inspection, souvent pilotés de loin ou en suivant seuls un trajet enregistré.</p>
+    <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Où</th><th class="left">Ce qu'il y fait</th><th class="left">Exemples</th></tr><tr><td class="left">Sites industriels</td><td class="left">lire des manomètres, mesurer la chaleur et les fuites de gaz, écouter les machines</td><td class="left">Boston Dynamics Spot, ANYbotics ANYmal</td></tr><tr><td class="left">Chantiers</td><td class="left">scanner le bâtiment chaque jour et le comparer aux plans</td><td class="left">Spot + 3D scanner</td></tr><tr><td class="left">Mines et tunnels</td><td class="left">cartographier des lieux sombres et dangereux</td><td class="left">ANYmal X (ATEX)</td></tr><tr><td class="left">Secours et sécurité</td><td class="left">entrer en premier dans des bâtiments effondrés ou dangereux</td><td class="left">police et pompiers</td></tr><tr><td class="left">Recherche et enseignement</td><td class="left">apprendre la locomotion à pattes, l'apprentissage par renforcement</td><td class="left">Unitree Go2, MIT Mini Cheetah</td></tr></tbody></table></div>
+    <ul><li><strong>Points forts</strong> : stable sur 4 pattes, monte escaliers et marches, porte 10 à 15 kg de capteurs.</li><li><strong>Points faibles</strong> : environ 90 minutes de batterie, plus lent et plus fragile qu'un robot à roues ou à chenilles sur sol plat.</li></ul>
   
 
 </body>

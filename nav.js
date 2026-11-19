@@ -672,6 +672,12 @@
     }
     // 3D anatomy pages: 1. the robot in 3D (the model, X-ray, the axes), 2. inside each joint, 3. all the components
     const anat = body.querySelector(':scope > .anat');
+    // the robots that have their own anatomy page (humanoid, quadruped, drone, underwater, tracked): four parts like the other robots
+    const kin = body.querySelector(':scope > h2.part-kin'), pin = body.querySelector(':scope > h2.part-in'), apps = body.querySelector(':scope > h2.part-apps');
+    if (h1 && anat && kin && pin && apps && !body.querySelector('.ptabs')) {
+      const first = body.querySelector(':scope > p.lead') || anat;
+      makeTabs([first, kin, pin, apps], fr ? ['Aperçu', 'Cinématique', 'Anatomie', 'Applications'] : ['Overview', 'Kinematics', 'Anatomy', 'Applications'], ['robot', 'kinematics', 'anatomy', 'uses']);
+    }
     if (h1 && anat && bodyH2.length >= 2 && !body.querySelector('.ptabs')) {
       const first = body.querySelector(':scope > p.lead') || anat;
       makeTabs([first, bodyH2[0], bodyH2[1]], fr ? ['Le robot en 3D', 'Dans chaque articulation', 'Tous les composants'] : ['The robot in 3D', 'Inside each joint', 'All the components'], ['robot', 'joints', 'components']);

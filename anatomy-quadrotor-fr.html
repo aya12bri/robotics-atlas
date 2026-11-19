@@ -5,6 +5,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Anatomie d'un quadrirotor (3D)</title>
+    <!-- seo -->
+    <meta name="description" content="Anatomie 3D d'un drone quadrirotor qui vole vraiment : moteurs, ESC, contrôleur de vol, batterie et capteurs, avec un mode rayons X." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/anatomy-quadrotor-fr" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/anatomy-quadrotor" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/anatomy-quadrotor-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/anatomy-quadrotor" />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Anatomie d'un quadrirotor (3D)" />
+    <meta property="og:description" content="Anatomie 3D d'un drone quadrirotor qui vole vraiment : moteurs, ESC, contrôleur de vol, batterie et capteurs, avec un mode rayons X." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/anatomy-quadrotor-fr" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="anatomy.css" />
     <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
@@ -15,7 +34,7 @@
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
   <body data-robot="quadrotor" class="anatbox">
-    <h1>Drone <span class="h1tag">anatomie 3D</span></h1>
+    <h1>Drone <span class="h1tag">4 hélices</span></h1>
     <p><a href="index-fr.html" style="color:#ff9f43">← Liste des robots</a> · <a href="learn-world-fr.html" style="color:#ff9f43">Cours Les robots dans le monde réel</a></p>
     <p class="lead">Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.</p>
     <div class="andef"><b>Définition</b><p>Un <strong>quadrirotor</strong> est un robot volant porté par quatre hélices. Deux tournent dans le sens horaire et deux dans le sens antihoraire pour que leurs couples de réaction s'annulent. Il n'a que quatre moteurs pour six degrés de liberté (il est sous-actionné) : pour se déplacer de côté il doit d'abord s'incliner. Un contrôleur de vol avec une centrale inertielle le stabilise des centaines de fois par seconde.</p></div>
@@ -38,7 +57,19 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Capteurs et charge</b></button><p>GPS et boussole pour la position, baromètre pour l'altitude, et ici une caméra sur nacelle. D'autres drones portent des lidars, des pulvérisateurs ou des colis.</p></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
+<h2 class="part-kin">Cinématique et dynamique : 6 directions, 4 moteurs</h2>
+    <p>Un drone se déplace dans 6 directions (3 positions, 3 angles) mais n'a que 4 moteurs : il est sous-actionné. Il ne peut pas pousser directement sur le côté : pour avancer, il s'incline d'abord, pour qu'une partie de la poussée pointe vers l'avant. C'est pourquoi sa position et son attitude sont commandées par deux boucles imbriquées.</p>
+    <figure class="figure"><svg viewBox="0 0 360 200" class="fig" role="img" aria-hidden="true">
+        <line x1="60" y1="100" x2="300" y2="100" stroke="#1d2633" stroke-width="6" stroke-linecap="round"></line><rect x="160" y="88" width="40" height="24" rx="6" fill="#2f6bff"></rect>
+        <ellipse cx="60" cy="90" rx="34" ry="6" fill="#8a99ae" opacity="0.6"></ellipse><ellipse cx="300" cy="90" rx="34" ry="6" fill="#8a99ae" opacity="0.6"></ellipse>
+        <line x1="60" y1="84" x2="60" y2="30" stroke="#ff9f43" stroke-width="3"></line><polygon points="60,22 54,34 66,34" fill="#ff9f43"></polygon><text x="70" y="40" fill="#ff9f43" font-size="15">T1</text>
+        <line x1="300" y1="84" x2="300" y2="30" stroke="#ff9f43" stroke-width="3"></line><polygon points="300,22 294,34 306,34" fill="#ff9f43"></polygon><text x="310" y="40" fill="#ff9f43" font-size="15">T3</text>
+        <line x1="180" y1="112" x2="180" y2="180" stroke="#e5484d" stroke-width="3"></line><polygon points="180,188 174,176 186,176" fill="#e5484d"></polygon><text x="190" y="176" fill="#e5484d" font-size="15">m g</text></svg></figure>
+    <p class="eq">Poussée d'une hélice : T = k ω²   Vol stationnaire : T₁ + T₂ + T₃ + T₄ = m g</p>
+    <p class="eq">Couple de roulis : τ_x = ℓ (T₄ − T₂)   Tangage : τ_y = ℓ (T₁ − T₃)   Lacet : τ_z = c (T₁ − T₂ + T₃ − T₄)</p>
+    <p>Le mélangeur transforme les 4 commandes du pilote ou de l'autopilote (poussée totale, roulis, tangage, lacet) en 4 vitesses de moteurs. Deux hélices tournent dans le sens horaire et deux dans l'autre sens, pour que leurs couples de réaction s'annulent ; les rendre inégales fait tourner le drone sur lui-même.</p>
+    <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Boucle</th><th class="left">Mesure</th><th class="left">Commande</th><th class="left">Fréquence</th></tr><tr><td class="left">Attitude (intérieure)</td><td class="left">angles par la centrale inertielle</td><td class="left">couples → moteurs</td><td class="left">500 Hz – 8 kHz</td></tr><tr><td class="left">Position (extérieure)</td><td class="left">GNSS, caméra, baromètre</td><td class="left">angles d'inclinaison à atteindre</td><td class="left">10 – 50 Hz</td></tr></tbody></table></div>
+    <h2 class="part-in">Que contient chaque articulation ?</h2>
     <ul><li><strong>Boucles de commande de vol</strong> : une boucle interne sur les vitesses angulaires (environ 1 kHz), puis la boucle d'attitude, puis la position et l'altitude ; c'est une cascade de boucles PID comme celles du cours de commande.</li><li><strong>Mélangeur</strong> : le contrôleur demande une poussée totale et trois couples (roulis, tangage, lacet) ; le mélangeur les transforme en quatre poussées de moteurs. Essayez le bouton de panne : avec un moteur perdu, trois moteurs ne peuvent pas donner les quatre valeurs voulues et le drone culbute.</li><li><strong>Estimation d'état</strong> : la centrale inertielle dérive, donc l'attitude vient d'un filtre (complémentaire ou Kalman) qui fusionne le gyroscope, l'accéléromètre, la boussole, et le GPS et le baromètre pour la position (cours perception).</li><li><strong>Sécurité</strong> : retour au point de départ, zones interdites, mode de secours en cas de perte de la liaison radio, et les règles du pays pour faire voler des drones.</li></ul>
     <p>Le drone vole vraiment : une simulation de corps rigide (masse 1,2 kg, rapport poussée/poids 2) avec un contrôleur de vol et un mélangeur qui transforme vos quatre commandes en poussées des quatre moteurs. Roulis et tangage sont des angles visés : pour aller de côté le drone doit d'abord s'incliner, car il est sous-actionné (6 degrés de liberté, 4 moteurs). Les deux hélices bleues tournent dans un sens et les deux blanches dans l'autre, pour que leurs couples de réaction s'annulent ; la commande de lacet les rend inégales. Le modèle est simplifié.</p>
     <h2>Tous les composants, de A à Z</h2>
@@ -50,6 +81,10 @@
       if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
     </script>
     <script type="module" src="system-demo.js"></script>
+    <h2 class="part-apps">Où utilise-t-on les drones ?</h2>
+    <p>Un drone porte une caméra ou un capteur en hauteur, vite et pour pas cher. La plupart des drones professionnels volent une mission préparée à l'avance, avec un pilote qui surveille et peut reprendre la main.</p>
+    <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Où</th><th class="left">Ce qu'il y fait</th><th class="left">Exemples</th></tr><tr><td class="left">Inspection</td><td class="left">ponts, lignes électriques, éoliennes, toitures</td><td class="left">DJI Matrice, Skydio X10</td></tr><tr><td class="left">Cartographie et topographie</td><td class="left">modèles 3D de terrains et de bâtiments (photogrammétrie, lidar)</td><td class="left">drones RTK</td></tr><tr><td class="left">Agriculture</td><td class="left">surveiller les cultures, pulvériser juste où il faut</td><td class="left">DJI Agras</td></tr><tr><td class="left">Livraison</td><td class="left">médicaments, sang, petits colis</td><td class="left">Zipline, Wing</td></tr><tr><td class="left">Secours et cinéma</td><td class="left">chercher des personnes avec une caméra thermique, filmer du ciel</td><td class="left">pompiers, équipes de tournage</td></tr></tbody></table></div>
+    <ul><li><strong>Points forts</strong> : rapide, voit d'en haut, fait du sur-place, peu cher à l'achat et à l'usage.</li><li><strong>Points faibles</strong> : 20 à 40 minutes de vol, sensible au vent et à la pluie, règles de vol strictes.</li></ul>
   
 
 </body>
