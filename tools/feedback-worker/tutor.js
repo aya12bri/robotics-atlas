@@ -100,22 +100,27 @@ export async function tutorStatus(env, url) {
       }
     }
   } else out.gemini = 'no key: add the secret GEMINI_API_KEY in Cloudflare (Settings → Variables and Secrets)';
-  out.order = 'Gemini first, then Claude if Gemini fails';
+  out.order = 'Gemini first (the model that answered last, then the others), then Claude if Gemini fails';
+  out.gemini_last_winner = geminiBest || 'none yet (since this Worker started)';
   out.note = 'The Claude credit balance is not checked here: see platform.claude.com → Settings → Billing.';
   return new Response(JSON.stringify(out, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
 // Gemini, streamed: yields the text pieces; throws (with .status) before the first piece when it cannot answer
 // one Gemini model, streamed: yields the text pieces; throws (with a short reason) when it cannot answer
+const geminiThink = {};
 async function* geminiStream(env, model, system, contents, signal) {
   const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
     method: 'POST', signal,
     headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
     body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
   });
-  let r = await call({ thinkingBudget: 0 });                              // older Flash models: no thinking
-  if (r.status === 400) r = await call({ thinkingLevel: 'minimal' });     // newer Flash models: the least thinking
-  if (r.status === 400) r = await call(null);                             // the model's own default
+  // the least thinking each model accepts: no thinking (older Flash), 'minimal' (newer ones) or its own default.
+  // The one that worked is remembered, so the next questions do not spend a refused request on the others.
+  const THINK = [{ thinkingBudget: 0 }, { thinkingLevel: 'minimal' }, null];
+  let k = geminiThink[model] || 0, r = await call(THINK[k]);
+  while (r.status === 400 && k < THINK.length - 1) r = await call(THINK[++k]);
+  if (r.ok) geminiThink[model] = k;
   if (!r.ok || !r.body) {
     const raw = await r.text().catch(() => ''); let msg = raw; try { msg = JSON.parse(raw).error.message || raw; } catch (x) { /* not JSON */ }
     const e = new Error(`${r.status} ${msg.slice(0, 80)}`); e.status = r.status; throw e;
@@ -139,13 +144,15 @@ async function* geminiStream(env, model, system, contents, signal) {
   if (why === 'MAX_TOKENS') yield ' …';
 }
 
-// Gemini: the first RACE models of the list are asked at the same time and the first one that starts writing answers
-// (the others are stopped); if none does, the next models are tried one by one. Each model gets up to PER_MODEL_MS to
-// write its first words, all of them together TOTAL_MS; after that, Claude answers. The free models need 10–15 s.
+// Gemini, sparing the free quota: the question goes first to the model that answered last time (remembered while this
+// Worker runs), and only to it. If it fails at once (quota, busy server) the next model is asked at once; if it has written
+// nothing after HEDGE_MS, the next model is asked too and the first one that writes answers (the other is stopped).
+// Each model gets up to PER_MODEL_MS to write its first words, all of them together TOTAL_MS; after that, Claude answers.
+let geminiBest = '';
 async function* askGemini(env, system, history, question) {
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
-  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 20000), TOTAL_MS = +(env.GEMINI_TOTAL_MS || 30000), RACE = +(env.GEMINI_RACE || 2), end = Date.now() + TOTAL_MS;
-  const list = geminiList(env), fails = [];
+  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 20000), TOTAL_MS = +(env.GEMINI_TOTAL_MS || 30000), HEDGE_MS = +(env.GEMINI_HEDGE_MS || 12000), end = Date.now() + TOTAL_MS;
+  const list = geminiList(env), order = list.includes(geminiBest) ? [geminiBest, ...list.filter((m) => m !== geminiBest)] : list, fails = [];
   const start = (model) => {
     const wait = Math.min(PER_MODEL_MS, end - Date.now()), ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), wait);
     const gen = geminiStream(env, model, system, contents, ctl.signal);
@@ -154,35 +161,38 @@ async function* askGemini(env, system, history, question) {
     return { model, gen, ctl, timer, first };
   };
   const stop = (x) => { clearTimeout(x.timer); x.ctl.abort(); };
-  const groups = [list.slice(0, RACE), ...list.slice(RACE).map((m) => [m])];
-  for (const group of groups) {
-    if (end - Date.now() < 2000) { fails.push(`${group.join(', ')} not tried (no time left)`); continue; }
-    let left = group.map(start), win = null;
-    while (left.length && !win) {
-      const { x, v } = await Promise.race(left.map((x) => x.first.then((v) => ({ x, v }))));
-      left = left.filter((y) => y !== x);
-      if (v.ok) win = { x, v };
-      else { fails.push(`${x.model} ${v.why}`); clearTimeout(x.timer); if (v.refusal) { left.forEach(stop); const e = new Error('gemini: ' + fails.join(' / ')); e.status = 'refusal'; throw e; } }
-    }
-    left.forEach(stop);                                                   // the slower ones are stopped
-    if (!win) continue;
-    clearTimeout(win.x.timer);                                            // the winner has no limit for the whole answer…
-    yield win.v.piece;
-    const IDLE_MS = +(env.GEMINI_IDLE_MS || 15000);                       // …but if it stops sending for IDLE_MS, give up
-    for (;;) {
-      let idle;
-      const step = await Promise.race([win.x.gen.next(), new Promise((res) => { idle = setTimeout(() => res('idle'), IDLE_MS); })])
-        .catch((e) => 'error');
-      clearTimeout(idle);
-      if (step === 'idle' || step === 'error') {
-        win.x.ctl.abort();
-        const x = new Error(`gemini: cut in the middle (${step === 'idle' ? 'nothing for ' + IDLE_MS / 1000 + ' s' : 'error'})`); x.status = 'cut'; throw x;   // keep what it wrote
-      }
-      if (step.done) return;
-      yield step.value;
-    }
+  let next = 0, active = [], win = null;
+  const launch = () => { while (next < order.length) { const m = order[next++]; if (end - Date.now() < 2000) { fails.push(`${m} not tried (no time left)`); continue; } active.push(start(m)); return true; } return false; };
+  launch();
+  while (!win && active.length) {
+    let h; const hedge = new Promise((res) => { h = setTimeout(() => res({ hedge: true }), HEDGE_MS); });
+    const r = await Promise.race([...active.map((x) => x.first.then((v) => ({ x, v }))), hedge]);
+    clearTimeout(h);
+    if (r.hedge) { launch(); continue; }                                  // still nothing: ask the next model too
+    active = active.filter((y) => y !== r.x);
+    if (r.v.ok) { win = r; break; }
+    fails.push(`${r.x.model} ${r.v.why}`); clearTimeout(r.x.timer);
+    if (r.v.refusal) { active.forEach(stop); const e = new Error('gemini: ' + fails.join(' / ')); e.status = 'refusal'; throw e; }
+    if (!active.length) launch();                                         // it failed at once: the next one, now
   }
-  const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = 'all'; throw e;
+  active.forEach(stop);                                                   // the slower one is stopped
+  if (!win) { const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = 'all'; throw e; }
+  geminiBest = win.x.model;                                               // next question: this model first
+  clearTimeout(win.x.timer);                                              // the winner has no limit for the whole answer…
+  yield win.v.piece;
+  const IDLE_MS = +(env.GEMINI_IDLE_MS || 15000);                         // …but if it stops sending for IDLE_MS, give up
+  for (;;) {
+    let idle;
+    const step = await Promise.race([win.x.gen.next(), new Promise((res) => { idle = setTimeout(() => res('idle'), IDLE_MS); })])
+      .catch(() => 'error');
+    clearTimeout(idle);
+    if (step === 'idle' || step === 'error') {
+      win.x.ctl.abort();
+      const x = new Error(`gemini: cut in the middle (${step === 'idle' ? 'nothing for ' + IDLE_MS / 1000 + ' s' : 'error'})`); x.status = 'cut'; throw x;   // keep what it wrote
+    }
+    if (step.done) return;
+    yield step.value;
+  }
 }
 
 export async function tutor(req, env, url) {
