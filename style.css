@@ -1779,3 +1779,19 @@ nav.courses.fold:not(.open) .course.current .cnt { white-space: nowrap; }
 }
 /* short page titles: the name, then its kinematics or "3D anatomy" in a small tag */
 h1 .h1tag { display: inline-block; vertical-align: middle; margin-left: 0.5rem; padding: 0.2rem 0.65rem; border-radius: 999px; font-family: var(--mono); font-size: 0.32em; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 70%, transparent); }
+
+/* system demo: the buttons in a bar above the picture (never on top of each other), a picture as tall as the screen allows */
+.sys-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0 0 0.5rem; }
+.sysdemo .sys-bar .sys-views, .sysdemo.sys-how-on .sys-bar .sys-views { position: static; transform: none; top: auto; left: auto; bottom: auto; }
+.sysdemo .sys-bar .sys-ctl { position: static; max-width: none; margin-left: auto; }
+.sysdemo.light .sys-bar .sys-views { box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.35); }
+.sysdemo .sys-stage { height: clamp(480px, calc(100vh - 150px), 820px); }
+.sysdemo.sys-how-on .sys-stage { height: clamp(560px, calc(100vh - 120px), 900px); }
+.sysdemo.sys-how-on .sys-flow { width: min(560px, calc(100% - 400px)); }
+.sysdemo.sys-how-on .sys-hcard { width: 176px; }
+.sys-frame:fullscreen { display: flex; flex-direction: column; padding: 10px; background: var(--bg); }
+.sys-frame:fullscreen .sys-stage { flex: 1; height: auto !important; }
+@media (max-width: 600px) { .sysdemo .sys-stage { height: 460px; } .sysdemo.sys-narrow.sys-how-on .sys-stage { height: 520px; } .sys-bar .sys-ctl { margin-left: 0; } }
+.sysdemo.sys-tight .sys-hcard span { display: none; }
+.sysdemo.sys-tight .sys-hcard.on span, .sysdemo.sys-tight .sys-hcard.sel span, .sysdemo.sys-tight .sys-hcard:hover span { display: block; }
+@media (max-width: 1000px) { .sysdemo.sys-how-on .sys-flow { width: calc(100% - 20px); } }
