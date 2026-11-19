@@ -610,57 +610,47 @@
     }
     // long pages in three parts, with a menu on the left that lists every title. starts: the three body children where the
     // parts begin; T: the names of the parts; IDS: their addresses. One part is shown at a time; a title opens its part.
+    // long pages in parts, shown as tabs across the top of the page (one part at a time), and under them the titles of
+    // the open part. starts: the body children where the parts begin; T: the names of the parts; IDS: their addresses.
     const makeTabs = (starts, T, IDS) => {
       const kids = [...body.children], at = starts.map((el) => kids.indexOf(el));
       const skip = (el) => /^(SCRIPT|STYLE|HEADER|FOOTER)$/.test(el.tagName) || el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top');
-      const panes = IDS.map((id) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; return d; });
+      const panes = IDS.map((id) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; d.setAttribute('role', 'tabpanel'); return d; });
       kids.forEach((el, i) => { if (i < at[0] || skip(el)) return; let k = 0; while (k + 1 < at.length && i >= at[k + 1]) k++; panes[k].appendChild(el); });
-      // the menu: each part, then the titles (h2) inside it
-      const wrap = document.createElement('div'); wrap.className = 'rside-wrap';
-      const side = document.createElement('nav'); side.className = 'rside ra-own'; side.setAttribute('aria-label', lang === 'fr' ? 'Sommaire de la page' : 'Page contents');
-      const main = document.createElement('div'); main.className = 'rside-main';
+      const wrap = document.createElement('div'); wrap.className = 'ptabs-wrap';
+      const bar = document.createElement('nav'); bar.className = 'ptabs ra-own'; bar.setAttribute('aria-label', lang === 'fr' ? 'Parties de la page' : 'Parts of the page');
+      bar.innerHTML = '<div class="ptabs-in" role="tablist">' + IDS.map((id, k) => `<a href="#${id}" role="tab" data-k="${k}" aria-controls="tab-${id}"><span>${String(k + 1).padStart(2, '0')}</span>${T[k]}</a>`).join('') + '</div>';
+      const sub = document.createElement('nav'); sub.className = 'psub ra-own'; sub.setAttribute('aria-label', lang === 'fr' ? 'Dans cette partie' : 'In this part');
+      const main = document.createElement('div'); main.className = 'ptabs-main';
       let n = 0;
       const heads = panes.map((p) => [...p.querySelectorAll('h2')].filter((h) => h.textContent.trim()).map((h) => { if (!h.id) h.id = 'sec' + (++n); return h; }));
       const short = (h) => h.textContent.replace(/\s*\((schéma cinématique|kinematic diagram)\)\s*$/i, '').trim();
-      side.innerHTML = `<details open><summary>${lang === 'fr' ? 'Sommaire' : 'Contents'}</summary><ol>` + IDS.map((id, k) =>
-        `<li class="rs-part" data-k="${k}"><a href="#${id}" class="rs-head" data-k="${k}"><b>${k + 1}</b>${T[k]}</a><ul>` +
-        heads[k].map((h) => `<li><a href="#${h.id}" data-k="${k}" data-h="${h.id}">${short(h)}</a></li>`).join('') + '</ul></li>').join('') + '</ol></details>';
       const anchor = h1.nextElementSibling && h1.nextElementSibling.classList.contains('crumbs') ? h1.nextElementSibling : h1;
-      anchor.after(wrap); wrap.append(side, main); main.append(...panes);
-      // the menu follows the language (the titles are translated after the page is built)
-      heads.flat().forEach((h) => new MutationObserver(() => { const a = side.querySelector(`a[data-h="${h.id}"]`); if (a && a.textContent !== short(h)) a.textContent = short(h); }).observe(h, { childList: true, characterData: true, subtree: true }));
+      anchor.after(bar); bar.after(wrap); wrap.append(sub, main); main.append(...panes);
       let cur = -1;
+      const paintSub = () => { const list = heads[cur] || []; sub.hidden = list.length < 2; sub.innerHTML = `<span>${lang === 'fr' ? 'Dans cette partie' : 'In this part'}</span>` + list.map((h) => `<a href="#${h.id}" data-h="${h.id}">${short(h)}</a>`).join(''); };
+      heads.flat().forEach((h) => new MutationObserver(() => { const a = sub.querySelector(`a[data-h="${h.id}"]`); if (a && a.textContent !== short(h)) a.textContent = short(h); }).observe(h, { childList: true, characterData: true, subtree: true }));   // the titles follow the language
       const show = (k) => {
         if (k === cur) return; cur = k;
         panes.forEach((p, j) => { p.hidden = j !== k; });
-        side.querySelectorAll('.rs-part').forEach((li) => li.classList.toggle('open', +li.dataset.k === k));
+        bar.querySelectorAll('a').forEach((a) => { const on = +a.dataset.k === k; a.classList.toggle('on', on); a.setAttribute('aria-selected', String(on)); });
+        paintSub();
         window.dispatchEvent(new Event('resize'));                                   // the 3D views and the diagram take their size again
         const svg = document.getElementById('schema'); if (svg) svg.setAttribute('data-shown', String(Date.now()));
       };
-      const go = (y) => window.scrollTo({ top: Math.max(0, y - 90), behavior: 'smooth' });
-      side.addEventListener('click', (e) => {
-        const a = e.target.closest('a'); if (!a) return; e.preventDefault();
-        const k = +a.dataset.k; show(k);
-        if (a.dataset.h) { const h = document.getElementById(a.dataset.h); go(h.getBoundingClientRect().top + window.scrollY); history.replaceState(null, '', '#' + a.dataset.h); }
-        else { go(wrap.getBoundingClientRect().top + window.scrollY); history.replaceState(null, '', '#' + IDS[k]); }
-        if (matchMedia('(max-width: 900px)').matches) side.querySelector('details').open = false;
-      });
-      // the title being read is marked in the menu
-      const mark = () => {
-        const list = heads[cur] || []; let on = null;
-        for (const h of list) if (h.getBoundingClientRect().top < 140) on = h.id;
-        side.querySelectorAll('a[data-h]').forEach((a) => a.classList.toggle('on', a.dataset.h === on));
-      };
+      const go = (y) => window.scrollTo({ top: Math.max(0, y - 140), behavior: 'smooth' });
+      bar.addEventListener('click', (e) => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); const k = +a.dataset.k; show(k); if (bar.getBoundingClientRect().top < 90) go(wrap.getBoundingClientRect().top + window.scrollY + 40); history.replaceState(null, '', '#' + IDS[k]); });
+      sub.addEventListener('click', (e) => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); const h = document.getElementById(a.dataset.h); go(h.getBoundingClientRect().top + window.scrollY); history.replaceState(null, '', '#' + a.dataset.h); });
+      // the title being read is marked
+      const mark = () => { const list = heads[cur] || []; let on = null; for (const h of list) if (h.getBoundingClientRect().top < 170) on = h.id; sub.querySelectorAll('a[data-h]').forEach((a) => a.classList.toggle('on', a.dataset.h === on)); };
       window.addEventListener('scroll', mark, { passive: true });
       // the part of the address: one of IDS, or the part that holds the element the address points to
       const h = decodeURIComponent(location.hash.slice(1)), byId = IDS.indexOf(h), el = h && document.getElementById(h);
       show(byId >= 0 ? byId : el ? Math.max(0, panes.findIndex((p) => p.contains(el))) : 0);
-      if (matchMedia('(max-width: 900px)').matches) side.querySelector('details').open = false;
       mark();
       // other links to a section of a hidden part open that part first
-      document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.closest('.rside')) return; const t = document.getElementById(a.getAttribute('href').slice(1)); const k = t ? panes.findIndex((p) => p.contains(t)) : -1; if (k >= 0 && panes[k].hidden) show(k); }, true);
-      side.querySelector('summary').addEventListener('click', (e) => { if (!matchMedia('(max-width: 900px)').matches) e.preventDefault(); });   // always open on a computer
-      body.classList.add('has-rside');
+      document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.closest('.ptabs, .psub')) return; const t = document.getElementById(a.getAttribute('href').slice(1)); const k = t ? panes.findIndex((p) => p.contains(t)) : IDS.indexOf(a.getAttribute('href').slice(1)); if (k >= 0) show(k); }, true);
+      body.classList.add('has-ptabs');
     };
     const fr = lang === 'fr', bodyH2 = [...body.children].filter((el) => el.tagName === 'H2' && !el.closest('.stage-side'));
     // robot pages: 1. the robot in 3D (view and joints), 2. kinematics and models (from the kinematic diagram to the result),
@@ -668,18 +658,18 @@
     const usesAt = body.querySelector(':scope > .robot');
     if (h1 && view && bodyH2[0] && usesAt && [...body.children].indexOf(usesAt) > [...body.children].indexOf(bodyH2[0])) {
       const anatAt = body.querySelector(':scope > .part-anat') || body.querySelector(':scope > .part-inside');   // the 3D anatomy and the inside of the robot
-      if (anatAt && [...body.children].indexOf(anatAt) < [...body.children].indexOf(usesAt)) makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], anatAt, usesAt], fr ? ['Le robot en 3D', 'Cinématique et modèles', 'Anatomie et intérieur', 'Usages et opérations'] : ['The robot in 3D', 'Kinematics and models', 'Anatomy and inside', 'Uses and operations'], ['robot', 'kinematics', 'anatomy', 'uses']);
-      else makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], usesAt], fr ? ['Le robot en 3D', 'Cinématique et modèles', 'Usages et intérieur'] : ['The robot in 3D', 'Kinematics and models', 'Uses and inside'], ['robot', 'kinematics', 'uses']);
+      if (anatAt && [...body.children].indexOf(anatAt) < [...body.children].indexOf(usesAt)) makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], anatAt, usesAt], fr ? ['Aperçu', 'Cinématique', 'Anatomie', 'Applications'] : ['Overview', 'Kinematics', 'Anatomy', 'Applications'], ['robot', 'kinematics', 'anatomy', 'uses']);
+      else makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], usesAt], fr ? ['Aperçu', 'Cinématique', 'Applications'] : ['Overview', 'Kinematics', 'Applications'], ['robot', 'kinematics', 'uses']);
     }
     // 3D anatomy pages: 1. the robot in 3D (the model, X-ray, the axes), 2. inside each joint, 3. all the components
     const anat = body.querySelector(':scope > .anat');
-    if (h1 && anat && bodyH2.length >= 2 && !body.querySelector('.rside')) {
+    if (h1 && anat && bodyH2.length >= 2 && !body.querySelector('.ptabs')) {
       const first = body.querySelector(':scope > p.lead') || anat;
       makeTabs([first, bodyH2[0], bodyH2[1]], fr ? ['Le robot en 3D', 'Dans chaque articulation', 'Tous les composants'] : ['The robot in 3D', 'Inside each joint', 'All the components'], ['robot', 'joints', 'components']);
     }
     // chips that jump to each section
     const heads = [...body.querySelectorAll('h2')].filter((h) => !h.closest('.stage-side') && !h.closest('.robot') && h.textContent.trim());
-    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn') && !body.querySelector('.rside')) {
+    if (h1 && heads.length > 2 && !body.classList.contains('home') && !body.classList.contains('learn') && !body.querySelector('.ptabs')) {
       const toc = document.createElement('nav'); toc.className = 'toc'; toc.setAttribute('aria-label', lang === 'fr' ? 'Sur cette page' : 'On this page');
       const short = (h) => h.textContent.replace(/^\d+\.\s*/, '').replace(/\s*\(.*$/, '').replace(/,\s*(side|top|front) view$/i, '').trim() || h.textContent.trim();
       heads.forEach((h, i) => {
