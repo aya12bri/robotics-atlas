@@ -29,6 +29,9 @@ const OPS = {
   ser: [L('Serialisation', 'Sérialisation'), L('Each box gets its own DataMatrix code and serial number: printed under the inkjet head, then read back by a camera, for traceability.', 'Chaque boîte reçoit son propre code DataMatrix et son numéro de série : imprimés sous la tête jet d\'encre, puis relus par une caméra, pour la traçabilité.')],
   fil: [L('Filling', 'Remplissage'), L('Each empty bottle is held under the filling nozzle until it is full, capped, then set down.', 'Chaque bouteille vide est tenue sous la buse de remplissage jusqu\'à ce qu\'elle soit pleine, bouchée, puis posée.')],
   ass: [L('Screwing / assembly', 'Vissage / assemblage'), L('The robot puts the cover on the housing, then drives the four screws.', 'Le robot pose le couvercle sur le boîtier, puis visse les quatre vis.')],
+  hxa: [L('Precise alignment and assembly', 'Alignement précis et assemblage'), L('A camera measures how far the part is from the fixed pin; the platform corrects in all six directions at once, then rises to fit the part on the pin.', 'Une caméra mesure l\'écart entre la pièce et la goupille fixe ; la plateforme corrige dans les six directions à la fois, puis monte pour emboîter la pièce sur la goupille.')],
+  hxv: [L('Quality control / vision', 'Contrôle qualité / vision'), L('The camera stays still: the platform tilts and turns the part to show each side to the camera.', 'La caméra reste fixe : la plateforme incline et tourne la pièce pour montrer chaque face à la caméra.')],
+  hxl: [L('Laser marking', 'Marquage laser'), L('The laser head stays still: the platform moves the part under the beam, which engraves the serial number.', 'La tête laser reste fixe : la plateforme déplace la pièce sous le faisceau, qui grave le numéro de série.')],
   pod: [L('Goods to person (like Amazon)', 'Marchandise vers l\'opérateur (comme chez Amazon)'), L('The robot slides under a shelf, lifts it and brings it to the picking station: the operator does not walk, the shelf comes to them. Then it takes the shelf back.', 'Le robot se glisse sous une étagère, la soulève et l\'apporte au poste de préparation : l\'opérateur ne marche pas, c\'est l\'étagère qui vient à lui. Puis il ramène l\'étagère.')],
   shu: [L('Conveying with an AMR', 'Convoyage par AMR'), L('The AMR takes a tote from station A and delivers it to station B, with no rail or conveyor between them.', 'L\'AMR prend un bac au poste A et le livre au poste B, sans rail ni convoyeur entre les deux.')],
   rou: [L('AMR delivery route', 'Tournée d\'un AMR'), L('The AMR visits three stations, finds its way around the shelves and stops for a person crossing.', 'L\'AMR passe par trois postes, contourne les étagères et s\'arrête pour une personne qui traverse.')]
@@ -107,6 +110,10 @@ function articulated(o) {
   wr.add(cylZ(r * 0.78, r * 1.7, J));
   const wl = cylX(r * 0.55, L4, cobot ? MAT.cobot : MAT.dark); wr.add(wl);
   const cap = cylX(r * 0.6, 0.02, MAT.steel); cap.position.x = L4 - 0.02; wr.add(cap);
+  if (o.seven) {                                             // 7-axis arm: a roll joint in the middle of the upper arm and of the forearm
+    const r1 = cylX(r * 1.02, r * 1.2, J); r1.position.x = L2 * 0.5 - r * 0.6; up.add(r1);
+    const r2 = cylX(r * 0.82, r * 1.1, J); r2.position.x = L3 * 0.5 - r * 0.55; el.add(r2);
+  }
   return {
     root,
     reach(f) {                                             // f = flange position; the wrist link points straight down
@@ -139,6 +146,79 @@ function arm3(o) {                                          // 3-axis arm (yaw, 
       turret.rotation.y = t1; up.rotation.z = a2; el.rotation.z = a3; return true;
     }
   };
+}
+function cylindrical(o) {                                    // R-P-P: a column that turns, a carriage that goes up and down, an arm that slides out
+  const { Hc, La, rmin, rmax, lo, hi, r } = o, root = new THREE.Group(), hang = r * 1.6;
+  root.add(cyl(r * 3.2, 0.06, MAT.dark));
+  const turret = new THREE.Group(); root.add(turret);
+  turret.add(cyl(r * 2.4, r * 1.4, MAT.orange));                                   // turning base (q1)
+  const col = cyl(r * 0.95, Hc, MAT.grey); col.position.y = r * 1.4; turret.add(col);   // fixed column on the turntable
+  const cap = cyl(r * 1.25, r * 0.5, MAT.orange); cap.position.y = r * 1.4 + Hc; turret.add(cap);
+  const car = new THREE.Group(); turret.add(car);
+  car.add(box(r * 3, r * 2.6, r * 2.6, MAT.orange, false));                          // carriage (q2) around the column
+  const arm = new THREE.Group(); car.add(arm);
+  const bar = box(La, r * 1.2, r * 1.2, MAT.grey, false); bar.position.x = -La / 2; arm.add(bar);   // arm (q3), its tip at the group origin
+  const head = box(r * 1.5, hang, r * 1.5, MAT.dark, false); head.position.y = -hang / 2; arm.add(head);
+  return {
+    root,
+    reach(f) {
+      const rr = Math.hypot(f.x, f.z), y = f.y + hang;
+      if (rr < rmin || rr > rmax || y < lo || y > hi) return false;
+      turret.rotation.y = Math.atan2(-f.z, f.x); car.position.y = y; arm.position.x = rr; return true;
+    }
+  };
+}
+function spherical(o) {                                     // R-R-P: a turret, a tilting shoulder and a telescopic arm; the tool hangs on a passive joint
+  const { h1, Ls, dmin, dmax, r } = o, root = new THREE.Group(), hang = r * 0.9;
+  root.add(cyl(r * 2.6, 0.06, MAT.dark));
+  const turret = new THREE.Group(); root.add(turret);
+  const body = cyl(r * 1.9, h1 - 0.06, MAT.orange); body.position.y = 0.06; turret.add(body);
+  const sh = new THREE.Group(); sh.position.y = h1; turret.add(sh); sh.add(cylZ(r * 1.5, r * 3.0, MAT.orange));
+  const tilt = new THREE.Group(); sh.add(tilt);
+  const back = cylX(r * 1.0, r * 1.4, MAT.dark); back.position.x = -r * 1.4; tilt.add(back);        // counterweight behind the shoulder
+  tilt.add(cylX(r * 0.95, Ls, MAT.grey));                                                            // outer sleeve
+  const ram = cylX(r * 0.62, Ls, MAT.steel); tilt.add(ram);                                          // telescopic ram (q3)
+  const tip = new THREE.Group(); tilt.add(tip); tip.add(new THREE.Mesh(new THREE.SphereGeometry(r * 0.8, 20, 14), MAT.orange));
+  const drop = cyl(r * 0.35, hang, MAT.dark); drop.position.y = -hang; tip.add(drop);
+  return {
+    root, hang,
+    reach(f) {
+      const wy = f.y + hang, rr = Math.hypot(f.x, f.z), zz = wy - h1, d = Math.hypot(rr, zz), pitch = Math.atan2(zz, rr);
+      if (d < dmin || d > dmax || pitch < -1.0 || pitch > 1.0) return false;
+      turret.rotation.y = Math.atan2(-f.z, f.x); tilt.rotation.z = pitch; ram.position.x = d - Ls; tip.position.x = d; tip.rotation.z = -pitch; return true;
+    }
+  };
+}
+function hexapod(o) {                                       // Stewart platform: six legs that change length move the top plate in its six directions
+  const { Rb, Rp, H, r } = o, root = new THREE.Group(), legs = [];
+  const plate = cyl(Rb + r * 2.4, r * 1.4, MAT.dark, 6); plate.rotation.y = Math.PI / 6; root.add(plate);
+  const plat = new THREE.Group(); root.add(plat);
+  const top = cyl(Rp + r * 2.2, r * 1.6, MAT.orange, 6, false); top.geometry.translate(0, -r * 0.8, 0); top.rotation.y = Math.PI / 6; plat.add(top);
+  const carry = new THREE.Group(); plat.add(carry);                                      // what sits on the platform (origin = top face)
+  const bA = [], pA = [];
+  for (let k = 0; k < 3; k++) for (const s of [-1, 1]) {
+    const ab = (k * 120 + s * 16) * Math.PI / 180, ap = (k * 120 + 60 - s * 44) * Math.PI / 180;
+    bA.push(V(Rb * Math.cos(ab), r * 1.4, Rb * Math.sin(ab))); pA.push(V(Rp * Math.cos(ap), -r * 1.6, Rp * Math.sin(ap)));
+  }
+  for (let i = 0; i < 6; i++) {
+    const j0 = new THREE.Mesh(new THREE.SphereGeometry(r * 1.1, 16, 12), MAT.steel); j0.position.copy(bA[i]); root.add(j0);
+    const j1 = new THREE.Mesh(new THREE.SphereGeometry(r * 1.0, 16, 12), MAT.steel); j1.position.copy(pA[i]); plat.add(j1);
+    const body = cyl(r * 0.95, 1, MAT.grey, 18, false), rod = cyl(r * 0.5, 1, MAT.steel, 14, false), mot = cyl(r * 1.15, 1, MAT.dark, 18, false);
+    root.add(body, rod, mot); legs.push({ body, rod, mot });
+  }
+  const P = V(0, 0, 0);
+  function pose(p, rx = 0, rz = 0, ry = 0) {
+    plat.position.copy(p); plat.rotation.set(rx, ry, rz); plat.updateMatrix();
+    for (let i = 0; i < 6; i++) {
+      const a = bA[i], b = P.copy(pA[i]).applyMatrix4(plat.matrix).clone(), d = b.clone().sub(a), len = d.length(), u1 = d.clone().divideScalar(len);
+      const Lb = Math.min(len * 0.62, H * 0.62);
+      rodBetween(legs[i].mot, a, a.clone().addScaledVector(u1, r * 3)); rodBetween(legs[i].body, a.clone().addScaledVector(u1, r * 3), a.clone().addScaledVector(u1, Lb));
+      rodBetween(legs[i].rod, a.clone().addScaledVector(u1, Lb * 0.8), b);
+    }
+    return true;
+  }
+  pose(V(0, H, 0));
+  return { root, plat, carry, pose, H, reach: (f) => pose(f) };
 }
 function scara(o) {
   const { H, L1, L2, r, lo, hi } = o, root = new THREE.Group();
@@ -384,12 +464,19 @@ const ROBOTS = {
     safety: 'collab', opFar: [-0.05, 0, -1.08], opClose: [0.28, 0, -0.66], mm: { L: 0.8, X2: 1.5, zS: 0.48, cam: [1.0, 1.3, 2.1] } },
   arm: { human: 0.6, build: () => arm3({ h1: 0.42, L2: 0.45, L3: 0.45, r: 0.06 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.85, 1.85, 2.0], target: [0.3, 0.28, 0.12], v: 0.7, arc: true,
     safety: 'cage', cage: [-0.5, 1.05, -0.8, 1.0, 1.25], mm: { L: 0.9, X2: 1.7, zS: 0.55, cam: [1.1, 1.45, 2.3] } },
+  cylindrical: { human: 0.6, build: () => cylindrical({ Hc: 0.72, La: 0.62, rmin: 0.28, rmax: 0.94, lo: 0.13, hi: 0.76, r: 0.045 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.85, 1.85, 2.0], target: [0.3, 0.3, 0.12], v: 0.7, arc: true,
+    safety: 'cage', cage: [-0.5, 1.05, -0.8, 1.0, 1.25] },
+  spherical: { human: 0.6, build: () => spherical({ h1: 0.46, Ls: 0.4, dmin: 0.3, dmax: 0.86, r: 0.05 }), u: 0.1, A: [0.22, 0.56], B: [0.6, -0.26], cam: [1.85, 1.85, 2.0], target: [0.3, 0.3, 0.12], v: 0.7, arc: true,
+    safety: 'cage', cage: [-0.55, 1.05, -0.8, 1.0, 1.3] },
+  redundant: { human: 0.58, build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075, seven: true }), u: 0.11, A: [0.25, 0.62], B: [0.66, -0.3], cam: [2.0, 2.0, 2.2], target: [0.32, 0.3, 0.12], v: 0.85, arc: true,
+    safety: 'cage', cage: [-0.55, 1.15, -0.85, 1.12, 1.35], mm: { L: 1.0, X2: 1.9, zS: 0.6, cam: [1.2, 1.55, 2.5] } },
   scara: { human: 0.72, build: () => scara({ H: 0.42, L1: 0.34, L2: 0.3, r: 0.045, lo: 0.04, hi: 0.4 }), u: 0.075, A: [0.2, 0.4], B: [0.45, -0.14], cam: [1.25, 1.3, 1.4], target: [0.22, 0.18, 0.1], v: 0.55, arc: true,
     stationK: 1.5, safety: 'cage', cage: [-0.38, 0.82, -0.55, 0.75, 0.95], mm: { L: 0.75, X2: 1.25, zS: 0.42, cam: [0.8, 1.05, 1.7] } },
   delta: { human: 0.75, palLayers: 1, build: () => delta({ Ht: 0.8, Rb: 0.13, rf: 0.25, re: 0.66, Re: 0.045, r: 0.03 }), u: 0.064, A: [0.0, 0.15], B: [0.0, -0.15], cam: [1.35, 1.3, 1.3], target: [0, 0.3, 0], v: 1.0,
     safety: 'cage', cage: [-0.85, 0.85, -0.8, 0.8, 1.0] },
   gantry: { human: 0.62, build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), u: 0.13, A: [-0.42, 0.18], B: [0.38, -0.12], cam: [0.55, 2.0, 2.65], target: [0, 0.32, 0], v: 0.8,
     safety: 'cage', cage: [-1.05, 1.05, -0.85, 0.85, 1.4] },
+  hexapod: { hexa: true, build: () => hexapod({ Rb: 0.3, Rp: 0.19, H: 0.34, r: 0.018 }), u: 0.1, cam: [1.05, 0.95, 1.25], target: [0, 0.38, 0], ops: ['hxa', 'hxv', 'hxl'], fit: { hxa: 2, hxv: 2, hxl: 2 } },
   mobile: { mobile: true, u: 0.085, cam: [2.6, 3.2, 4.6], target: [0.4, 0.5, -0.6], ops: ['pod', 'shu', 'rou'], fit: { pod: 3, shu: 3, rou: 3 } }
 };
 // how well each robot suits each operation (same as the table on the page): 3 main use, 2 possible, 1 rarely
@@ -397,6 +484,9 @@ const FIT = {
   articulated: { pal: 3, enc: 3, far: 2, eti: 2, ser: 1, vis: 2, bin: 3, deg: 2, con: 1, amr: 2, ass: 3 },
   cobot:       { pal: 3, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 2, con: 1, amr: 2, ass: 3 },
   arm:         { pal: 2, enc: 2, far: 1, eti: 1, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 1 },
+  cylindrical: { pal: 2, enc: 2, far: 1, eti: 1, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 2 },
+  spherical:   { pal: 2, enc: 2, far: 1, eti: 1, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 1 },
+  redundant:   { pal: 2, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 3, deg: 2, con: 1, amr: 3, ass: 3 },
   scara:       { pal: 1, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 2, con: 1, amr: 1, ass: 3 },
   delta:       { pal: 1, enc: 3, far: 2, eti: 1, ser: 1, vis: 3, bin: 1, deg: 3, con: 2, amr: 1, ass: 2 },
   gantry:      { pal: 3, enc: 3, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 1, con: 2, amr: 1, ass: 3 }
@@ -447,8 +537,9 @@ function mount(host) {
   matchMedia('(prefers-color-scheme: light)').addEventListener('change', paint);
 
   // robot + tool
-  const u = R.u, robot = R.build ? R.build() : null, tool = robot ? makeGripper(u) : null;
-  if (robot) { scene.add(robot.root); robot.root.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); scene.add(tool); tool.traverse((o) => { if (o.isMesh) o.castShadow = true; }); tool.userData.nBase = tool.children.length; }
+  const u = R.u, robot = R.build ? R.build() : null, tool = robot && !R.hexa ? makeGripper(u) : null;
+  if (robot) { scene.add(robot.root); robot.root.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); }
+  if (tool) { scene.add(tool); tool.traverse((o) => { if (o.isMesh) o.castShadow = true; }); tool.userData.nBase = tool.children.length; }
   const toolLen = tool ? tool.userData.len : 0;
   const tip = V(0, 0, 0), YAX = V(0, 1, 0), base = { p: V(0, 0, 0), yaw: 0 }; let yaw = 0, ikFails = 0;
   function setTip(p, y = yaw) {
@@ -917,6 +1008,79 @@ function mount(host) {
       await amrDrive(c, [V(-0.3, 0, 1.0), V(-2.0, 0, 0.2), V(-2.6, 0, -0.7)]);
     }
   };
+  // ------------------------------------------------ hexapod scripts: the tool stays still, the platform moves the part
+  const hx = { p: V(0, 0, 0), rx: 0, rz: 0, ry: 0 };
+  function hxGo(c, to, dur, each) {                          // to = { p, rx, rz, ry }: the six legs follow at once
+    const f = { p: hx.p.clone(), rx: hx.rx, rz: hx.rz, ry: hx.ry }, t = { p: to.p || f.p, rx: to.rx ?? f.rx, rz: to.rz ?? f.rz, ry: to.ry ?? f.ry };
+    return c.tw(dur, (k) => { const e = ease(k); hx.p.copy(f.p).lerp(t.p, e); hx.rx = f.rx + (t.rx - f.rx) * e; hx.rz = f.rz + (t.rz - f.rz) * e; hx.ry = f.ry + (t.ry - f.ry) * e; robot.pose(hx.p, hx.rx, hx.rz, hx.ry); if (each) each(k); });
+  }
+  function hxStart() { hx.p.set(0, robot.H, 0); hx.rx = hx.rz = hx.ry = 0; robot.pose(hx.p); }
+  function overhead(len, y) {                                // a fixed post and an arm above the platform; returns the head
+    const g = new THREE.Group(); g.add(box(0.06, y + 0.08, 0.06, MAT.frame)); const arm = box(len, 0.05, 0.05, MAT.frame, false); arm.position.set(len / 2, y + 0.05, 0); g.add(arm);
+    add(g, -len, 0, 0); return g;
+  }
+  const SH = {
+    async hxa(c) {
+      hxStart(); const H = robot.H;
+      const part = new THREE.Group(); { const b = box(0.2, 0.06, 0.2, MAT.part); part.add(b); const hole = cyl(0.022, 0.004, MAT.black); hole.position.y = 0.06; part.add(hole); }
+      robot.carry.add(part); part.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+      overhead(0.42, H + 0.3);
+      const pin = cyl(0.018, 0.12, MAT.steel); pin.position.set(0, H + 0.2, 0); props.add(pin); const pinTop = box(0.07, 0.05, 0.07, MAT.dark); pinTop.position.set(0, H + 0.31, 0); props.add(pinTop);
+      const cam = box(0.06, 0.05, 0.08, MAT.black); cam.position.set(0.12, H + 0.3, 0); props.add(cam);
+      c.say('The part arrives on the platform, a little off', 'La pièce arrive sur la plateforme, un peu décalée');
+      await hxGo(c, { p: V(0.035, H, -0.025), rx: 0.07, rz: -0.05, ry: 0.25 }, 1.2);
+      const cone = flashCone(0.12, 0.3); cone.position.set(0.12, H + 0.29, 0); props.add(cone);
+      c.say('The camera measures the gap: 3.5 mm, 2.5 mm, a tilt of 4° and a turn of 14°', 'La caméra mesure l\'écart : 3,5 mm, 2,5 mm, une inclinaison de 4° et une rotation de 14°');
+      await c.tw(0.8, (k) => { cone.material.opacity = Math.sin(k * Math.PI) * 0.35; });
+      c.say('The six legs change length together: the part is lined up in all 6 directions', 'Les six jambes changent de longueur ensemble : la pièce est alignée dans les 6 directions');
+      await hxGo(c, { p: V(0, H, 0), rx: 0, rz: 0, ry: 0 }, 1.6);
+      c.say('The platform rises: the hole slides onto the pin', 'La plateforme monte : le trou s\'emboîte sur la goupille');
+      await hxGo(c, { p: V(0, H + 0.075, 0) }, 1.4);
+      c.say('Fitted with a few micrometres of precision', 'Emboîté à quelques micromètres près'); await c.wait(1.2);
+      await hxGo(c, { p: V(0, H, 0) }, 1.0);
+    },
+    async hxv(c) {
+      hxStart(); const H = robot.H;
+      const part = new THREE.Group(); { const b = cyl(0.08, 0.1, MAT.part, 8); part.add(b); const t2 = cyl(0.05, 0.03, MAT.orange, 8); t2.position.y = 0.1; part.add(t2); }
+      robot.carry.add(part); part.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+      overhead(0.42, H + 0.42);
+      const cam = box(0.08, 0.07, 0.1, MAT.black); cam.position.set(0, H + 0.42, 0); props.add(cam);
+      const cone = flashCone(0.2, 0.3); cone.position.set(0, H + 0.4, 0); props.add(cone);
+      const views = [[L('top', 'dessus'), { rx: 0, rz: 0 }], [L('side 1', 'côté 1'), { rx: 0.32, rz: 0 }], [L('side 2', 'côté 2'), { rx: 0, rz: 0.32 }], [L('side 3', 'côté 3'), { rx: -0.32, rz: 0 }], [L('side 4', 'côté 4'), { rx: 0, rz: -0.32 }]];
+      for (const [name, v] of views) {
+        c.say(`The platform shows the ${name} to the camera`, `La plateforme montre le ${name} à la caméra`);
+        await hxGo(c, { p: V(0, H + 0.02, 0), ...v }, 0.9);
+        await c.tw(0.45, (k) => { cone.material.opacity = Math.sin(k * Math.PI) * 0.35; });
+      }
+      await hxGo(c, { p: V(0, H, 0), rx: 0, rz: 0 }, 0.8);
+      const ok = marker(0.15, true); ok.position.set(0, 0.006, 0.42); props.add(ok);
+      c.say('5 views checked: the part is good. The camera never moved', '5 vues contrôlées : la pièce est conforme. La caméra n\'a pas bougé'); await c.wait(1.4);
+    },
+    async hxl(c) {
+      hxStart(); const H = robot.H;
+      const tex = textTexture(['SN 2411-0731', 'HEXA-06'], 256, 128, '#9aa5b1', '#1d2330');
+      const plateP = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.025, 0.18).translate(0, 0.0125, 0), [MAT.part, MAT.part, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.35, metalness: 0.6 }), MAT.part, MAT.part, MAT.part]);
+      plateP.castShadow = true; robot.carry.add(plateP); tex.draw(0);
+      overhead(0.42, H + 0.32);
+      const head = box(0.07, 0.1, 0.07, MAT.dark); head.position.set(0, H + 0.24, 0); props.add(head);
+      const beam = cyl(0.006, 1, new THREE.MeshBasicMaterial({ color: '#ff2a2a' }), 8, false); props.add(beam); beam.visible = false;
+      const spot = new THREE.Mesh(new THREE.SphereGeometry(0.008, 10, 8), new THREE.MeshBasicMaterial({ color: '#ffd0d0' })); props.add(spot); spot.visible = false;
+      c.say('The plate is clamped on the platform, under the fixed laser head', 'La plaque est bridée sur la plateforme, sous la tête laser fixe');
+      await hxGo(c, { p: V(0.1, H, 0.03) }, 1.0);
+      c.say('Laser on: the platform moves the plate under the beam', 'Laser allumé : la plateforme déplace la plaque sous le faisceau');
+      const total = 19, y = H + 0.025;
+      beam.visible = spot.visible = true;
+      await c.tw(3.2, (k) => {
+        tex.draw(Math.floor(k * total));
+        const line = k < 12 / 19 ? 0 : 1, kk = line ? (k - 12 / 19) / (7 / 19) : k / (12 / 19);
+        hx.p.set(0.1 - 0.2 * kk * (line ? 0.6 : 1) + (Math.random() - 0.5) * 0.004, H, line ? -0.03 : 0.03); robot.pose(hx.p, 0, 0, 0);
+        rodBetween(beam, V(0, H + 0.19, 0), V(0, y, 0)); spot.position.set(0, y, 0);
+      });
+      beam.visible = spot.visible = false; tex.draw();
+      await hxGo(c, { p: V(0, H, 0) }, 0.8);
+      c.say('Marked. The beam never moved: the hexapod did all the motion', 'Marqué. Le faisceau n\'a pas bougé : l\'hexapode a fait tout le mouvement'); await c.wait(1.4);
+    }
+  };
   if (R.mobile) { amr = makeAMR(0.8); scene.add(amr); amr.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); amr.userData.nBase = amr.children.length; }
 
   // ------------------------------------------------ safety: industrial robots in a cage, the cobot next to an operator
@@ -964,6 +1128,7 @@ function mount(host) {
   let current = null;
   function clearProps() {
     while (props.children.length) props.remove(props.children[0]);
+    if (R.hexa) while (robot.carry.children.length) robot.carry.remove(robot.carry.children[0]);
     for (const g of [tool, amr]) if (g) while (g.children.length > g.userData.nBase) g.remove(g.children[g.children.length - 1]);   // anything still carried
   }
   async function run(op) {
@@ -973,16 +1138,17 @@ function mount(host) {
     what.textContent = OPS[op][1];
     const mmOp = op === 'mm';
     base.p.set(0, 0, 0); base.yaw = 0; setInCell(!(mmOp || op === 'amr'));
-    if (robot) { robot.root.visible = tool.visible = !R.mobile || mmOp; tool.setOpen(0.55 * u); tool.userData.cam.visible = false; if (HOME && !mmOp) setTip(HOME.clone(), 0); }
+    if (R.hexa) robot.pose(V(0, robot.H, 0));
+    if (tool) { robot.root.visible = tool.visible = !R.mobile || mmOp; tool.setOpen(0.55 * u); tool.userData.cam.visible = false; if (HOME && !mmOp) setTip(HOME.clone(), 0); }
     if (amr) amr.visible = !mmOp;
     if (!mmOp) setCam(R.cam, R.target);
-    const script = (R.mobile && !mmOp ? SM : S)[op];
+    const script = (R.hexa ? SH : R.mobile && !mmOp ? SM : S)[op];
     while (tok === token) {
       const c = ctxFor(tok);
       await script(c);
       if (tok !== token) return;
       if (robot && HOME && !mmOp) await c.move(HOME.clone(), null, 0);
-      clearProps(); if (robot) { tool.userData.cam.visible = false; tool.setOpen(0.55 * u); }
+      clearProps(); if (tool) { tool.userData.cam.visible = false; tool.setOpen(0.55 * u); }
       if (amr) { amr.position.set(0, 0, 0); }
       await c.wait(0.3);
     }
@@ -1024,4 +1190,4 @@ function mount(host) {
 }
 document.querySelectorAll('.opsdemo').forEach(mount);
 
-export { makePerson, articulated, arm3, scara, gantry, delta, makeAMR, MAT, M, box, cyl, cylZ, cylX, V, ease, textTexture };
+export { makePerson, articulated, arm3, cylindrical, spherical, hexapod, scara, gantry, delta, makeAMR, MAT, M, box, cyl, cylZ, cylX, V, ease, textTexture };

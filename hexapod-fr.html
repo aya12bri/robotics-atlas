@@ -94,6 +94,37 @@
       <p><strong>Points forts :</strong> très rigide et précis (les jambes ne font que tirer ou pousser, les erreurs ne s'additionnent pas), une grande charge pour son propre poids, six degrés de liberté. <strong>Points faibles :</strong> un petit espace de travail, surtout en rotation, des mouvements couplés (toutes les jambes bougent pour n'importe quel mouvement), un modèle direct sans formule, et des singularités à l'intérieur de l'espace de travail que la commande doit éviter.</p>
     </div>
 
+    <!-- BEGIN operations -->
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="hexapod"></div>
+    <script type="module" src="inside-demo.js"></script>
+    <h2>Opérations industrielles</h2>
+    <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
+    <div class="cmp-wrap ops-wrap">
+      <table class="dh ops">
+        <thead><tr><th class="left">Opération</th><th class="left">Explication simple</th><th>Pour ce robot</th></tr></thead>
+        <tbody>
+          <tr><td class="left"><strong>Étiquetage / marquage laser</strong></td><td class="left">Coller une étiquette ou graver une information (lot, date, code) au laser.</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Contrôle qualité / vision</strong></td><td class="left">Une caméra vérifie le produit à la place de l'œil humain (présence, lisibilité d'un code, défaut).</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Vissage / dévissage, assemblage, remplissage</strong></td><td class="left">Gestes répétitifs automatisés, souvent pour soulager les opérateurs.</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Palettisation / dépalettisation</strong></td><td class="left">Empiler des colis sur une palette selon un plan (ou les en retirer).</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Encaissage</strong></td><td class="left">Mettre des produits (bouteilles, barquettes, flacons) dans un carton.</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Fardelage</strong></td><td class="left">Regrouper des produits et les entourer d'un film plastique.</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Sérialisation</strong></td><td class="left">Donner à chaque boîte un numéro unique (code DataMatrix) pour la traçabilité, surtout en pharmacie.</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Dévracage (bin picking)</strong></td><td class="left">Un robot guidé par vision prend des pièces en vrac dans un bac.</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Dégrappage</strong></td><td class="left">Séparer des produits liés entre eux.</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Convoyage</strong></td><td class="left">Transporter les produits d'un poste à l'autre sur des tapis ou rouleaux.</td><td><span class="opfit f1">Rarement</span></td></tr>
+          <tr><td class="left"><strong>Mobilité via AMR</strong></td><td class="left">Un robot mobile autonome transporte des charges dans l'usine sans rail ni guidage au sol.</td><td><span class="opfit f1">Rarement</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2>Démo des opérations</h2>
+    <p>Choisissez une opération : le robot la réalise dans une petite cellule 3D, étape par étape. Tournez la vue à la souris ou au doigt, et utilisez Pause pour regarder de près.</p>
+    <div class="opsdemo" data-robot="hexapod"></div>
+    <script type="module" src="ops-demo.js"></script>
+    <!-- END operations -->
+
     <p class="try"><a href="anatomy-stewart-fr.html">Le voir en 3D, avec l'intérieur du robot →</a></p>
     <p class="try"><a href="learn-parallel-fr.html#l5">Cours : robots parallèles et mobilité de Grübler →</a> · <a href="learn-parallel-fr.html#l6">Modèles et singularités →</a></p>
 
