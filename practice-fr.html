@@ -69,6 +69,7 @@
           </span>
         </a>
       </div>
+      <nav class="px-pager"><span></span><a href="#program" class="next"><small>Partie suivante <i aria-hidden="true">→</i></small><b>Programmer et mesurer</b></a></nav>
     </section>
     <section class="px-step" id="program">
       <div class="px-head"><span class="px-num">02</span><div><h2>Programmer et mesurer</h2><p>Donnez des ordres à un robot, pilotez-le, et voyez ce que ses capteurs mesurent vraiment.</p></div></div>
@@ -101,6 +102,7 @@
           </span>
         </a>
       </div>
+      <nav class="px-pager"><a href="#discover" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Découvrir en jouant</b></a><a href="#make" class="next"><small>Partie suivante <i aria-hidden="true">→</i></small><b>Coder et fabriquer</b></a></nav>
     </section>
     <section class="px-step" id="make">
       <div class="px-head"><span class="px-num">03</span><div><h2>Coder et fabriquer</h2><p>Du vrai code et de vrais robots, étape par étape, jusqu'à un projet terminé.</p></div></div>
@@ -131,7 +133,27 @@ arm.<u>move_to</u>(0.25, 0.10)</code></span></span>
           </span>
         </a>
       </div>
+      <nav class="px-pager"><a href="#program" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Programmer et mesurer</b></a></nav>
     </section>
+    <script>
+      // one part at a time: the three cards at the top (and the buttons at the bottom of each part) open their part
+      (function () {
+        var steps = [].slice.call(document.querySelectorAll('.px-step')), cards = [].slice.call(document.querySelectorAll('.px-steps a'));
+        function show(id, scroll) {
+          if (!steps.some(function (s) { return s.id === id; })) id = steps[0].id;
+          steps.forEach(function (s) { s.hidden = s.id !== id; });
+          cards.forEach(function (a) { var on = a.getAttribute('href') === '#' + id; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); });
+          if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+          if (scroll) { var top = document.querySelector('.px-steps').getBoundingClientRect().top + window.scrollY - 100; window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' }); }
+        }
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('.px-steps a, .px-pager a'); if (!a) return;
+          e.preventDefault(); show(a.getAttribute('href').slice(1), true);
+        }, true);
+        window.addEventListener('hashchange', function () { show(location.hash.slice(1), false); });
+        show(location.hash.slice(1), false);
+      })();
+    </script>
   
 
 </body>
