@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of an underwater robot (3D)</title>
+    <!-- seo -->
+    <meta name="description" content="3D anatomy of an autonomous underwater robot (AUV): propeller, fins, pressure hull, sonars and navigation without GPS, with an X-ray mode." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/anatomy-auv" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/anatomy-auv" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/anatomy-auv-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/anatomy-auv" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Anatomy of an underwater robot (3D)" />
+    <meta property="og:description" content="3D anatomy of an autonomous underwater robot (AUV): propeller, fins, pressure hull, sonars and navigation without GPS, with an X-ray mode." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/anatomy-auv" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
+    <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+  <script src="nav.js" defer></script></head>
+  <body data-robot="auv" class="anatbox">
+    <h1>Underwater robot <span class="h1tag">3D anatomy</span></h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>An <strong>underwater robot</strong> (AUV, autonomous underwater vehicle) is a torpedo-shaped robot that dives alone, without a cable or a pilot. A propeller pushes it, fins steer it, and it finds its way without GPS with sonars and an inertial unit. It maps the sea floor and inspects pipelines and wrecks.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Turn to the right</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="auv"></div>
+      <div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">Pilot commands</b><p>Set the propeller thrust, then turn with the rudders and dive or climb with the elevators.</p><label class="ansl ansl3"><span>propeller thrust</span><input type="range" aria-label="q0"><output></output></label><label class="ansl ansl3"><span>rudders (turn)</span><input type="range" aria-label="q1"><output></output></label><label class="ansl ansl3"><span>elevators (dive)</span><input type="range" aria-label="q2"><output></output></label></div>
+        <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Propeller and motor</b></button><p>A propeller in a duct, turned by a brushless motor sealed in oil or behind a magnetic coupling, so that the water never reaches the electronics.</p></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Control fins</b></button><p>Four fins at the tail: the two vertical ones (rudders) turn the vehicle, the two horizontal ones (elevators) tilt the nose to dive or climb.</p></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Pressure hull</b></button><p>A tube of aluminium or titanium that resists the pressure of the water: 1 bar more every 10 m, so 300 bar at 3 000 m. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Navigation sensors</b></button><p>There is no GPS under water: a DVL (four sonar beams to the sea floor) measures the speed, an IMU the turns, a pressure sensor the depth; the side-scan sonar draws a map of the floor.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Battery and computer</b></button><p>Lithium batteries for 10 to 24 hours of mission, a computer that follows the mission plan alone, and foam blocks that make the vehicle float. Seen in X-ray.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Antenna and beacon</b></button><p>At the surface, the antenna gets a GPS position and sends the data by radio; under water, only sound carries messages (an acoustic modem). The flashing light helps to find it.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>No cable, no pilot</strong>: an AUV (autonomous underwater vehicle) follows its mission alone, unlike an ROV, which is driven by a pilot through a cable from a ship.</li><li><strong>Navigation without GPS</strong>: it adds up the speed of the DVL and the turns of the IMU (dead reckoning, corrected by a Kalman filter), and comes back to the surface now and then to get a GPS fix.</li><li><strong>Uses</strong>: mapping the sea floor, inspecting pipelines and cables, searching for wrecks, studying the ocean.</li></ul>
+    <p>The underwater robot really moves: the propeller pushes it forward, the rudders turn it and the elevators tilt its nose to dive or climb. Like a plane, the fins only work when the vehicle moves through the water. The model is simplified.</p>
+
+    <script type="module" src="anatomy.js"></script>
+    
+  </body>
+</html>
