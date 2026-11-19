@@ -42,7 +42,7 @@
     [{ en: 'Parallel robots', fr: 'Robots parallèles' }, ['delta.html', 'hexapod.html']],
     [{ en: 'Mobile robots', fr: 'Robots mobiles' }, ['mobile.html', 'wheels.html']]
   ];
-  const MENU_TOOLS = [['build.html', 'Build your first robot', 'Construire votre premier robot'], ['sandbox.html', 'Programming sandbox', 'Bac à sable de programmation'], ['sensors.html', 'Sensor test bench', 'Banc d\'essai des capteurs'], ['projects.html', 'Guided projects', 'Projets guidés']];
+  const MENU_TOOLS = [['practice.html', 'All the hands-on tools', 'Tous les outils pratiques'], ['build.html', 'Build your first robot', 'Construire votre premier robot'], ['sandbox.html', 'Programming sandbox', 'Bac à sable de programmation'], ['sensors.html', 'Sensor test bench', 'Banc d\'essai des capteurs'], ['projects.html', 'Guided projects', 'Projets guidés']];
   const MENU_ME = [['index.html#road', 'My roadmap', 'Mon parcours'], ['certificate.html', 'My certificates', 'Mes certificats'], ['exam.html', 'Final exams', 'Examens finaux'], ['review.html', 'My reviews', 'Mes révisions'], ['revision.html', 'Revision sheets', 'Fiches de révision'], ['glossary.html', 'Glossary', 'Glossaire'], ['index.html#rmBackup', 'Save my progress, offline mode', 'Sauvegarde et mode hors ligne']];
   const SOCIAL = [
     ['LinkedIn', 'https://www.linkedin.com/in/aya-briksine/', '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>'],
@@ -52,9 +52,9 @@
   window.RA_SOCIAL = SOCIAL;
   const UI = {
     en: { courses: 'Courses', tools: 'Tools', me: 'My space', allCourses: 'All the courses (roadmap)', allRobots: 'All the robots, by family', learnH: 'Learn', aboutH: 'About', secIntro: 'Intro', secHow: 'How it works', secRobots: 'The robots', secInside: 'Anatomy 3D', secRoad: 'Roadmap', secAbout: 'About', home: 'Home', learn: 'Learn', start: 'Where to start', done: 'Mark this page as done', doneOn: 'Done, well played!', road: 'Back to the roadmap', all: 'All robot pages', by: 'Designed and built by', robots: 'Robots', menu: 'Open the menu', top: 'Back to top', lang: 'Language', theme: 'Switch between dark and light', search: 'Search the site (Ctrl + K)',
-          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', sens: 'Sensor bench', sbx: 'Sandbox', prj: 'Projects', about: 'About', review: 'My reviews', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Build' },
+          foot: 'Robotics Atlas · a learning project about robots, their kinematics and their uses · 3D with', learnFoot: 'Learn the basics', wheels: 'Wheels', certs: 'My certificates', gloss: 'Glossary', rev: 'Revision sheets', sens: 'Sensor bench', sbx: 'Sandbox', prj: 'Projects', about: 'About', review: 'My reviews', offline: 'Offline mode', anatomy: 'Anatomy in 3D', build: 'Practise' },
     fr: { courses: 'Cours', tools: 'Outils', me: 'Mon espace', allCourses: 'Tous les cours (parcours)', allRobots: 'Tous les robots, par famille', learnH: 'Apprendre', aboutH: 'À propos', secIntro: 'Intro', secHow: 'Comment ça marche', secRobots: 'Les robots', secInside: 'Anatomie 3D', secRoad: 'Parcours', secAbout: 'À propos', home: 'Accueil', learn: 'Apprendre', start: 'Par où commencer', done: 'Marquer cette page comme terminée', doneOn: 'Terminée, bien joué !', road: 'Retour au parcours', all: 'Toutes les pages robots', by: 'Conçu et réalisé par', robots: 'Robots', menu: 'Ouvrir le menu', top: 'Haut de page', lang: 'Langue', theme: 'Basculer entre sombre et clair', search: 'Rechercher dans le site (Ctrl + K)',
-          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', sens: 'Banc des capteurs', sbx: 'Bac à sable', prj: 'Projets', about: 'À propos', review: 'Mes révisions', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Construire' }
+          foot: 'Robotics Atlas · un projet pour apprendre les robots, leur cinématique et leurs usages · 3D avec', learnFoot: 'Les bases', wheels: 'Roues', certs: 'Mes certificats', gloss: 'Glossaire', rev: 'Fiches de révision', sens: 'Banc des capteurs', sbx: 'Bac à sable', prj: 'Projets', about: 'À propos', review: 'Mes révisions', offline: 'Mode hors ligne', anatomy: 'Anatomie en 3D', build: 'Pratiquer' }
   };
 
   // ---------------------------------------------------------------- preferences
@@ -448,11 +448,12 @@
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<nav class="nav-l" aria-label="Main">' +
-      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#inside">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="build.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a><a href="index.html#inside">${ui.secInside}</a>` + link('build.html', ui.build)) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="anatomy.html">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="practice.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a>` + link('anatomy.html', ui.secInside) + `<a href="practice.html"${/^(practice|build|sandbox|sensors|projects)\.html$/.test(here) ? ' aria-current="page"' : ''}>${ui.build}</a>`) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
       '<div class="nav-r">' +
       (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
       ROBOTS.map(([h, n, k]) => { const t = k.split(' / ')[lang === 'fr' && k.includes(' / ') ? 1 : 0]; return link(h, `${n[lang]}${t === '—' ? '' : ` <small>${t}</small>`}`); }).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
+      `<div class="dd me-dd"><button class="icon-btn me-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.me}" title="${ui.me}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg></button><div class="dd-menu me-menu"><span class="dd-sep">${ui.me}</span><span class="me-prog"></span>` + MENU_ME.map(([h, en, fr]) => link(h, lang === 'fr' ? fr : en)).join('') + '</div></div>' +
       `<button class="icon-btn search-btn" type="button" aria-label="${ui.search}" title="${ui.search}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>` +
       `<div class="seg" role="group" aria-label="${ui.lang}"><button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button><button type="button" data-lang="fr" aria-pressed="${lang === 'fr'}">FR</button></div>` +
       `<button class="icon-btn theme-btn" type="button" aria-label="${ui.theme}" title="${ui.theme}"></button>` +
@@ -480,12 +481,13 @@
       if (hasTwin(here) && pageName !== '404') location.href = twinUrl(b.dataset.lang); else location.reload();
     }));
     const links = nav.querySelector('.nav-l'), toggle = nav.querySelector('.nav-toggle');
-    const ddBtn = nav.querySelector('.dd-btn'), dd = nav.querySelector('.dd');
     toggle.addEventListener('click', () => { const o = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(o)); });
-    if (ddBtn) {
-      ddBtn.addEventListener('click', (e) => { e.stopPropagation(); const o = dd.classList.toggle('open'); ddBtn.setAttribute('aria-expanded', String(o)); });
-      document.addEventListener('click', () => { dd.classList.remove('open'); ddBtn.setAttribute('aria-expanded', 'false'); });
-    }
+    // the drop-down menus: the robots, and my space (one open at a time)
+    const dds = [...nav.querySelectorAll('.dd')].map((dd) => [dd, dd.querySelector('.dd-btn, .me-btn')]).filter((x) => x[1]);
+    const closeAll = (but) => dds.forEach(([dd, b]) => { if (dd !== but) { dd.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); } });
+    dds.forEach(([dd, b]) => b.addEventListener('click', (e) => { e.stopPropagation(); closeAll(dd); const o = dd.classList.toggle('open'); b.setAttribute('aria-expanded', String(o));
+      if (o && dd.classList.contains('me-dd')) { const P = window.RA && RA.progress, n = P && P.all ? Object.keys(P.all()).length : 0; dd.querySelector('.me-prog').textContent = lang === 'fr' ? `${n} page${n > 1 ? 's' : ''} terminée${n > 1 ? 's' : ''}` : `${n} page${n === 1 ? '' : 's'} finished`; } }));
+    document.addEventListener('click', (e) => { if (!e.target.closest('.dd-menu')) closeAll(null); });
     // the search: search.js is loaded the first time it is opened
     const openSearch = (q) => {
       if (RA.openSearch) return RA.openSearch(q);
