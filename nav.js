@@ -22,25 +22,31 @@
     ['mobile.html',     { en: 'Mobile robot', fr: 'Robot mobile' },  '2 wheels / 2 roues'],
     ['wheels.html',     { en: 'Wheels',       fr: 'Roues' },         '—']
   ];
-  // the 3D "anatomy" pages (in the menu, not in the previous / next pager)
-  const ANATOMY = [
-    ['articulated.html#anatomy', { en: '6-axis robot', fr: 'Robot 6 axes' }],
-    ['scara.html#anatomy',   { en: 'SCARA',        fr: 'SCARA' }],
-    ['cobot.html#anatomy',   { en: 'Cobot',        fr: 'Cobot' }],
-    ['delta.html#anatomy',   { en: 'Delta',        fr: 'Delta' }],
-    ['gantry.html#anatomy',  { en: 'Gantry',       fr: 'Cartésien' }],
-    ['mobile.html#anatomy',  { en: 'Mobile robot', fr: 'Robot mobile' }],
-    ['anatomy-wheels.html',  { en: 'Wheels',       fr: 'Roues' }],
-    ['anatomy-drives.html',  { en: 'Drives',       fr: 'Motorisations' }],
-    ['hexapod.html#anatomy', { en: 'Hexapod',      fr: 'Hexapode' }],
-    ['anatomy-quadrotor.html', { en: 'Drone',      fr: 'Drone' }],
-    ['anatomy-humanoid.html', { en: 'Humanoid',    fr: 'Humanoïde' }]
+  // the robots that have only a 3D anatomy page (legged, aerial, underwater)
+  const MORE_ROBOTS = [
+    ['anatomy-humanoid.html',  { en: 'Humanoid',         fr: 'Humanoïde' },        '2 legs / 2 jambes'],
+    ['anatomy-quadruped.html', { en: 'Quadruped',        fr: 'Quadrupède' },       '4 legs / 4 pattes'],
+    ['anatomy-quadrotor.html', { en: 'Drone',            fr: 'Drone' },            '4 rotors / 4 hélices'],
+    ['anatomy-auv.html',       { en: 'Underwater robot', fr: 'Robot sous-marin' }, 'AUV']
+  ];
+  // the Robots menu, by the usual classification: manipulators (fixed) and mobile robots
+  const MENU_ROBOTS = [
+    [{ en: 'Manipulators (fixed)', fr: 'Robots manipulateurs (fixes)' }, [
+      [{ en: 'Serial', fr: 'Série' }, ['arm.html', 'gantry.html', 'cylindrical.html', 'spherical.html', 'scara.html', 'articulated.html', 'cobot.html', 'redundant.html']],
+      [{ en: 'Parallel', fr: 'Parallèles' }, ['delta.html', 'hexapod.html']]]],
+    [{ en: 'Mobile robots', fr: 'Robots mobiles' }, [
+      [{ en: 'On wheels', fr: 'À roues' }, ['mobile.html', 'wheels.html']],
+      [{ en: 'On legs', fr: 'À pattes' }, ['anatomy-humanoid.html', 'anatomy-quadruped.html']],
+      [{ en: 'Aerial', fr: 'Aériens' }, ['anatomy-quadrotor.html']],
+      [{ en: 'Underwater', fr: 'Sous-marins' }, ['anatomy-auv.html']]]]
   ];
   // the groups of links of the footer: the robots by family, the tools, my space
   const ROBOT_FAMILIES = [
     [{ en: 'Serial arms', fr: 'Bras série' }, ['arm.html', 'gantry.html', 'cylindrical.html', 'spherical.html', 'scara.html', 'articulated.html', 'cobot.html', 'redundant.html']],
     [{ en: 'Parallel robots', fr: 'Robots parallèles' }, ['delta.html', 'hexapod.html']],
-    [{ en: 'Mobile robots', fr: 'Robots mobiles' }, ['mobile.html', 'wheels.html']]
+    [{ en: 'Mobile robots on wheels', fr: 'Robots mobiles à roues' }, ['mobile.html', 'wheels.html']],
+    [{ en: 'Legged robots', fr: 'Robots à pattes' }, ['anatomy-humanoid.html', 'anatomy-quadruped.html']],
+    [{ en: 'Aerial and underwater', fr: 'Aériens et sous-marins' }, ['anatomy-quadrotor.html', 'anatomy-auv.html']]
   ];
   const MENU_TOOLS = [['practice.html', 'All the hands-on tools', 'Tous les outils pratiques'], ['build.html', 'Build your first robot', 'Construire votre premier robot'], ['sandbox.html', 'Programming sandbox', 'Bac à sable de programmation'], ['sensors.html', 'Sensor test bench', 'Banc d\'essai des capteurs'], ['projects.html', 'Guided projects', 'Projets guidés']];
   const MENU_ME = [['index.html#road', 'My roadmap', 'Mon parcours'], ['certificate.html', 'My certificates', 'Mes certificats'], ['exam.html', 'Final exams', 'Examens finaux'], ['review.html', 'My reviews', 'Mes révisions'], ['revision.html', 'Revision sheets', 'Fiches de révision'], ['glossary.html', 'Glossary', 'Glossaire'], ['index.html#rmBackup', 'Save my progress, offline mode', 'Sauvegarde et mode hors ligne']];
@@ -448,10 +454,10 @@
     nav.innerHTML =
       `<a class="brand" href="index.html">${LOGO}<span>Robotics Atlas</span></a>` +
       '<nav class="nav-l" aria-label="Main">' +
-      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="anatomy.html">${ui.secInside}</a><a href="index.html#road">${ui.secRoad}</a><a href="practice.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a>` + link('anatomy.html', ui.secInside) + `<a href="practice.html"${/^(practice|build|sandbox|sensors|projects)\.html$/.test(here) ? ' aria-current="page"' : ''}>${ui.build}</a>`) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
+      (here === 'index.html' ? `<a href="index.html">${ui.secIntro}</a><a href="index.html#tour">${ui.secHow}</a><a href="index.html#gallery">${ui.secRobots}</a><a href="index.html#road">${ui.secRoad}</a><a href="practice.html">${ui.build}</a>` : link('index.html', ui.home) + `<a href="index.html#road"${/^learn/.test(here) ? ' aria-current="page"' : ''}>${ui.secRoad}</a>` + `<a href="practice.html"${/^(practice|build|sandbox|sensors|projects)\.html$/.test(here) ? ' aria-current="page"' : ''}>${ui.build}</a>`) + (here === 'index.html' ? '' : `<a class="mob-only" href="index.html#gallery">${ui.robots}</a>`) + '</nav>' +   // the home page already has "The robots"
       '<div class="nav-r">' +
       (here === 'index.html' ? '' : `<div class="dd"><a class="dd-link" href="index.html#gallery">${ui.robots}</a><button class="dd-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.all}">▾</button><div class="dd-menu">` +
-      ROBOTS.map(([h, n, k]) => { const t = k.split(' / ')[lang === 'fr' && k.includes(' / ') ? 1 : 0]; return link(h, `${n[lang]}${t === '—' ? '' : ` <small>${t}</small>`}`); }).join('') + `<span class="dd-sep">${ui.anatomy}</span>` + ANATOMY.map(([h, n]) => link(h, `${n[lang]} <small>3D</small>`)).join('') + '</div></div>') +   // the home page already has "The robots": no second robots menu there
+      MENU_ROBOTS.map(([fam, subs]) => `<span class="dd-sep">${fam[lang]}</span>` + subs.map(([sub, list]) => `<span class="dd-sub">${sub[lang]}</span>` + list.map((h) => { const [, n, k] = ROBOTS.concat(MORE_ROBOTS).find((r) => r[0] === h); const t = k.split(' / ')[lang === 'fr' && k.includes(' / ') ? 1 : 0]; return link(h, `${n[lang]}${t === '—' ? '' : ` <small>${t}</small>`}`); }).join('')).join('')).join('') + `<a class="dd-all" href="index.html#robots">${ui.allRobots} →</a>` + '</div></div>') +   // the home page already has "The robots": no second robots menu there
       '<div class="nav-tools">' +
       `<div class="dd me-dd"><button class="icon-btn me-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="${ui.me}" title="${ui.me}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg></button><div class="dd-menu me-menu"><span class="dd-sep">${ui.me}</span><span class="me-prog"></span>` + MENU_ME.map(([h, en, fr]) => link(h, lang === 'fr' ? fr : en)).join('') + '</div></div>' +
       `<button class="icon-btn search-btn" type="button" aria-label="${ui.search}" title="${ui.search}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>` +
@@ -569,7 +575,7 @@
     const T = (list) => list.map(([h, en, fr]) => [h, lang === 'fr' ? fr : en]);
     const cols = '<nav class="fcols" aria-label="' + (lang === 'fr' ? 'Plan du site' : 'Site map') + '">' +
       col(ui.learnH, [['index.html#road', lang === 'fr' ? 'Parcours et tous les cours' : 'Roadmap and all the courses'], ['learn.html', ui.learnFoot], ['glossary.html', ui.gloss], ['revision.html', ui.rev], ['exam.html', lang === 'fr' ? 'Examens finaux' : 'Final exams']]) +
-      col(ui.robots, ROBOT_FAMILIES.map(([g, list]) => [list[0], g[lang]]).concat([['index.html#robots', ui.allRobots], ['anatomy.html', ui.anatomy]])) +
+      col(ui.robots, ROBOT_FAMILIES.map(([g, list]) => [list[0], g[lang]]).concat([['index.html#robots', ui.allRobots]])) +
       col(ui.tools, T(MENU_TOOLS)) +
       col(ui.me, T(MENU_ME.filter((x) => !/glossary|revision|exam/.test(x[0]))).concat([['about.html', ui.aboutH]])) + '</nav>';
     foot.innerHTML = doneBar + pager + cols +

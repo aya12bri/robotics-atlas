@@ -1838,3 +1838,7 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .ptabs-main { min-width: 0; } .ptabs-main .rtab-pane > :first-child { margin-top: 0; }
 .psub[hidden] + .ptabs-main { margin-top: 1.6rem; }
 @media (max-width: 700px) { .ptabs { top: 4.4rem; } .ptabs a { padding: 0.8rem 0.9rem 0.7rem; font-size: 1rem; } .psub { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .psub a { flex: none; } .psub > span { display: none; } }
+/* the Robots menu: families, then sub-families */
+.dd-menu > .dd-sep:first-child { margin-top: 0.2rem; border-top: 0; padding-top: 0.2rem; }
+.dd-sub { display: block; margin: 0.35rem 0.8rem 0.05rem; font: 600 0.68rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.dd-menu .dd-all { margin-top: 0.4rem; border-top: 1px solid var(--border); border-radius: 0 0 12px 12px; font-weight: 600; color: var(--accent); }

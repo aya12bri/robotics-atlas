@@ -29,6 +29,10 @@ const CFG = {
     playFn: (now) => [25 * Math.sin(now / 2600), 14 * Math.sin(now / 1500), 14 * Math.cos(now / 1500), 25 * Math.sin(now / 3000)], cam: [0.65, 0.5, 0.75], target: [0, 0.6, 0], special: [[0, 0]] },
   humanoid: { n: 6, nq: 5, cmd: true, col: ALLCOL, lim: [[0, 100], [-60, 60], [-30, 170], [-80, 80], [0, 100]], home: [0, 0, 0, 0, 50], unit: [' %', '°', '°', '°', ' %'], dec: 0, grid: 40,
     playFn: (now) => [35 + 35 * Math.sin(now / 1500), 40 * Math.sin(now / 1900), 75 + 75 * Math.sin(now / 1300), 55 * Math.sin(now / 1700), q[4]], cam: [2.9, 1.3, 2.3], target: [0, 0.85, 0], special: [[0, 0]] },
+  quadruped: { n: 6, nq: 4, cmd: true, col: ALLCOL, lim: [[0, 100], [0, 100], [-15, 15], [-15, 15]], home: [50, 60, 0, 0], unit: [' %', ' %', '°', '°'], dec: 0, grid: 40,
+    playFn: (now) => [q[0], 55 + 35 * Math.sin(now / 1700), 10 * Math.sin(now / 1300), 9 * Math.cos(now / 1100)], cam: [1.35, 0.8, 1.45], target: [0, 0.38, 0], special: [[0, 0]] },
+  auv: { n: 6, nq: 3, cmd: true, col: ALLCOL, lim: [[-100, 100], [-30, 30], [-30, 30]], home: [0, 0, 0], unit: [' %', '°', '°'], dec: 0, grid: 40,
+    playFn: (now) => [60, 22 * Math.sin(now / 2600), 14 * Math.sin(now / 1900)], cam: [1.55, 1.0, 1.65], target: [0, 0.6, 0], special: [[0, 70], [1, 25], [2, 0]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -820,7 +824,139 @@ function buildHumanoid() {
   return pose;
 }
 
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid }[KIND]();
+// ------------------------------------------------------------------ model 12: quadruped (trots: diagonal gait + 3-joint leg inverse kinematics)
+function buildQuadruped() {
+  const L1 = 0.3, L2 = 0.3, HX = 0.36, HZ = 0.13, OFF = 0.055, FR = 0.035;
+  const root = group(scene), body = group(root, [0, 0.55, 0]);
+  const green = new THREE.MeshStandardMaterial({ color: '#1f8f4a' });
+  boxm(0.96, 0.16, 0.28, ORANGE, body, [0, 0, 0]); boxm(0.78, 0.03, 0.18, DARK, body, [0, 0.093, 0]);            // body shell and top rails
+  for (const sx of [-1, 1]) {                                                                                     // front and back: stereo depth cameras
+    boxm(0.05, 0.11, 0.22, BLACK, body, [sx * 0.49, -0.005, 0]);
+    for (const sz of [-1, 1]) cyl(0.016, 0.02, SILVER, body, [sx * 0.515, 0.01, sz * 0.06], 'x');
+  }
+  for (const sz of [-1, 1]) { boxm(0.16, 0.07, 0.02, BLACK, body, [0, 0, sz * 0.145]); cyl(0.014, 0.015, SILVER, body, [0.03, 0, sz * 0.156], 'z'); cyl(0.014, 0.015, SILVER, body, [-0.03, 0, sz * 0.156], 'z'); }   // side cameras
+  xr(boxm(0.46, 0.08, 0.16, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), body, [-0.02, -0.02, 0]));     // battery
+  const brd = group(body, [0.12, 0.05, 0]); brd.rotation.x = -Math.PI / 2; xr(boxm(0.22, 0.14, 0.012, green, brd, [0, 0, 0]));
+  for (let i = 0; i < 6; i++) xr(boxm(0.035, 0.03, 0.018, i % 2 ? BLACK : SILVER, brd, [-0.07 + (i % 3) * 0.07, -0.035 + Math.floor(i / 3) * 0.06, 0.012]));   // computer
+  xr(boxm(0.04, 0.012, 0.04, green, body, [0.0, 0.05, 0.07])); xr(boxm(0.012, 0.008, 0.012, BLACK, body, [0.0, 0.058, 0.07]));   // IMU
+  const legs = [[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([sx, sz], i) => {
+    const abd = group(body, [sx * HX, -0.05, sz * HZ]); cyl(0.05, 0.1, DARK, abd, [0, 0, 0], 'x');                  // hip abduction (turns about x)
+    const hip = group(abd, [0, 0, sz * OFF]); cyl(0.06, 0.08, DARK, hip, [0, 0, 0], 'z');                           // hip flexion (about z)
+    boxm(0.075, L1, 0.06, LIGHT, hip, [0, -L1 / 2, 0]);
+    const kn = group(hip, [0, -L1, 0]); cyl(0.036, 0.075, DARK, kn, [0, 0, 0], 'z');
+    boxm(0.04, L2 - 0.02, 0.04, DARK, kn, [0, -L2 / 2, 0]);
+    mesh(new THREE.SphereGeometry(FR, 16, 12), BLACK, kn, [0, -L2, 0]);                                              // rubber foot (contact sensor)
+    drive(abd, [0, 0, 0], 'x', 0.045, 0.6); drive(hip, [0, 0, sz * 0.035], 'z', 0.05, 0.65); xr(cyl(0.04, 0.08, MOTOR, hip, [0.0, 0, -sz * 0.03], 'z'));   // three motors in the hip
+    xr(cyl(0.007, L1, SILVER, hip, [-0.03, -L1 / 2, 0]));                                                          // the knee is pulled by a rod from the hip
+    return { abd, hip, kn, sx, sz, ph: i === 0 || i === 3 ? 0 : 0.5 };
+  });
+  ring(0, legs[0].hip, [0, 0, 0], 'z', 0.085, { len: 0.4 });
+  ring(1, legs[0].kn, [0, 0, 0], 'z', 0.06, { len: 0.3 });
+  ring(2, legs[0].kn, [0, -L2, 0], 'z', 0.055, { noAxis: true });
+  ring(3, body, [0.5, 0, 0], 'x', 0.12, { noAxis: true });
+  ring(4, body, [0, 0, 0], 'y', 0.3, { noAxis: true, xray: true });
+  ring(5, legs[0].abd, [0, 0, 0], 'x', 0.075, { len: 0.4 });
+  const st = { on: false, wk: 0, phase: 0, contact: [true, true, true, true] }, info = { text: '' }, P = new THREE.Vector3();
+  function legIK(lg, fx, lift, H) {                                    // put the foot at (fx forward of the hip, on the ground + lift) in the room
+    body.updateMatrixWorld(true);
+    P.set(root.position.x + lg.sx * HX + fx, FR + lift, lg.sz * (HZ + OFF)); lg.abd.worldToLocal(P);
+    const dz = P.z - lg.sz * OFF, g = Math.atan2(dz, -P.y); lg.abd.rotation.x = -g;   // abduction: the leg plane passes through the foot
+    const ay = -Math.hypot(P.y, dz), ax = P.x, d = Math.min(Math.hypot(ax, ay), L1 + L2 - 1e-4);
+    const k = Math.PI - Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2))));
+    lg.hip.rotation.z = Math.atan2(ax, -ay) - Math.atan2(L2 * Math.sin(k), L1 + L2 * Math.cos(k)); lg.kn.rotation.z = k;   // the knee points backwards, like most quadrupeds
+  }
+  function place() {
+    const w = st.wk, H = 0.38 + 0.2 * q[1] / 100, S = (0.05 + 0.1 * q[0] / 100) * w;
+    body.position.y = H + 0.05 + 0.008 * w * Math.cos(4 * Math.PI * st.phase);
+    body.rotation.set(q[3] * D2R, 0, q[2] * D2R);
+    legs.forEach((lg, i) => {
+      const ph = (st.phase + lg.ph) % 1; let fx, lift = 0;
+      if (ph < 0.5) fx = S - 2 * S * (ph / 0.5);                                           // stance: the foot moves backwards under the body
+      else { const u = (ph - 0.5) / 0.5; fx = -S + 2 * S * (u - Math.sin(2 * Math.PI * u) / (2 * Math.PI)); lift = 0.08 * w * Math.sin(Math.PI * u); }   // swing: forwards in the air
+      st.contact[i] = lift < 0.004; legIK(lg, fx, lift, H);
+    });
+  }
+  let prevx = 0;
+  function pose() { place(); }
+  pose.tick = (dt) => {
+    st.wk += Math.sign((st.on ? 1 : 0) - st.wk) * Math.min(Math.abs((st.on ? 1 : 0) - st.wk), dt * 1.5);
+    const T = 0.62 - 0.22 * q[0] / 100, S = (0.05 + 0.1 * q[0] / 100) * st.wk;
+    if (st.wk > 0.001) st.phase = (st.phase + dt / T) % 1;
+    const v = 4 * S / T * (q[0] > 0 ? 1 : 0); root.position.x += v * dt; place();
+    const dx = root.position.x - prevx; prevx = root.position.x; camera.position.x += dx; orbit.target.x += dx;
+    const n = st.contact.filter(Boolean).length;
+    info.text = L('speed ', 'vitesse ') + v.toFixed(2) + ' m/s, ' + L('body height ', 'hauteur du corps ') + (body.position.y - 0.05).toFixed(2) + ' m, ' + L('feet on the ground: ', 'pieds au sol : ') + n + ' / 4\n' +
+      (st.wk > 0.5 ? L('trot: the two diagonal pairs of legs step in turn', 'trot : les deux paires de pattes en diagonale avancent à tour de rôle') : L('standing on 4 feet: very stable; tilt the body with the sliders', 'debout sur 4 pattes : très stable ; inclinez le corps avec les curseurs'));
+  };
+  pose.special = () => { st.on = !st.on; };
+  pose.reset = () => { st.on = false; st.wk = 0; st.phase = 0; root.position.x = 0; prevx = 0; place(); };
+  pose.readout = () => info.text;
+  return pose;
+}
+
+// ------------------------------------------------------------------ model 13: autonomous underwater vehicle (AUV): propeller, 4 fins, sensors
+function buildAUV() {
+  const R = 0.13, LH = 1.25, root = group(scene), hull = group(root, [0, 0.62, 0]);
+  const green = new THREE.MeshStandardMaterial({ color: '#1f8f4a' });
+  const body = group(hull);
+  mesh(new THREE.CylinderGeometry(R, R, LH, 48), ORANGE, body, [0, 0, 0], [0, 0, Math.PI / 2]);
+  mesh(new THREE.SphereGeometry(R, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), LIGHT, body, [LH / 2, 0, 0], [0, 0, -Math.PI / 2]);   // nose
+  mesh(new THREE.CylinderGeometry(R, 0.045, 0.36, 48), LIGHT, body, [-LH / 2 - 0.18, 0, 0], [0, 0, -Math.PI / 2]);               // tail cone
+  for (const x of [-0.35, 0.1, 0.45]) cyl(R * 1.01, 0.03, DARK, body, [x, 0, 0], 'x');                                             // section joints
+  cyl(0.05, 0.012, BLACK, body, [LH / 2 + R - 0.004, 0, 0], 'x'); cyl(0.03, 0.014, BLUE, body, [LH / 2 + R, 0, 0], 'x');            // nose camera
+  for (const sz of [-1, 1]) boxm(0.5, 0.05, 0.012, DARK, body, [0.05, -0.04, sz * (R + 0.004)]);                                  // side-scan sonar
+  for (const [dx, dz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) cyl(0.022, 0.03, BLACK, body, [0.32 + dx * 0.035, -R + 0.006, dz * 0.035]);   // DVL: four sonar beams to the sea floor
+  const mast = group(body, [-0.3, R, 0]); cyl(0.015, 0.16, DARK, mast, [0, 0.08, 0]); boxm(0.05, 0.025, 0.03, LIGHT, mast, [0, 0.17, 0]); mesh(new THREE.SphereGeometry(0.012, 12, 8), new THREE.MeshStandardMaterial({ color: '#ffd24a', emissive: '#ffb300', emissiveIntensity: 0.8 }), mast, [0, 0.19, 0]);   // antenna and strobe
+  // inside (X-ray): the pressure hull, the battery, the computer, the motor, buoyancy foam
+  xr(mesh(new THREE.CylinderGeometry(R * 0.86, R * 0.86, 0.5, 32, 1, true), SILVER, body, [0.05, 0, 0], [0, 0, Math.PI / 2]));
+  for (let i = 0; i < 4; i++) xr(boxm(0.1, 0.1, 0.12, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), body, [-0.15 + i * 0.12, -0.01, 0]));
+  const brd = group(body, [0.4, 0.04, 0]); brd.rotation.x = -Math.PI / 2; xr(boxm(0.16, 0.12, 0.012, green, brd, [0, 0, 0]));
+  for (let i = 0; i < 4; i++) xr(boxm(0.03, 0.03, 0.018, i % 2 ? BLACK : SILVER, brd, [-0.04 + (i % 2) * 0.08, -0.03 + Math.floor(i / 2) * 0.06, 0.012]));
+  xr(boxm(0.03, 0.012, 0.03, green, body, [0.55, -0.03, 0]));                                                                       // IMU
+  xr(cyl(0.05, 0.12, MOTOR, body, [-LH / 2 - 0.12, 0, 0], 'x')); xr(cyl(0.01, 0.2, SILVER, body, [-LH / 2 - 0.25, 0, 0], 'x'));     // thruster motor and shaft
+  xr(boxm(0.18, 0.05, 0.16, new THREE.MeshStandardMaterial({ color: '#e8d27a', roughness: 0.9 }), body, [0.62, 0.05, 0]));           // syntactic foam (buoyancy)
+  cable(body, [[0.4, 0.03, 0], [0.2, 0.05, 0.03], [-0.2, 0.05, 0.02], [-LH / 2 - 0.1, 0, 0]], 0.008);
+  // propeller in a duct
+  const prop = group(body, [-LH / 2 - 0.39, 0, 0]);
+  mesh(new THREE.TorusGeometry(0.1, 0.012, 10, 40), DARK, body, [-LH / 2 - 0.39, 0, 0], [0, Math.PI / 2, 0]);
+  cyl(0.025, 0.05, SILVER, prop, [0, 0, 0], 'x');
+  for (let i = 0; i < 3; i++) { const b = boxm(0.012, 0.085, 0.03, ORANGE, prop, [0, 0, 0]); b.position.set(0, Math.cos(i * 2.094) * 0.05, Math.sin(i * 2.094) * 0.05); b.rotation.x = -i * 2.094; b.rotation.y = 0.5; }
+  // four control fins: rudders (top, bottom) and elevators (left, right)
+  const fins = [];
+  for (const [ax, sy, sz] of [['y', 1, 0], ['y', -1, 0], ['z', 0, 1], ['z', 0, -1]]) {
+    const f = group(body, [-LH / 2 - 0.14, sy * 0.07, sz * 0.07]);
+    const plate = boxm(0.11, ax === 'y' ? 0.12 : 0.012, ax === 'y' ? 0.012 : 0.12, DARK, f, [-0.02, sy * 0.06, sz * 0.06]);
+    fins.push({ f, ax });
+  }
+  ring(0, body, [-LH / 2 - 0.39, 0, 0], 'x', 0.13, { len: 0.6 });
+  ring(1, fins[0].f, [0, 0.06, 0], 'y', 0.07, { len: 0.4 });
+  ring(2, body, [0.05, 0, 0], 'x', R + 0.03, { noAxis: true });
+  ring(3, body, [0.32, -R, 0], 'y', 0.07, { noAxis: true });
+  ring(4, body, [0.05, 0, 0], 'x', R * 0.8, { noAxis: true, xray: true });
+  ring(5, mast, [0, 0.17, 0], 'y', 0.05, { noAxis: true });
+  const st = { spin: 0, yaw: 0, pitch: 0, x: 0, z: 0, y: 0.62 }, info = { text: '' };
+  function pose() { fins.forEach(({ f, ax }) => { if (ax === 'y') f.rotation.y = q[1] * D2R; else f.rotation.z = -q[2] * D2R; }); }
+  const prev = hull.position.clone();
+  pose.tick = (dt) => {
+    pose();
+    const v = 0.5 * q[0] / 100;                                                              // speed through the water (m/s)
+    st.spin += q[0] / 100 * 30 * dt; prop.rotation.x = st.spin;
+    st.yaw += -v * 1.6 * Math.sin(q[1] * D2R) * dt;                                           // the rudders turn the vehicle (only when it moves)
+    const pt = Math.max(-0.5, Math.min(0.5, -1.2 * Math.sin(q[2] * D2R) * Math.sign(v || 1)));  // the elevators set the pitch: nose down to dive
+    st.pitch += (pt * Math.min(1, Math.abs(v) * 3) - st.pitch) * Math.min(1, dt * 1.5);
+    hull.rotation.set(0, st.yaw, st.pitch);
+    st.x += Math.cos(st.yaw) * v * dt; st.z -= Math.sin(st.yaw) * v * dt; st.y = Math.max(0.3, Math.min(1.4, st.y + Math.sin(st.pitch) * v * dt));
+    hull.position.set(st.x, st.y, st.z);
+    const d = hull.position.clone().sub(prev); prev.copy(hull.position); camera.position.add(d); orbit.target.add(d);
+    info.text = L('speed ', 'vitesse ') + Math.abs(v).toFixed(2) + ' m/s, ' + L('heading ', 'cap ') + Math.round(((-st.yaw / D2R) % 360 + 360) % 360) + '°, ' + L('pitch ', 'assiette ') + Math.round(-st.pitch / D2R) + '°, ' + L('depth ', 'profondeur ') + (25 + (1.4 - st.y) * 20).toFixed(1) + ' m\n' +
+      (Math.abs(v) < 0.02 ? L('stopped: the fins do nothing without speed', 'à l\'arrêt : les gouvernes n\'agissent pas sans vitesse') : st.pitch > 0.08 ? L('nose down: it dives', 'nez vers le bas : il plonge') : st.pitch < -0.08 ? L('nose up: it climbs', 'nez vers le haut : il remonte') : L('level flight under water', 'route à profondeur constante'));
+  };
+  pose.reset = () => { st.spin = st.yaw = st.pitch = st.x = st.z = 0; st.y = 0.62; hull.position.set(0, 0.62, 0); hull.rotation.set(0, 0, 0); prev.copy(hull.position); };
+  pose.readout = () => info.text;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid, quadruped: buildQuadruped, auv: buildAUV }[KIND]();
 
 scene.traverse((o) => { if (o.isMesh && !o.userData.floor && !o.material.isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } });
 // ------------------------------------------------------------------ reference frame
@@ -1025,7 +1161,7 @@ function loop(now) {
     [floor, pad, grid].forEach((o) => { o.position.x = gx; o.position.z = gz; });
   }
   if (thumbFit) {                                               // a closer view for the small robots
-    thumbFit = false; const z = { mobile: 0.5, drives: 0.5, wheels: 0.8, quadrotor: 0.8 }[KIND] || 1; camera.position.sub(orbit.target).multiplyScalar(z).add(orbit.target);
+    thumbFit = false; const z = { mobile: 0.5, drives: 0.5, wheels: 0.8, quadrotor: 0.8, auv: 0.85 }[KIND] || 1; camera.position.sub(orbit.target).multiplyScalar(z).add(orbit.target);
   }
   flyStep(now);
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();

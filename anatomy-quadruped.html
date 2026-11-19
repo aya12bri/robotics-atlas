@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anatomy of a quadruped robot (3D)</title>
+    <!-- seo -->
+    <meta name="description" content="3D anatomy of a quadruped robot that really trots: 12 joints, legs, cameras, battery and computer, with an X-ray mode." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/anatomy-quadruped" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Anatomy of a quadruped robot (3D)" />
+    <meta property="og:description" content="3D anatomy of a quadruped robot that really trots: 12 joints, legs, cameras, battery and computer, with an X-ray mode." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/anatomy-quadruped" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
+    <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+    </script>
+    <link rel="modulepreload" href="vendor/three.module.min.js" />
+    <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
+  <script src="nav.js" defer></script></head>
+  <body data-robot="quadruped" class="anatbox">
+    <h1>Quadruped <span class="h1tag">3D anatomy</span></h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn-world.html" style="color:#ff9f43">Robots in the real world course</a></p>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>quadruped robot</strong> walks on four legs, like a dog. Each leg has three joints (sideways at the hip, forward at the hip, the knee), so 12 motors in all. On four legs it is stable standing still and it goes where wheels cannot: stairs, gravel, mud. Examples: Boston Dynamics Spot, ANYbotics ANYmal, Unitree Go2.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Trot on / off</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="quadruped"></div>
+      <div class="ancard info" id="anCmd" style="--c:#2f6bff"><b class="ancmdt">Gait and body</b><p>Press Trot to make it walk; the speed slider sets the step length and the rhythm. The other sliders raise the body and tilt it forward or sideways: the feet stay on the ground.</p><label class="ansl ansl3"><span>speed</span><input type="range" aria-label="q0"><output></output></label><label class="ansl ansl3"><span>body height</span><input type="range" aria-label="q1"><output></output></label><label class="ansl ansl3"><span>body pitch</span><input type="range" aria-label="q2"><output></output></label><label class="ansl ansl3"><span>body roll</span><input type="range" aria-label="q3"><output></output></label></div>
+        <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>Hip (forward and back)</b></button><p>Swings the whole leg forward and back. With the knee, it moves the foot in the plane of the leg. Its motor sits in the body, close to the hip.</p></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Knee</b></button><p>Bends the lower leg. On most quadrupeds the knee points backwards. Its motor is not in the knee but in the hip, and a rod pulls the knee (seen in X-ray): the leg stays light and fast.</p></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Foot</b></button><p>A rubber ball that grips the ground. The robot feels when a foot touches the ground from the motor currents, or with a contact sensor.</p></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Cameras all around</b></button><p>Stereo depth cameras at the front, the back and on both sides: the robot sees the steps and the obstacles in every direction.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Battery and computer</b></button><p>The battery fills the middle of the body and gives about 90 minutes of walking. The computer runs the balance loop and the vision. Seen in X-ray, with the IMU.</p></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Hip (sideways)</b></button><p>The abduction joint opens the leg sideways. It keeps the feet under the body when the body rolls, and lets the robot step sideways.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>12 actuators</strong>: three per leg (abduction, hip, knee), each a brushless motor with a planetary gearbox, all placed in the body or at the hip so that the legs stay light.</li><li><strong>Balance</strong>: an IMU in the body, an encoder on every joint and the feeling of the feet; on 4 legs the robot is stable standing still, and when it trots two feet are always on the ground.</li><li><strong>Uses</strong>: inspection of factories, tunnels, oil rigs and power plants, carrying sensors where wheels cannot go (stairs, gravel, mud).</li></ul>
+    <p>The quadruped really trots: the legs go in two diagonal pairs (front left with rear right, then front right with rear left). For each leg, a small inverse kinematics finds the three angles (abduction, hip, knee) that put the foot where the gait wants it, even when you tilt the body. The model is simplified; real robots such as Spot or ANYmal add force control in every joint.</p>
+
+    <script type="module" src="anatomy.js"></script>
+    
+  </body>
+</html>
