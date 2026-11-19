@@ -12,7 +12,7 @@ import Anthropic from '@anthropic-ai/sdk';
 const MODEL = 'claude-haiku-5-5';            // the backup model; change this line for claude-sonnet-5-5 or claude-opus-5-5
 // the main models, tried in this order until one answers (a model can have no free quota, or not exist any more);
 // the variable GEMINI_MODEL (one name, or several separated by commas) replaces this list
-const GEMINIS = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite'];
+const GEMINIS = ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];   // the light models answer fastest on the free tier
 const geminiList = (env) => (env.GEMINI_MODEL ? env.GEMINI_MODEL.split(',').map((s) => s.trim()).filter(Boolean) : GEMINIS);
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta';
 const text = (s, status = 200, extra = {}) => new Response(s, { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra } });
@@ -105,50 +105,50 @@ export async function tutorStatus(env, url) {
 // Gemini, streamed: yields the text pieces; throws (with .status) before the first piece when it cannot answer
 async function* askGemini(env, system, history, question) {
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
-  // a lesson explanation does not need the model's long "thinking" before it writes: ask for none (or the least),
-  // and give up on Gemini (Claude answers instead) if nothing has arrived after FIRST_WORDS_MS
-  const FIRST_WORDS_MS = 25000, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), FIRST_WORDS_MS);
-  const call = (model, thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
-    method: 'POST', signal: ctl.signal,
-    headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
-  });
+  // each model of the list gets PER_MODEL_MS to write its first words, otherwise the next one is tried (a slow or busy
+  // model no longer blocks the others); a lesson explanation does not need the model's long "thinking": ask for none
+  const PER_MODEL_MS = 8000;
   const errText = async (r) => { const raw = await r.text().catch(() => ''); try { return JSON.parse(raw).error.message || raw; } catch (x) { return raw; } };
-  let r = null; const fails = [];
-  try {
-    for (const model of geminiList(env)) {
-      r = await call(model, { thinkingBudget: 0 });                              // Flash 2.x: no thinking
-      if (r.status === 400) r = await call(model, { thinkingLevel: 'minimal' });  // newer Flash models: the least thinking
-      if (r.status === 400) r = await call(model, null);                         // the model's own default
-      if (r.ok && r.body) break;
-      fails.push(`${model} ${r.status} ${(await errText(r)).slice(0, 90)}`);
-      if (![403, 404, 429, 500, 503].includes(r.status)) break;                  // a quota, a missing model, a busy server: try the next one
+  const fails = [];
+  for (const model of geminiList(env)) {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), PER_MODEL_MS);
+    const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
+      method: 'POST', signal: ctl.signal,
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
+    });
+    let r, any = false, why = '';
+    try {
+      r = await call({ thinkingBudget: 0 });                              // older Flash models: no thinking
+      if (r.status === 400) r = await call({ thinkingLevel: 'minimal' });  // newer Flash models: the least thinking
+      if (r.status === 400) r = await call(null);                         // the model's own default
+      if (!r.ok || !r.body) { clearTimeout(timer); fails.push(`${model} ${r.status} ${(await errText(r)).slice(0, 80)}`); continue; }
+      const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '';
+      for (;;) {
+        const { done, value } = await rd.read(); if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i;
+        while ((i = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+          if (!line.startsWith('data:')) continue;
+          let j; try { j = JSON.parse(line.slice(5)); } catch (e) { continue; }
+          const c = j.candidates && j.candidates[0];
+          if (c && c.finishReason) why = c.finishReason;
+          const s = ((c && c.content && c.content.parts) || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('');
+          if (s) { if (!any) clearTimeout(timer); any = true; yield s; }  // the first words: this model answers, no more time limit
+        }
+      }
+    } catch (e) {
+      clearTimeout(timer);
+      if (any) { const x = new Error('gemini: cut in the middle'); x.status = 'cut'; throw x; }   // it had started: keep what it wrote
+      fails.push(`${model} ${ctl.signal.aborted ? 'no answer in ' + PER_MODEL_MS / 1000 + ' s' : 'error ' + e.message}`); continue;
     }
-  } catch (e) { clearTimeout(timer); const x = new Error('gemini: no answer in time ' + fails.join(' / ')); x.status = 'timeout'; throw x; }
-  if (!r || !r.ok || !r.body) {
     clearTimeout(timer);
-    const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = r ? r.status : 0; throw e;
+    if (any) { if (why === 'MAX_TOKENS') yield ' …'; return; }
+    fails.push(`${model} empty answer ${why}`);
+    if (why === 'SAFETY') { const e = new Error('gemini: ' + fails.join(' / ')); e.status = 'refusal'; throw e; }
   }
-  const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', any = false, why = '';
-  for (;;) {
-    let step;
-    try { step = await rd.read(); } catch (e) { clearTimeout(timer); const x = new Error('gemini: no answer in time'); x.status = any ? 'cut' : 'timeout'; throw x; }
-    const { done, value } = step; if (done) break;
-    buf += dec.decode(value, { stream: true });
-    let i;
-    while ((i = buf.indexOf('\n')) >= 0) {
-      const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
-      if (!line.startsWith('data:')) continue;
-      let j; try { j = JSON.parse(line.slice(5)); } catch (e) { continue; }
-      const c = j.candidates && j.candidates[0];
-      if (c && c.finishReason) why = c.finishReason;
-      const s = ((c && c.content && c.content.parts) || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('');
-      if (s) { if (!any) clearTimeout(timer); any = true; yield s; }
-    }
-  }
-  clearTimeout(timer);
-  if (!any) { const e = new Error('gemini: empty answer ' + why); e.status = why === 'SAFETY' ? 'refusal' : 'empty'; throw e; }
-  if (why === 'MAX_TOKENS') yield ' …';
+  const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = 'all'; throw e;
 }
 
 export async function tutor(req, env, url) {
