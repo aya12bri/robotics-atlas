@@ -33,6 +33,8 @@ const CFG = {
     playFn: (now) => [q[0], 55 + 35 * Math.sin(now / 1700), 10 * Math.sin(now / 1300), 9 * Math.cos(now / 1100)], cam: [1.35, 0.8, 1.45], target: [0, 0.38, 0], special: [[0, 0]] },
   auv: { n: 6, nq: 3, cmd: true, col: ALLCOL, lim: [[-100, 100], [-30, 30], [-30, 30]], home: [0, 0, 0], unit: [' %', '°', '°'], dec: 0, grid: 40,
     playFn: (now) => [60, 22 * Math.sin(now / 2600), 14 * Math.sin(now / 1900)], cam: [1.55, 1.0, 1.65], target: [0, 0.6, 0], special: [[0, 70], [1, 25], [2, 0]] },
+  tracked: { n: 6, nq: 2, cmd: true, col: ALLCOL, lim: [[-1, 1], [-1, 1]], home: [0.4, 0.4], unit: [' m/s', ' m/s'], dec: 2, step: 0.05, grid: 40,
+    playFn: (now) => [0.35 + 0.3 * Math.sin(now / 1300), 0.35 - 0.3 * Math.sin(now / 1300)], cam: [1.1, 0.72, 1.2], target: [0, 0.18, 0], special: [[0, -0.4], [1, 0.4]] },
   mobile: { n: 6, nq: 2, col: ALLCOL, lim: [[-12, 12], [-12, 12]], home: [6, 8], unit: [' rad/s', ' rad/s'], dec: 1, step: 0.5, grid: 30,
     playFn: (now) => [5 + 3.5 * Math.sin(now / 900), 5 - 3.5 * Math.sin(now / 900)], cam: [1.6, 1.2, 1.8], target: [0, 0.15, 0], special: [[0, -5], [1, 5]] }
 }[KIND];
@@ -964,7 +966,59 @@ function buildAUV() {
   return pose;
 }
 
-const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid, quadruped: buildQuadruped, auv: buildAUV }[KIND]();
+// ------------------------------------------------------------------ model 14: tracked robot (skid steering: two tracks, each driven by its own motor)
+function buildTracked() {
+  const TL = 0.62, TR = 0.1, TW = 0.13, B = 0.5;                   // distance between the sprockets, their radius, track width, distance between the two tracks
+  const robot = group(scene), body = group(robot);
+  boxm(0.66, 0.16, B - TW - 0.03, ORANGE, body, [0, 0.21, 0]); boxm(0.6, 0.025, B - TW - 0.06, DARK, body, [0, 0.3, 0]);
+  boxm(0.04, 0.1, 0.2, BLACK, body, [0.34, 0.22, 0]); for (const z of [-0.05, 0.05]) cyl(0.018, 0.02, SILVER, body, [0.36, 0.23, z], 'x');   // front stereo camera
+  const lid = group(body, [0.12, 0.36, 0]); cyl(0.05, 0.05, DARK, lid, [0, 0, 0]); cyl(0.052, 0.012, SILVER, lid, [0, 0.018, 0]); cyl(0.012, 0.05, DARK, body, [0.12, 0.32, 0]);   // lidar on a short mast
+  const ant = group(body, [-0.26, 0.31, 0.1]); cyl(0.008, 0.26, DARK, ant, [0, 0.13, 0]); mesh(new THREE.SphereGeometry(0.014, 10, 8), BLACK, ant, [0, 0.27, 0]);   // radio antenna
+  for (const z of [-1, 1]) boxm(0.05, 0.03, 0.03, new THREE.MeshStandardMaterial({ color: '#fff3c4', emissive: '#ffd24a', emissiveIntensity: 0.7 }), body, [0.335, 0.27, z * 0.12]);   // headlights
+  xr(boxm(0.32, 0.07, 0.24, new THREE.MeshStandardMaterial({ color: '#2a6fd6' }), body, [-0.05, 0.19, 0]));                             // battery
+  const brd = group(body, [0.17, 0.27, 0]); brd.rotation.x = -Math.PI / 2; xr(boxm(0.16, 0.14, 0.012, new THREE.MeshStandardMaterial({ color: '#1f8f4a' }), brd, [0, 0, 0]));
+  for (let i = 0; i < 4; i++) xr(boxm(0.03, 0.03, 0.018, i % 2 ? BLACK : SILVER, brd, [-0.04 + (i % 2) * 0.08, -0.03 + Math.floor(i / 2) * 0.06, 0.012]));   // computer
+  cable(body, [[-0.05, 0.23, 0.05], [0.05, 0.26, 0.05], [0.12, 0.3, 0.0]], 0.006);
+  const tracks = [-1, 1].map((s) => {
+    const g = group(robot, [0, 0, s * B / 2]), cy0 = TR + 0.005;
+    const spr = [], belt = [], P = 2 * TL + 2 * Math.PI * TR, NB = 44;
+    for (const x of [-TL / 2, TL / 2]) { const w = group(g, [x, cy0, 0]); cyl(TR * 0.86, TW * 0.9, DARK, w, [0, 0, 0], 'z'); cyl(TR * 0.35, TW * 1.02, SILVER, w, [0, 0, 0], 'z');
+      for (let k = 0; k < 10; k++) { const t = boxm(0.025, 0.02, TW * 0.92, DARK, w, [Math.cos(k * 0.628) * TR * 0.86, Math.sin(k * 0.628) * TR * 0.86, 0]); t.rotation.z = k * 0.628; } spr.push(w); }   // sprocket (rear, driven) and idler (front)
+    for (const x of [-0.16, 0, 0.16]) cyl(0.045, TW * 0.8, BLACK, g, [x, 0.05, 0], 'z');                                                 // road wheels
+    for (let i = 0; i < NB; i++) { const b = boxm(0.04, 0.014, TW, TYRE, g, [0, 0, 0]); boxm(0.012, 0.02, TW * 0.9, TYRE, b, [0, -0.012, 0]); belt.push(b); }   // track pads with their grousers
+    drive(body, [-TL / 2, cy0, s * (B / 2 - TW / 2 - 0.05)], 'z', 0.035, 0.85);                                                          // motor + gearbox at the rear sprocket
+    const place = (off) => belt.forEach((b, i) => {
+      let u = ((i * P / NB) + off) % P; if (u < 0) u += P; let x, y, a;
+      if (u < TL) { x = TL / 2 - u; y = cy0 - TR; a = 0; } else if (u < TL + Math.PI * TR) { const t = (u - TL) / TR; x = -TL / 2 - Math.sin(t) * TR; y = cy0 - Math.cos(t) * TR; a = -t; }
+      else if (u < 2 * TL + Math.PI * TR) { x = -TL / 2 + (u - TL - Math.PI * TR); y = cy0 + TR; a = Math.PI; } else { const t = (u - 2 * TL - Math.PI * TR) / TR; x = TL / 2 + Math.sin(t) * TR; y = cy0 + Math.cos(t) * TR; a = Math.PI - t; }
+      b.position.set(x, y, 0); b.rotation.z = a; });
+    place(0); return { g, spr, place, run: 0 };
+  });
+  ring(0, tracks[1].g, [0, TR + 0.005, 0], 'x', 0.12, { noAxis: true });
+  ring(1, tracks[0].spr[0], [0, 0, 0], 'z', TR + 0.03, { len: 0.5 });
+  ring(2, tracks[1].g, [0, 0.05, 0], 'z', 0.07, { noAxis: true });
+  ring(3, body, [0.12, 0.36, 0], 'y', 0.08, { noAxis: true });
+  ring(4, body, [-0.05, 0.19, 0], 'y', 0.2, { noAxis: true, xray: true });
+  ring(5, ant, [0, 0.2, 0], 'y', 0.04, { noAxis: true });
+  const trail = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: '#ff9f43' })); scene.add(trail);
+  const pts = []; let acc = 0;
+  const st = { x: 0, z: 0, th: 0 }, info = { text: '' }, prev = new THREE.Vector3();
+  function pose() { robot.position.set(st.x, 0, st.z); robot.rotation.y = st.th; }
+  pose.tick = (dt) => {
+    const vL = q[0], vR = q[1], v = (vL + vR) / 2, om = 0.8 * (vR - vL) / B;       // skid steering: the tracks slip when it turns, so it turns less than two wheels would (0.8)
+    prev.copy(robot.position); st.th += om * dt; st.x += v * Math.cos(st.th) * dt; st.z -= v * Math.sin(st.th) * dt; pose();
+    [vL, vR].forEach((sp, i) => { const t = tracks[i === 0 ? 0 : 1]; t.run += sp * dt; t.place(-t.run); t.spr.forEach((w) => { w.rotation.z = -t.run / TR; }); });
+    lid.rotation.y += 6 * dt;
+    const dp = robot.position.clone().sub(prev); camera.position.add(dp); orbit.target.add(dp);
+    acc += dt; if (acc > 0.05 && (Math.abs(v) > 1e-3 || Math.abs(om) > 1e-3)) { acc = 0; pts.push(st.x, 0.004, st.z); if (pts.length > 3 * 1500) pts.splice(0, 3); trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); }
+    info.text = 'v = ' + v.toFixed(2) + ' m/s, ω = ' + om.toFixed(2) + ' rad/s\n' + (Math.abs(vL - vR) < 0.01 ? L('both tracks at the same speed: it goes straight', 'les deux chenilles à la même vitesse : il va tout droit') : Math.abs(vL + vR) < 0.01 ? L('tracks in opposite directions: it turns on the spot, the tracks slide sideways', 'chenilles en sens opposés : il tourne sur place, les chenilles glissent de côté') : L('one track faster than the other: it turns, with some slip', 'une chenille plus rapide que l\'autre : il tourne, en glissant un peu'));
+  };
+  pose.reset = () => { st.x = st.z = st.th = 0; pts.length = 0; trail.geometry.setAttribute('position', new THREE.Float32BufferAttribute([], 3)); pose(); };
+  pose.readout = () => info.text;
+  return pose;
+}
+
+const pose = { six: buildSix, scara: buildScara, cobot: buildCobot, delta: buildDelta, mobile: buildMobile, gantry: buildGantry, wheels: buildWheels, drives: buildDrives, stewart: buildStewart, quadrotor: buildQuadrotor, humanoid: buildHumanoid, quadruped: buildQuadruped, auv: buildAUV, tracked: buildTracked }[KIND]();
 
 scene.traverse((o) => { if (o.isMesh && !o.userData.floor && !o.material.isMeshBasicMaterial) { o.castShadow = true; o.receiveShadow = true; } });
 // ------------------------------------------------------------------ reference frame
@@ -1169,7 +1223,7 @@ function loop(now) {
     [floor, pad, grid].forEach((o) => { o.position.x = gx; o.position.z = gz; });
   }
   if (thumbFit) {                                               // a closer view for the small robots
-    thumbFit = false; const z = { mobile: 0.5, drives: 0.5, wheels: 0.8, quadrotor: 0.8, auv: 0.85 }[KIND] || 1; camera.position.sub(orbit.target).multiplyScalar(z).add(orbit.target);
+    thumbFit = false; const z = { mobile: 0.5, drives: 0.5, wheels: 0.8, quadrotor: 0.8, auv: 0.85, tracked: 0.75 }[KIND] || 1; camera.position.sub(orbit.target).multiplyScalar(z).add(orbit.target);
   }
   flyStep(now);
   orbit.autoRotate = spin; orbit.autoRotateSpeed = 1.2; orbit.update();
