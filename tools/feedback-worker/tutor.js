@@ -11,8 +11,18 @@ const MODEL = 'claude-haiku-5-5';            // the cheapest model; change this 
 const text = (s, status = 200, extra = {}) => new Response(s, { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 
 // the lesson as plain text: the <article id="lN"> of the page, without scripts, styles, figures' drawing code and tags
+async function getPage(env, url) {
+  // the static files answer /learn-x.html with a redirect to /learn-x (and the other way round): follow up to 3 redirects
+  for (let k = 0; k < 4; k++) {
+    const r = env.ASSETS ? await env.ASSETS.fetch(new Request(url, { redirect: 'manual' })) : await fetch(url, { redirect: 'manual' });
+    const to = r.status >= 300 && r.status < 400 && r.headers.get('location');
+    if (!to) return r;
+    url = new URL(to, url).href;
+  }
+  return new Response('too many redirects', { status: 508 });
+}
 async function lessonText(env, origin, page, lesson) {
-  const u = `${origin}/${page}.html`, r = env.ASSETS ? await env.ASSETS.fetch(new Request(u)) : await fetch(u, { cf: { cacheTtl: 3600, cacheEverything: true } });
+  const r = await getPage(env, `${origin}/${page}.html`);
   if (!r.ok) return null;
   const h = await r.text(), a = h.search(new RegExp(`<article[^>]*\\bid="${lesson}"`));
   if (a < 0) return null;
@@ -44,6 +54,18 @@ How to answer:
 
 async function sha(s) { const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(d)].slice(0, 12).map((b) => b.toString(16).padStart(2, '0')).join(''); }
 
+// GET /api/tutor/status: what works and what does not, without showing any secret (to set up and debug the tutor)
+export async function tutorStatus(env, url) {
+  const out = { model: MODEL, key: !!env.ANTHROPIC_API_KEY, rate_limit: !!env.TUTOR_LIMIT, assets: !!env.ASSETS };
+  try { const l = await lessonText(env, url.origin, 'learn-fr', 'l1'); out.lesson_text = l ? `ok (${l.body.length} characters)` : 'NOT FOUND'; } catch (e) { out.lesson_text = 'error: ' + e.message; }
+  if (env.ANTHROPIC_API_KEY) {
+    try { const m = await new Anthropic({ apiKey: env.ANTHROPIC_API_KEY }).models.retrieve(MODEL); out.api = `ok: the key works and ${m.id} is available`; }
+    catch (e) { out.api = `error ${e.status || ''}: ${(e.error && e.error.error && e.error.error.message) || e.message}`; }
+  } else out.api = 'no key: add the secret ANTHROPIC_API_KEY in Cloudflare (Settings → Variables and Secrets)';
+  out.note = 'The credit balance is not checked here: see platform.claude.com → Settings → Billing.';
+  return new Response(JSON.stringify(out, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+}
+
 export async function tutor(req, env, url) {
   if (!env.ANTHROPIC_API_KEY) return text('tutor not configured', 503);
   let d; try { d = await req.json(); } catch (e) { return text('bad json', 400); }
@@ -70,7 +92,7 @@ export async function tutor(req, env, url) {
   }
 
   const lesson = await lessonText(env, url.origin, d.lang === 'fr' ? d.page + '-fr' : d.page, d.lesson);
-  if (!lesson) return text('lesson not found', 404);
+  if (!lesson) { console.log('tutor error: lesson not found', d.page, d.lesson, d.lang); return text('lesson not found', 404); }
 
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
   const stream = client.messages.stream({
@@ -91,7 +113,7 @@ export async function tutor(req, env, url) {
         else if (msg.stop_reason === 'max_tokens') ctrl.enqueue(enc.encode(' …'));
       } catch (e) {
         console.log('tutor error', e && e.status, e && e.message);
-        ctrl.enqueue(enc.encode('\n\n[[error]]'));
+        ctrl.enqueue(enc.encode(`\n\n[[error ${(e && e.status) || ''}]]`));
       }
       ctrl.close();
     }
