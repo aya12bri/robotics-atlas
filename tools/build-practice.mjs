@@ -79,7 +79,27 @@ ${STEPS.map(([id, h, p, list], k) => `    <section class="px-step" id="${id}">
       <div class="px-grid${list.length === 2 ? ' two' : ''}">
         ${list.map((t, i) => card(t, k === 0 && i === 0)).join('\n        ')}
       </div>
+      <nav class="px-pager">${k > 0 ? `<a href="#${STEPS[k - 1][0]}" class="prev"><small><i aria-hidden="true">←</i> ${tx('Previous part', 'Partie précédente')}</small><b>${tx(...STEPS[k - 1][1])}</b></a>` : '<span></span>'}${k < STEPS.length - 1 ? `<a href="#${STEPS[k + 1][0]}" class="next"><small>${tx('Next part', 'Partie suivante')} <i aria-hidden="true">→</i></small><b>${tx(...STEPS[k + 1][1])}</b></a>` : ''}</nav>
     </section>`).join('\n')}
+    <script>
+      // one part at a time: the three cards at the top (and the buttons at the bottom of each part) open their part
+      (function () {
+        var steps = [].slice.call(document.querySelectorAll('.px-step')), cards = [].slice.call(document.querySelectorAll('.px-steps a'));
+        function show(id, scroll) {
+          if (!steps.some(function (s) { return s.id === id; })) id = steps[0].id;
+          steps.forEach(function (s) { s.hidden = s.id !== id; });
+          cards.forEach(function (a) { var on = a.getAttribute('href') === '#' + id; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current'); });
+          if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+          if (scroll) { var top = document.querySelector('.px-steps').getBoundingClientRect().top + window.scrollY - 100; window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' }); }
+        }
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('.px-steps a, .px-pager a'); if (!a) return;
+          e.preventDefault(); show(a.getAttribute('href').slice(1), true);
+        }, true);
+        window.addEventListener('hashchange', function () { show(location.hash.slice(1), false); });
+        show(location.hash.slice(1), false);
+      })();
+    </script>
   </body>
 </html>
 `;
