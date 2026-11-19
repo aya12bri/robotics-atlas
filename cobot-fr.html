@@ -118,9 +118,6 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">J6</span><b>Poignet 3</b></button><p>Fait tourner la bride de l'outil. Quand J5 = 0, les poignets 1 et 3 s'alignent : une singularité de poignet.</p><label class="ansl"><input type="range" step="1" aria-label="J6"><output></output></label></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
-    <ul><li><strong>Modules d'articulation compacts</strong> : chaque articulation est un tube avec un moteur sans balais, un réducteur harmonique et l'électronique à l'intérieur.</li><li><strong>Deux codeurs par articulation</strong> (côté moteur et côté sortie) et un <strong>capteur de couple ou mesure du courant</strong> : le contrôleur sent les efforts de contact et s'arrête quand il touche une personne.</li><li><strong>Frein</strong> dans chaque articulation, et un circuit d'arrêt de sécurité certifié.</li><li>Les <strong>câbles</strong> passent dans les tubes, avec le contrôleur dans un boîtier séparé relié par un seul câble.</li><li><strong>Formes arrondies, poids faible, force limitée</strong> : fait pour travailler à côté des personnes (voir « Comment un cobot reste sûr »).</li></ul>
-    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="cobot" data-set="cobot"></div>
@@ -137,6 +134,14 @@
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Modules d'articulation compacts</strong> : chaque articulation est un tube avec un moteur sans balais, un réducteur harmonique et l'électronique à l'intérieur.</li><li><strong>Deux codeurs par articulation</strong> (côté moteur et côté sortie) et un <strong>capteur de couple ou mesure du courant</strong> : le contrôleur sent les efforts de contact et s'arrête quand il touche une personne.</li><li><strong>Frein</strong> dans chaque articulation, et un circuit d'arrêt de sécurité certifié.</li><li>Les <strong>câbles</strong> passent dans les tubes, avec le contrôleur dans un boîtier séparé relié par un seul câble.</li><li><strong>Formes arrondies, poids faible, force limitée</strong> : fait pour travailler à côté des personnes (voir « Comment un cobot reste sûr »).</li></ul>
+    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h3>À essayer : trois types de singularité</h3>
@@ -220,6 +225,7 @@
     <div class="opsdemo" data-robot="cobot"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

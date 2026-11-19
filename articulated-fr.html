@@ -148,9 +148,6 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">J6</span><b>Rotation de l'outil</b></button><p>Fait tourner la pince ou l'outil autour de son propre axe : il règle l'orientation finale de l'outil.</p><label class="ansl"><input type="range" step="1" aria-label="J6"><output></output></label></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
-    <ul><li><strong>Servomoteur</strong> (sans balais) : tourne vite avec peu de couple.</li><li><strong>Réducteur</strong> (harmonique ou cycloïdal) : ralentit le moteur de 50 à 200 fois et multiplie le couple du même facteur.</li><li><strong>Codeur et frein</strong> : le codeur mesure l'angle ; le frein retient le bras quand le courant est coupé.</li><li><strong>Faisceau de câbles</strong> : l'énergie et les signaux passent dans les corps creux jusqu'au poignet et à l'outil.</li><li><strong>Contrôleur</strong> : l'ordinateur et les variateurs qui exécutent les boucles d'asservissement (dans la base ou dans une armoire à côté du robot).</li></ul>
-    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="six" data-set="arm"></div>
@@ -167,6 +164,14 @@
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Servomoteur</strong> (sans balais) : tourne vite avec peu de couple.</li><li><strong>Réducteur</strong> (harmonique ou cycloïdal) : ralentit le moteur de 50 à 200 fois et multiplie le couple du même facteur.</li><li><strong>Codeur et frein</strong> : le codeur mesure l'angle ; le frein retient le bras quand le courant est coupé.</li><li><strong>Faisceau de câbles</strong> : l'énergie et les signaux passent dans les corps creux jusqu'au poignet et à l'outil.</li><li><strong>Contrôleur</strong> : l'ordinateur et les variateurs qui exécutent les boucles d'asservissement (dans la base ou dans une armoire à côté du robot).</li></ul>
+    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h3>À essayer : une singularité</h3>
@@ -222,6 +227,7 @@
     <div class="opsdemo" data-robot="articulated"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

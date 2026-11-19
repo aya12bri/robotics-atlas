@@ -344,13 +344,21 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   if (R.merge) {
     // one page per robot: the viewer goes into the "Anatomy" part of the robot page, the old address leads there
     const rp = path.join(root, R.merge + '.html'); let h = fs.readFileSync(rp, 'utf8');
-    const seg = '    <div class="anatbox part-anat">\n' + html.slice(html.indexOf('    <p class="lead">'), html.indexOf('  </body>')) + '    </div>\n';
+    // the anatomy part: the viewer and the A-to-Z components; "what is inside each joint" goes to the "Inside" part, under the 3D dive
+    const body0 = html.slice(html.indexOf('    <p class="lead">'), html.indexOf('  </body>'));
+    const j0 = body0.indexOf('    <h2>What is inside each joint?</h2>'), j1 = body0.indexOf('    <h2>All the components, from A to Z</h2>');
+    const seg = '    <div class="anatbox part-anat">\n' + body0.slice(0, j0) + body0.slice(j1) + '    </div>\n';
+    const joints = `    <!-- BEGIN joints -->\n    <div class="part-joints">\n${body0.slice(j0, j1)}    </div>\n    <!-- END joints -->\n`;
     const H2 = ['Anatomy in 3D: every joint and every part', 'Anatomie en 3D : chaque articulation et chaque pièce'];
     const block = `    <!-- BEGIN anatomy -->\n${seg.replace('<div class="anatbox part-anat">\n', `<div class="anatbox part-anat">\n    <h2>${H2[0]}</h2>\n`)}    <!-- END anatomy -->\n`;
-    h = h.replace(/ *<p class="try"><a href="anatomy[a-z-]*\.html">[^\n]*<\/a><\/p>\n\n?/g, '').replace(/ *<!-- BEGIN anatomy -->[\s\S]*?<!-- END anatomy -->\n/, '');
-    const at = h.indexOf('    <!-- BEGIN inside -->') >= 0 ? h.indexOf('    <!-- BEGIN inside -->') : h.indexOf('    <div class="robot">');
+    h = h.replace(/ *<p class="try"><a href="anatomy[a-z-]*\.html">[^\n]*<\/a><\/p>\n\n?/g, '').replace(/ *<!-- BEGIN anatomy -->[\s\S]*?<!-- END anatomy -->\n\n?/, '').replace(/ *<!-- BEGIN joints -->[\s\S]*?<!-- END joints -->\n\n?/, '');
+    // order before the first "robot" box: anatomy, inside (tools/add-operations.mjs), joints
+    const first = (...marks) => { for (const m of marks) { const i = h.indexOf(m); if (i >= 0) return i; } return -1; };
+    const at = first('    <!-- BEGIN inside -->', '    <div class="robot">');
     if (at < 0) throw new Error('no place for the anatomy in ' + R.merge);
     h = h.slice(0, at) + block + '\n' + h.slice(at);
+    const endIn = h.indexOf('<!-- END inside -->\n'), atJ = endIn >= 0 ? endIn + '<!-- END inside -->\n'.length : h.indexOf('    <div class="robot">');
+    h = h.slice(0, atJ) + (endIn >= 0 ? '\n' : '') + joints + (endIn >= 0 ? '' : '\n') + h.slice(atJ);
     if (!h.includes('href="anatomy.css"')) h = h.replace('<link rel="stylesheet" href="style.css" />', '<link rel="stylesheet" href="style.css" />\n    <link rel="stylesheet" href="anatomy.css" />');
     fs.writeFileSync(rp, h);
     const hk = await hashAll(R.merge + '.html', [...pairs.map((q) => q[0]), H2[0]]), md = {};

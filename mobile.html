@@ -159,9 +159,6 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Controller</b></button><p>A microcontroller runs the fast loops (PID on the wheel speeds, using the encoders) and a small computer runs navigation and mapping. Seen in X-ray.</p></div>
       </div>
     </div>
-    <h2>What is inside each joint?</h2>
-    <ul><li><strong>Two gear motors with encoders</strong>: the encoders measure each wheel speed for the PID loops and for the odometry (which drifts, see the course on perception).</li><li><strong>Caster</strong>: a free wheel, the third point of support.</li><li><strong>Battery</strong> placed low, and <strong>motor drivers</strong> (H-bridges) that turn the controller commands into motor current.</li><li><strong>Small computer</strong> (single-board) for navigation, mapping and communication, for example with ROS 2.</li><li><strong>Sensors</strong>: lidar for obstacles and maps, bumpers and cliff sensors for safety, IMU for the heading.</li></ul>
-    <p>The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.</p>
     <h2>All the components, from A to Z</h2>
     <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
     <div class="sysdemo" data-robot="mobile" data-set="mobile"></div>
@@ -178,6 +175,14 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Two gear motors with encoders</strong>: the encoders measure each wheel speed for the PID loops and for the odometry (which drifts, see the course on perception).</li><li><strong>Caster</strong>: a free wheel, the third point of support.</li><li><strong>Battery</strong> placed low, and <strong>motor drivers</strong> (H-bridges) that turn the controller commands into motor current.</li><li><strong>Small computer</strong> (single-board) for navigation, mapping and communication, for example with ROS 2.</li><li><strong>Sensors</strong>: lidar for obstacles and maps, bumpers and cliff sensors for safety, IMU for the heading.</li></ul>
+    <p>The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h2>Where is a mobile robot used?</h2>
@@ -225,6 +230,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <div class="opsdemo" data-robot="mobile"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

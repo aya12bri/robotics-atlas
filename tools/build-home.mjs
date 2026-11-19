@@ -11,14 +11,14 @@ reset();
 // its interactive page (or null), its 3D anatomy page (or null), thumbnail]. Each robot appears once, with its two pages.
 const FAMILIES = [
   ['ser', ['Serial arms', 'Bras série'], ['One chain of joints from the base to the tool: they pick, place, weld and assemble.', 'Une seule chaîne d\'articulations de la base à l\'outil : ils prennent, posent, soudent et assemblent.'], [
-    [['3-axis arm', 'Bras 3 axes'], 'R-R-R', ['The simplest arm that reaches a point in space.', 'Le bras le plus simple qui atteint un point de l\'espace.'], 'arm.html', 'arm.html#anatomy', 'robot-arm'],
+    [['3-axis arm', 'Bras 3 axes'], 'R-R-R', ['The simplest arm that reaches a point in space.', 'Le bras le plus simple qui atteint un point de l\'espace.'], 'arm.html', 'arm.html#inside', 'robot-arm'],
     [['Gantry', 'Cartésien'], 'P-P-P', ['Three straight axes X, Y, Z: simple, precise, can be huge.', 'Trois axes droits X, Y, Z : simple, précis, peut être immense.'], 'gantry.html', 'gantry.html#anatomy', 'anatomy-gantry'],
-    [['Cylindrical', 'Cylindrique'], 'R-P-P', ['A column that turns, a carriage that goes up, an arm that comes out.', 'Une colonne qui tourne, un chariot qui monte, un bras qui sort.'], 'cylindrical.html', 'cylindrical.html#anatomy', 'robot-cylindrical'],
-    [['Spherical', 'Sphérique'], 'R-R-P', ['Two angles and a telescopic arm: the very first industrial robot.', 'Deux angles et un bras télescopique : le tout premier robot industriel.'], 'spherical.html', 'spherical.html#anatomy', 'robot-spherical'],
+    [['Cylindrical', 'Cylindrique'], 'R-P-P', ['A column that turns, a carriage that goes up, an arm that comes out.', 'Une colonne qui tourne, un chariot qui monte, un bras qui sort.'], 'cylindrical.html', 'cylindrical.html#inside', 'robot-cylindrical'],
+    [['Spherical', 'Sphérique'], 'R-R-P', ['Two angles and a telescopic arm: the very first industrial robot.', 'Deux angles et un bras télescopique : le tout premier robot industriel.'], 'spherical.html', 'spherical.html#inside', 'robot-spherical'],
     [['SCARA', 'SCARA'], 'R-R-P-R', ['Very fast for assembling small parts on a table.', 'Très rapide pour assembler de petites pièces sur une table.'], 'scara.html', 'scara.html#anatomy', 'anatomy-scara'],
     [['6-axis', '6 axes'], '6 × R', ['The arm of car factories: strong, fast, inside a cage.', 'Le bras des usines automobiles : fort, rapide, dans une cage.'], 'articulated.html', 'articulated.html#anatomy', 'anatomy'],
     [['Cobot', 'Cobot'], '6 × R', ['A gentle arm that works next to people, without a cage.', 'Un bras doux qui travaille à côté des personnes, sans cage.'], 'cobot.html', 'cobot.html#anatomy', 'anatomy-cobot'],
-    [['7-axis', '7 axes'], '7 × R', ['One joint too many, on purpose: the elbow moves, the tool stays still.', 'Une articulation de trop, exprès : le coude bouge, l\'outil reste immobile.'], 'redundant.html', 'redundant.html#anatomy', 'robot-redundant']]],
+    [['7-axis', '7 axes'], '7 × R', ['One joint too many, on purpose: the elbow moves, the tool stays still.', 'Une articulation de trop, exprès : le coude bouge, l\'outil reste immobile.'], 'redundant.html', 'redundant.html#inside', 'robot-redundant']]],
   ['par', ['Parallel', 'Parallèles'], ['Several chains hold one platform.', 'Plusieurs chaînes tiennent une plateforme.'], [
     [['Delta', 'Delta'], ['Parallel', 'Parallèle'], ['Picks hundreds of chocolates per minute.', 'Prend des centaines de chocolats par minute.'], 'delta.html', 'delta.html#anatomy', 'anatomy-delta'],
     [['Hexapod', 'Hexapode'], '6-UPS', ['Six legs move a platform in 6 directions: flight simulators.', 'Six jambes bougent une plateforme dans 6 directions : simulateurs de vol.'], 'hexapod.html', 'hexapod.html#anatomy', 'anatomy-stewart']]],

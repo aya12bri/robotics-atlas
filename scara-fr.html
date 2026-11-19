@@ -117,9 +117,6 @@ q4 = q1 + q2                              (garde le cube orienté dans la même 
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">J4</span><b>Rotation de l'outil</b></button><p>Fait tourner l'outil autour de la tige verticale : il règle l'angle de la pince dans le plan.</p><label class="ansl"><input type="range" step="1" aria-label="J4"><output></output></label></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
-    <ul><li><strong>Servomoteurs</strong> à la base et au coude, avec des <strong>réducteurs harmoniques</strong> : rigide dans le plan, c'est pourquoi un SCARA est si précis.</li><li><strong>Vis à billes et arbre cannelé</strong> : le bout du corps 2 contient deux moteurs, un pour le mouvement vertical (J3) et un pour la rotation de l'outil (J4), tous deux agissant sur la même tige creuse.</li><li><strong>Frein sur J3</strong> : la gravité tire la tige vers le bas, donc le frein la retient quand le courant est coupé.</li><li><strong>Câbles et air</strong> passent dans la tige creuse jusqu'à la pince (vide ou air comprimé).</li><li><strong>Contrôleur</strong> : dans la colonne ou dans un boîtier séparé.</li></ul>
-    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="scara" data-set="arm"></div>
@@ -136,6 +133,14 @@ q4 = q1 + q2                              (garde le cube orienté dans la même 
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Servomoteurs</strong> à la base et au coude, avec des <strong>réducteurs harmoniques</strong> : rigide dans le plan, c'est pourquoi un SCARA est si précis.</li><li><strong>Vis à billes et arbre cannelé</strong> : le bout du corps 2 contient deux moteurs, un pour le mouvement vertical (J3) et un pour la rotation de l'outil (J4), tous deux agissant sur la même tige creuse.</li><li><strong>Frein sur J3</strong> : la gravité tire la tige vers le bas, donc le frein la retient quand le courant est coupé.</li><li><strong>Câbles et air</strong> passent dans la tige creuse jusqu'à la pince (vide ou air comprimé).</li><li><strong>Contrôleur</strong> : dans la colonne ou dans un boîtier séparé.</li></ul>
+    <p>Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l'affichage : ils diffèrent d'une constante des angles DH de la page du robot. Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h2>Où utilise-t-on un SCARA ?</h2>
@@ -176,6 +181,7 @@ q4 = q1 + q2                              (garde le cube orienté dans la même 
     <div class="opsdemo" data-robot="scara"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 
