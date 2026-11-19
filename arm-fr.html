@@ -140,18 +140,18 @@
       if (window.RA && RA.darkParts) RA.darkParts(scene);   // dark mode: black parts shown light grey
       scene.background = new THREE.Color('#1d2638');
       const camera = new THREE.PerspectiveCamera(50, box.clientWidth / box.clientHeight, 0.1, 100);
-      camera.position.set(4, 3, 4);
+      camera.position.set(2.5, 1.95, 2.5);
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(box.clientWidth, box.clientHeight);
       box.appendChild(renderer.domElement);
       const orbit = new OrbitControls(camera, renderer.domElement);
-      orbit.target.set(0, 1.2, 0);
+      orbit.target.set(0, 1.15, 0);
 
       const hemi = new THREE.HemisphereLight('#ffffff', '#3a3a3a', 1.2); scene.add(hemi);
       const sun = new THREE.DirectionalLight('#ffffff', 1.5);
       sun.position.set(3, 5, 2);
       scene.add(sun);
-      const grid = new THREE.GridHelper(24, 48, '#7a7a7a', '#3a3a3a'); scene.add(grid);
+      const grid = new THREE.GridHelper(6, 24, '#7a7a7a', '#3a3a3a'); scene.add(grid);   // tiles of 25 cm, as on the other robot pages
       // light / dark ground: background, hemisphere ground colour and grid lines follow the site theme
       const floor = new THREE.Mesh((grid.geometry.computeBoundingBox(), new THREE.PlaneGeometry(grid.geometry.boundingBox.max.x * 2, grid.geometry.boundingBox.max.z * 2)).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#7d8691', roughness: 1 }));
       floor.position.y = -0.003; scene.add(floor);                      // dark grey pad exactly under the grid; everything else stays light grey
@@ -165,40 +165,55 @@
           box.classList.toggle('light3d', L);
         }); }
 
-      const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43' });
-      const grey = new THREE.MeshStandardMaterial({ color: '#cfd8e3' });
+      // materials: the site's orange for the motors, light grey links, dark caps and base, steel screws
+      const orange = new THREE.MeshStandardMaterial({ color: '#ff9f43', roughness: 0.45, metalness: 0.1 });
+      const grey = new THREE.MeshStandardMaterial({ color: '#e3e8ee', roughness: 0.4, metalness: 0.08 });
+      const dark = new THREE.MeshStandardMaterial({ color: '#2b313a', roughness: 0.55, metalness: 0.2 });
+      const steel = new THREE.MeshStandardMaterial({ color: '#b4bcc6', roughness: 0.3, metalness: 0.7 });
+      const mesh = (geo, mat, x = 0, y = 0, z = 0, parent) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); if (parent) parent.add(m); return m; };
 
-      function jointHousing() {                      // round housing, axis along Z
-        const geo = new THREE.CylinderGeometry(0.17, 0.17, 0.3, 28);
-        geo.rotateX(Math.PI / 2);
-        return new THREE.Mesh(geo, orange);
+      function jointHousing(r, len) {                // a motor: orange drum along Z, dark covers on both sides, a steel hub
+        const g = new THREE.Group();
+        mesh(new THREE.CylinderGeometry(r, r, len, 40).rotateX(Math.PI / 2), orange, 0, 0, 0, g);
+        for (const s of [-1, 1]) {
+          mesh(new THREE.CylinderGeometry(r * 0.82, r * 0.82, 0.03, 40).rotateX(Math.PI / 2), dark, 0, 0, s * (len / 2 + 0.012), g);
+          mesh(new THREE.CylinderGeometry(r * 0.28, r * 0.28, 0.02, 24).rotateX(Math.PI / 2), steel, 0, 0, s * (len / 2 + 0.032), g);
+        }
+        return g;
+      }
+      function tube(r0, r1, y0, y1, parent) {        // a round link from y0 to y1, a bit thinner at its far end
+        return mesh(new THREE.CylinderGeometry(r1, r0, y1 - y0, 36), grey, 0, (y0 + y1) / 2, 0, parent);
       }
 
       const base = new THREE.Group();                // joint 1: turns around the vertical axis
       scene.add(base);
-      const column = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 0.5, 32), orange);
-      column.position.y = 0.25;
-      base.add(column);
+      const plate = mesh(new THREE.CylinderGeometry(0.44, 0.46, 0.08, 48), dark, 0, 0.04, 0);   // the fixed foot, bolted to the floor
+      scene.add(plate);
+      for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + 0.3; mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.03, 12), steel, Math.cos(a) * 0.38, 0.095, Math.sin(a) * 0.38, scene); }
+      const column = mesh(new THREE.CylinderGeometry(0.25, 0.31, 0.28, 40), orange, 0, 0.22, 0, base);   // the turret, the shoulder motor sits on it
+      mesh(new THREE.CylinderGeometry(0.27, 0.27, 0.03, 40), dark, 0, 0.375, 0, base);
 
       const shoulder = new THREE.Group();            // joint 2
       shoulder.position.y = 0.5;
       base.add(shoulder);
-      shoulder.add(jointHousing());
-      const link1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 0.2), grey);
-      link1.position.y = 0.6;
-      shoulder.add(link1);
+      shoulder.add(jointHousing(0.17, 0.36));
+      const link1 = tube(0.11, 0.085, 0.12, 1.08, shoulder);
+      mesh(new THREE.CylinderGeometry(0.1, 0.104, 0.07, 36), orange, 0, 0.32, 0, shoulder);      // an orange band
 
       const elbow = new THREE.Group();               // joint 3
       elbow.position.y = 1.2;
       shoulder.add(elbow);
-      elbow.add(jointHousing());
-      const link2 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.0, 0.16), grey);
-      link2.position.y = 0.5;
-      elbow.add(link2);
+      elbow.add(jointHousing(0.14, 0.3));
+      const link2 = tube(0.08, 0.06, 0.1, 0.86, elbow);
 
-      const hand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.2), orange);
-      hand.position.y = 1.05;
-      elbow.add(hand);
+      // the tool: a flange, the gripper body and two fingers; the TCP is between the fingertips
+      const hand = new THREE.Group(); elbow.add(hand);
+      mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.05, 32), dark, 0, 0.885, 0, hand);
+      mesh(new THREE.BoxGeometry(0.24, 0.07, 0.11), orange, 0, 0.945, 0, hand);
+      for (const s of [-1, 1]) {
+        mesh(new THREE.BoxGeometry(0.035, 0.12, 0.07), dark, s * 0.065, 1.035, 0, hand);
+        mesh(new THREE.BoxGeometry(0.012, 0.06, 0.05), steel, s * 0.044, 1.06, 0, hand);           // the pads
+      }
       const tipNode = new THREE.Object3D();          // the tool centre point (TCP)
       tipNode.position.y = 1.05;
       elbow.add(tipNode);
