@@ -175,13 +175,27 @@
     ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); ask(ta.value); } });
     $('.rb-clear').onclick = function () { if (busy) return; store(KEY(cur), '[]'); paint(); ta.focus(); };
 
-    // the speech bubble: "Do you have any questions?" a few seconds after the page opens, and again on each new lesson
-    var bubbleT = 0, OFF = 'ra-tutor-quiet';
-    function hideBubble() { clearTimeout(bubbleT); bubble.hidden = true; root.classList.remove('talk'); }
+    // to be noticed: the robot first waves hello (and hops a little), then its bubble says "Do you have any questions?".
+    // It does it a few seconds after the page opens, again later if nobody answered (twice at most), and on each new lesson.
+    var bubbleT = 0, againT = 0, waves = 0, OFF = 'ra-tutor-quiet', WAVE_MS = 2400;
+    var quiet = function () { return store(OFF) === '1' || !panel.hidden; };
+    function hideBubble() { clearTimeout(bubbleT); clearTimeout(againT); bubble.hidden = true; root.classList.remove('talk', 'wave'); }
     function showBubble(delay) {
-      clearTimeout(bubbleT);
-      if (store(OFF) === '1' || !panel.hidden) return;
-      bubbleT = setTimeout(function () { if (!panel.hidden) return; bubble.hidden = false; root.classList.add('talk'); bubbleT = setTimeout(hideBubble, 9000); }, delay);
+      hideBubble();
+      if (quiet()) return;
+      bubbleT = setTimeout(function () {
+        if (quiet()) return;
+        root.classList.add('wave'); waves++;                                        // 1. wave hello
+        bubbleT = setTimeout(function () {
+          root.classList.remove('wave');
+          if (quiet()) return;
+          bubble.hidden = false; root.classList.add('talk');                        // 2. then ask
+          bubbleT = setTimeout(function () {
+            bubble.hidden = true; root.classList.remove('talk');
+            if (waves < 3) againT = setTimeout(function () { showBubble(0); }, 45000);   // 3. again later, if nobody answered
+          }, 9000);
+        }, WAVE_MS);
+      }, delay);
     }
     $('.rb-x').onclick = function () { store(OFF, '1'); hideBubble(); };
     showBubble(2500);
@@ -190,7 +204,7 @@
     var seen = current();
     var mo = new MutationObserver(function () {
       var now = current(); if (now === seen) return; seen = now;
-      if (!panel.hidden && !busy) paint(); else if (panel.hidden) { cur = null; showBubble(1200); }
+      if (!panel.hidden && !busy) paint(); else if (panel.hidden) { cur = null; waves = 0; showBubble(1200); }
     });
     lessons.forEach(function (a) { mo.observe(a, { attributes: true, attributeFilter: ['hidden'] }); });
   }
