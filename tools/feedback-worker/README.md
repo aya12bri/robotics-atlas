@@ -1,5 +1,8 @@
 # Statistiques, avis des leçons et tuteur IA — guide d'installation
 
+Ce dossier contient le petit service (*Worker*) du site, qui répond aux adresses `/api/...`. **Il est publié automatiquement avec le site** :
+`wrangler.jsonc` à la racine du dépôt l'indique à Cloudflare, et chaque fusion sur GitHub le met à jour. Aucun terminal n'est nécessaire.
+
 Le site envoie deux sortes d'informations, toutes **anonymes** (pas de cookie, pas d'adresse IP enregistrée) :
 
 1. **Les statistiques de visite** (pages vues, pays, appareils) avec **Cloudflare Web Analytics**.
@@ -15,79 +18,65 @@ ajoutez le site `roboticsatlas.ayabriksine.com` et choisissez l'**installation a
 **Méthode avec jeton** (si l'installation automatique n'est pas proposée) : copiez le jeton (token) affiché par Cloudflare,
 puis collez-le dans `nav.js`, dans la constante `CF_ANALYTICS_TOKEN` (en haut du fichier), et republiez le site.
 
-## 2. Avis des leçons (15 minutes)
+## 2. Tuteur IA (10 minutes, dans le navigateur)
 
-Il faut un petit *Worker* Cloudflare séparé, qui reçoit les votes sur l'adresse `/api/feedback` et les range dans un stockage *KV*.
-Le site lui-même n'est pas modifié.
-
-```bash
-cd tools/feedback-worker
-npm install                                         # une seule fois : installe le SDK d'Anthropic et wrangler
-npx wrangler login                                  # une seule fois
-npx wrangler kv namespace create FEEDBACK           # affiche un "id" : copiez-le dans wrangler.jsonc
-npx wrangler secret put SUMMARY_TOKEN               # choisissez un mot de passe long : il protège la lecture des avis
-npx wrangler deploy
-```
-
-Vérifiez dans `wrangler.jsonc` que la route correspond à votre domaine (`roboticsatlas.ayabriksine.com/api/*`).
-
-**Lire les avis** (les leçons les moins claires d'abord, puis les commentaires) :
-
-```bash
-curl -H "Authorization: Bearer VOTRE_MOT_DE_PASSE" https://roboticsatlas.ayabriksine.com/api/feedback/summary
-```
-
-## Ce qui est envoyé
-
-```json
-{ "page": "learn-control", "lesson": "l4", "vote": -1, "lang": "fr", "comment": "La partie sur le terme D n'est pas claire" }
-```
-
-Le Worker refuse tout autre format. Chaque vote est gardé un an, et un compteur par leçon garde le total.
-Le stockage KV gratuit de Cloudflare suffit largement (100 000 lectures et 1 000 écritures par jour).
-
-## 3. Tuteur IA (20 minutes)
-
-À la fin de chaque leçon, un bloc « Une question sur cette leçon ? » ouvre une petite discussion avec un tuteur IA (Claude).
-Le même Worker reçoit les questions sur `/api/tutor`. Il lit lui-même la leçon sur le site (un visiteur ne peut donc pas lui
-envoyer un autre texte), demande à Claude d'expliquer comme un professeur, et renvoie la réponse mot par mot.
+À la fin de chaque leçon, un bloc « Une question sur cette leçon ? » ouvre une discussion avec un tuteur IA (Claude).
+Le Worker reçoit les questions sur `/api/tutor`, lit lui-même la leçon sur le site (un visiteur ne peut donc pas lui envoyer
+un autre texte), demande à Claude d'expliquer comme un professeur et renvoie la réponse mot par mot.
 Tant que la clé n'est pas installée, le bloc affiche « Le tuteur n'est pas disponible pour le moment » et rien ne casse.
 
-**Étape 1 : la clé d'API** (sur la plateforme d'API d'Anthropic, `platform.claude.com`)
+**Étape 1 : la clé d'API** (sur `platform.claude.com`, avec le compte de votre choix)
 
-1. Créez un compte, puis achetez des crédits (par exemple 5 ou 10 $). **Laissez la recharge automatique désactivée** :
+1. *Settings → Billing* : achetez des crédits (par exemple 5 ou 10 $) et **laissez la recharge automatique désactivée** :
    vous ne pourrez jamais dépenser plus que ce que vous avez mis.
-2. Dans *Limits*, fixez une limite de dépense mensuelle (par exemple 10 $).
-3. Dans *API Keys*, créez une clé (elle commence par `sk-ant-`). Ne la mettez **jamais** dans le code ni sur GitHub.
+2. *Settings → Limits* : fixez une limite de dépense mensuelle (par exemple 10 $).
+3. *Settings → API Keys* : créez une clé (elle commence par `sk-ant-`) et copiez-la. Ne la mettez **jamais** dans le code ni sur GitHub.
 
-**Étape 2 : donner la clé au Worker et déployer**
+**Étape 2 : coller la clé dans Cloudflare**
 
-```bash
-cd tools/feedback-worker
-npx wrangler secret put ANTHROPIC_API_KEY           # collez la clé quand elle est demandée (elle reste secrète chez Cloudflare)
-npx wrangler deploy
-```
+1. Ouvrez `dash.cloudflare.com` et connectez-vous.
+2. Menu de gauche : *Workers & Pages* (ou *Compute*), puis cliquez sur le projet **robotics-atlas**.
+3. Onglet *Settings*, rubrique *Variables and Secrets*, bouton *Add*.
+4. *Type* : **Secret** · *Variable name* : `ANTHROPIC_API_KEY` · *Value* : collez la clé.
+5. Cliquez sur *Deploy* (ou *Save and deploy*).
 
-Ouvrez ensuite une leçon, cliquez sur « Demander au tuteur » et posez une question : la réponse doit s'écrire en quelques secondes.
+La clé reste secrète chez Cloudflare et n'est pas effacée par les publications suivantes.
+Ouvrez ensuite une leçon, cliquez sur « Demander au tuteur » et posez une question.
 
 **Les réglages**
 
 | Réglage | Où | Valeur actuelle |
 |---|---|---|
 | Modèle | `MODEL` en haut de `tutor.js` | `claude-haiku-5-5` (le moins cher, environ 0,001 $ par question) |
-| Questions par visiteur et par jour | `TUTOR_PER_DAY` dans `wrangler.jsonc` | 30 |
-| Questions par jour pour tout le site | `TUTOR_DAILY_CAP` dans `wrangler.jsonc` | 1 500 (au plus environ 1,5 $ par jour avec Haiku) |
+| Questions par visiteur | `ratelimits` dans `wrangler.jsonc` (racine) | 5 par minute |
+| Dépense totale | les crédits prépayés de la plateforme d'API | ce que vous avez acheté, sans recharge automatique |
 
 Si les explications ne sont pas assez bonnes, remplacez le modèle par `claude-sonnet-5-5` (environ 20 fois plus cher)
-ou `claude-opus-5-5` (environ 40 fois plus cher), puis redéployez avec `npx wrangler deploy`.
+ou `claude-opus-5-5` (environ 40 fois plus cher) : la fusion suivante sur GitHub le publie.
 
 **Ce qui est envoyé et gardé**
 
 - Le navigateur envoie : la page, la leçon, la langue, la question et les 6 derniers messages de la conversation.
 - Le Worker envoie à Anthropic : les consignes du tuteur, le texte de la leçon et la conversation. **Aucune** adresse IP.
-- Le Worker garde seulement deux compteurs par jour : un par visiteur (une empreinte de son adresse IP mélangée à la date,
-  jamais l'adresse elle-même, effacée après 2 jours) et un pour tout le site.
-- La conversation reste dans l'onglet du visiteur (elle disparaît quand il le ferme).
+- Rien n'est enregistré sur le serveur. La conversation reste dans l'onglet du visiteur (elle disparaît quand il le ferme).
 
 **Suivre la consommation** : la console de la plateforme d'API montre les dépenses jour par jour (*Usage* et *Cost*).
-Les erreurs du tuteur apparaissent dans les journaux du Worker : `npx wrangler tail`.
+Les erreurs du tuteur apparaissent dans Cloudflare : projet **robotics-atlas** → *Observability* (ou *Logs*).
+
+## 3. Avis des leçons (facultatif)
+
+Sans stockage, les votes « Cette leçon était-elle claire ? » sont acceptés puis oubliés. Pour les garder :
+
+1. Cloudflare : *Storage & Databases → KV* → *Create* ; nommez-le `robotics-atlas-feedback`.
+2. Projet **robotics-atlas** → *Settings → Bindings* → *Add* → *KV namespace* : nom de la variable `FEEDBACK`, choisissez le stockage créé.
+3. Dans *Variables and Secrets*, ajoutez un secret `SUMMARY_TOKEN` (un long mot de passe de votre choix).
+
+Pour que ce réglage ne soit pas effacé par la publication suivante, donnez-moi l'« ID » du stockage KV
+(ce n'est pas un secret) : je l'ajoute à `wrangler.jsonc`.
+
+**Lire les avis** (les leçons les moins claires d'abord, puis les commentaires) : ouvrez
+`https://roboticsatlas.ayabriksine.com/api/feedback/summary` avec l'en-tête `Authorization: Bearer VOTRE_MOT_DE_PASSE`
+(ou demandez-moi de le faire).
+
+Avec le stockage KV, le tuteur limite aussi les questions à 30 par visiteur et 1 500 par jour pour tout le site
+(`TUTOR_PER_DAY` et `TUTOR_DAILY_CAP`, facultatifs).

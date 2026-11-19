@@ -1,8 +1,0 @@
-{
-  "name": "robotics-atlas-api",
-  "private": true,
-  "type": "module",
-  "description": "The small API of Robotics Atlas: lesson feedback and the AI tutor (Cloudflare Worker).",
-  "dependencies": { "@anthropic-ai/sdk": "1.10.0" },
-  "devDependencies": { "wrangler": "4.165.0" }
-}

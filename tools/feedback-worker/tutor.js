@@ -1,16 +1,18 @@
 // tutor.js — the AI tutor of the lessons (tutor.js in the site sends the questions here).
 // The Worker reads the lesson from the site itself, so a visitor cannot send another text to the model, then asks
 // Claude to explain it like a teacher and streams the answer back as plain text.
-// Limits: TUTOR_PER_DAY questions per visitor and per day, TUTOR_DAILY_CAP questions per day for the whole site.
-// The visitor is counted by a hash of their IP address and the date: the address itself is never stored.
+// Limits: TUTOR_LIMIT (a rate-limit binding, wrangler.jsonc) allows a few questions per minute for each visitor; the
+// total spend is capped by the prepaid API credits. If a KV namespace FEEDBACK is bound, TUTOR_PER_DAY and TUTOR_DAILY_CAP
+// also cap the questions per visitor and per site and per day. The visitor is known by a hash of their IP address and
+// the date: the address itself is never stored.
 import Anthropic from '@anthropic-ai/sdk';
 
 const MODEL = 'claude-haiku-5-5';            // the cheapest model; change this line for claude-sonnet-5-5 or claude-opus-5-5
 const text = (s, status = 200, extra = {}) => new Response(s, { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 
 // the lesson as plain text: the <article id="lN"> of the page, without scripts, styles, figures' drawing code and tags
-async function lessonText(origin, page, lesson) {
-  const r = await fetch(`${origin}/${page}.html`, { cf: { cacheTtl: 3600, cacheEverything: true } });
+async function lessonText(env, origin, page, lesson) {
+  const u = `${origin}/${page}.html`, r = env.ASSETS ? await env.ASSETS.fetch(new Request(u)) : await fetch(u, { cf: { cacheTtl: 3600, cacheEverything: true } });
   if (!r.ok) return null;
   const h = await r.text(), a = h.search(new RegExp(`<article[^>]*\\bid="${lesson}"`));
   if (a < 0) return null;
@@ -56,15 +58,18 @@ export async function tutor(req, env, url) {
   for (let i = 1; i < history.length; i++) if (history[i].role === history[i - 1].role) { history.length = i; break; }
   if (history.length && history[history.length - 1].role === 'user') history.pop();
 
-  // limits (KV is not atomic: a burst may pass a few questions over the limit, which is fine)
-  const day = new Date().toISOString().slice(0, 10), perDay = +(env.TUTOR_PER_DAY || 30), cap = +(env.TUTOR_DAILY_CAP || 1500);
-  const who = `t:${day}:${await sha((req.headers.get('cf-connecting-ip') || 'x') + day + (env.SUMMARY_TOKEN || ''))}`, all = `tg:${day}`;
-  const [n1, n2] = await Promise.all([env.FEEDBACK.get(who), env.FEEDBACK.get(all)]).then((v) => v.map((x) => +x || 0));
-  if (n1 >= perDay) return text('limit: visitor', 429);
-  if (n2 >= cap) return text('limit: site', 429);
-  await Promise.all([env.FEEDBACK.put(who, String(n1 + 1), { expirationTtl: 2 * 86400 }), env.FEEDBACK.put(all, String(n2 + 1), { expirationTtl: 40 * 86400 })]);
+  const ip = req.headers.get('cf-connecting-ip') || 'x', day = new Date().toISOString().slice(0, 10), visitor = await sha(ip + day + (env.SUMMARY_TOKEN || 'ra'));
+  if (env.TUTOR_LIMIT) { const { success } = await env.TUTOR_LIMIT.limit({ key: visitor }); if (!success) return text('limit: minute', 429); }
+  if (env.FEEDBACK) {
+    // daily limits (KV is not atomic: a burst may pass a few questions over the limit, which is fine)
+    const perDay = +(env.TUTOR_PER_DAY || 30), cap = +(env.TUTOR_DAILY_CAP || 1500), who = `t:${day}:${visitor}`, all = `tg:${day}`;
+    const [n1, n2] = await Promise.all([env.FEEDBACK.get(who), env.FEEDBACK.get(all)]).then((v) => v.map((x) => +x || 0));
+    if (n1 >= perDay) return text('limit: visitor', 429);
+    if (n2 >= cap) return text('limit: site', 429);
+    await Promise.all([env.FEEDBACK.put(who, String(n1 + 1), { expirationTtl: 2 * 86400 }), env.FEEDBACK.put(all, String(n2 + 1), { expirationTtl: 40 * 86400 })]);
+  }
 
-  const lesson = await lessonText(url.origin, d.lang === 'fr' ? d.page + '-fr' : d.page, d.lesson);
+  const lesson = await lessonText(env, url.origin, d.lang === 'fr' ? d.page + '-fr' : d.page, d.lesson);
   if (!lesson) return text('lesson not found', 404);
 
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });

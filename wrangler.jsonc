@@ -1,10 +1,18 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "robotics-atlas",
+  // the small API of the site (lesson feedback and the AI tutor). It only runs for /api/*: every other address is a plain file.
+  "main": "tools/feedback-worker/worker.js",
   "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": ".",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
   },
+  // the AI tutor: at most 5 questions per minute for each visitor (the total spend is capped by the prepaid API credits).
+  // The API key is a secret added in the Cloudflare dashboard: Settings → Variables and Secrets → ANTHROPIC_API_KEY.
+  "ratelimits": [{ "name": "TUTOR_LIMIT", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }],
   "previews": {}
 }
