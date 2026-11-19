@@ -104,6 +104,15 @@ Modèle inverse (MGI) :  q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − 
     </svg>
     <p>Avec q3 entre r<sub>min</sub> et r<sub>max</sub> et q2 entre ses deux butées, l'outil balaie un <strong>cylindre creux</strong> (un tube épais), coupé par les butées de q1 si la colonne ne peut pas faire un tour complet. Le volume est l'aire de l'anneau fois la course de q2 : V = θ<sub>plage</sub>/2 · (r<sub>max</sub>² − r<sub>min</sub>²) · course.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="cylindrical"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Où utilise-t-on un robot cylindrique ?</h2>
       <p>Chargement et déchargement de machines-outils et de presses, fonderie sous pression et forge, manutention en salle blanche (plaquettes de silicium, verre), empilage et assemblage simple. Le Versatran (1960), l'un des premiers robots industriels, était cylindrique ; on retrouve aujourd'hui cette structure dans les manipulateurs de plaquettes, les robots pédagogiques de table et de nombreuses unités de « prise et dépose ».</p>
@@ -113,10 +122,6 @@ Modèle inverse (MGI) :  q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − 
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="cylindrical"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -142,6 +147,7 @@ Modèle inverse (MGI) :  q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − 
     <div class="opsdemo" data-robot="cylindrical"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
     <p class="try"><a href="learn-parallel-fr.html#l2">Cours : des limites articulaires à l'espace de travail réel →</a></p>
 

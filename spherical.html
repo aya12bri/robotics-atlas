@@ -113,6 +113,15 @@ Inverse model (MGI):   q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))  
     </svg>
     <p>The tool stays between two spheres centred on the shoulder (radius q3 min and q3 max), between the lowest and highest tilt of q2: a <strong>thick spherical shell</strong> cut by two cones. The volume grows with the cube of the reach: a long telescopic arm covers a huge space, but every millimetre of play at the shoulder becomes a large error at the tool.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="spherical"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Where is a spherical robot used?</h2>
       <p>Historically: spot welding and die casting (Unimate at General Motors, 1961), forging, loading presses and machine tools. Today the structure survives in heavy hydraulic manipulators, in some teaching robots, and in the positioning of telescopes, antennas, cameras and radiotherapy arms (two angles and a distance).</p>
@@ -122,10 +131,6 @@ Inverse model (MGI):   q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))  
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="spherical"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -151,6 +156,7 @@ Inverse model (MGI):   q1 = atan2(y, x)    q2 = atan2(z − h, √(x² + y²))  
     <div class="opsdemo" data-robot="spherical"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
     <p class="try"><a href="learn-parallel.html#l1">Course: joint space and operational space →</a></p>
 

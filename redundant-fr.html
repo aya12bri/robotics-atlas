@@ -94,6 +94,15 @@
     <p>Le <strong>degré de redondance</strong> est r = n − m = 7 − 6 = 1 : quand la pose de l'outil est fixée, un paramètre reste libre. Pour ce bras c'est l'<strong>angle de coude</strong> ψ, la rotation du coude autour de la droite épaule–poignet (le « pivot » de votre propre coude quand vous gardez la main posée sur une table). Appuyez sur le bouton sous la vue 3D : la commande tient les 6 coordonnées de l'outil et fait tourner ψ ; la ligne sous le schéma montre que l'outil ne bouge pas de plus de quelques centièmes de millimètre.</p>
     <p>Comment marche le bouton : il tourne un peu q3, puis résout le modèle inverse des six autres liaisons pour que l'outil revienne exactement où il était (moindres carrés amortis sur la jacobienne, la méthode du <a href="learn-armlab-fr.html#l4">cours Python</a>). Les vraies baies de commande font la même chose au niveau des vitesses, avec le noyau de la jacobienne : q̇ = J⁺ ẋ + (I − J⁺J) z.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="redundant"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Où utilise-t-on un robot 7 axes ?</h2>
       <p>Robots collaboratifs et sensibles (KUKA LBR iiwa et LBR Med, Franka Research 3, Kinova Gen3, les bras de l'ABB YuMi), robots chirurgicaux et médicaux, recherche, assemblage dans des espaces étroits où le coude doit éviter des obstacles, et bras spatiaux (le Canadarm2 de la Station spatiale internationale a 7 articulations).</p>
@@ -103,10 +112,6 @@
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="redundant"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -132,6 +137,7 @@
     <div class="opsdemo" data-robot="redundant"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
     <p class="try"><a href="learn-parallel-fr.html#l4">Cours : aspects et redondance →</a> · <a href="learn-singularities-fr.html#l7">Redondance et noyau →</a></p>
 

@@ -58,11 +58,19 @@ for (const [file, fit] of Object.entries(PAGES)) {
     return `          <tr><td class="left"><strong>${n}</strong></td><td class="left">${e}</td><td>${badge}</td></tr>`;
   });
   pairs.push(...keys.map((k) => [`<strong>${OPS[k][0]}</strong>`, `<strong>${OPS[k][1]}</strong>`]));
-  const block = `    <!-- BEGIN operations -->
+  // the inside of the robot opens the "Anatomy and inside" part (before the first "robot" box); the operations close the page
+  const inside = `    <!-- BEGIN inside -->
+    <div class="part-inside">
     <h2>${IN_H2[0]}</h2>
     <p>${IN_P[0]}</p>
     <div class="insdemo" data-robot="${file}"></div>
     <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+`;
+  h = h.replace(/ *<!-- BEGIN inside -->[\s\S]*?<!-- END inside -->\n\n?/, '');
+  { const i0 = h.indexOf('    <div class="robot">'); if (i0 < 0) throw new Error('no robot box in ' + file); h = h.slice(0, i0) + inside + '\n' + h.slice(i0); }
+  const block = `    <!-- BEGIN operations -->
     <h2>${H2[0]}</h2>
     <p>${INTRO[0]}</p>
     <div class="cmp-wrap ops-wrap">

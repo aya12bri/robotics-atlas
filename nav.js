@@ -24,15 +24,15 @@
   ];
   // the 3D "anatomy" pages (in the menu, not in the previous / next pager)
   const ANATOMY = [
-    ['anatomy.html',         { en: '6-axis robot', fr: 'Robot 6 axes' }],
-    ['anatomy-scara.html',   { en: 'SCARA',        fr: 'SCARA' }],
-    ['anatomy-cobot.html',   { en: 'Cobot',        fr: 'Cobot' }],
-    ['anatomy-delta.html',   { en: 'Delta',        fr: 'Delta' }],
-    ['anatomy-gantry.html',  { en: 'Gantry',       fr: 'Cartésien' }],
-    ['anatomy-mobile.html',  { en: 'Mobile robot', fr: 'Robot mobile' }],
+    ['articulated.html#anatomy', { en: '6-axis robot', fr: 'Robot 6 axes' }],
+    ['scara.html#anatomy',   { en: 'SCARA',        fr: 'SCARA' }],
+    ['cobot.html#anatomy',   { en: 'Cobot',        fr: 'Cobot' }],
+    ['delta.html#anatomy',   { en: 'Delta',        fr: 'Delta' }],
+    ['gantry.html#anatomy',  { en: 'Gantry',       fr: 'Cartésien' }],
+    ['mobile.html#anatomy',  { en: 'Mobile robot', fr: 'Robot mobile' }],
     ['anatomy-wheels.html',  { en: 'Wheels',       fr: 'Roues' }],
     ['anatomy-drives.html',  { en: 'Drives',       fr: 'Motorisations' }],
-    ['anatomy-stewart.html', { en: 'Hexapod',      fr: 'Hexapode' }],
+    ['hexapod.html#anatomy', { en: 'Hexapod',      fr: 'Hexapode' }],
     ['anatomy-quadrotor.html', { en: 'Drone',      fr: 'Drone' }],
     ['anatomy-humanoid.html', { en: 'Humanoid',    fr: 'Humanoïde' }]
   ];
@@ -612,7 +612,7 @@
       const kids = [...body.children], at = starts.map((el) => kids.indexOf(el));
       const skip = (el) => /^(SCRIPT|STYLE|HEADER|FOOTER)$/.test(el.tagName) || el.classList.contains('site-nav') || el.classList.contains('site-foot') || el.classList.contains('to-top');
       const panes = IDS.map((id) => { const d = document.createElement('section'); d.className = 'rtab-pane'; d.id = 'tab-' + id; return d; });
-      kids.forEach((el, i) => { if (i < at[0] || skip(el)) return; panes[i < at[1] ? 0 : i < at[2] ? 1 : 2].appendChild(el); });
+      kids.forEach((el, i) => { if (i < at[0] || skip(el)) return; let k = 0; while (k + 1 < at.length && i >= at[k + 1]) k++; panes[k].appendChild(el); });
       // the menu: each part, then the titles (h2) inside it
       const wrap = document.createElement('div'); wrap.className = 'rside-wrap';
       const side = document.createElement('nav'); side.className = 'rside ra-own'; side.setAttribute('aria-label', lang === 'fr' ? 'Sommaire de la page' : 'Page contents');
@@ -665,7 +665,9 @@
     // 3. uses and inside (where it is used, the real components, the operations)
     const usesAt = body.querySelector(':scope > .robot');
     if (h1 && view && bodyH2[0] && usesAt && [...body.children].indexOf(usesAt) > [...body.children].indexOf(bodyH2[0])) {
-      makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], usesAt], fr ? ['Le robot en 3D', 'Cinématique et modèles', 'Usages et intérieur'] : ['The robot in 3D', 'Kinematics and models', 'Uses and inside'], ['robot', 'kinematics', 'uses']);
+      const anatAt = body.querySelector(':scope > .part-anat') || body.querySelector(':scope > .part-inside');   // the 3D anatomy and the inside of the robot
+      if (anatAt && [...body.children].indexOf(anatAt) < [...body.children].indexOf(usesAt)) makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], anatAt, usesAt], fr ? ['Le robot en 3D', 'Cinématique et modèles', 'Anatomie et intérieur', 'Usages et opérations'] : ['The robot in 3D', 'Kinematics and models', 'Anatomy and inside', 'Uses and operations'], ['robot', 'kinematics', 'anatomy', 'uses']);
+      else makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], usesAt], fr ? ['Le robot en 3D', 'Cinématique et modèles', 'Usages et intérieur'] : ['The robot in 3D', 'Kinematics and models', 'Uses and inside'], ['robot', 'kinematics', 'uses']);
     }
     // 3D anatomy pages: 1. the robot in 3D (the model, X-ray, the axes), 2. inside each joint, 3. all the components
     const anat = body.querySelector(':scope > .anat');

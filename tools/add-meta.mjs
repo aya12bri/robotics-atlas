@@ -47,7 +47,7 @@ const DESC = {
   'delta.html': 'Interactive 3D Delta (parallel) robot: three arms and parallelograms, inverse kinematics and a fast pick-and-place demo.',
   'mobile.html': 'Interactive 3D differential-drive mobile robot: wheel speeds, turning circle, odometry and programs you can run.',
   'wheels.html': 'Mobile robot wheels and drives: fixed, castor, omni, Mecanum and ball wheels, drive layouts, sensors and a simulator.',
-  'anatomy.html': 'Look inside a 6-axis industrial robot in 3D: joints, motors, gearboxes, controller and cables, with an X-ray mode.',
+  'anatomy.html': 'Anatomy in 3D: look inside every robot, its joints with an X-ray mode, the motors, gearboxes and every component of the cell.',
   'anatomy-scara.html': '3D anatomy of a SCARA robot: its joints, motors, gearboxes and controller, with an X-ray mode.',
   'anatomy-cobot.html': '3D anatomy of a collaborative robot: joints, motors, brakes, sensors and controller, with an X-ray mode.',
   'anatomy-delta.html': '3D anatomy of a Delta robot: motors, arms, parallelograms and the platform, with an X-ray mode.',
@@ -100,7 +100,7 @@ const DESC_FR = {
   'delta.html': 'Robot Delta (parallèle) 3D interactif : trois bras et parallélogrammes, modèle inverse et démonstration de prise-dépose rapide.',
   'mobile.html': 'Robot mobile à entraînement différentiel en 3D interactif : vitesses des roues, rayon de virage, odométrie et programmes à exécuter.',
   'wheels.html': 'Les roues et motorisations des robots mobiles : roues fixes, folles, omni, Mecanum et sphériques, configurations, capteurs et un simulateur.',
-  'anatomy.html': 'L\'intérieur d\'un robot industriel 6 axes en 3D : articulations, moteurs, réducteurs, armoire de commande et câbles, avec un mode rayons X.',
+  'anatomy.html': 'Anatomie 3D : regardez à l\'intérieur de chaque robot, ses articulations en mode rayons X, les moteurs, réducteurs et tous les composants de la cellule.',
   'anatomy-scara.html': 'Anatomie 3D d\'un robot SCARA : ses articulations, moteurs, réducteurs et sa commande, avec un mode rayons X.',
   'anatomy-cobot.html': 'Anatomie 3D d\'un robot collaboratif : articulations, moteurs, freins, capteurs et commande, avec un mode rayons X.',
   'anatomy-delta.html': 'Anatomie 3D d\'un robot Delta : moteurs, bras, parallélogrammes et plateforme, avec un mode rayons X.',
@@ -114,7 +114,7 @@ const DESC_FR = {
 };
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 // every page has a French twin made by build-fr.mjs (learn.html -> learn-fr.html), except the 404 and offline pages
-const pages = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html').sort();
+const pages = fs.readdirSync(root).filter((f) => f.endsWith('.html') && f !== '404.html' && !fs.readFileSync(path.join(root, f), 'utf8').includes('http-equiv="refresh"')).sort();   // not the old addresses that lead to another page
 const url = (f) => (f === 'index.html' ? SITE + '/' : SITE + '/' + f.replace(/\.html$/, ''));
 const isFr = (f) => /-fr\.html$/.test(f), enOf = (f) => f.replace(/-fr\.html$/, '.html'), frOf = (f) => f.replace(/\.html$/, '-fr.html');
 const twin = (f) => (isFr(f) || pages.includes(frOf(f)));

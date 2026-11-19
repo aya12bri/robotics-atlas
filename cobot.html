@@ -24,6 +24,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
       select {
@@ -110,8 +111,6 @@
        The fingertips are another 0.10 m further along z<sub>6</sub>. The 3×3 block says where the tool points: its third column
        is the direction of z<sub>6</sub>. Both tables give exactly this same matrix.</p>
 
-    <p class="try"><a href="anatomy-cobot.html">See it in 3D, with the inside of the robot →</a></p>
-
     <h2>What is special about this DH table?</h2>
     <p>Compare it with the industrial 6-axis robot. Here rows 4 and 5 have <strong>d4 and d5 ≠ 0</strong>: the three wrist axes do
        <strong>not</strong> meet at one point. This is the typical "offset wrist" of Universal Robots. The wrist is compact and
@@ -119,6 +118,49 @@
        by joints 4-6" as simply as for a spherical wrist. Still, the UR5 has a closed-form solution with up to
        <strong>8 configurations</strong> (shoulder left or right × elbow up or down × wrist flipped or not); the page uses the
        numerical method to stay general.</p>
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomy in 3D: every joint and every part</h2>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>collaborative robot</strong> (cobot) is a robot arm designed to work next to people without a safety fence. It is light, has rounded shapes, and measures the forces at its joints so that it stops when it touches something. It is slower and carries less than an industrial robot, but it is easy to install and to program by hand guiding.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Wrist singularity (J5 = 0)</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="cobot"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">J1</span><b>Base</b></button><p>Turns the whole robot around its vertical axis.</p><label class="ansl"><input type="range" step="1" aria-label="J1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">J2</span><b>Shoulder</b></button><p>Lifts the upper arm. The joint is offset sideways from the arm.</p><label class="ansl"><input type="range" step="1" aria-label="J2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">J3</span><b>Elbow</b></button><p>Folds the forearm.</p><label class="ansl"><input type="range" step="1" aria-label="J3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">J4</span><b>Wrist 1</b></button><p>First wrist joint, parallel to the shoulder and the elbow.</p><label class="ansl"><input type="range" step="1" aria-label="J4"><output></output></label></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">J5</span><b>Wrist 2</b></button><p>Second wrist joint, perpendicular to wrist 1. With the offsets, its axis does not cross the others: the wrist is not spherical.</p><label class="ansl"><input type="range" step="1" aria-label="J5"><output></output></label></div>
+        <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">J6</span><b>Wrist 3</b></button><p>Spins the tool flange. When J5 = 0, wrist 1 and wrist 3 line up: a wrist singularity.</p><label class="ansl"><input type="range" step="1" aria-label="J6"><output></output></label></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Compact joint modules</strong>: each joint is a tube with a brushless motor, a harmonic-drive gearbox and the electronics inside.</li><li><strong>Two encoders per joint</strong> (motor side and output side) and a <strong>torque sensor or current sensing</strong>: the controller feels contact forces and stops when it touches a person.</li><li><strong>Brake</strong> in every joint, and a safety-rated stop circuit.</li><li><strong>Cables</strong> run inside the tubes, with the controller in a separate box connected by one cable.</li><li><strong>Rounded shapes, light weight, limited force</strong>: made to work next to people (see “How a cobot stays safe”).</li></ul>
+    <p>The angles of this 3D model are those of the drawing, with a zero chosen for display: they differ by a constant from the DH angles of the robot page. The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="cobot" data-set="cobot"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="cobot"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h3>Try it: three kinds of singularity</h3>
       <ul>
@@ -185,10 +227,6 @@
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="cobot"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -214,6 +252,7 @@
     <div class="opsdemo" data-robot="cobot"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

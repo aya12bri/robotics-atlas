@@ -104,6 +104,15 @@
     <p>The <strong>degree of redundancy</strong> is r = n − m = 7 − 6 = 1: when the tool pose is fixed, one parameter is still free. For this arm it is the <strong>elbow angle</strong> ψ, the rotation of the elbow around the line from the shoulder to the wrist (the “swivel” of your own elbow when you keep your hand on a table). Press the button under the 3D view: the controller holds the 6 coordinates of the tool and turns ψ; the line under the diagram shows that the tool does not move by more than a few hundredths of a millimetre.</p>
     <p>How the button works: it turns q3 a little, then solves the inverse model of the six other joints so that the tool comes back exactly where it was (a damped least squares on the Jacobian, the method of the <a href="learn-armlab.html#l4">Python course</a>). Real controllers do the same at the level of speeds, with the null space of the Jacobian: q̇ = J⁺ ẋ + (I − J⁺J) z.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="redundant"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Where is a 7-axis robot used?</h2>
       <p>Collaborative and sensitive robots (KUKA LBR iiwa and LBR Med, Franka Research 3, Kinova Gen3, ABB YuMi's arms), surgery and medical robots, research, assembly in tight spaces where the elbow must avoid obstacles, and space arms (the Canadarm2 of the International Space Station has 7 joints).</p>
@@ -113,10 +122,6 @@
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="redundant"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -142,6 +147,7 @@
     <div class="opsdemo" data-robot="redundant"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
     <p class="try"><a href="learn-parallel.html#l4">Course: aspects and redundancy →</a> · <a href="learn-singularities.html#l7">Redundancy and the null space →</a></p>
 

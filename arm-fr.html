@@ -75,6 +75,15 @@
     <pre class="matrix" id="matrix"></pre>
     <p>La dernière colonne est la position de l'outil dans le repère de base {0}. Les deux tableaux donnent exactement cette même matrice.</p>
 
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>À l'intérieur du robot : les vrais composants</h2>
+    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
+    <div class="insdemo" data-robot="arm"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
+
     <div class="robot">
       <h2>Où utilise-t-on ce type de bras ?</h2>
       <p>Ces trois liaisons sont la <strong>partie de positionnement</strong> d'un bras industriel plus grand : la base, l'épaule et le coude amènent l'outil à un point de l'espace. Un vrai robot 6 axes ajoute un <em>poignet</em> à trois liaisons pour choisir aussi l'orientation de l'outil. Seul, un bras 3 axes sert à la prise et dépose simples, aux robots pédagogiques, et au positionnement de caméras ou de capteurs.</p>
@@ -89,10 +98,6 @@
     </div>
 
     <!-- BEGIN operations -->
-    <h2>À l'intérieur du robot : les vrais composants</h2>
-    <p>Plongez dans une articulation, étape par étape : la caméra entre, le capot s'ouvre, chaque pièce sort avec son vrai nom et son rôle, puis l'articulation tourne pour montrer comment elle marche.</p>
-    <div class="insdemo" data-robot="arm"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Opérations industrielles</h2>
     <p>Les opérations les plus courantes en usine, expliquées simplement, et à quel point ce robot convient pour chacune. Les opérations faites surtout par des machines dédiées (fardelage, sérialisation, convoyage) sont souvent seulement alimentées ou déchargées par un robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -118,6 +123,7 @@
     <div class="opsdemo" data-robot="arm"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

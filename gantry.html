@@ -24,6 +24,7 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="anatomy.css" />
     <style>
       #view { width: 100%; height: 480px; border-radius: 6px; }
     </style>
@@ -94,8 +95,6 @@
     <pre class="matrix" id="matrix"></pre>
     <p>The last column is the position of the tool in the base frame {0}.</p>
 
-    <p class="try"><a href="anatomy-gantry.html">See it in 3D, with the inside of the robot →</a></p>
-
     <h2>Forward kinematics of a gantry</h2>
     <pre class="matrix">x0 = q3 + 0.15      (x0 points DOWN)
 y0 = q2             (across the machine)
@@ -103,6 +102,48 @@ z0 = q1             (along the long rails)</pre>
     <p>This is the simplest kinematics of all robots: <strong>each joint is directly one
        coordinate</strong>. That is why gantries are so easy to program and so precise. The frame
        {0} is placed so that its z axis points along the first rail, which is why z0 = q1.</p>
+
+    <!-- BEGIN anatomy -->
+    <div class="anatbox part-anat">
+    <h2>Anatomy in 3D: every joint and every part</h2>
+    <p class="lead">Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.</p>
+    <div class="andef"><b>Definition</b><p>A <strong>Cartesian robot</strong> (gantry) moves its tool along three straight axes at right angles, X, Y and Z, each one a sliding (prismatic) joint. Its kinematics is the simplest of all robots: the position of the tool is directly the three axis positions. It is stiff, precise and can be very large: 3D printers, CNC machines, palletising.</p></div>
+    <div class="toolbar">
+      <button id="anXray" type="button" aria-pressed="false">X-ray (inside)</button>
+      <button id="anPlay" type="button" aria-pressed="false">Animate the selected axis</button>
+      <button id="anSpin" type="button" aria-pressed="false">Auto-rotate</button>
+      <button id="anWrist" type="button">Far corner of the workspace</button>
+      <button id="anReset" type="button">Reset</button>
+    </div>
+    <div class="anat">
+      <div id="anatView" data-robot="gantry"></div>
+      <div class="ancards">
+        <div class="ancard" style="--c:#2f6bff"><button type="button" class="anhead"><span class="ann">1</span><b>X axis (along the rails)</b></button><p>The whole bridge slides along two parallel rails, driven by a motor and a belt (or a rack and pinion). A prismatic joint (P).</p><label class="ansl"><input type="range" step="1" aria-label="1"><output></output></label></div>
+        <div class="ancard" style="--c:#2e9e5b"><button type="button" class="anhead"><span class="ann">2</span><b>Y axis (across)</b></button><p>The carriage slides along the beam of the bridge, across the rails.</p><label class="ansl"><input type="range" step="1" aria-label="2"><output></output></label></div>
+        <div class="ancard" style="--c:#ff9f43"><button type="button" class="anhead"><span class="ann">3</span><b>Z axis (down)</b></button><p>A vertical rod, driven by a ball screw, goes down to the part. The tool is at its end.</p><label class="ansl"><input type="range" step="1" aria-label="3"><output></output></label></div>
+        <div class="ancard" style="--c:#8a5cf6"><button type="button" class="anhead"><span class="ann">4</span><b>Frame and rails (fixed)</b></button><p>The posts and the rails carry everything. Their stiffness decides the precision. The frame is fixed to the floor.</p></div>
+        <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Gripper</b></button><p>The tool at the end of the Z axis. A Cartesian robot cannot orient it, unless a fourth rotary axis is added.</p></div>
+      </div>
+    </div>
+    <h2>What is inside each joint?</h2>
+    <ul><li><strong>Three motors</strong> (servo or stepper), one per axis, with <strong>belts, rack and pinion or ball screws</strong> that turn the rotation into a straight motion (seen in X-ray).</li><li><strong>Linear guides</strong>: rails with recirculating-ball carriages that carry the load and give a straight, rigid motion.</li><li><strong>Limit switches and homing</strong>: incremental encoders do not know the position at power-on, so each axis first goes to a switch.</li><li><strong>Cable chains</strong> carry the cables of the moving axes without breaking them.</li><li><strong>Controller</strong>: often a PLC or a CNC controller in a cabinet next to the frame; the same machine is a 3D printer or a milling machine when the tool changes.</li></ul>
+    <p>The three travels are in cm as on the gantry page: the tool position is simply (q1, q2, height). The three joints are prismatic (P): there is no angle. The model is simplified: the real inside depends on the make.</p>
+    <h2>All the components, from A to Z</h2>
+    <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
+    <div class="sysdemo" data-robot="gantry" data-set="arm"></div>
+    <script type="module" src="anatomy.js"></script>
+    <script type="module" src="system-demo.js"></script>
+    </div>
+    <!-- END anatomy -->
+
+    <!-- BEGIN inside -->
+    <div class="part-inside">
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="gantry"></div>
+    <script type="module" src="inside-demo.js"></script>
+    </div>
+    <!-- END inside -->
 
     <div class="robot">
       <h2>Where is a Cartesian gantry used?</h2>
@@ -125,10 +166,6 @@ z0 = q1             (along the long rails)</pre>
     </div>
 
     <!-- BEGIN operations -->
-    <h2>Inside the robot: the real components</h2>
-    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
-    <div class="insdemo" data-robot="gantry"></div>
-    <script type="module" src="inside-demo.js"></script>
     <h2>Industrial operations</h2>
     <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
     <div class="cmp-wrap ops-wrap">
@@ -154,6 +191,7 @@ z0 = q1             (along the long rails)</pre>
     <div class="opsdemo" data-robot="gantry"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

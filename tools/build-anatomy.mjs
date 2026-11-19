@@ -10,7 +10,7 @@ const ALLCOL = ['#2f6bff', '#2e9e5b', '#ff9f43', '#8a5cf6', '#ff5a5f', '#1fb5c9'
 
 const ROBOTS = {
   six: {
-    file: 'anatomy', robotPage: 'articulated', before: '<h2>The spherical wrist</h2>', cols: ALLCOL,
+    file: 'anatomy-articulated', merge: 'articulated', robotPage: 'articulated', before: '<h2>The spherical wrist</h2>', cols: ALLCOL,
     title: ['Anatomy of a 6-axis robot (3D)', 'Anatomie d\'un robot 6 axes (3D)'], short: ['6-axis robot', 'Robot 6 axes'], back: ['6-axis robot page', 'Page du robot 6 axes'],
     special: ['Wrist singularity (J5 = 0)', 'Singularité de poignet (J5 = 0)'],
     joints: [
@@ -30,7 +30,7 @@ const ROBOTS = {
     ]
   },
   scara: {
-    file: 'anatomy-scara', robotPage: 'scara', before: '<h2>Forward kinematics of a SCARA</h2>', cols: [ALLCOL[0], ALLCOL[1], ALLCOL[3], ALLCOL[5]],
+    file: 'anatomy-scara', merge: 'scara', robotPage: 'scara', before: '<h2>Forward kinematics of a SCARA</h2>', cols: [ALLCOL[0], ALLCOL[1], ALLCOL[3], ALLCOL[5]],
     title: ['Anatomy of a SCARA robot (3D)', 'Anatomie d\'un robot SCARA (3D)'], short: ['SCARA', 'SCARA'], back: ['SCARA page', 'Page du SCARA'],
     special: ['Arm stretched (J2 = 0)', 'Bras tendu (J2 = 0)'],
     joints: [
@@ -48,7 +48,7 @@ const ROBOTS = {
     ]
   },
   cobot: {
-    file: 'anatomy-cobot', robotPage: 'cobot', before: '<h2>What is special about this DH table?</h2>', cols: ALLCOL,
+    file: 'anatomy-cobot', merge: 'cobot', robotPage: 'cobot', before: '<h2>What is special about this DH table?</h2>', cols: ALLCOL,
     title: ['Anatomy of a cobot (3D)', 'Anatomie d\'un cobot (3D)'], short: ['Cobot', 'Cobot'], back: ['Cobot page', 'Page du cobot'],
     special: ['Wrist singularity (J5 = 0)', 'Singularité de poignet (J5 = 0)'],
     joints: [
@@ -68,7 +68,7 @@ const ROBOTS = {
     ]
   },
   delta: {
-    file: 'anatomy-delta', robotPage: 'delta', before: '<h2>Serial robot or parallel robot?</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
+    file: 'anatomy-delta', merge: 'delta', robotPage: 'delta', before: '<h2>Serial robot or parallel robot?</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
     title: ['Anatomy of a Delta robot (3D)', 'Anatomie d\'un robot Delta (3D)'], short: ['Delta', 'Delta'], back: ['Delta robot page', 'Page du robot Delta'],
     special: ['Centre the effector (equal angles)', 'Centrer l\'effecteur (angles égaux)'],
     note: ['The motor angles θ are measured as on the Delta page: 0° when the upper arm is horizontal, positive downward. The effector position is computed live from the three angles (forward kinematics). The model is simplified: the real inside depends on the make.', 'Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l\'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
@@ -88,7 +88,7 @@ const ROBOTS = {
     ]
   },
   gantry: {
-    file: 'anatomy-gantry', robotPage: 'gantry', before: '<h2>Forward kinematics of a gantry</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
+    file: 'anatomy-gantry', merge: 'gantry', robotPage: 'gantry', before: '<h2>Forward kinematics of a gantry</h2>', cols: ALLCOL.slice(0, 5), labels: ['1', '2', '3', '4', '5'],
     title: ['Anatomy of a Cartesian gantry (3D)', 'Anatomie d\'un robot cartésien (3D)'], short: ['Gantry', 'Cartésien'], back: ['Cartesian gantry page', 'Page du robot cartésien'],
     special: ['Far corner of the workspace', 'Coin opposé de l\'espace de travail'],
     note: ['The three travels are in cm as on the gantry page: the tool position is simply (q1, q2, height). The three joints are prismatic (P): there is no angle. The model is simplified: the real inside depends on the make.', 'Les trois courses sont en cm comme sur la page du robot cartésien : la position de l\'outil est simplement (q1, q2, hauteur). Les trois liaisons sont prismatiques (P) : il n\'y a aucun angle. Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
@@ -153,7 +153,7 @@ const ROBOTS = {
     ]
   },
   stewart: {
-    file: 'anatomy-stewart', robotPage: null, backHref: 'learn-singularities.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-stewart', merge: 'hexapod', robotPage: null, backHref: 'learn-singularities.html', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a Stewart platform (3D)', 'Anatomie d\'une plateforme de Stewart (3D)'], short: ['Hexapod', 'Hexapode'], back: ['Singularities course', 'Cours sur les singularités'],
     special: ['Tilt the platform (roll 15°, pitch 10°)', 'Incliner la plateforme (roulis 15°, tangage 10°)'],
     note: ['The six leg lengths are computed live from the pose of the platform (inverse kinematics: one simple formula per leg, the distance between the base joint and the platform joint). A leg turns red when it leaves its stroke (550 to 950 mm here) and the pose is then not reachable. Angles are roll (about the forward axis), pitch and yaw. The model is simplified: the real inside depends on the make. Stewart platforms also have singular poses (see lesson 8 of the course on singularities).', 'Les six longueurs de vérins sont calculées en direct à partir de la pose de la plateforme (cinématique inverse : une formule simple par vérin, la distance entre la rotule de la base et celle de la plateforme). Un vérin devient rouge quand il sort de sa course (550 à 950 mm ici) et la pose n\'est alors pas atteignable. Les angles sont le roulis (autour de l\'axe avant), le tangage et le lacet. Le modèle est simplifié : l\'intérieur réel dépend de la marque. Les plateformes de Stewart ont aussi des poses singulières (voir la leçon 8 du cours sur les singularités).'],
@@ -216,7 +216,7 @@ const ROBOTS = {
     ]
   },
   mobile: {
-    file: 'anatomy-mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
+    file: 'anatomy-mobile', merge: 'mobile', robotPage: 'mobile', before: '<h2>Kinematic model</h2>', cols: ALLCOL, labels: ['1', '2', '3', '4', '5', '6'],
     title: ['Anatomy of a mobile robot (3D)', 'Anatomie d\'un robot mobile (3D)'], short: ['Mobile robot', 'Robot mobile'], back: ['Mobile robot page', 'Page du robot mobile'],
     special: ['Spin on the spot', 'Tourner sur place'],
     note: ['The wheel speeds are in rad/s: v = r (ωL + ωR) / 2 and ω = r (ωR − ωL) / L, with r = 0.07 m and L = 0.40 m as on the mobile robot page. The orange line is the path the robot has driven (odometry). The model is simplified: the real inside depends on the make.', 'Les vitesses des roues sont en rad/s : v = r (ωG + ωD) / 2 et ω = r (ωD − ωG) / L, avec r = 0,07 m et L = 0,40 m comme sur la page du robot mobile. La ligne orange est le chemin parcouru par le robot (odométrie). Le modèle est simplifié : l\'intérieur réel dépend de la marque.'],
@@ -270,6 +270,20 @@ const hashAll = async (file, list) => {                               // fingerp
   await bpage.goto(pathToFileURL(path.join(root, file)).href); await bpage.waitForFunction(() => window.RA && RA.hash);
   return bpage.evaluate((en) => en.map((s) => { const d = document.createElement('div'); d.innerHTML = s; return RA.hash(RA.norm(d.innerHTML)); }), list);
 };
+// the old address of a merged anatomy page: it leads to the "Anatomy" part of the robot page
+const stub = (to) => `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content="0; url=${to}" />
+    <link rel="canonical" href="${to}" />
+    <title>Robotics Atlas</title>
+    <script>location.replace('${to}');</script>
+  </head>
+  <body><p><a href="${to}">${to}</a></p></body>
+</html>
+`;
 const LINK = ['See it in 3D, with the inside of the robot →', 'Voir en 3D, avec l\'intérieur du robot →'];
 const NOTE = ['The angles of this 3D model are those of the drawing, with a zero chosen for display: they differ by a constant from the DH angles of the robot page. The model is simplified: the real inside depends on the make.', 'Les angles de ce modèle 3D sont ceux du dessin, avec un zéro choisi pour l\'affichage : ils diffèrent d\'une constante des angles DH de la page du robot. Le modèle est simplifié : l\'intérieur réel dépend de la marque.'];
 
@@ -284,61 +298,7 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${tx(...R.title)}</title>
     <link rel="stylesheet" href="style.css" />
-    <style>
-      /* The stage: the model in the middle, a callout card for each part on both sides, each tied to its part by a leader line.
-         On a phone: the model, then the cards as a row you swipe. */
-      .anat { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.8rem; margin: 1rem 0 1.4rem; }
-      #anatView { position: relative; width: 100%; height: 460px; border-radius: 14px; overflow: hidden; touch-action: none; border: 1px solid var(--border); box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.55); }
-      #anatView canvas { position: absolute; inset: 0; display: block; cursor: grab; } #anatView canvas:active { cursor: grabbing; }
-      .antag { position: absolute; transform: translate(-50%, -50%); width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; color: #fff; font: 700 11px var(--mono); cursor: pointer; padding: 0; box-shadow: 0 0 0 4px color-mix(in srgb, var(--c, #fff) 28%, transparent), 0 2px 8px rgba(0,0,0,.5); }
-      .antag.on, .antag.lit { transform: translate(-50%, -50%) scale(1.3); }
-      #anatView .antag:not(.on):not(.lit) { width: 11px; height: 11px; min-width: 0; font-size: 0; border-width: 2px; box-shadow: 0 1px 4px rgba(0,0,0,.45); }   /* just a small dot until you point at the joint */
-      .ancards { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 2px 10px; } .ancards::-webkit-scrollbar { display: none; }
-      .ancard { position: relative; z-index: 1; flex: 0 0 min(82%, 290px); scroll-snap-align: start; align-self: start; border: 1px solid var(--border); border-left: 5px solid var(--c); border-radius: 12px; padding: 0.55rem 0.8rem 0.6rem; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: 0 10px 22px -18px rgba(0, 0, 0, 0.6); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
-      .ancard.on, .ancard.lit { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: var(--c); box-shadow: 0 0 0 1px var(--c), 0 14px 28px -18px var(--c); }
-      .anhead { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: 0; color: var(--text); text-align: left; padding: 0; cursor: pointer; font-size: 0.95rem; }
-      .anhead:hover, .anhead:focus, .anhead:active { background: none; color: var(--text); }
-      .ann { background: var(--c); flex: none; width: 1.8rem; height: 1.8rem; border-radius: 50%; color: #fff; display: grid; place-items: center; font: 700 0.72rem var(--mono); }
-      .ancard p { margin: 0.35rem 0 0.2rem; font-size: 0.84rem; line-height: 1.4; color: var(--muted); max-width: none; }
-      .ansl { display: grid; grid-template-columns: 1fr 3.4rem; gap: 0.5rem; align-items: center; } .ansl input { width: 100%; accent-color: var(--c); } .ansl output { font: 0.8rem var(--mono); text-align: right; color: var(--muted); }
-      .anout { position: absolute; left: 10px; bottom: 8px; right: 110px; white-space: pre-line; font: 12px var(--mono); color: #cfd8e3; pointer-events: none; text-shadow: 0 1px 3px #000; }
-      .ansl3 { grid-template-columns: 7.5rem 1fr 4.2rem; } .ansl3 span { font: 0.8rem var(--mono); } .ancmdt { font-size: 1rem; }
-      #anCmd { flex: none; }
-      .andef { margin: 0.6rem 0 1rem; padding: 0.7rem 1rem 0.75rem; border: 1px solid var(--border); border-left: 5px solid var(--accent); border-radius: 12px; background: color-mix(in srgb, var(--accent) 6%, var(--surface)); max-width: 62rem; }
-      .andef b { display: block; font: 600 0.72rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; } .andef p { margin: 0; max-width: none; }
-      .anframe { position: absolute; transform: translate(-50%, -50%); font: 700 13px var(--mono); pointer-events: none; text-shadow: 0 0 3px #000, 0 1px 4px #000; } .anframe sub { font-size: 9px; }
-      .angizmo { position: absolute; right: 10px; bottom: 10px; width: 88px; height: 88px; pointer-events: none; } .angizmo .bg { fill: rgba(20, 22, 26, 0.55); stroke: rgba(255, 255, 255, 0.15); } .angizmo text { fill: #fff; font: 700 10px var(--mono); text-anchor: middle; }
-      .anviews { position: absolute; left: 10px; top: 10px; z-index: 3; display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.08); }
-      .anviews button, .anfull { display: grid; place-items: center; gap: 2px; min-width: 44px; min-height: 0; padding: 4px 6px 3px; border-radius: 9px; border: 1px solid rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.04); color: #c9d2de; font: 600 10px var(--sans, inherit); cursor: pointer; }
-      .anviews button svg, .anfull svg { width: 15px; height: 15px; } .anviews button:hover, .anfull:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
-      .anviews button.on { color: #fff; border-color: #8b7bff; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); box-shadow: 0 0 0 1px rgba(139, 123, 255, 0.5), 0 6px 18px -6px rgba(109, 93, 252, 0.8); }
-      .anfull { position: absolute; right: 10px; top: 10px; z-index: 3; min-width: 0; width: 32px; height: 32px; padding: 0; background: rgba(18, 20, 28, 0.62); backdrop-filter: blur(8px); }
-      #anatView:fullscreen { width: 100vw; height: 100vh; border-radius: 0; border: 0; }
-      #anatView.light .anviews, #anatView.light .anfull { background: rgba(255, 255, 255, 0.78); border-color: rgba(20, 30, 50, 0.12); }
-      #anatView.light .anviews button, #anatView.light .anfull { color: #3a4556; background: rgba(20, 30, 50, 0.04); border-color: rgba(20, 30, 50, 0.08); }
-      #anatView.light .anviews button:hover, #anatView.light .anfull:hover { color: #111; background: rgba(20, 30, 50, 0.1); }
-      #anatView.light .anviews button.on { color: #fff; border-color: #6d5dfc; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); }
-      #anatView.light .anout { color: #1d2633; text-shadow: 0 1px 2px #fff; }
-      #anatView.light .anframe { text-shadow: 0 0 3px #fff, 0 1px 3px #fff; }
-      #anatView.light .angizmo .bg { fill: rgba(255, 255, 255, 0.72); stroke: rgba(20, 30, 50, 0.15); }
-      @media (max-width: 600px) { .anviews button { min-width: 0; padding: 6px; } .anviews button span { display: none; } }
-      .toolbar { justify-content: center; }
-      #anatView .anviews button, #anatView .anfull { font-size: 11px; line-height: 1.1; font-weight: 600; min-height: 0; }
-      .toolbar button.on { background: var(--btn); border-color: var(--btn); color: #fff; }
-      .ancall { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; display: none; }
-      .ancall path { fill: none; stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0.75; transition: opacity 0.2s ease, stroke-width 0.2s ease; } .ancall path.lit { stroke-width: 2.6; stroke-dasharray: none; opacity: 1; }
-      @media (min-width: 1000px) {
-        .anat { grid-template-columns: 210px minmax(0, 1fr) 210px; column-gap: 14px; row-gap: 10px; align-items: center; }
-        #anatView { grid-column: 2; grid-row: 1 / span var(--rows, 3); align-self: stretch; height: auto; min-height: clamp(520px, calc(100vh - 220px), 680px); }
-        .ancards { display: contents; }
-        .ancard { align-self: center; }
-        .ancard[data-side="left"] { grid-column: 1; border-left: 1px solid var(--border); border-right: 5px solid var(--c); } .ancard[data-side="left"].on, .ancard[data-side="left"].lit { border-color: var(--c); }
-        .ancard[data-side="right"] { grid-column: 3; }
-        #anCmd { grid-column: 2; grid-row: calc(var(--rows, 3) + 1); align-self: start; }
-        .ancard:not(.info):not(.on) p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
-        .ancall { display: block; }
-      }
-    </style>
+    <link rel="stylesheet" href="anatomy.css" />
     <!-- the import map comes first: a module preloaded before it cannot resolve "three" -->
     <script type="importmap">
       { "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
@@ -346,20 +306,20 @@ for (const [key, R] of Object.entries(ROBOTS)) {
     <link rel="modulepreload" href="vendor/three.module.min.js" />
     <link rel="modulepreload" href="vendor/addons/controls/OrbitControls.js" />
   <script src="nav.js" defer></script></head>
-  <body data-robot="${key}">
+  <body data-robot="${key}" class="anatbox">
     <h1>${R.short ? `${tx(...R.short)} <span class="h1tag">${tx('3D anatomy', 'anatomie 3D')}</span>` : tx(...R.title)}</h1>
     <p>${tx(`<a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[0]}</a>`, `<a href="index.html" style="color:#ff9f43">← Liste des robots</a> · <a href="${R.backHref || R.robotPage + '.html'}" style="color:#ff9f43">${R.back[1]}</a>`)}</p>
     <p class="lead">${tx('Turn the robot with the mouse or your finger. Click an axis (a coloured circle or a card) to light up its ring and its axis and to read its description, press X-ray to look inside at the motors, gearboxes, controller and cables, and move each joint with its slider.', 'Faites tourner le robot à la souris ou au doigt. Cliquez sur un axe (un cercle coloré ou une carte) pour allumer son anneau et son axe et lire sa description, appuyez sur Rayons X pour voir à l\'intérieur les moteurs, réducteurs, contrôleur et câbles, et bougez chaque articulation avec son curseur.')}</p>
     <div class="andef"><b>${tx('Definition', 'Définition')}</b><p>${tx(...DEFS[key])}</p></div>
     <div class="toolbar">
-      <button id="xrayBtn" type="button" aria-pressed="false">${tx('X-ray (inside)', 'Rayons X (intérieur)')}</button>
-      <button id="playBtn" type="button" aria-pressed="false">${tx('Animate the selected axis', 'Animer l\'axe choisi')}</button>
-      <button id="spinBtn" type="button" aria-pressed="false">${tx('Auto-rotate', 'Rotation automatique')}</button>
-      <button id="wristBtn" type="button">${tx(...R.special)}</button>
-      <button id="resetBtn" type="button">${tx('Reset', 'Réinitialiser')}</button>
+      <button id="anXray" type="button" aria-pressed="false">${tx('X-ray (inside)', 'Rayons X (intérieur)')}</button>
+      <button id="anPlay" type="button" aria-pressed="false">${tx('Animate the selected axis', 'Animer l\'axe choisi')}</button>
+      <button id="anSpin" type="button" aria-pressed="false">${tx('Auto-rotate', 'Rotation automatique')}</button>
+      <button id="anWrist" type="button">${tx(...R.special)}</button>
+      <button id="anReset" type="button">${tx('Reset', 'Réinitialiser')}</button>
     </div>
     <div class="anat">
-      <div id="anatView"></div>
+      <div id="anatView" data-robot="${key}"></div>
       ${cmdCard}<div class="ancards">
         ${cards}
       </div>
@@ -381,7 +341,26 @@ for (const [key, R] of Object.entries(ROBOTS)) {
   const dict = {}; pairs.forEach(([en, fr], i) => { dict[keys[i]] = fr; });
   fs.writeFileSync(path.join(root, 'i18n', `fr-${R.file}.js`), `// Français — ${R.file}.html (généré par tools/build-anatomy.mjs)\nRA.add(${JSON.stringify(dict, null, 1)});\n`);
 
-  if (R.robotPage) {
+  if (R.merge) {
+    // one page per robot: the viewer goes into the "Anatomy" part of the robot page, the old address leads there
+    const rp = path.join(root, R.merge + '.html'); let h = fs.readFileSync(rp, 'utf8');
+    const seg = '    <div class="anatbox part-anat">\n' + html.slice(html.indexOf('    <p class="lead">'), html.indexOf('  </body>')) + '    </div>\n';
+    const H2 = ['Anatomy in 3D: every joint and every part', 'Anatomie en 3D : chaque articulation et chaque pièce'];
+    const block = `    <!-- BEGIN anatomy -->\n${seg.replace('<div class="anatbox part-anat">\n', `<div class="anatbox part-anat">\n    <h2>${H2[0]}</h2>\n`)}    <!-- END anatomy -->\n`;
+    h = h.replace(/ *<p class="try"><a href="anatomy[a-z-]*\.html">[^\n]*<\/a><\/p>\n\n?/g, '').replace(/ *<!-- BEGIN anatomy -->[\s\S]*?<!-- END anatomy -->\n/, '');
+    const at = h.indexOf('    <!-- BEGIN inside -->') >= 0 ? h.indexOf('    <!-- BEGIN inside -->') : h.indexOf('    <div class="robot">');
+    if (at < 0) throw new Error('no place for the anatomy in ' + R.merge);
+    h = h.slice(0, at) + block + '\n' + h.slice(at);
+    if (!h.includes('href="anatomy.css"')) h = h.replace('<link rel="stylesheet" href="style.css" />', '<link rel="stylesheet" href="style.css" />\n    <link rel="stylesheet" href="anatomy.css" />');
+    fs.writeFileSync(rp, h);
+    const hk = await hashAll(R.merge + '.html', [...pairs.map((q) => q[0]), H2[0]]), md = {};
+    pairs.forEach(([, fr], i) => { md[hk[i]] = fr; }); md[hk[pairs.length]] = H2[1];
+    const f = path.join(root, 'i18n', `fr-${R.merge}.js`);
+    const s2 = fs.readFileSync(f, 'utf8').replace(/\n?\/\/ BEGIN anatomy[\s\S]*?\/\/ END anatomy\n?/, '\n');
+    fs.writeFileSync(f, s2.trimEnd() + `\n// BEGIN anatomy (generated by tools/build-anatomy.mjs)\nRA.add(${JSON.stringify(md, null, 1)});\n// END anatomy\n`);
+    for (const [from, to] of [[R.file, R.merge], [R.file + '-fr', R.merge + '-fr']]) fs.writeFileSync(path.join(root, from + '.html'), stub(to + '.html#anatomy'));
+    fs.rmSync(path.join(root, 'i18n', `fr-${R.file}.js`), { force: true });
+  } else if (R.robotPage) {
   // link from the robot page (and its French text)
   const LK = R.link || LINK;
   const rp = path.join(root, R.robotPage + '.html'); let h = fs.readFileSync(rp, 'utf8');
