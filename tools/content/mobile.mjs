@@ -7,6 +7,7 @@ import './m-ex2.mjs';
 import './m-ex3.mjs';
 import './m-ex4.mjs';
 import { ESS } from './m-ess.mjs';
+import { MFIG } from '../practice/figx.mjs';
 import { partZero } from './m-0.mjs';
 import { partA } from './m-a.mjs';
 import { partDrives } from './m-8.mjs';
@@ -22,7 +23,7 @@ export const meta = { script: 'learn-mobile-widgets.js' };
 const num = (h) => +/data-id="wmr-(\d+)"/.exec(h)[1];
 const sorted = (list) => list.sort((x, y) => num(x) - num(y));
 // "The essentials" box of each lesson, just before its key terms (as in the other courses)
-const withEss = (h) => { const e = ESS[num(h)]; if (!e) return h; const box = '          ' + BOX('key', ['The essentials', 'L\'essentiel'], UL(e)) + '\n';
+const withEss = (h) => { const e = ESS[num(h)]; if (!e) return h; const mf = MFIG[num(h)] && MFIG[num(h)](), box = '          ' + BOX('key', ['The essentials', 'L\'essentiel'], UL(e)) + '\n' + (mf ? `          <figure class="figure pfig"><svg viewBox="${mf.fig.vb}" class="fig" role="img" aria-hidden="true">${mf.fig.svg}</svg><figcaption>${tx(...mf.cap)}</figcaption></figure>\n` : '');
   const i = h.indexOf('<h3>Key terms</h3>'); return i < 0 ? h : h.slice(0, h.lastIndexOf('\n', i) + 1) + box + h.slice(h.lastIndexOf('\n', i) + 1); };
 export const lessonsPart1 = () => sorted([...partZero(), ...partA(), ...partB(), ...partDrives(), ...partC()]).filter((h) => num(h) <= 10).map(withEss);
 export const lessonsPart2 = () => sorted([...partC(), ...partD(), ...partE(), ...partF(), ...partG()]).filter((h) => num(h) > 10).map(withEss);

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { REG, SVGREG, reset, tx, BOX, UL, EXS } from './lib.mjs';
 import { QUIZ } from './practice/quiz.mjs';
+import { FIGX } from './practice/figx.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
 
@@ -26,7 +27,9 @@ for (const [key, file, prefix, i18n] of COURSES) {
   const f = path.join(root, file); let h = fs.readFileSync(f, 'utf8');
   h = h.replace(/\n? *<!-- BEGIN practice -->[\s\S]*?<!-- END practice -->\n?/g, '\n');
   let count = 0;
-  for (const [n, L] of Object.entries(PRACTICE)) {
+  const FX = FIGX[key] ? FIGX[key]() : {};
+  for (const [n, L0] of Object.entries(PRACTICE)) {
+    const L = L0.fig || !FX[n] ? L0 : { ...L0, ...FX[n] };   // a figure for the lessons that have none
     const fig = L.fig ? `<figure class="figure pfig"><svg viewBox="${L.fig.vb}" class="fig" role="img" aria-hidden="true">${L.fig.svg}</svg>${L.cap ? `<figcaption>${tx(L.cap[0], L.cap[1])}</figcaption>` : ''}</figure>` : '';
     const block = `          <!-- BEGIN practice -->
           ${L.more ? L.more + '\n          ' : ''}${BOX('key', ['The essentials', 'L\'essentiel'], UL(L.sum))}
