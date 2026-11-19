@@ -1,13 +1,17 @@
 // tutor.js — the AI tutor of the lessons (tutor.js in the site sends the questions here).
 // The Worker reads the lesson from the site itself, so a visitor cannot send another text to the model, then asks
-// Claude to explain it like a teacher and streams the answer back as plain text.
+// an AI model to explain it like a teacher and streams the answer back as plain text.
+// Models: Gemini first (secret GEMINI_API_KEY, free tier of Google AI Studio); if Gemini fails before writing anything
+// (no key, daily quota reached, error), Claude Haiku answers instead (secret ANTHROPIC_API_KEY, prepaid credits).
 // Limits: TUTOR_LIMIT (a rate-limit binding, wrangler.jsonc) allows a few questions per minute for each visitor; the
 // total spend is capped by the prepaid API credits. If a KV namespace FEEDBACK is bound, TUTOR_PER_DAY and TUTOR_DAILY_CAP
 // also cap the questions per visitor and per site and per day. The visitor is known by a hash of their IP address and
 // the date: the address itself is never stored.
 import Anthropic from '@anthropic-ai/sdk';
 
-const MODEL = 'claude-haiku-5-5';            // the cheapest model; change this line for claude-sonnet-5-5 or claude-opus-5-5
+const MODEL = 'claude-haiku-5-5';            // the backup model; change this line for claude-sonnet-5-5 or claude-opus-5-5
+const GEMINI = 'gemini-flash-latest';        // the main model (Google's alias for its latest Flash model); the variable GEMINI_MODEL overrides it
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta';
 const text = (s, status = 200, extra = {}) => new Response(s, { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 
 // the lesson as plain text: the <article id="lN"> of the page, without scripts, styles, figures' drawing code and tags
@@ -62,12 +66,51 @@ export async function tutorStatus(env, url) {
     try { const m = await new Anthropic({ apiKey: env.ANTHROPIC_API_KEY }).models.retrieve(MODEL); out.api = `ok: the key works and ${m.id} is available`; }
     catch (e) { out.api = `error ${e.status || ''}: ${(e.error && e.error.error && e.error.error.message) || e.message}`; }
   } else out.api = 'no key: add the secret ANTHROPIC_API_KEY in Cloudflare (Settings → Variables and Secrets)';
-  out.note = 'The credit balance is not checked here: see platform.claude.com → Settings → Billing.';
+  const gm = env.GEMINI_MODEL || GEMINI;
+  out.gemini_model = gm;
+  if (env.GEMINI_API_KEY) {
+    try {
+      const r = await fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${gm}`, { headers: { 'x-goog-api-key': env.GEMINI_API_KEY } });
+      const j = await r.json().catch(() => ({}));
+      out.gemini = r.ok ? `ok: the key works and ${j.name || gm} is available (the daily free quota is not checked here)` : `error ${r.status}: ${(j.error && j.error.message) || r.statusText}`;
+    } catch (e) { out.gemini = 'error: ' + e.message; }
+  } else out.gemini = 'no key: add the secret GEMINI_API_KEY in Cloudflare (Settings → Variables and Secrets)';
+  out.order = 'Gemini first, then Claude if Gemini fails';
+  out.note = 'The Claude credit balance is not checked here: see platform.claude.com → Settings → Billing.';
   return new Response(JSON.stringify(out, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
+// Gemini, streamed: yields the text pieces; throws (with .status) before the first piece when it cannot answer
+async function* askGemini(env, system, history, question) {
+  const model = env.GEMINI_MODEL || GEMINI;
+  const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
+  const r = await fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000 } })
+  });
+  if (!r.ok || !r.body) { const e = new Error(`gemini ${r.status}: ${(await r.text().catch(() => '')).slice(0, 300)}`); e.status = r.status; throw e; }
+  const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', any = false, why = '';
+  for (;;) {
+    const { done, value } = await rd.read(); if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+      if (!line.startsWith('data:')) continue;
+      let j; try { j = JSON.parse(line.slice(5)); } catch (e) { continue; }
+      const c = j.candidates && j.candidates[0];
+      if (c && c.finishReason) why = c.finishReason;
+      const s = ((c && c.content && c.content.parts) || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('');
+      if (s) { any = true; yield s; }
+    }
+  }
+  if (!any) { const e = new Error('gemini: empty answer ' + why); e.status = why === 'SAFETY' ? 'refusal' : 'empty'; throw e; }
+  if (why === 'MAX_TOKENS') yield ' …';
+}
+
 export async function tutor(req, env, url) {
-  if (!env.ANTHROPIC_API_KEY) return text('tutor not configured', 503);
+  if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY) return text('tutor not configured', 503);
   let d; try { d = await req.json(); } catch (e) { return text('bad json', 400); }
   const ok = (s, re) => typeof s === 'string' && re.test(s);
   if (!ok(d.page, /^learn(-[a-z]+){0,3}$/) || !ok(d.lesson, /^l\d{1,2}$/) || !['en', 'fr'].includes(d.lang) || typeof d.question !== 'string') return text('bad data', 400);
@@ -94,20 +137,33 @@ export async function tutor(req, env, url) {
   const lesson = await lessonText(env, url.origin, d.lang === 'fr' ? d.page + '-fr' : d.page, d.lesson);
   if (!lesson) { console.log('tutor error: lesson not found', d.page, d.lesson, d.lang); return text('lesson not found', 404); }
 
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
-  const stream = client.messages.stream({
-    model: MODEL,
-    max_tokens: 2000,
-    output_config: { effort: 'low' },               // a chat answer: short thinking is enough
-    // the rules and the lesson do not change from one question to the next: they are cached
-    system: [{ type: 'text', text: RULES(d.lang) }, { type: 'text', text: `The lesson: ${lesson.title}\n\n${lesson.body}`, cache_control: { type: 'ephemeral' } }],
-    messages: [...history, { role: 'user', content: question }]
-  });
+  const system = `${RULES(d.lang)}\n\nThe lesson: ${lesson.title}\n\n${lesson.body}`;
   const enc = new TextEncoder();
   const body = new ReadableStream({
     async start(ctrl) {
+      let started = false;
+      // the first piece says which model answers ([[m:gemini]] or [[m:claude]]): the page shows it only in its test mode
+      const put = (s, who) => { if (!started) ctrl.enqueue(enc.encode(`[[m:${who}]]`)); started = true; ctrl.enqueue(enc.encode(s)); };
+      // 1. Gemini, the main model
+      if (env.GEMINI_API_KEY) {
+        try { for await (const s of askGemini(env, system, history, question)) put(s, 'gemini'); ctrl.close(); return; }
+        catch (e) {
+          console.log('tutor: gemini failed', e && e.status, e && e.message);
+          if (started) { ctrl.enqueue(enc.encode('\n\n[[error]]')); ctrl.close(); return; }   // it stopped in the middle: keep what it wrote
+        }
+      }
+      // 2. Claude Haiku, the backup
+      if (!env.ANTHROPIC_API_KEY) { ctrl.enqueue(enc.encode('\n\n[[error 503]]')); ctrl.close(); return; }
       try {
-        for await (const ev of stream) if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta') ctrl.enqueue(enc.encode(ev.delta.text));
+        const stream = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY }).messages.stream({
+          model: MODEL,
+          max_tokens: 2000,
+          output_config: { effort: 'low' },               // a chat answer: short thinking is enough
+          // the rules and the lesson do not change from one question to the next: they are cached
+          system: [{ type: 'text', text: RULES(d.lang) }, { type: 'text', text: `The lesson: ${lesson.title}\n\n${lesson.body}`, cache_control: { type: 'ephemeral' } }],
+          messages: [...history, { role: 'user', content: question }]
+        });
+        for await (const ev of stream) if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta') put(ev.delta.text, 'claude');
         const msg = await stream.finalMessage();
         if (msg.stop_reason === 'refusal') ctrl.enqueue(enc.encode('\n\n[[refusal]]'));
         else if (msg.stop_reason === 'max_tokens') ctrl.enqueue(enc.encode(' …'));
