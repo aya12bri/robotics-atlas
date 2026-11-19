@@ -94,7 +94,7 @@ export async function tutorStatus(env, url) {
         const t0 = Date.now();
         try {
           let first = '';
-          for await (const s of askGemini({ ...env, GEMINI_MODEL: m, GEMINI_WAIT_MS: 20000 }, system, [], 'Explique-moi cette leçon en une phrase.')) { first += s; if (first.length > 20) break; }
+          for await (const s of askGemini({ ...env, GEMINI_MODEL: m, GEMINI_WAIT_MS: 20000, GEMINI_TOTAL_MS: 20000 }, system, [], 'Explique-moi cette leçon en une phrase.')) { first += s; if (first.length > 20) break; }
           out.gemini[m] = `ok: first words after ${((Date.now() - t0) / 1000).toFixed(1)} s`;
         } catch (e) { out.gemini[m] = `${String(e.message).replace(/^gemini:? ?/, '').slice(0, 220)} (after ${((Date.now() - t0) / 1000).toFixed(1)} s)`; }
       }
@@ -110,11 +110,15 @@ async function* askGemini(env, system, history, question) {
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
   // each model of the list gets PER_MODEL_MS to write its first words, otherwise the next one is tried (a slow or busy
   // model no longer blocks the others); a lesson explanation does not need the model's long "thinking": ask for none
-  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 8000);
+  // the free models can take 10–15 s before their first words: each model gets up to PER_MODEL_MS, all of them together
+  // TOTAL_MS (a busy model says so at once, so it costs almost nothing); after that, Claude answers
+  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 20000), TOTAL_MS = +(env.GEMINI_TOTAL_MS || 30000), end = Date.now() + TOTAL_MS;
   const errText = async (r) => { const raw = await r.text().catch(() => ''); try { return JSON.parse(raw).error.message || raw; } catch (x) { return raw; } };
   const fails = [];
   for (const model of geminiList(env)) {
-    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), PER_MODEL_MS);
+    const wait = Math.min(PER_MODEL_MS, end - Date.now());
+    if (wait < 2000) { fails.push(`${model} not tried (no time left)`); continue; }
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), wait);
     const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
       method: 'POST', signal: ctl.signal,
       headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
@@ -144,7 +148,7 @@ async function* askGemini(env, system, history, question) {
     } catch (e) {
       clearTimeout(timer);
       if (any) { const x = new Error('gemini: cut in the middle'); x.status = 'cut'; throw x; }   // it had started: keep what it wrote
-      fails.push(`${model} ${ctl.signal.aborted ? (r ? `HTTP ${r.status} but no words` : 'no reply') + ' in ' + PER_MODEL_MS / 1000 + ' s' : 'error ' + e.message}`); continue;
+      fails.push(`${model} ${ctl.signal.aborted ? (r ? `HTTP ${r.status} but no words` : 'no reply') + ' in ' + Math.round(wait / 1000) + ' s' : 'error ' + e.message}`); continue;
     }
     clearTimeout(timer);
     if (any) { if (why === 'MAX_TOKENS') yield ' …'; return; }
