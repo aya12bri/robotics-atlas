@@ -85,6 +85,14 @@ const MOVING = ['drives', 'humanoid', 'mobile'].includes(KIND) || (CFG.grid || 4
   grid = new THREE.GridHelper(gs, gs * 4, '#5a5f68', '#383c43'); grid.material.transparent = true; grid.material.opacity = 0.5; scene.add(grid);
   [floor, pad].forEach((m) => { m.material.polygonOffset = true; m.material.polygonOffsetFactor = 2; m.material.polygonOffsetUnits = 2; });   // the grid lines always stay on top of the floor (no flicker from far away)
   grid.position.y = 0.002;
+  if (size > 8) {                                               // big floors (robots that walk, roll, fly or swim): the same 25 cm tiles everywhere, drawn as a repeated texture
+    grid.visible = false;
+    const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+    g.clearRect(0, 0, 64, 64); g.fillStyle = '#fff'; g.fillRect(0, 0, 64, 2); g.fillRect(0, 0, 2, 64);
+    const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(size / 0.25, size / 0.25); tex.anisotropy = 8;
+    const tiles = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: tex, color: '#a3acb7', transparent: true, depthWrite: false }));
+    tiles.rotation.x = -Math.PI / 2; tiles.position.y = 0.001; tiles.renderOrder = 1; tiles.userData.floor = true; scene.add(tiles); grid.userData.tiles = tiles;
+  }
 }
 // The ground follows the site theme: a dark workshop in dark mode, a light studio floor in light mode (same rule as nav.js).
 const isLight = () => (document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')) === 'light';
@@ -94,7 +102,7 @@ function paintGround() {
   floor.material.color.set(light ? '#cfd4db' : '#242f44'); floor.material.envMapIntensity = light ? 0.6 : 0.35;
   const c1 = new THREE.Color(light ? '#c3cad3' : '#73819a'), c2 = new THREE.Color(light ? '#a3acb7' : '#36435b'), n = g.count;
   for (let i = 0; i < n; i += 4) { const c = (i / 4) === Math.floor(n / 8) ? c1 : c2; for (let k = 0; k < 4 && i + k < n; k++) g.setXYZ(i + k, c.r, c.g, c.b); }   // GridHelper: 4 vertices per line, the centre lines get colour 1
-  g.needsUpdate = true; grid.material.opacity = light ? 0.9 : 0.5;
+  g.needsUpdate = true; grid.material.opacity = light ? 0.9 : 0.5; if (grid.userData.tiles) { grid.userData.tiles.material.color.set(light ? '#a3acb7' : '#36435b'); grid.userData.tiles.material.opacity = light ? 0.9 : 0.7; }
   hemi.groundColor.set(light ? '#b9c0ca' : '#56637b'); hemi.intensity = light ? 0.45 : 0.55; renderer.toneMappingExposure = light ? 1.0 : 1.18;
   box.classList.toggle('light', light);
 }
