@@ -85,7 +85,7 @@ const main = document.getElementById('sbx');
 main.innerHTML = `<h1>${L('Programming sandbox', 'Bac à sable de programmation')}</h1>
 <p class="lead">${L('Write a small program and watch a robot run it in 3D: a SCARA or a 6-axis arm. Coordinates are in centimetres, from the axis of the robot. Choose a mission, complete the program, press Run; then compare a linear move with a joint move, and export your program in the style of an industrial language.', 'Écrivez un petit programme et regardez un robot l\'exécuter en 3D : un SCARA ou un bras 6 axes. Les coordonnées sont en centimètres, depuis l\'axe du robot. Choisissez une mission, complétez le programme, appuyez sur Exécuter ; comparez ensuite un mouvement linéaire et un mouvement articulaire, et exportez votre programme dans le style d\'un langage industriel.')}</p>
 <div class="sbx-robot" role="radiogroup" aria-label="Robot"><span>Robot :</span><button type="button" role="radio" data-r="scara">SCARA</button><button type="button" role="radio" data-r="six">${L('6-axis arm', 'Bras 6 axes')}</button><span class="sbx-reach"></span></div>
-<div class="sbx-missions" role="tablist">${MISSIONS.map((m, i) => `<button type="button" data-m="${i}">${esc(m.t[LG])}</button>`).join('')}</div>
+<div class="sbx-missions" role="tablist">${MISSIONS.map((m, i) => `<button type="button" role="tab" data-m="${i}">${esc(m.t[LG])}</button>`).join('')}</div>
 <div class="sbx-grid">
   <div class="sbx-left">
     <p class="sbx-goal"></p>
