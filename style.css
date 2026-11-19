@@ -322,6 +322,19 @@ body::after { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 1
 .toc a:hover { color: var(--text); background: color-mix(in srgb, var(--accent) 22%, transparent); }
 .stage { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 0 2rem; align-items: start; margin-top: 0.6rem; }
 .stage-main > :first-child { margin-top: 0; }
+.lead.lead-card { max-width: none; margin: 1.1rem 0 0; padding: 1rem 1.2rem; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); color: var(--text); font-size: 1.02rem; line-height: 1.6; }
+.stage-side .lead.lead-card { margin-top: 1.2rem; }
+/* "Explore this robot": fills the room under the sliders with links to the other parts of the page */
+.stage-more { margin-top: 1.3rem; padding: 0.9rem 1rem 0.6rem; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); }
+.stage-more > b { display: block; margin: 0 0 0.45rem; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.stage-more a, .stage-more button { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.45rem 0.4rem; margin: 0; border: 0; border-radius: 10px; background: none; color: var(--text); text-align: left; text-decoration: none; font: inherit; min-height: 0; cursor: pointer; }
+.stage-more a:hover, .stage-more button:hover { background: var(--surface-2); }
+.stage-more svg { flex: none; width: 1.9rem; height: 1.9rem; padding: 0.35rem; border-radius: 9px; background: color-mix(in srgb, var(--accent) 14%, transparent); stroke: var(--accent); stroke-width: 1.8; fill: none; stroke-linejoin: round; stroke-linecap: round; box-sizing: border-box; }
+.stage-more span { display: flex; flex-direction: column; line-height: 1.3; }
+.stage-more strong { font-size: 0.95rem; } .stage-more small { color: var(--muted); font-size: 0.82rem; }
+.stage-more.compact { padding: 0.7rem 0.9rem 0.45rem; } .stage-more.compact small { display: none; } .stage-more.compact a, .stage-more.compact button { padding: 0.25rem 0.4rem; } .stage-more.compact svg { width: 1.6rem; height: 1.6rem; padding: 0.28rem; } .stage-more.mini .sm-tutor { display: none; }
+/* robot and anatomy pages: the text of each part fills the width of the page (no empty band on the right) */
+.rtab-pane p, .rtab-pane li { max-width: none; }
 .stage-side h2 { margin-top: 0; font-size: 1.35rem; }
 .stage-side .ctl { gap: 0.2rem 0.7rem; }
 .stage-side .ctl-name { width: 100%; font-size: 0.92rem; }
