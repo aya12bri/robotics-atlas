@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
-const SIZE = 160, N = 11;
+const SIZE = 208, N = 11;
 
 // a tiny static server for three.js (ES modules do not load from file://)
 const server = http.createServer((req, res) => {
