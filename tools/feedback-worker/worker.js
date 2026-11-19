@@ -4,7 +4,8 @@
 //   POST /api/feedback          { page, lesson, vote: 1 | -1, lang: 'en' | 'fr', comment? }   → 204
 //   GET  /api/feedback/summary  header  Authorization: Bearer <SUMMARY_TOKEN>                  → JSON totals + comments
 //   POST /api/tutor             { page, lesson, lang, question, history? }                    → the answer, streamed as plain text
-import { tutor } from './tutor.js';
+//   GET  /api/tutor/status                                                                    → what works (key, lesson text, API), no secret
+import { tutor, tutorStatus } from './tutor.js';
 const json = (o, status = 200) => new Response(JSON.stringify(o, null, 1), { status, headers: { 'content-type': 'application/json; charset=utf-8' } });
 
 export default {
@@ -42,6 +43,7 @@ export default {
       return json({ totals, comments: comments.sort((a, b) => b.day.localeCompare(a.day)).slice(0, 200) });
     }
     if (url.pathname === '/api/tutor' && req.method === 'POST') return tutor(req, env, url);
+    if (url.pathname === '/api/tutor/status' && req.method === 'GET') return tutorStatus(env, url);
     if (!url.pathname.startsWith('/api/') && env.ASSETS) return env.ASSETS.fetch(req);   // (not reached: only /api/* runs the Worker)
     return json({ error: 'not found' }, 404);
   }

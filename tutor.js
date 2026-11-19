@@ -88,27 +88,28 @@
       bubble('user', '<p>' + esc(show || q) + '</p>');
       var out = bubble('assistant', '<span class="lt-dots" aria-label="' + esc(L('The tutor is writing', 'Le tuteur écrit')) + '"><i></i><i></i><i></i></span>');
       var past = hist.slice(-6).map(function (m) { return { role: m.role, text: m.text }; });
-      var acc = '', done = function (err) {
+      var acc = '', done = function (err, why) {
         busy = false; send.disabled = false;
-        if (err) { out.innerHTML = '<p class="lt-err">' + esc(fail(err)) + '</p>'; return; }
+        if (err) { out.innerHTML = '<p class="lt-err">' + esc(fail(err)) + (why ? ' <small>(' + esc(why) + ')</small>' : '') + '</p>'; return; }
         hist.push({ role: 'user', text: q, show: show }, { role: 'assistant', text: acc }); save();
       };
       if (!navigator.onLine) return done('offline');
       fetch('/api/tutor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: PAGE, lesson: lesson, lang: FR() ? 'fr' : 'en', question: q, history: past }) })
         .then(function (r) {
           if (r.status === 429) return r.text().then(function (m) { done(/minute/.test(m) ? 'minute' : 429); });
-          if (!r.ok || !r.body || !/text\/plain/.test(r.headers.get('content-type') || '')) return done('down');
+          if (!r.ok || !r.body || !/text\/plain/.test(r.headers.get('content-type') || '')) return r.text().then(function (m) { done('down', r.status + (/^[a-z :]{3,40}$/.test(m) ? ' · ' + m : '')); }, function () { done('down', String(r.status)); });
           var rd = r.body.getReader(), dec = new TextDecoder();
           var pump = function () {
             return rd.read().then(function (c) {
               if (c.done) {
                 if (/\[\[refusal\]\]\s*$/.test(acc)) return done('refusal');
-                if (/\[\[error\]\]\s*$/.test(acc) && acc.replace(/\[\[error\]\]\s*$/, '').trim().length < 2) return done('down');
-                acc = acc.replace(/\s*\[\[error\]\]\s*$/, ' …'); out.innerHTML = md(acc); return done();
+                var em = /\[\[error ?(\d*)\]\]\s*$/.exec(acc);
+                if (em && acc.slice(0, em.index).trim().length < 2) return done('down', 'API ' + (em[1] || '?'));
+                acc = acc.replace(/\s*\[\[error ?\d*\]\]\s*$/, ' …'); out.innerHTML = md(acc); return done();
               }
               acc += dec.decode(c.value, { stream: true });
               var near = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
-              out.innerHTML = md(acc.replace(/\s*\[\[(refusal|error)\]\]\s*$/, '')) || out.innerHTML;
+              out.innerHTML = md(acc.replace(/\s*\[\[(refusal|error ?\d*)\]?\]?\s*$/, '').replace(/\s*\[\[[a-z0-9 ]*$/, '')) || out.innerHTML;
               if (near) log.scrollTop = log.scrollHeight;
               return pump();
             });
