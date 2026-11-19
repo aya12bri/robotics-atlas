@@ -86,14 +86,17 @@ export async function tutorStatus(env, url) {
   if (env.GEMINI_API_KEY) {
     if (env.TUTOR_LIMIT && !(await env.TUTOR_LIMIT.limit({ key: 'status' })).success) out.gemini = 'checked too often: try again in a minute';
     else {
+      // the same request as the robot: the rules and a real lesson, streamed; the time to the first words
       out.gemini = {};
+      const l = await lessonText(env, url.origin, 'learn-fr', 'l1');
+      const system = `${RULES('fr')}\n\nThe lesson: ${l ? l.title + '\n\n' + l.body : ''}`;
       for (const m of geminiList(env)) {
+        const t0 = Date.now();
         try {
-          const r = await fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${m}:generateContent`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'Say OK.' }] }], generationConfig: { maxOutputTokens: 20 } }) });
-          const j = await r.json().catch(() => ({}));
-          out.gemini[m] = r.ok ? 'ok: it answers' : `error ${r.status}: ${((j.error && j.error.message) || r.statusText).slice(0, 220)}`;
-        } catch (e) { out.gemini[m] = 'error: ' + e.message; }
+          let first = '';
+          for await (const s of askGemini({ ...env, GEMINI_MODEL: m, GEMINI_WAIT_MS: 20000 }, system, [], 'Explique-moi cette leçon en une phrase.')) { first += s; if (first.length > 20) break; }
+          out.gemini[m] = `ok: first words after ${((Date.now() - t0) / 1000).toFixed(1)} s`;
+        } catch (e) { out.gemini[m] = `${String(e.message).replace(/^gemini:? ?/, '').slice(0, 220)} (after ${((Date.now() - t0) / 1000).toFixed(1)} s)`; }
       }
     }
   } else out.gemini = 'no key: add the secret GEMINI_API_KEY in Cloudflare (Settings → Variables and Secrets)';
@@ -107,7 +110,7 @@ async function* askGemini(env, system, history, question) {
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
   // each model of the list gets PER_MODEL_MS to write its first words, otherwise the next one is tried (a slow or busy
   // model no longer blocks the others); a lesson explanation does not need the model's long "thinking": ask for none
-  const PER_MODEL_MS = 8000;
+  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 8000);
   const errText = async (r) => { const raw = await r.text().catch(() => ''); try { return JSON.parse(raw).error.message || raw; } catch (x) { return raw; } };
   const fails = [];
   for (const model of geminiList(env)) {
@@ -141,7 +144,7 @@ async function* askGemini(env, system, history, question) {
     } catch (e) {
       clearTimeout(timer);
       if (any) { const x = new Error('gemini: cut in the middle'); x.status = 'cut'; throw x; }   // it had started: keep what it wrote
-      fails.push(`${model} ${ctl.signal.aborted ? 'no answer in ' + PER_MODEL_MS / 1000 + ' s' : 'error ' + e.message}`); continue;
+      fails.push(`${model} ${ctl.signal.aborted ? (r ? `HTTP ${r.status} but no words` : 'no reply') + ' in ' + PER_MODEL_MS / 1000 + ' s' : 'error ' + e.message}`); continue;
     }
     clearTimeout(timer);
     if (any) { if (why === 'MAX_TOKENS') yield ' …'; return; }

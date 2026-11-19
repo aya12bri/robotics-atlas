@@ -121,9 +121,9 @@
       var out = bubbleMsg('assistant', '<span class="rb-dots" aria-label="' + esc(L('The tutor is writing', 'Le tuteur écrit')) + '"><i></i><i></i><i></i></span>');
       var past = hist.slice(-6).map(function (m) { return { role: m.role, text: m.text }; });
       var acc = '', model = '', why = '', t0 = Date.now(), first = 0;
-      var done = function (err, why) {
+      var done = function (err, detail) {
         busy = false; send.disabled = false;
-        if (err) { out.innerHTML = '<p class="rb-err">' + esc(fail(err)) + (why ? ' <small>(' + esc(why) + ')</small>' : '') + '</p>'; return; }
+        if (err) { out.innerHTML = '<p class="rb-err">' + esc(fail(err)) + (detail ? ' <small>(' + esc(detail) + ')</small>' : '') + '</p>'; return; }
         if (model && first) model += ' · ' + ((first - t0) / 1000).toFixed(1).replace('.', FR() ? ',' : '.') + ' s';   // time to the first words
         if (model && why) model += ' · Gemini : ' + why;
         if (DEBUG && model) out.insertAdjacentHTML('beforeend', '<span class="rb-model">' + esc(model) + '</span>');
