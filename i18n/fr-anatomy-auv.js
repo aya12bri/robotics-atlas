@@ -33,5 +33,7 @@ RA.add({
  "16olyh7hwfm": "<strong>Ni câble ni pilote</strong> : un AUV (véhicule sous-marin autonome) suit seul sa mission, contrairement à un ROV, piloté depuis un bateau à travers un câble.",
  "1ryl8kuwvsq": "<strong>Navigation sans GPS</strong> : il additionne la vitesse du DVL et les rotations de la centrale inertielle (navigation à l'estime, corrigée par un filtre de Kalman), et remonte de temps en temps en surface pour recaler sa position GPS.",
  "web5yq4ldf": "<strong>Usages</strong> : cartographie des fonds marins, inspection de pipelines et de câbles, recherche d'épaves, étude de l'océan.",
- "zj1hccd0wf": "Le robot sous-marin se déplace vraiment : l'hélice le pousse vers l'avant, les gouvernes de direction le font tourner et les gouvernes de profondeur inclinent son nez pour plonger ou remonter. Comme pour un avion, les gouvernes n'agissent que si le véhicule avance dans l'eau. Le modèle est simplifié."
+ "zj1hccd0wf": "Le robot sous-marin se déplace vraiment : l'hélice le pousse vers l'avant, les gouvernes de direction le font tourner et les gouvernes de profondeur inclinent son nez pour plonger ou remonter. Comme pour un avion, les gouvernes n'agissent que si le véhicule avance dans l'eau. Le modèle est simplifié.",
+ "zq3mfy19s5": "Tous les composants, de A à Z",
+ "4xif653etr": "D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle."
 });

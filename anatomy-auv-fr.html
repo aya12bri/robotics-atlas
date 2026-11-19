@@ -60,9 +60,11 @@
     <h2>Que contient chaque articulation ?</h2>
     <ul><li><strong>Ni câble ni pilote</strong> : un AUV (véhicule sous-marin autonome) suit seul sa mission, contrairement à un ROV, piloté depuis un bateau à travers un câble.</li><li><strong>Navigation sans GPS</strong> : il additionne la vitesse du DVL et les rotations de la centrale inertielle (navigation à l'estime, corrigée par un filtre de Kalman), et remonte de temps en temps en surface pour recaler sa position GPS.</li><li><strong>Usages</strong> : cartographie des fonds marins, inspection de pipelines et de câbles, recherche d'épaves, étude de l'océan.</li></ul>
     <p>Le robot sous-marin se déplace vraiment : l'hélice le pousse vers l'avant, les gouvernes de direction le font tourner et les gouvernes de profondeur inclinent son nez pour plonger ou remonter. Comme pour un avion, les gouvernes n'agissent que si le véhicule avance dans l'eau. Le modèle est simplifié.</p>
-
+    <h2>Tous les composants, de A à Z</h2>
+    <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
+    <div class="sysdemo" data-robot="auv" data-set="auv"></div>
     <script type="module" src="anatomy.js"></script>
-    
+    <script type="module" src="system-demo.js"></script>
   
 
 </body>
