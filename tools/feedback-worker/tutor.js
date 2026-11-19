@@ -12,7 +12,7 @@ import Anthropic from '@anthropic-ai/sdk';
 const MODEL = 'claude-haiku-5-5';            // the backup model; change this line for claude-sonnet-5-5 or claude-opus-5-5
 // the main models, tried in this order until one answers (a model can have no free quota, or not exist any more);
 // the variable GEMINI_MODEL (one name, or several separated by commas) replaces this list
-const GEMINIS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+const GEMINIS = ['gemini-flash-latest', 'gemini-3.8-flash', 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite'];
 const geminiList = (env) => (env.GEMINI_MODEL ? env.GEMINI_MODEL.split(',').map((s) => s.trim()).filter(Boolean) : GEMINIS);
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta';
 const text = (s, status = 200, extra = {}) => new Response(s, { status, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', ...extra } });
