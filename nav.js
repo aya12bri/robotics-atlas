@@ -793,6 +793,8 @@
     watch3d();
     robotPage();
     wireScroll();
+    // the AI tutor (tutor.js): a small robot on the side of every page, except the error and offline pages
+    if (!/^(404|offline)$/.test(RA.page || '')) { const t = document.createElement('script'); t.src = 'tutor.js'; t.defer = true; document.body.append(t); }
     if (lang === 'fr') loadDictionaries(startTranslation);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

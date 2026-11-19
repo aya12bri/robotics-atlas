@@ -25,29 +25,41 @@ async function getPage(env, url) {
   }
   return new Response('too many redirects', { status: 508 });
 }
-async function lessonText(env, origin, page, lesson) {
-  const r = await getPage(env, `${origin}/${page}.html`);
+// the text a student is reading: the <article id="lN"> of a course page, or the whole page (without the drawing code)
+async function lessonText(env, origin, page, lesson, fallback) {
+  let r = await getPage(env, `${origin}/${page}.html`);
+  if (!r.ok && fallback) r = await getPage(env, `${origin}/${fallback}.html`);     // a page without a French twin
   if (!r.ok) return null;
-  const h = await r.text(), a = h.search(new RegExp(`<article[^>]*\\bid="${lesson}"`));
-  if (a < 0) return null;
-  const art = h.slice(a, h.indexOf('</article>', a));
-  const title = (/<h2[^>]*>([\s\S]*?)<\/h2>/.exec(art) || [, ''])[1].replace(/<[^>]+>/g, '').trim();
-  const body = art
-    .replace(/<(script|style|svg|canvas|template)\b[\s\S]*?<\/\1>/gi, ' ')
-    .replace(/<(br|\/p|\/li|\/h\d|\/tr|\/div|\/figcaption|\/pre)>/gi, '\n')
+  const h = await r.text();
+  let part, title;
+  if (lesson) {
+    const a = h.search(new RegExp(`<article[^>]*\\bid="${lesson}"`));
+    if (a < 0) return null;
+    part = h.slice(a, h.indexOf('</article>', a));
+    title = (/<h2[^>]*>([\s\S]*?)<\/h2>/.exec(part) || [, ''])[1];
+  } else {
+    const b = h.search(/<body[^>]*>/i);
+    part = b < 0 ? h : h.slice(b);
+    title = (/<h1[^>]*>([\s\S]*?)<\/h1>/.exec(h) || /<title>([\s\S]*?)<\/title>/.exec(h) || [, ''])[1];
+  }
+  title = title.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const body = part
+    .replace(/<(script|style|svg|canvas|template|noscript)\b[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<(br|\/p|\/li|\/h\d|\/tr|\/div|\/figcaption|\/pre|\/section|\/a)>/gi, '\n')
     .replace(/<(td|th)[^>]*>/gi, ' | ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, '&')
     .replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
-  return { title, body: body.slice(0, 60000) };
+  return { title, body: body.slice(0, 60000), kind: lesson ? 'lesson' : 'page' };
 }
 
 const RULES = (lang) => `You are the tutor of Robotics Atlas, a free website that teaches robotics from the basics to a professional level.
-A student is reading the lesson given below and asks you a question about it.
+A student is reading the lesson or the page of the site given below and asks you a question about it.
 
 How to answer:
 - Answer in ${lang === 'fr' ? 'French' : 'English'}, the language of the page, with the simple words of the lesson. The students are beginners to engineers; many are not native speakers.
-- Rely on the lesson first: use its notation, its examples and its numbers. If the question goes beyond the lesson, answer briefly and say so.
+- Rely on the lesson or page first: use its notation, its examples and its numbers. If the question goes beyond it, answer anyway, simply and correctly, and say that it goes beyond the page.
+- On a page that is not a lesson (a robot, a tool, the home page), explain what the student sees there, and point to the course of the site that teaches it when it helps.
 - Be short: usually 80 to 200 words. Explain step by step, with one small example or a calculation when it helps.
 - For an exercise of the lesson, first give a hint or the next step and let the student try; give the full solution only if they ask for it.
 - If the student gives a calculation, check it step by step and show exactly where it goes wrong.
@@ -61,7 +73,8 @@ async function sha(s) { const d = await crypto.subtle.digest('SHA-256', new Text
 // GET /api/tutor/status: what works and what does not, without showing any secret (to set up and debug the tutor)
 export async function tutorStatus(env, url) {
   const out = { model: MODEL, key: !!env.ANTHROPIC_API_KEY, rate_limit: !!env.TUTOR_LIMIT, assets: !!env.ASSETS };
-  try { const l = await lessonText(env, url.origin, 'learn-fr', 'l1'); out.lesson_text = l ? `ok (${l.body.length} characters)` : 'NOT FOUND'; } catch (e) { out.lesson_text = 'error: ' + e.message; }
+  try { const l = await lessonText(env, url.origin, 'learn-fr', 'l1');
+    const pg = await lessonText(env, url.origin, 'scara-fr', ''); out.page_text = pg ? `ok (${pg.body.length} characters)` : 'NOT FOUND'; out.lesson_text = l ? `ok (${l.body.length} characters)` : 'NOT FOUND'; } catch (e) { out.lesson_text = 'error: ' + e.message; }
   if (env.ANTHROPIC_API_KEY) {
     try { const m = await new Anthropic({ apiKey: env.ANTHROPIC_API_KEY }).models.retrieve(MODEL); out.api = `ok: the key works and ${m.id} is available`; }
     catch (e) { out.api = `error ${e.status || ''}: ${(e.error && e.error.error && e.error.error.message) || e.message}`; }
@@ -86,7 +99,7 @@ async function* askGemini(env, system, history, question) {
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
   // a lesson explanation does not need the model's long "thinking" before it writes: ask for none (or the least),
   // and give up on Gemini (Claude answers instead) if nothing has arrived after FIRST_WORDS_MS
-  const FIRST_WORDS_MS = 12000, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), FIRST_WORDS_MS);
+  const FIRST_WORDS_MS = 25000, ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), FIRST_WORDS_MS);
   const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
     method: 'POST', signal: ctl.signal,
     headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
@@ -129,7 +142,7 @@ export async function tutor(req, env, url) {
   if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY) return text('tutor not configured', 503);
   let d; try { d = await req.json(); } catch (e) { return text('bad json', 400); }
   const ok = (s, re) => typeof s === 'string' && re.test(s);
-  if (!ok(d.page, /^learn(-[a-z]+){0,3}$/) || !ok(d.lesson, /^l\d{1,2}$/) || !['en', 'fr'].includes(d.lang) || typeof d.question !== 'string') return text('bad data', 400);
+  if (!ok(d.page, /^[a-z0-9]+(-[a-z0-9]+){0,5}$/) || /^(404|offline)$/.test(d.page) || (d.lesson && !ok(d.lesson, /^l\d{1,2}$/)) || !['en', 'fr'].includes(d.lang) || typeof d.question !== 'string') return text('bad data', 400);
   const question = d.question.trim().slice(0, 1200); if (!question) return text('empty question', 400);
   // earlier turns of this conversation: at most 6 messages, alternating, starting with the student
   const history = (Array.isArray(d.history) ? d.history : []).slice(-6)
@@ -150,10 +163,11 @@ export async function tutor(req, env, url) {
     await Promise.all([env.FEEDBACK.put(who, String(n1 + 1), { expirationTtl: 2 * 86400 }), env.FEEDBACK.put(all, String(n2 + 1), { expirationTtl: 40 * 86400 })]);
   }
 
-  const lesson = await lessonText(env, url.origin, d.lang === 'fr' ? d.page + '-fr' : d.page, d.lesson);
+  const lesson = await lessonText(env, url.origin, d.lang === 'fr' ? d.page + '-fr' : d.page, d.lesson || '', d.lang === 'fr' ? d.page : '');
   if (!lesson) { console.log('tutor error: lesson not found', d.page, d.lesson, d.lang); return text('lesson not found', 404); }
 
-  const system = `${RULES(d.lang)}\n\nThe lesson: ${lesson.title}\n\n${lesson.body}`;
+  const head = lesson.kind === 'lesson' ? 'The lesson' : 'The page of the site';
+  const system = `${RULES(d.lang)}\n\n${head}: ${lesson.title}\n\n${lesson.body}`;
   const enc = new TextEncoder();
   const body = new ReadableStream({
     async start(ctrl) {
@@ -178,7 +192,7 @@ export async function tutor(req, env, url) {
           max_tokens: 2000,
           output_config: { effort: 'low' },               // a chat answer: short thinking is enough
           // the rules and the lesson do not change from one question to the next: they are cached
-          system: [{ type: 'text', text: RULES(d.lang) }, { type: 'text', text: `The lesson: ${lesson.title}\n\n${lesson.body}`, cache_control: { type: 'ephemeral' } }],
+          system: [{ type: 'text', text: RULES(d.lang) }, { type: 'text', text: `${head}: ${lesson.title}\n\n${lesson.body}`, cache_control: { type: 'ephemeral' } }],
           messages: [...history, { role: 'user', content: question }]
         });
         for await (const ev of stream) if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta') put(ev.delta.text, 'claude');

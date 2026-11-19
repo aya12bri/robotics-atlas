@@ -1,5 +1,6 @@
-// tutor.js — the AI tutor of the courses: a small robot on the side of every course page (loaded by lesson-quiz.js).
-// It asks "Do you have a question?"; a click opens a chat about the lesson shown on the screen. The question goes to
+// tutor.js — the AI tutor: a small robot on the side of every page of the site (loaded by nav.js).
+// It asks "Do you have a question?"; a click opens a chat about the lesson shown on the screen (course pages)
+// or about the page itself (robots, tools, home…). The question goes to
 // /api/tutor (tools/feedback-worker/tutor.js), which reads the lesson from the site and asks an AI model to explain it
 // like a teacher; the answer arrives word by word. Nothing is stored on the server; the conversation of each lesson is
 // kept in this tab only (sessionStorage). Without the server, or offline, the panel says so and nothing breaks.
@@ -49,7 +50,7 @@
 
   function init() {
     var lessons = [].slice.call(document.querySelectorAll('article.lesson')).filter(function (a) { return /^l\d{1,2}$/.test(a.id); });
-    if (!lessons.length || document.querySelector('.rbot')) return;
+    if (document.querySelector('.rbot')) return;
     var root = document.createElement('div'); root.className = 'rbot ra-own';
     root.innerHTML =
       '<div class="rb-bubble" hidden><button type="button" class="rb-x" aria-label="' + esc(L('Hide', 'Masquer')) + '">×</button>' +
@@ -62,7 +63,8 @@
         '<form class="rb-form"><label class="sr-only" for="rb-q">' + L('Your question', 'Votre question') + '</label>' +
           '<textarea id="rb-q" rows="1" maxlength="' + MAXQ + '" placeholder="' + esc(L('Ask your question…', 'Posez votre question…')) + '" title="' + esc(L('Enter to send, Shift + Enter for a new line', 'Entrée pour envoyer, Maj + Entrée pour aller à la ligne')) + '"></textarea>' +
           '<button type="submit" class="rb-send" aria-label="' + esc(L('Send', 'Envoyer')) + '">' + SEND + '</button></form>' +
-        '<p class="rb-note">' + L('Answers are written by an AI from this lesson: check them against the lesson. Do not write personal information.', 'Réponses rédigées par une IA à partir de cette leçon : vérifiez-les avec la leçon. N\'écrivez pas d\'informations personnelles.') +
+        '<p class="rb-note">' + (lessons.length ? L('Answers are written by an AI from this lesson: check them against the lesson. Do not write personal information.', 'Réponses rédigées par une IA à partir de cette leçon : vérifiez-les avec la leçon. N\'écrivez pas d\'informations personnelles.')
+          : L('Answers are written by an AI from this page: check them. Do not write personal information.', 'Réponses rédigées par une IA à partir de cette page : vérifiez-les. N\'écrivez pas d\'informations personnelles.')) +
           ' <button type="button" class="rb-clear">' + L('Clear', 'Effacer') + '</button></p>' +
       '</section>' +
       '<button type="button" class="rb-btn" aria-expanded="false" aria-label="' + esc(L('Ask the AI tutor a question', 'Poser une question au tuteur IA')) + '">' + ROBOT + '</button>';
@@ -72,16 +74,26 @@
     panel.setAttribute('aria-label', L('AI tutor', 'Tuteur IA'));
 
     var cur = null, busy = false;
-    var current = function () { for (var i = 0; i < lessons.length; i++) if (!lessons[i].hidden) return lessons[i]; return lessons[0]; };
-    var KEY = function (art) { return 'ra-tutor:' + PAGE + '#' + art.id + ':' + (FR() ? 'fr' : 'en'); };
+    // course pages: the lesson shown on the screen; other pages: the page itself (null)
+    var current = function () { for (var i = 0; i < lessons.length; i++) if (!lessons[i].hidden) return lessons[i]; return lessons[0] || null; };
+    var KEY = function (art) { return 'ra-tutor:' + PAGE + '#' + (art ? art.id : 'page') + ':' + (FR() ? 'fr' : 'en'); };
     var load = function (art) { try { return JSON.parse(store(KEY(art)) || '[]') || []; } catch (e) { return []; } };
-    var titleOf = function (art) { var h = art.querySelector('h2'); return h ? h.textContent.replace(/^\s*\d+\s*/, '').trim() : ''; };
+    var titleOf = function (art) {
+      if (!art) { var h1 = document.querySelector('h1'); return ((h1 && h1.textContent) || document.title.split(/ [—|·-] /)[0]).replace(/\s+/g, ' ').trim(); }
+      var h = art.querySelector('h2'); return h ? h.textContent.replace(/^\s*\d+\s*/, '').trim() : '';
+    };
 
     var SUGG = [
       [L('Explain this lesson more simply', 'Explique-moi cette leçon plus simplement'), L('Explain the main idea of this lesson more simply, with an everyday example.', 'Explique-moi l\'idée principale de cette leçon plus simplement, avec un exemple de la vie courante.')],
       [L('Give me a worked example', 'Donne-moi un exemple chiffré'), L('Give me a short worked example with numbers for this lesson.', 'Donne-moi un court exemple chiffré pour cette leçon.')],
       [L('I am stuck on an exercise', 'Je bloque sur un exercice'), L('I am stuck on an exercise of this lesson. Give me a hint, not the solution.', 'Je bloque sur un exercice de cette leçon. Donne-moi un indice, pas la solution.')],
       [L('Quiz me', 'Pose-moi une question'), L('Ask me one short question to check that I understood this lesson, then wait for my answer.', 'Pose-moi une courte question pour vérifier que j\'ai compris cette leçon, puis attends ma réponse.')]
+    ];
+    if (!lessons.length) SUGG = [
+      [L('Explain this page simply', 'Explique-moi cette page simplement'), L('Explain simply what this page shows and what it is for.', 'Explique-moi simplement ce que montre cette page et à quoi ça sert.')],
+      [L('What is it used for in real life?', 'À quoi ça sert dans la vraie vie ?'), L('Give me real examples, in industry or everyday life, of what this page is about.', 'Donne-moi des exemples réels, dans l\'industrie ou la vie de tous les jours, de ce dont parle cette page.')],
+      [L('Where should I start learning?', 'Par où commencer pour apprendre ?'), L('I want to learn this. Which course of the site should I start with, and why?', 'Je veux apprendre ça. Par quel cours du site commencer, et pourquoi ?')],
+      [L('Quiz me', 'Pose-moi une question'), L('Ask me one short question about this page to check that I understood it, then wait for my answer.', 'Pose-moi une courte question sur cette page pour vérifier que j\'ai compris, puis attends ma réponse.')]
     ];
     SUGG.forEach(function (s) { var b = document.createElement('button'); b.type = 'button'; b.textContent = s[0]; b.onclick = function () { ask(s[1], s[0]); }; sugg.append(b); });
 
@@ -95,7 +107,8 @@
       cur = current(); var hist = load(cur);
       lname.textContent = titleOf(cur);
       log.innerHTML = '';
-      bubbleMsg('assistant', '<p>' + esc(L('Hello! I know the lesson “', 'Bonjour ! Je connais la leçon « ') + titleOf(cur) + L('”. What would you like to understand better?', ' ». Qu\'aimeriez-vous mieux comprendre ?')) + '</p>');
+      bubbleMsg('assistant', '<p>' + esc(cur ? L('Hello! I know the lesson “', 'Bonjour ! Je connais la leçon « ') + titleOf(cur) + L('”. What would you like to understand better?', ' ». Qu\'aimeriez-vous mieux comprendre ?')
+        : L('Hello! I can explain this page, “', 'Bonjour ! Je peux vous expliquer cette page, « ') + titleOf(cur) + L('”, or anything about robotics. What would you like to understand?', ' », ou n\'importe quelle question de robotique. Qu\'aimeriez-vous comprendre ?')) + '</p>');
       hist.forEach(function (m) { bubbleMsg(m.role, m.role === 'user' ? '<p>' + esc(m.show || m.text) + '</p>' : md(m.text), m.model); });
       sugg.hidden = hist.length > 0;
     }
@@ -125,7 +138,7 @@
       };
       var clean = function (s) { return s.replace(/\s*\[\[(refusal|error ?\d*)\]?\]?\s*$/, '').replace(/\s*\[\[[a-z0-9 ]*$/, ''); };
       if (!navigator.onLine) return done('offline');
-      fetch('/api/tutor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: PAGE, lesson: art.id, lang: FR() ? 'fr' : 'en', question: q, history: past }) })
+      fetch('/api/tutor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: PAGE, lesson: art ? art.id : '', lang: FR() ? 'fr' : 'en', question: q, history: past }) })
         .then(function (r) {
           if (r.status === 429) return r.text().then(function (m) { done(/minute/.test(m) ? 'minute' : 429); });
           if (!r.ok || !r.body || !/text\/plain/.test(r.headers.get('content-type') || '')) return r.text().then(function (m) { done('down', r.status + (/^[a-z :]{3,40}$/.test(m) ? ' · ' + m : '')); }, function () { done('down', String(r.status)); });
