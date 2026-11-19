@@ -21,23 +21,41 @@ const I = {
   ops: '<path d="M4 20h16M6 20V10l4 3V10l4 3V6l4 3v11"/>'
 };
 const LV = [['Beginner', 'Débutant'], ['Intermediate', 'Intermédiaire'], ['Advanced', 'Avancé']];
-// [href, icon, colour, [name EN, FR], [what you do EN, FR], level 1-3, minutes]
-const GROUPS = [
-  [['Try and play', 'Essayer et jouer'], ['In the browser, nothing to install: move, program and test.', 'Dans le navigateur, rien à installer : bouger, programmer et tester.'], [
-    ['build.html', 'build', '#2f6bff', ['Build your first robot', 'Construire votre premier robot'], ['Choose a robot, assemble it in 3D, move it and see how its joints work.', 'Choisissez un robot, assemblez-le en 3D, faites-le bouger et voyez comment marchent ses articulations.'], 1, 20],
-    ['sandbox.html', 'code', '#6d5dfc', ['Programming sandbox', 'Bac à sable de programmation'], ['Program a SCARA or a 6-axis robot in 3D: moves, loops, pick and place.', 'Programmez un SCARA ou un robot 6 axes en 3D : déplacements, boucles, prise et dépose.'], 2, 30],
-    ['sensors.html', 'sensor', '#2e9e5b', ['Sensor test bench', 'Banc d\'essai des capteurs'], ['Encoder, IMU, lidar, camera and ultrasonic sensor, live: see what each one measures and how it fails.', 'Codeur, centrale inertielle, lidar, caméra et ultrason, en direct : voyez ce que chacun mesure et comment il se trompe.'], 2, 30],
-    ['wheels.html#wlab', 'wheel', '#f5963a', ['Wheel lab', 'Laboratoire des roues'], ['Push each wheel type in 3D: fixed, castor, steered, omni, Mecanum, ball and tracks.', 'Poussez chaque type de roue en 3D : fixe, folle, orientable, omni, Mecanum, sphérique et chenilles.'], 1, 15],
-    ['anatomy-drives.html', 'drive', '#1fb5c9', ['Drive 8 mobile robots', 'Conduire 8 robots mobiles'], ['Differential, Ackermann, omni, Mecanum and more: drive each one with the keyboard.', 'Différentiel, Ackermann, omni, Mecanum et d\'autres : conduisez chacun au clavier.'], 2, 20],
-    ['articulated.html#uses', 'ops', '#ff5a5f', ['Industrial operations in 3D', 'Opérations industrielles en 3D'], ['Watch a robot palletise, pack, label and inspect, in a cell with its safety fence.', 'Regardez un robot palettiser, encaisser, étiqueter et contrôler, dans une cellule avec sa barrière de sécurité.'], 1, 15]
+// three steps, from playing to building real robots. Each tool: [href, icon, colour, [name EN, FR], [what you do EN, FR], level 1-3, minutes, preview]
+// preview: a picture name in thumbs/ (practice-<name>.jpg and -dark.jpg), 'code' (a small Python window) or 'projects' (two robots)
+const STEPS = [
+  ['discover', ['Discover by playing', 'Découvrir en jouant'], ['Nothing to install and nothing to know: move robots in 3D and see how they work.', 'Rien à installer, rien à savoir : faites bouger des robots en 3D et voyez comment ils marchent.'], [
+    ['build.html', 'build', '#2f6bff', ['Build your first robot', 'Construire votre premier robot'], ['Choose a robot, assemble it in 3D piece by piece, move each joint and see what it does. The best place to start.', 'Choisissez un robot, assemblez-le en 3D pièce par pièce, bougez chaque articulation et voyez ce qu\'elle fait. Le meilleur point de départ.'], 1, 20, 'build'],
+    ['wheels.html#wlab', 'wheel', '#f5963a', ['Wheel lab', 'Laboratoire des roues'], ['Push each wheel type in 3D: fixed, castor, steered, omni, Mecanum, ball and tracks.', 'Poussez chaque type de roue en 3D : fixe, folle, orientable, omni, Mecanum, sphérique et chenilles.'], 1, 15, 'wheels'],
+    ['articulated.html#uses', 'ops', '#ff5a5f', ['Industrial operations in 3D', 'Opérations industrielles en 3D'], ['Watch a robot palletise, pack, label and inspect, in a cell with its safety fence.', 'Regardez un robot palettiser, encaisser, étiqueter et contrôler, dans une cellule avec sa barrière de sécurité.'], 1, 15, 'ops']
   ]],
-  [['Code and make', 'Coder et fabriquer'], ['Real code and real robots, step by step.', 'Du vrai code et de vrais robots, étape par étape.'], [
-    ['learn-armlab.html', 'python', '#8a5cf6', ['Code a robot arm in Python', 'Coder un bras robot en Python'], ['Forward and inverse models, a DH engine, trajectories, then a real servo arm.', 'Modèles direct et inverse, un moteur DH, des trajectoires, puis un vrai bras à servos.'], 2, 150],
-    ['projects.html', 'project', '#e0a100', ['Guided projects', 'Projets guidés'], ['A servo arm, a line follower and a ROS 2 mobile robot: parts, prices, wiring, code and tests.', 'Un bras à servos, un suiveur de ligne et un robot mobile ROS 2 : pièces, prix, câblage, code et tests.'], 3, 600]
+  ['program', ['Program and measure', 'Programmer et mesurer'], ['Give orders to a robot, drive it, and see what its sensors really measure.', 'Donnez des ordres à un robot, pilotez-le, et voyez ce que ses capteurs mesurent vraiment.'], [
+    ['sandbox.html', 'code', '#6d5dfc', ['Programming sandbox', 'Bac à sable de programmation'], ['Program a SCARA or a 6-axis robot in 3D: moves, loops, pick and place.', 'Programmez un SCARA ou un robot 6 axes en 3D : déplacements, boucles, prise et dépose.'], 2, 30, 'sandbox'],
+    ['sensors.html', 'sensor', '#2e9e5b', ['Sensor test bench', 'Banc d\'essai des capteurs'], ['Encoder, IMU, lidar, camera and ultrasonic sensor, live: see what each one measures and how it fails.', 'Codeur, centrale inertielle, lidar, caméra et ultrason, en direct : voyez ce que chacun mesure et comment il se trompe.'], 2, 30, 'sensors'],
+    ['anatomy-drives.html', 'drive', '#1fb5c9', ['Drive 8 mobile robots', 'Conduire 8 robots mobiles'], ['Differential, Ackermann, omni, Mecanum and more: drive each one with the keyboard.', 'Différentiel, Ackermann, omni, Mecanum et d\'autres : conduisez chacun au clavier.'], 2, 20, 'drives']
+  ]],
+  ['make', ['Code and make', 'Coder et fabriquer'], ['Real code and real robots, step by step, up to a finished project.', 'Du vrai code et de vrais robots, étape par étape, jusqu\'à un projet terminé.'], [
+    ['learn-armlab.html', 'python', '#8a5cf6', ['Code a robot arm in Python', 'Coder un bras robot en Python'], ['Forward and inverse models, a DH engine, trajectories, then a real servo arm.', 'Modèles direct et inverse, un moteur DH, des trajectoires, puis un vrai bras à servos.'], 2, 150, 'code'],
+    ['projects.html', 'project', '#e0a100', ['Guided projects', 'Projets guidés'], ['A servo arm, a line follower and a ROS 2 mobile robot: parts, prices, wiring, code and tests.', 'Un bras à servos, un suiveur de ligne et un robot mobile ROS 2 : pièces, prix, câblage, code et tests.'], 3, 600, 'projects']
   ]]
 ];
 const dur = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') : ''}`);
-const card = ([href, icon, c, n, d, lv, min]) => `<a class="pr-card" href="${href}" style="--c:${c}"><span class="pr-ic"><svg viewBox="0 0 24 24" aria-hidden="true">${I[icon]}</svg></span><span class="pr-tx"><b>${tx(...n)}</b><span>${tx(...d)}</span><small><i class="pr-lv l${lv}"><b></b><b></b><b></b></i> <em>${tx(...LV[lv - 1])}</em> · ${dur(min)}</small></span></a>`;
+const pic = (n) => `<img class="th-light" src="thumbs/${n}.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/${n}-dark.jpg" alt="" width="640" height="400" decoding="async">`;
+const PREVIEW = {
+  code: `<span class="px-code" aria-hidden="true"><i></i><i></i><i></i><code><s>import</s> numpy <s>as</s> np\n\n<s>def</s> <u>fk</u>(q1, q2):\n    x = L1*np.cos(q1) + L2*np.cos(q1+q2)\n    y = L1*np.sin(q1) + L2*np.sin(q1+q2)\n    <s>return</s> x, y\n\narm.<u>move_to</u>(0.25, 0.10)</code></span>`,
+  projects: `<span class="px-duo">${pic('robot-arm')}</span><span class="px-duo">${pic('anatomy-mobile')}</span>`
+};
+const ICON = (k) => `<span class="px-ic"><svg viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg></span>`;
+const card = ([href, icon, c, n, d, lv, min, pv], feat) => `<a class="px-card${feat ? ' px-feat' : ''}" href="${href}" style="--c:${c}">
+          <span class="px-img">${PREVIEW[pv] || pic('practice-' + pv)}</span>
+          <span class="px-body">
+            <span class="px-top">${ICON(icon)}<span class="px-meta"><i class="pr-lv l${lv}"><b></b><b></b><b></b></i><em>${tx(...LV[lv - 1])}</em><span>${dur(min)}</span></span></span>
+            <b class="px-t">${tx(...n)}</b>
+            <span class="px-d">${tx(...d)}</span>
+            <span class="px-go"><em>${tx('Open', 'Ouvrir')}</em> <span aria-hidden="true">→</span></span>
+          </span>
+        </a>`;
+const total = STEPS.reduce((a, s) => a + s[3].length, 0);
 const html = `<!DOCTYPE html>
 <html>
   <head>
@@ -46,14 +64,20 @@ const html = `<!DOCTYPE html>
     <title>${tx('Practise: build, program and test robots', 'Pratiquer : construire, programmer et tester des robots')}</title>
     <link rel="stylesheet" href="style.css" />
   <script src="nav.js" defer></script></head>
-  <body>
-    <h1>${tx('Practise', 'Pratiquer')}</h1>
-    <p class="lead">${tx('Every hands-on tool of the site in one place. Start with the beginner ones; each card says the level and the time it takes.', 'Tous les outils pratiques du site au même endroit. Commencez par ceux pour débutants ; chaque carte indique le niveau et le temps qu\'il faut.')}</p>
-${GROUPS.map(([h, p, list]) => `    <section class="pr-group">
-      <h2>${tx(...h)}</h2>
-      <p>${tx(...p)}</p>
-      <div class="pr-grid">
-        ${list.map(card).join('\n        ')}
+  <body class="practice">
+    <header class="px-hero">
+      <span class="px-kicker">${tx('Hands-on', 'Pratique')}</span>
+      <h1>${tx('Practise', 'Pratiquer')}</h1>
+      <p class="lead">${tx('Learn robotics by doing: build a robot, program it, drive it, then code a real one. Every tool runs in the browser.', 'Apprenez la robotique en faisant : construisez un robot, programmez-le, pilotez-le, puis codez-en un vrai. Tous les outils marchent dans le navigateur.')}</p>
+      <ol class="px-steps">
+${STEPS.map(([id, h, , list], k) => `        <li><a href="#${id}"><b>${k + 1}</b><span>${tx(...h)}</span><small>${list.length} <em>${tx('tools', 'outils')}</em></small></a></li>`).join('\n')}
+      </ol>
+      <p class="px-facts"><span>${total} <em>${tx('tools', 'outils')}</em></span><span>${tx('free', 'gratuit')}</span><span>${tx('nothing to install', 'rien à installer')}</span><span>${tx('beginner to advanced', 'du débutant à l\'avancé')}</span></p>
+    </header>
+${STEPS.map(([id, h, p, list], k) => `    <section class="px-step" id="${id}">
+      <div class="px-head"><span class="px-num">${String(k + 1).padStart(2, '0')}</span><div><h2>${tx(...h)}</h2><p>${tx(...p)}</p></div></div>
+      <div class="px-grid${list.length === 2 ? ' two' : ''}">
+        ${list.map((t, i) => card(t, k === 0 && i === 0)).join('\n        ')}
       </div>
     </section>`).join('\n')}
   </body>
