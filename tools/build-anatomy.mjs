@@ -393,7 +393,11 @@ for (const [key, R] of Object.entries(ROBOTS)) {
 ${R.noSys ? '' : `    <h2>${tx('All the components, from A to Z', 'Tous les composants, de A à Z')}</h2>
     <p>${tx('First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.', 'D\'abord le robot entier, avec un numéro sur chaque composant à l\'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c\'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.')}</p>
     <div class="sysdemo" data-robot="${key}" data-set="${({ cobot: 'cobot', wheels: 'mobile', drives: 'mobile', mobile: 'mobile', humanoid: 'humanoid', quadrotor: 'drone', quadruped: 'quadruped', auv: 'auv', tracked: 'tracked' })[key] || 'arm'}"></div>`}
-    <script type="module" src="anatomy.js"></script>
+    <script type="module">
+      // the 3D anatomy starts when its viewer comes near the screen (on a robot page it sits in a tab that is closed at first)
+      const v = document.getElementById('anatView'), go = () => import('./anatomy.js');
+      if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
+    </script>
     ${R.noSys ? '' : '<script type="module" src="system-demo.js"></script>'}
   </body>
 </html>

@@ -1209,8 +1209,11 @@ function resize() { const w = box.clientWidth, h = box.clientHeight; renderer.se
 addEventListener('resize', resize);
 if (window.ResizeObserver) new ResizeObserver(resize).observe(box);
 const v = new THREE.Vector3();
+let onScreen = true;                                          // nothing is drawn while the viewer is off the screen or in a closed tab
+if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen = es[0].isIntersecting; }).observe(box);
 function loop(now) {
   requestAnimationFrame(loop);
+  if (!onScreen || document.hidden) { last = now; return; }
   const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
   if (play) {
     if (CFG.playFn) CFG.playFn(now).forEach((val, i) => setQ(i, val));
