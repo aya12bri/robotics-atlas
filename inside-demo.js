@@ -68,6 +68,10 @@ const PART = {
   car: [L('Carriage', 'Chariot'), L('The plate that carries the next axis (or the tool). Bolted to the nut and the blocks.', 'La plaque qui porte l\'axe suivant (ou l\'outil). Vissée sur l\'écrou et les patins.')],
   sup: [L('Support bearings', 'Paliers de vis'), L('Angular-contact bearings hold the screw at both ends: it can turn but not move along its axis.', 'Des roulements à contact oblique tiennent la vis aux deux bouts : elle peut tourner mais pas glisser le long de son axe.')],
   lim: [L('Limit switches', 'Fins de course'), L('Sensors at both ends: one gives the home position at start-up, both stop the axis before it hits the end.', 'Des capteurs aux deux bouts : l\'un donne la position d\'origine au démarrage, les deux arrêtent l\'axe avant la butée.')],
+  pul: [L('Toothed pulleys', 'Poulies crantées'), L('The drive pulley on the motor shaft pulls the belt; the idler pulley at the other end keeps it tight. One turn moves the carriage by about 200 mm.', 'La poulie motrice sur l\'arbre du moteur tire la courroie ; la poulie de renvoi à l\'autre bout la tend. Un tour déplace le chariot d\'environ 200 mm.')],
+  belt: [L('Toothed belt', 'Courroie crantée'), L('Polyurethane reinforced with steel cords: it does not stretch, and its teeth cannot slip. Unlike a very long screw, it does not whip at high speed, so it is used for long and fast axes.', 'En polyuréthane renforcé de câbles d\'acier : elle ne s\'allonge pas et ses dents ne glissent pas. Contrairement à une vis très longue, elle ne vibre pas à grande vitesse : on l\'utilise pour les axes longs et rapides.')],
+  bclp: [L('Belt clamp', 'Bride de courroie'), L('Clamps both ends of the belt to the carriage: when the belt moves, the carriage moves with it.', 'Serre les deux bouts de la courroie sur le chariot : quand la courroie avance, le chariot avance avec elle.')],
+  twin: [L('Twin axis (other side)', 'Axe jumeau (de l\'autre côté)'), L('The same axis on the other side of the bridge, with its own motor. The controller keeps both motors exactly in step (gantry mode), so the bridge never twists.', 'Le même axe de l\'autre côté du pont, avec son propre moteur. Le contrôleur garde les deux moteurs parfaitement synchronisés (mode portique), pour que le pont ne se mette jamais de travers.')],
   // planetary
   pmot: [L('Servo motor', 'Servomoteur'), L('A brushless motor: copper windings in the stator, magnets on the rotor. Fast but weak on its own.', 'Un moteur sans balais : bobinages de cuivre dans le stator, aimants sur le rotor. Rapide mais peu puissant seul.')],
   sun: [L('Sun gear', 'Pignon solaire'), L('The small gear on the motor shaft (12 teeth). It drives the three planets.', 'Le petit pignon sur l\'arbre moteur (12 dents). Il entraîne les trois satellites.')],
@@ -190,26 +194,52 @@ function rotaryJoint(o) {
   return { g, parts, cover, lids, ids, run, read, len: o.drv ? 4.6 : 4.0, kind: 'rot' };
 }
 
-function linearAxis() {
+function linearAxis(o = {}) {                                 // o.belt: toothed belt instead of a ball screw; o.brake: motor brake; o.dual: a twin axis on the other side
   const g = new THREE.Group(), parts = [], add = (id, obj, ex) => { g.add(obj); obj.traverse((m) => { if (m.isMesh) m.userData.part = id; }); parts.push({ id, obj, home: obj.position.clone(), ex }); return obj; };
   const along = (r, h, mat, seg = 32) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg).rotateZ(Math.PI / 2), mat); m.castShadow = m.receiveShadow = true; return m; };   // along x
-  { const m = new THREE.Group(); m.position.x = -9.6; m.add(along(1.0, 2.4, P.black)); const cap = along(0.9, 0.5, P.dark); cap.position.x = -1.45; m.add(cap); const fl = boxC(0.25, 2.1, 2.1, P.alu); fl.position.x = 1.25; m.add(fl); add('lmot', m, V(-3, 0, 0)); }
+  { const m = new THREE.Group(); m.position.x = -9.6; m.add(along(1.0, 2.4, P.black)); const cap = along(0.9, 0.5, P.dark); cap.position.x = -1.45; m.add(cap); const fl = boxC(0.25, 2.1, 2.1, P.alu); fl.position.x = 1.25; m.add(fl); add('lmot', m, V(o.brake ? -2.2 : -3, 0, 0)); }
+  if (o.brake) { const b = new THREE.Group(); b.position.x = -11.55; b.add(along(0.95, 0.5, P.dark)); const disc = along(0.8, 0.12, P.friction); disc.position.x = -0.3; b.add(disc); const coil = along(0.6, 0.35, P.copper); coil.position.x = 0.1; b.add(coil); add('brk', b, V(-4.6, 0, 0)); }
   { const c = new THREE.Group(); c.position.x = -7.95; const cc = along(0.55, 0.9, P.alu); c.add(cc); for (let i = 0; i < 3; i++) { const sl = along(0.57, 0.05, P.dark); sl.position.x = -0.3 + i * 0.3; c.add(sl); } add('cpl', c, V(-1.6, 0, 0)); }
   const scrM = P.steel.clone(); scrM.map = stripes(120, '#c9d2db', '#6b7682'); const screw = along(0.38, 15, scrM, 24); screw.position.x = 0.05;
-  { const sg = new THREE.Group(); sg.add(screw); add('scr', sg, V(0, 2.6, 0)); }
-  for (const x of [-7.3, 7.5]) { const s = boxC(0.7, 1.6, 1.4, P.dark); s.position.set(x, -0.35, 0); add('sup', s, V(x < 0 ? -0.8 : 0.8, -1.2, 0)); }
+  const pulleys = [];
+  if (o.belt) {                                               // toothed belt: a drive pulley on the motor side, an idler pulley at the far end, a clamp on the carriage
+    const pg = new THREE.Group(); const tM = P.dark.clone(); tM.map = stripes(40, '#59636f', '#2a3038');
+    for (const x of [-7.1, 7.1]) { const pu = new THREE.Group(); pu.position.set(x, -0.1, 0); pu.add(cylA(0.7, 0.9, tM, 40)); for (const z of [-0.5, 0.5]) { const fl = cylA(0.82, 0.08, P.alu, 40); fl.position.z = z; pu.add(fl); } pg.add(pu); pulleys.push(pu); }
+    add('pul', pg, V(0, 2.2, 0));
+    const bM = P.rubber.clone(); bM.map = stripes(160, '#2a2e33', '#14171a', true);
+    const bg = new THREE.Group(); for (const y of [0.64, -0.84]) { const run = boxC(14.2, 0.12, 0.8, bM); run.position.set(0, y, 0); bg.add(run); }
+    for (const x of [-7.1, 7.1]) { const loop = cylA(0.76, 0.8, P.rubber, 40, true); loop.position.set(x, -0.1, 0); bg.add(loop); }
+    add('belt', bg, V(0, 3.6, 0));
+  } else {
+    { const sg = new THREE.Group(); sg.add(screw); add('scr', sg, V(0, 2.6, 0)); }
+    for (const x of [-7.3, 7.5]) { const s = boxC(0.7, 1.6, 1.4, P.dark); s.position.set(x, -0.35, 0); add('sup', s, V(x < 0 ? -0.8 : 0.8, -1.2, 0)); }
+  }
   const carGroup = new THREE.Group(); g.add(carGroup);
-  const nut = new THREE.Group(); nut.add(along(0.75, 1.3, P.brass)); const flange = along(1.05, 0.22, P.brass); flange.position.x = 0.55; nut.add(flange); const ret = boxC(1.1, 0.25, 0.25, P.steel); ret.position.set(0, 0.8, 0); nut.add(ret);
-  add('nut', nut, V(0, 4.6, 0));
+  if (o.belt) { const cl = new THREE.Group(); const c1 = boxC(1.6, 0.32, 1.0, P.steel); c1.position.y = 0.66; cl.add(c1); for (const x of [-0.5, 0.5]) { const b = cy0(0.08, 0.2, P.dark); b.position.set(x, 0.8, 0); cl.add(b); } add('bclp', cl, V(0, 4.6, 0)); }
+  else { const nut = new THREE.Group(); nut.add(along(0.75, 1.3, P.brass)); const flange = along(1.05, 0.22, P.brass); flange.position.x = 0.55; nut.add(flange); const ret = boxC(1.1, 0.25, 0.25, P.steel); ret.position.set(0, 0.8, 0); nut.add(ret);
+    add('nut', nut, V(0, 4.6, 0)); }
   const rails = new THREE.Group(); for (const z of [-1.9, 1.9]) { const r = boxC(16, 0.45, 0.55, P.steel); r.position.set(0, -1.05, z); rails.add(r); } add('rail', rails, V(0, -2.4, 0));
   const blocks = new THREE.Group(); for (const x of [-1.1, 1.1]) for (const z of [-1.9, 1.9]) { const b = boxC(1.2, 0.55, 0.95, P.dark); b.position.set(x, -0.55, z); blocks.add(b); } add('blk', blocks, V(0, 1.4, 0));
   const car = boxC(3.6, 0.3, 4.8, P.orange); car.position.set(0, 0.0 + 0.95, 0); add('car', car, V(0, 6.6, 0));
   const lims = new THREE.Group(); for (const x of [-6.6, 6.8]) { const s = boxC(0.4, 0.5, 0.35, P.black); s.position.set(x, -0.55, 2.55); lims.add(s); const led = boxC(0.12, 0.12, 0.05, P.red); led.position.set(x, -0.4, 2.75); lims.add(led); } add('lim', lims, V(0, 0, 2.2));
-  const moving = ['nut', 'blk', 'car'].map((id) => parts.find((p) => p.id === id));
+  // dual drive: the same axis again on the other side of the bridge, with its own motor, moving in step
+  let twinCar = null;
+  if (o.dual) {
+    const tw = new THREE.Group(); tw.position.z = o.dual;
+    const m = along(1.0, 2.4, P.black); m.position.x = -9.6; tw.add(m);
+    for (const z of [-1.9, 1.9]) { const r = boxC(16, 0.45, 0.55, P.steel); r.position.set(0, -1.05, z); tw.add(r); }
+    const run = boxC(14.2, 0.12, 0.8, P.rubber); run.position.y = 0.64; tw.add(run);
+    twinCar = boxC(3.6, 0.3, 4.8, P.orange); twinCar.position.y = 0.95; tw.add(twinCar);
+    const link = boxC(0.7, 0.5, Math.abs(o.dual), P.alu); link.position.set(0, 1.35, -o.dual / 2); twinCar.add(link);   // the bridge beam that joins both carriages
+    add('twin', tw, V(0, 0, Math.sign(o.dual) * 3));
+  }
+  const moving = [o.belt ? 'bclp' : 'nut', 'blk', 'car'].map((id) => parts.find((p) => p.id === id));
   const ids = parts.map((p) => p.id);
-  const run = (th) => { screw.rotation.x = th; const x = 5.2 * Math.sin(th / 9); moving.forEach((p) => { p.obj.userData.dx = x; }); g.userData.x = x; };
-  const read = (th) => { const x = 5.2 * Math.sin(th / 9); return [[L('Screw lead', 'Pas de la vis'), '20 mm / ' + L('turn', 'tour')], [L('Motor', 'Moteur'), '1 500 ' + L('rpm', 'tr/min')], [L('Carriage speed', 'Vitesse du chariot'), '0.5 m/s'], [L('Position', 'Position'), (x * 40).toFixed(0) + ' mm']]; };
-  return { g, parts, cover: null, lids: [], ids, run, read, moving, len: 20, linear: true, kind: 'lin' };
+  const run = (th) => { screw.rotation.x = th; pulleys.forEach((pu) => { pu.rotation.z = -th * 0.35; }); const x = 5.2 * Math.sin(th / 9); moving.forEach((p) => { p.obj.userData.dx = x; }); if (twinCar) twinCar.position.x = x; g.userData.x = x; };
+  const read = (th) => { const x = 5.2 * Math.sin(th / 9); return o.belt
+    ? [[L('Pulley', 'Poulie'), '200 mm / ' + L('turn', 'tour')], [L('Motor', 'Moteur'), '600 ' + L('rpm', 'tr/min')], [L('Carriage speed', 'Vitesse du chariot'), '2 m/s'], [L('Position', 'Position'), (x * 40).toFixed(0) + ' mm']].concat(o.dual ? [[L('Two motors', 'Deux moteurs'), L('in step', 'synchronisés')]] : [])
+    : [[L('Screw lead', 'Pas de la vis'), '20 mm / ' + L('turn', 'tour')], [L('Motor', 'Moteur'), '1 500 ' + L('rpm', 'tr/min')], [L('Carriage speed', 'Vitesse du chariot'), '0.5 m/s'], [L('Position', 'Position'), (x * 40).toFixed(0) + ' mm']].concat(o.brake ? [[L('Brake', 'Frein'), L('released while moving', 'desserré en mouvement')]] : []); };
+  return { g, parts, cover: null, lids: [], ids, run, read, moving, len: 20, linear: true, kind: o.belt ? 'belt' : o.brake ? 'linb' : 'lin' };
 }
 
 function planetary(o) {
@@ -403,9 +433,9 @@ const ROB = (() => {
       tg([L('one of the three motors', 'l\'un des trois moteurs'), L('Motor 1', 'Moteur 1')], V(0, 0.8, -0.13), 'x', 0.04, () => planetary({ arm: true, armAngle: Math.PI / 2 + 0.076 }), L('The three motors stay fixed on the frame: only light arms and rods move, which is why a Delta is so fast.', 'Les trois moteurs restent fixes sur le bâti : seuls des bras et des bielles légers bougent, d\'où la rapidité d\'un Delta.')),
       GRIP(V(0, 0.25, 0), 0.02), CAB(V(-0.7, 0, 0.4), 0.085)] },
     gantry: { build: () => gantry({ W: 1.7, D: 1.3, Hg: 1.05, r: 0.05 }), pose: V(0, 0.3, 0), targets: [
-      tg([L('the X axis', 'l\'axe X'), 'X'], V(0, 1.08, 0.65), 'x', 0.085, () => linearAxis(), L('Each axis of a gantry is a straight line: the same set of parts, only the length changes.', 'Chaque axe d\'un portique est une ligne droite : les mêmes pièces, seule la longueur change.'), V(1, 0, 0)),
-      tg([L('the Y axis', 'l\'axe Y'), 'Y'], V(0, 1.14, 0), 'z', 0.065, () => linearAxis(), L('The Y axis runs along the bridge and carries the vertical Z axis.', 'L\'axe Y court le long du pont et porte l\'axe vertical Z.'), V(0, 0, 1)),
-      tg([L('the Z axis', 'l\'axe Z'), 'Z'], V(0, 0.75, 0), 'y', 0.042, () => linearAxis(), L('The Z axis moves the tool up and down; its motor has a brake so the load cannot fall.', 'L\'axe Z monte et descend l\'outil ; son moteur a un frein pour que la charge ne tombe pas.'), V(0, 1, 0)),
+      tg([L('the X axis', 'l\'axe X'), 'X'], V(0, 1.08, 0.65), 'x', 0.085, () => linearAxis({ belt: true, dual: -1.3 / 0.085 }), L('The X axis is the longest and carries the whole bridge: it is doubled (one axis on each side, two motors in step) and driven by a toothed belt, which stays fast and stiff over a long length.', 'L\'axe X est le plus long et porte tout le pont : il est doublé (un axe de chaque côté, deux moteurs synchronisés) et entraîné par une courroie crantée, qui reste rapide et rigide sur une grande longueur.'), V(1, 0, 0)),
+      tg([L('the Y axis', 'l\'axe Y'), 'Y'], V(0, 1.14, 0), 'z', 0.065, () => linearAxis(), L('The Y axis runs along the bridge and carries the vertical Z axis. It is shorter and lighter than X, so a ball screw is enough: very precise and stiff.', 'L\'axe Y court le long du pont et porte l\'axe vertical Z. Il est plus court et plus léger que X : une vis à billes suffit, très précise et rigide.'), V(0, 0, 1)),
+      tg([L('the Z axis', 'l\'axe Z'), 'Z'], V(0, 0.75, 0), 'y', 0.042, () => linearAxis({ brake: true }), L('The Z axis moves the tool up and down; its motor has a brake so the load cannot fall.', 'L\'axe Z monte et descend l\'outil ; son moteur a un frein pour que la charge ne tombe pas.'), V(0, -1, 0)),
       GRIP(V(0, 0.3, 0), 0.03), CAB(V(-1.15, 0, 0.5), 0.1)] },
     redundant: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075, seven: true }), pose: V(0.62, 0.62, 0), targets: [
       tg(J('J1', 'axis 1, the base', 'l\'axe 1, la base'), V(0, 0.25, 0), 'y', 0.08, () => rotaryJoint({ trq: true }), NOTE_7),
@@ -416,7 +446,7 @@ const ROB = (() => {
       GRIP(V(0.62, 0.62, 0), 0.028), CAB(V(-0.8, 0, 0.45), 0.1)] },
     cylindrical: { build: () => cylindrical({ Hc: 0.72, La: 0.62, rmin: 0.28, rmax: 0.94, lo: 0.13, hi: 0.76, r: 0.045 }), pose: V(0.55, 0.35, 0), targets: [
       tg(J('q1', 'the turning base (q1)', 'la base tournante (q1)'), V(0, 0.04, 0), 'y', 0.06, () => rotaryJoint({}), L('The only rotary joint: it turns the column, so it sets the angle of the arm.', 'La seule articulation rotative : elle fait tourner la colonne, elle donne donc l\'angle du bras.')),
-      tg([L('the vertical axis (q2)', 'l\'axe vertical (q2)'), 'q2'], V(0, 0.42, 0), 'y', 0.03, () => linearAxis(), L('The carriage goes up and down the column; its motor has a brake so the arm cannot fall when the power is off.', 'Le chariot monte et descend le long de la colonne ; son moteur a un frein pour que le bras ne tombe pas hors tension.'), V(0, 1, 0)),
+      tg([L('the vertical axis (q2)', 'l\'axe vertical (q2)'), 'q2'], V(0, 0.42, 0), 'y', 0.03, () => linearAxis({ brake: true }), L('The carriage goes up and down the column; its motor has a brake so the arm cannot fall when the power is off.', 'Le chariot monte et descend le long de la colonne ; son moteur a un frein pour que le bras ne tombe pas hors tension.'), V(0, -1, 0)),
       tg([L('the radial axis (q3)', 'l\'axe radial (q3)'), 'q3'], V(0.24, 0.422, 0), 'x', 0.028, () => linearAxis(), L('The arm slides out through the carriage: it sets the radius, the distance between the tool and the column.', 'Le bras coulisse dans le chariot : il donne le rayon, la distance entre l\'outil et la colonne.'), V(1, 0, 0)),
       CAB(V(-0.75, 0, 0.4), 0.09)] },
     spherical: { build: () => spherical({ h1: 0.46, Ls: 0.4, dmin: 0.3, dmax: 0.86, r: 0.05 }), pose: V(0.6, 0.415, 0), targets: [
@@ -453,6 +483,8 @@ function mount(host) {
     grip: L('The motor turns the lead screw through the gearbox; its two opposite threads bring the jaws together. When the pads touch the part, the current rises: the drive stops at the chosen force and the sensor says "part held".', 'Le moteur fait tourner la vis à travers le réducteur ; ses deux pas opposés rapprochent les mors. Quand les patins touchent la pièce, le courant monte : le variateur s\'arrête à la force choisie et le capteur dit « pièce tenue ».'),
     cab: L('The mains comes in through the main switch, the 24 V supply feeds the electronics, the controller computes the motion every millisecond and sends it to the six drives, which feed the motors. The safety relay can cut the motor power at any moment, and the fans keep it all cool.', 'Le secteur entre par le sectionneur, l\'alimentation 24 V alimente l\'électronique, le contrôleur calcule le mouvement chaque milliseconde et l\'envoie aux six variateurs, qui alimentent les moteurs. Le relais de sécurité peut couper la puissance des moteurs à tout moment, et les ventilateurs refroidissent le tout.'),
     bat: L('The battery and its BMS give the energy; the computer builds the map and plans the path; the drivers turn the speed orders into motor currents; the LiDAR spins to see all around and stops the robot if someone is too close.', 'La batterie et son BMS fournissent l\'énergie ; l\'ordinateur construit la carte et planifie le trajet ; les drivers transforment les consignes de vitesse en courant moteur ; le LiDAR tourne pour voir tout autour et arrête le robot si quelqu\'un est trop près.'),
+    belt: L('The motor turns the drive pulley; its teeth pull the belt, which is clamped to the carriage: one pulley turn = about 200 mm, much more than a screw, so the axis is fast. The twin axis on the other side moves in step, driven by its own motor.', 'Le moteur fait tourner la poulie motrice ; ses dents tirent la courroie, serrée sur le chariot : un tour de poulie = environ 200 mm, bien plus qu\'une vis, donc l\'axe est rapide. L\'axe jumeau de l\'autre côté avance en même temps, avec son propre moteur.'),
+    linb: L('Same parts as a horizontal axis, plus a brake: the motor turns the ball screw and the nut carries the Z slide. When the power goes off, springs in the brake grip the motor shaft at once, so the tool cannot drop.', 'Les mêmes pièces qu\'un axe horizontal, plus un frein : le moteur tourne la vis à billes et l\'écrou porte la glissière Z. Si le courant est coupé, les ressorts du frein serrent aussitôt l\'arbre moteur, et l\'outil ne peut pas tomber.'),
     pla: L('The motor turns the small sun gear; the three planets roll inside the fixed ring and carry the planet carrier round: it turns 5 times slower and 5 times stronger. The encoder at the back counts the motor turns.', 'Le moteur fait tourner le petit pignon solaire ; les trois satellites roulent dans la couronne fixe et entraînent le porte-satellites : il tourne 5 fois moins vite et 5 fois plus fort. Le codeur à l\'arrière compte les tours du moteur.')
   };
   host.innerHTML = `<div class="insd-targets" role="group" aria-label="${L('Part to open', 'Partie à ouvrir')}">${R.targets.map((t2, i) => `<button type="button" data-t="${i}">${t2.name[1]}</button>`).join('')}</div><div class="insd-stage"><div class="insd-tags"></div><div class="insd-read" hidden></div><div class="insd-pop" hidden><button type="button" class="insd-x" aria-label="${L('Close', 'Fermer')}">×</button><span></span><b></b><p></p></div><p class="insd-hint">${L('Drag to turn · scroll to zoom', 'Glisser pour tourner · molette pour zoomer')}</p></div>
@@ -493,7 +525,7 @@ function mount(host) {
     mech = T.mech(); holder = new THREE.Group(); holder.add(mech.g); holder.position.copy(T.at); holder.scale.setScalar(T.k);
     const ax = T.axis;
     if (ax && ax.isVector3) holder.quaternion.setFromUnitVectors(mech.linear ? V(1, 0, 0) : V(0, 0, 1), ax);
-    else if (mech.linear) { if (ax === 'z') holder.rotation.y = -Math.PI / 2; else if (ax === 'y') holder.rotation.z = Math.PI / 2; }
+    else if (mech.linear) { if (ax === 'z') holder.rotation.y = -Math.PI / 2; else if (ax === 'y') holder.rotation.z = -Math.PI / 2; }   // vertical axes: the motor on top
     else if (ax === 'y') holder.rotation.x = -Math.PI / 2; else if (ax === 'x') holder.rotation.y = Math.PI / 2; else if (ax === 'down') holder.rotation.x = Math.PI / 2;
     scene.add(holder);
     mech.g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });

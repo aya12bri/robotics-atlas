@@ -368,6 +368,10 @@ function mount(host) {
     <div class="sys-legend">${Object.entries(WIRE).map(([k, [c, n]]) => `<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>
     <div class="sys-detail" hidden></div>
     <div class="sys-cats"></div>`;
+  // the view buttons and the action buttons sit in a bar above the picture, so they never cover each other or the scene
+  { const st = host.querySelector('.sys-stage'), frame = document.createElement('div'), bar = document.createElement('div');
+    frame.className = 'sys-frame'; bar.className = 'sys-bar'; st.before(frame); bar.append(host.querySelector('.sys-views'), host.querySelector('.sys-ctl')); frame.append(bar, st); }
+  const frameEl = host.querySelector('.sys-frame');
   const stage = host.querySelector('.sys-stage'), pinsEl = host.querySelector('.sys-pins'), flowEl = host.querySelector('.sys-flow'), detail = host.querySelector('.sys-detail'), catsEl = host.querySelector('.sys-cats');
   const pop = host.querySelector('.sys-pop'); pop.querySelector('.sys-x').addEventListener('click', () => { if (sel) select(sel, false); });
   const playBtn = host.querySelector('.sys-play'), stopBtn = host.querySelector('.sys-stop'), allBtn = host.querySelector('.sys-all'), labsEl = host.querySelector('.sys-labs');
@@ -587,8 +591,8 @@ function mount(host) {
   }));
   host.querySelectorAll('.sys-zoom').forEach((b) => b.addEventListener('click', () => { const tg = orbit.target.clone(), f = b.dataset.z === 'out' ? 1.35 : 1 / 1.35; fly(tg.clone().add(camera.position.clone().sub(tg).multiplyScalar(f)), tg); }));
   const fullBtn = host.querySelector('.sys-full');
-  fullBtn.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen(); });
-  document.addEventListener('fullscreenchange', () => { const on = document.fullscreenElement === stage; host.classList.toggle('sys-fs', on); fullBtn.innerHTML = on ? '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'; });
+  fullBtn.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else if (frameEl.requestFullscreen) frameEl.requestFullscreen(); });
+  document.addEventListener('fullscreenchange', () => { const on = document.fullscreenElement === frameEl; host.classList.toggle('sys-fs', on); fullBtn.innerHTML = on ? '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'; });
   const hlMat = new Map();
   function select(id, flyTo = true) {
     sel = sel === id ? null : id;
@@ -696,6 +700,7 @@ function mount(host) {
         const pin = howEl.querySelector(`.sys-hpin[data-h="${h.id}"]`); pin.style.left = it2.x + 'px'; pin.style.top = it2.y + 'px'; pin.classList.toggle('dim', curStep >= 0 && !(h.step === curStep || (curStep === 3 && h.id === 'battery')));
         c.classList.toggle('on', curStep >= 0 && (h.step === curStep || (curStep === 3 && h.id === 'battery'))); c.classList.toggle('dim', curStep >= 0 && !c.classList.contains('on')); c.classList.toggle('sel', h.id === sel); });
       const cols = [items.filter((it) => it.x < r.width / 2), items.filter((it) => it.x >= r.width / 2)]; let ad = '';
+      host.classList.toggle('sys-tight', r.height < 92 * Math.max(cols[0].length, cols[1].length));   // short screens: titles only, the description shows on the active card
       // segments a-b and c-d cross?
       const cross = (a, b, c, d) => { const o = (p, q, r2) => Math.sign((q[0] - p[0]) * (r2[1] - p[1]) - (q[1] - p[1]) * (r2[0] - p[0])); return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
       cols.forEach((col, k) => {
