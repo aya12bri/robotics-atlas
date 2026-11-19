@@ -106,54 +106,71 @@ export async function tutorStatus(env, url) {
 }
 
 // Gemini, streamed: yields the text pieces; throws (with .status) before the first piece when it cannot answer
+// one Gemini model, streamed: yields the text pieces; throws (with a short reason) when it cannot answer
+async function* geminiStream(env, model, system, contents, signal) {
+  const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
+    method: 'POST', signal,
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
+  });
+  let r = await call({ thinkingBudget: 0 });                              // older Flash models: no thinking
+  if (r.status === 400) r = await call({ thinkingLevel: 'minimal' });     // newer Flash models: the least thinking
+  if (r.status === 400) r = await call(null);                             // the model's own default
+  if (!r.ok || !r.body) {
+    const raw = await r.text().catch(() => ''); let msg = raw; try { msg = JSON.parse(raw).error.message || raw; } catch (x) { /* not JSON */ }
+    const e = new Error(`${r.status} ${msg.slice(0, 80)}`); e.status = r.status; throw e;
+  }
+  const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', any = false, why = '';
+  for (;;) {
+    const { done, value } = await rd.read(); if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+      if (!line.startsWith('data:')) continue;
+      let j; try { j = JSON.parse(line.slice(5)); } catch (e) { continue; }
+      const c = j.candidates && j.candidates[0];
+      if (c && c.finishReason) why = c.finishReason;
+      const s = ((c && c.content && c.content.parts) || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('');
+      if (s) { any = true; yield s; }
+    }
+  }
+  if (!any) { const e = new Error('empty answer ' + why); e.status = why === 'SAFETY' ? 'refusal' : 'empty'; throw e; }
+  if (why === 'MAX_TOKENS') yield ' …';
+}
+
+// Gemini: the first RACE models of the list are asked at the same time and the first one that starts writing answers
+// (the others are stopped); if none does, the next models are tried one by one. Each model gets up to PER_MODEL_MS to
+// write its first words, all of them together TOTAL_MS; after that, Claude answers. The free models need 10–15 s.
 async function* askGemini(env, system, history, question) {
   const contents = [...history.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })), { role: 'user', parts: [{ text: question }] }];
-  // each model of the list gets PER_MODEL_MS to write its first words, otherwise the next one is tried (a slow or busy
-  // model no longer blocks the others); a lesson explanation does not need the model's long "thinking": ask for none
-  // the free models can take 10–15 s before their first words: each model gets up to PER_MODEL_MS, all of them together
-  // TOTAL_MS (a busy model says so at once, so it costs almost nothing); after that, Claude answers
-  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 20000), TOTAL_MS = +(env.GEMINI_TOTAL_MS || 30000), end = Date.now() + TOTAL_MS;
-  const errText = async (r) => { const raw = await r.text().catch(() => ''); try { return JSON.parse(raw).error.message || raw; } catch (x) { return raw; } };
-  const fails = [];
-  for (const model of geminiList(env)) {
-    const wait = Math.min(PER_MODEL_MS, end - Date.now());
-    if (wait < 2000) { fails.push(`${model} not tried (no time left)`); continue; }
-    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), wait);
-    const call = (thinking) => fetch(`${env.GEMINI_BASE_URL || GEMINI_URL}/models/${model}:streamGenerateContent?alt=sse`, {
-      method: 'POST', signal: ctl.signal,
-      headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig: { maxOutputTokens: 2000, ...(thinking ? { thinkingConfig: thinking } : {}) } })
-    });
-    let r, any = false, why = '';
-    try {
-      r = await call({ thinkingBudget: 0 });                              // older Flash models: no thinking
-      if (r.status === 400) r = await call({ thinkingLevel: 'minimal' });  // newer Flash models: the least thinking
-      if (r.status === 400) r = await call(null);                         // the model's own default
-      if (!r.ok || !r.body) { clearTimeout(timer); fails.push(`${model} ${r.status} ${(await errText(r)).slice(0, 80)}`); continue; }
-      const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '';
-      for (;;) {
-        const { done, value } = await rd.read(); if (done) break;
-        buf += dec.decode(value, { stream: true });
-        let i;
-        while ((i = buf.indexOf('\n')) >= 0) {
-          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
-          if (!line.startsWith('data:')) continue;
-          let j; try { j = JSON.parse(line.slice(5)); } catch (e) { continue; }
-          const c = j.candidates && j.candidates[0];
-          if (c && c.finishReason) why = c.finishReason;
-          const s = ((c && c.content && c.content.parts) || []).filter((p) => p.text && !p.thought).map((p) => p.text).join('');
-          if (s) { if (!any) clearTimeout(timer); any = true; yield s; }  // the first words: this model answers, no more time limit
-        }
-      }
-    } catch (e) {
-      clearTimeout(timer);
-      if (any) { const x = new Error('gemini: cut in the middle'); x.status = 'cut'; throw x; }   // it had started: keep what it wrote
-      fails.push(`${model} ${ctl.signal.aborted ? (r ? `HTTP ${r.status} but no words` : 'no reply') + ' in ' + Math.round(wait / 1000) + ' s' : 'error ' + e.message}`); continue;
+  const PER_MODEL_MS = +(env.GEMINI_WAIT_MS || 20000), TOTAL_MS = +(env.GEMINI_TOTAL_MS || 30000), RACE = +(env.GEMINI_RACE || 2), end = Date.now() + TOTAL_MS;
+  const list = geminiList(env), fails = [];
+  const start = (model) => {
+    const wait = Math.min(PER_MODEL_MS, end - Date.now()), ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), wait);
+    const gen = geminiStream(env, model, system, contents, ctl.signal);
+    const first = gen.next().then((r) => (r.done ? { ok: false, why: 'empty answer' } : { ok: true, piece: r.value }),
+      (e) => ({ ok: false, why: ctl.signal.aborted ? `no words in ${Math.round(wait / 1000)} s` : e.message, refusal: e.status === 'refusal' }));
+    return { model, gen, ctl, timer, first };
+  };
+  const stop = (x) => { clearTimeout(x.timer); x.ctl.abort(); };
+  const groups = [list.slice(0, RACE), ...list.slice(RACE).map((m) => [m])];
+  for (const group of groups) {
+    if (end - Date.now() < 2000) { fails.push(`${group.join(', ')} not tried (no time left)`); continue; }
+    let left = group.map(start), win = null;
+    while (left.length && !win) {
+      const { x, v } = await Promise.race(left.map((x) => x.first.then((v) => ({ x, v }))));
+      left = left.filter((y) => y !== x);
+      if (v.ok) win = { x, v };
+      else { fails.push(`${x.model} ${v.why}`); clearTimeout(x.timer); if (v.refusal) { left.forEach(stop); const e = new Error('gemini: ' + fails.join(' / ')); e.status = 'refusal'; throw e; } }
     }
-    clearTimeout(timer);
-    if (any) { if (why === 'MAX_TOKENS') yield ' …'; return; }
-    fails.push(`${model} empty answer ${why}`);
-    if (why === 'SAFETY') { const e = new Error('gemini: ' + fails.join(' / ')); e.status = 'refusal'; throw e; }
+    left.forEach(stop);                                                   // the slower ones are stopped
+    if (!win) continue;
+    clearTimeout(win.x.timer);                                            // the winner has no time limit any more
+    yield win.v.piece;
+    try { for await (const s of win.x.gen) yield s; }
+    catch (e) { const x = new Error('gemini: cut in the middle'); x.status = 'cut'; throw x; }   // keep what it wrote
+    return;
   }
   const e = new Error(`gemini ${fails.join(' / ').slice(0, 300)}`); e.status = 'all'; throw e;
 }
