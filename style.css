@@ -1886,3 +1886,51 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 @media (max-width: 680px) { .practice .px-hero { padding: 1.5rem 1.2rem 1.3rem; border-radius: 20px; } .px-steps { grid-template-columns: 1fr; } .px-grid, .px-grid.two { grid-template-columns: 1fr; } .px-feat { flex-direction: column; } .px-feat .px-img { min-height: 0; aspect-ratio: 16 / 10; } .px-feat .px-ic { margin-top: -2.2rem; border: 3px solid var(--surface); } .px-num { font-size: 2rem; } }
 .practice nav.toc { display: none; }
 @media (min-width: 1001px) { .px-feat { grid-row: span 2; flex-direction: column; } .px-feat .px-img { flex: 1; min-height: 0; aspect-ratio: auto; } .px-feat .px-body { flex: none; padding: 1.3rem 1.4rem 1.4rem; } .px-feat .px-ic { margin-top: -2.6rem; border: 3px solid var(--surface); } }
+
+/* ── AI tutor at the end of each lesson (tutor.js) ── */
+.ltutor { --lt: #6f42dc; margin: 1.6rem 0 0.6rem; border: 1px solid color-mix(in srgb, var(--lt) 35%, var(--border)); border-radius: 16px; background: linear-gradient(135deg, color-mix(in srgb, var(--lt) 9%, var(--surface)), var(--surface) 60%); overflow: hidden; }
+.ltutor .lt-head { display: flex; align-items: center; gap: 0.9rem 1rem; padding: 0.95rem 1.1rem; flex-wrap: wrap; }
+.ltutor .lt-head > div { flex: 1 1 16rem; min-width: 0; }
+.ltutor h3 { margin: 0 0 0.15rem; font: 700 1.05rem/1.3 var(--font); letter-spacing: normal; text-transform: none; color: var(--text); }
+.ltutor .lt-head p { margin: 0; color: var(--muted); font-size: 0.9rem; max-width: none; }
+.ltutor .lt-ic, .ltutor .lt-av { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 12px; background: linear-gradient(135deg, var(--lt), #4f7bff); color: #fff; }
+.ltutor .lt-ic svg, .ltutor .lt-av svg { width: 1.35rem; height: 1.35rem; }
+.ltutor svg { background: none; border: 0; border-radius: 0; padding: 0; margin: 0; box-shadow: none; max-width: none; }
+.ltutor svg path { fill: currentColor; stroke: none; }
+.ltutor .lt-open { flex: none; border: 0; border-radius: 999px; padding: 0.55rem 1.1rem; min-height: 0; font: 700 0.9rem var(--font); color: #fff; background: var(--lt); cursor: pointer; box-shadow: 0 4px 14px color-mix(in srgb, var(--lt) 35%, transparent); }
+.ltutor .lt-open:hover { filter: brightness(1.08); }
+.ltutor.on .lt-open { background: transparent; color: var(--text); border: 1px solid var(--border); box-shadow: none; }
+.ltutor .lt-panel { border-top: 1px solid var(--border); padding: 0.9rem 1.1rem 0.8rem; background: color-mix(in srgb, var(--bg) 35%, var(--surface)); }
+.ltutor .lt-log { display: flex; flex-direction: column; gap: 0.75rem; max-height: min(28rem, 60vh); overflow-y: auto; padding: 0.2rem 0.2rem 0.6rem; overscroll-behavior: contain; }
+.ltutor .lt-msg { display: flex; gap: 0.6rem; align-items: flex-start; max-width: 100%; }
+.ltutor .lt-msg.me { justify-content: flex-end; }
+.ltutor .lt-av { width: 2rem; height: 2rem; border-radius: 10px; }
+.ltutor .lt-av svg { width: 1.05rem; height: 1.05rem; }
+.ltutor .lt-b { min-width: 0; max-width: min(40rem, 88%); padding: 0.6rem 0.85rem; border-radius: 4px 14px 14px 14px; background: var(--surface); border: 1px solid var(--border); font-size: 0.94rem; line-height: 1.55; overflow-wrap: anywhere; }
+.ltutor .me .lt-b { border-radius: 14px 4px 14px 14px; background: color-mix(in srgb, var(--lt) 16%, var(--surface)); border-color: color-mix(in srgb, var(--lt) 40%, var(--border)); }
+.ltutor .lt-b p { margin: 0 0 0.5rem; max-width: none; } .ltutor .lt-b > :last-child { margin-bottom: 0; }
+.ltutor .lt-b ul, .ltutor .lt-b ol { margin: 0.2rem 0 0.5rem; padding-left: 1.3rem; }
+.ltutor .lt-b li { margin: 0.15rem 0; }
+.ltutor .lt-b code { font-size: 0.86em; padding: 0.05rem 0.3rem; border-radius: 5px; background: var(--surface-2); }
+.ltutor .lt-b pre { margin: 0.3rem 0 0.6rem; padding: 0.6rem 0.75rem; border-radius: 9px; background: var(--bg-2); overflow-x: auto; }
+.ltutor .lt-b pre code { padding: 0; background: none; }
+.ltutor .lt-err { color: var(--muted); font-style: italic; }
+.ltutor .lt-dots { display: inline-flex; gap: 4px; padding: 0.3rem 0; }
+.ltutor .lt-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--lt); opacity: 0.35; animation: ltdot 1.1s infinite; }
+.ltutor .lt-dots i:nth-child(2) { animation-delay: 0.18s; } .ltutor .lt-dots i:nth-child(3) { animation-delay: 0.36s; }
+@keyframes ltdot { 40% { opacity: 1; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .ltutor .lt-dots i { animation: none; opacity: 0.8; } }
+.ltutor .lt-sugg { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.2rem 0 0.7rem; }
+.ltutor .lt-sugg[hidden] { display: none; }
+.ltutor .lt-sugg button { border: 1px solid color-mix(in srgb, var(--lt) 45%, var(--border)); background: var(--surface); color: var(--text); border-radius: 999px; padding: 0.35rem 0.8rem; min-height: 0; font: 600 0.84rem var(--font); cursor: pointer; }
+.ltutor .lt-sugg button:hover { background: color-mix(in srgb, var(--lt) 14%, var(--surface)); }
+.ltutor .lt-form { display: flex; gap: 0.5rem; align-items: flex-end; margin: 0; }
+.ltutor .lt-form textarea { flex: 1; min-width: 0; resize: vertical; min-height: 2.8rem; max-height: 12rem; padding: 0.65rem 0.8rem; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 0.95rem/1.45 var(--font); }
+.ltutor .lt-form textarea:focus { outline: 2px solid color-mix(in srgb, var(--lt) 60%, transparent); outline-offset: 1px; border-color: var(--lt); }
+.ltutor .lt-send { flex: none; width: 2.8rem; height: 2.8rem; min-height: 0; padding: 0; border: 0; border-radius: 12px; display: grid; place-items: center; background: var(--lt); color: #fff; cursor: pointer; }
+.ltutor .lt-send svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+.ltutor .lt-send:disabled { opacity: 0.45; cursor: wait; }
+.ltutor .lt-note { margin: 0.55rem 0 0; font-size: 0.78rem; color: var(--muted); max-width: none; }
+.ltutor .lt-clear { border: 0; background: none; padding: 0; min-height: 0; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.ltutor .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 600px) { .ltutor .lt-open { width: 100%; } .ltutor .lt-b { max-width: 92%; } }

@@ -1,9 +1,12 @@
 {
-  // A separate, small Worker for the lesson feedback. Deploy it from this folder: npx wrangler deploy
+  // A separate, small Worker: the lesson feedback and the AI tutor. Deploy it from this folder: npm install, then npx wrangler deploy
   // Replace the domain below by yours, and the KV id by the one printed by: npx wrangler kv namespace create FEEDBACK
   "name": "robotics-atlas-feedback",
   "main": "worker.js",
   "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
   "routes": [{ "pattern": "roboticsatlas.ayabriksine.com/api/*", "zone_name": "ayabriksine.com" }],
+  // the AI tutor: questions per visitor and per day, and per day for the whole site (the API key is a secret: see README.md)
+  "vars": { "TUTOR_PER_DAY": "30", "TUTOR_DAILY_CAP": "1500" },
   "kv_namespaces": [{ "binding": "FEEDBACK", "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID" }]
 }
