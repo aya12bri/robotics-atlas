@@ -36,16 +36,9 @@
     return out.join('').replace(/\u0000(\d+)\u0000/g, function (m, k) { return '<code>' + blocks[+k] + '</code>'; });
   }
 
-  // the robot: antenna, head with a screen face (eyes blink), little body with a light
-  var ROBOT = '<svg viewBox="0 0 64 64" aria-hidden="true" class="rb-svg">' +
-    '<defs><linearGradient id="rbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#4f7bff"/></linearGradient></defs>' +
-    '<line x1="32" y1="6" x2="32" y2="14" stroke="#c9c2ff" stroke-width="2.5" stroke-linecap="round"/><circle class="rb-ant" cx="32" cy="5.5" r="3.6" fill="#ffd166"/>' +
-    '<rect x="7" y="23" width="6" height="12" rx="3" fill="#6f5ae8"/><rect x="51" y="23" width="6" height="12" rx="3" fill="#6f5ae8"/>' +
-    '<rect x="11" y="13" width="42" height="32" rx="12" fill="url(#rbg)"/>' +
-    '<rect x="16" y="18" width="32" height="20" rx="8" fill="#15193a"/>' +
-    '<g class="rb-eyes"><ellipse cx="25" cy="27" rx="3.4" ry="4" fill="#5ff2ff"/><ellipse cx="39" cy="27" rx="3.4" ry="4" fill="#5ff2ff"/></g>' +
-    '<path d="M26.5 33 q5.5 4 11 0" stroke="#5ff2ff" stroke-width="2.2" fill="none" stroke-linecap="round"/>' +
-    '<rect x="20" y="46" width="24" height="14" rx="6" fill="url(#rbg)"/><circle class="rb-heart" cx="32" cy="53" r="3" fill="#ffd166"/></svg>';
+  // the robot: a 3D mascot rendered once into a strip of pictures (thumbs/tutor-robot.webp, tools/build-tutor-robot.mjs);
+  // CSS shows one picture at a time to make it blink and wave
+  var ROBOT = '<span class="rb-face" aria-hidden="true"></span>';
   var SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg>';
 
   function init() {
