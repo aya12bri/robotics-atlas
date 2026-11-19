@@ -6,7 +6,7 @@
 // Usage:  <div class="insdemo" data-robot="articulated"></div>  +  <script type="module" src="inside-demo.js"></script>
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { articulated, arm3, scara, gantry, delta, makeAMR, M, box, cyl, V, ease } from './ops-demo.js';
+import { articulated, arm3, cylindrical, spherical, hexapod, scara, gantry, delta, makeAMR, M, box, cyl, V, ease } from './ops-demo.js';
 
 const FR = (window.RA && RA.lang) === 'fr';
 const L = (en, fr) => (FR ? fr : en);
@@ -369,6 +369,7 @@ function armJ(h1, L2, L3, L4, f) {                           // elbow and wrist 
 }
 const NOTE_IND = L('On an industrial robot the drive electronics sit in the controller cabinet; a thick cable brings the motor power and the encoder signals.', 'Sur un robot industriel, l\'électronique de commande est dans l\'armoire ; un gros câble apporte la puissance du moteur et les signaux du codeur.');
 const NOTE_COB = L('In a cobot each joint is a complete module: its own drive board and a torque sensor, so it feels contact.', 'Dans un cobot, chaque articulation est un module complet : sa propre carte variateur et un capteur de couple, pour sentir les contacts.');
+const NOTE_7 = L('Like a cobot, each joint of a 7-axis arm such as the KUKA iiwa has a torque sensor, so it feels contact.', 'Comme sur un cobot, chaque articulation d\'un bras 7 axes comme le KUKA iiwa a un capteur de couple, pour sentir les contacts.');
 const tg = (name, at, axis, k, mech, note, link) => ({ name, at, axis, k, mech, note: note || '', link });
 const GRIP = (at, k) => tg([L('the gripper', 'la pince'), L('Gripper', 'Pince')], at.clone().add(V(0, 2.75 * k, 0)), 'down', k, () => gripperMech(), L('An electric gripper is a small robot of its own: motor, gearbox, screw, guide and sensor.', 'Une pince électrique est un petit robot à elle seule : moteur, réducteur, vis, guidage et capteur.'));
 const CAB = (at, k) => tg([L('the controller cabinet', 'l\'armoire de commande'), L('Cabinet', 'Armoire')], at, 'up', k, () => cabinetMech(), L('It stands next to the robot and is linked to it by one thick cable: the brain and the power of the robot are here.', 'Elle est posée à côté du robot et reliée à lui par un gros câble : le cerveau et la puissance du robot sont ici.'));
@@ -406,6 +407,29 @@ const ROB = (() => {
       tg([L('the Y axis', 'l\'axe Y'), 'Y'], V(0, 1.14, 0), 'z', 0.065, () => linearAxis(), L('The Y axis runs along the bridge and carries the vertical Z axis.', 'L\'axe Y court le long du pont et porte l\'axe vertical Z.'), V(0, 0, 1)),
       tg([L('the Z axis', 'l\'axe Z'), 'Z'], V(0, 0.75, 0), 'y', 0.042, () => linearAxis(), L('The Z axis moves the tool up and down; its motor has a brake so the load cannot fall.', 'L\'axe Z monte et descend l\'outil ; son moteur a un frein pour que la charge ne tombe pas.'), V(0, 1, 0)),
       GRIP(V(0, 0.3, 0), 0.03), CAB(V(-1.15, 0, 0.5), 0.1)] },
+    redundant: { build: () => articulated({ h1: 0.45, L2: 0.5, L3: 0.5, L4: 0.14, r: 0.075, seven: true }), pose: V(0.62, 0.62, 0), targets: [
+      tg(J('J1', 'axis 1, the base', 'l\'axe 1, la base'), V(0, 0.25, 0), 'y', 0.08, () => rotaryJoint({ trq: true }), NOTE_7),
+      tg(J('J2', 'the shoulder (axis 2)', 'l\'épaule (axe 2)'), V(0, 0.45, 0), 'z', 0.082, () => rotaryJoint({ trq: true }), NOTE_7),
+      tg(J('J3', 'the arm twist (axis 3)', 'la rotation du bras (axe 3)'), V(0, 0.45, 0).lerp(six.el, 0.5), six.el.clone().sub(V(0, 0.45, 0)).normalize(), 0.07, () => rotaryJoint({ trq: true }), L('This is the extra joint: it turns the upper arm on itself, so the elbow can swing round while the tool stays still (the self-motion).', 'C\'est l\'articulation en plus : elle fait tourner le bras sur lui-même, pour que le coude puisse pivoter pendant que l\'outil reste immobile (le mouvement propre).')),
+      tg(J('J4', 'the elbow (axis 4)', 'le coude (axe 4)'), six.el, 'z', 0.066, () => rotaryJoint({ trq: true }), NOTE_7),
+      tg(J('J6', 'the wrist (axes 5-6-7)', 'le poignet (axes 5-6-7)'), six.wr, 'z', 0.048, () => rotaryJoint({ trq: true }), L('Three small joints close together give the tool any orientation.', 'Trois petites articulations rapprochées donnent à l\'outil n\'importe quelle orientation.')),
+      GRIP(V(0.62, 0.62, 0), 0.028), CAB(V(-0.8, 0, 0.45), 0.1)] },
+    cylindrical: { build: () => cylindrical({ Hc: 0.72, La: 0.62, rmin: 0.28, rmax: 0.94, lo: 0.13, hi: 0.76, r: 0.045 }), pose: V(0.55, 0.35, 0), targets: [
+      tg(J('q1', 'the turning base (q1)', 'la base tournante (q1)'), V(0, 0.04, 0), 'y', 0.06, () => rotaryJoint({}), L('The only rotary joint: it turns the column, so it sets the angle of the arm.', 'La seule articulation rotative : elle fait tourner la colonne, elle donne donc l\'angle du bras.')),
+      tg([L('the vertical axis (q2)', 'l\'axe vertical (q2)'), 'q2'], V(0, 0.42, 0), 'y', 0.03, () => linearAxis(), L('The carriage goes up and down the column; its motor has a brake so the arm cannot fall when the power is off.', 'Le chariot monte et descend le long de la colonne ; son moteur a un frein pour que le bras ne tombe pas hors tension.'), V(0, 1, 0)),
+      tg([L('the radial axis (q3)', 'l\'axe radial (q3)'), 'q3'], V(0.24, 0.422, 0), 'x', 0.028, () => linearAxis(), L('The arm slides out through the carriage: it sets the radius, the distance between the tool and the column.', 'Le bras coulisse dans le chariot : il donne le rayon, la distance entre l\'outil et la colonne.'), V(1, 0, 0)),
+      CAB(V(-0.75, 0, 0.4), 0.09)] },
+    spherical: { build: () => spherical({ h1: 0.46, Ls: 0.4, dmin: 0.3, dmax: 0.86, r: 0.05 }), pose: V(0.6, 0.415, 0), targets: [
+      tg(J('q1', 'the turret (q1)', 'la tourelle (q1)'), V(0, 0.23, 0), 'y', 0.07, () => rotaryJoint({}), NOTE_IND),
+      tg(J('q2', 'the shoulder that tilts (q2)', 'l\'épaule qui s\'incline (q2)'), V(0, 0.46, 0), 'z', 0.07, () => rotaryJoint({}), L('It tilts the whole arm up and down: this sets the elevation angle. The counterweight behind it balances the arm.', 'Elle incline tout le bras vers le haut ou le bas : c\'est l\'angle d\'élévation. Le contrepoids derrière équilibre le bras.')),
+      tg([L('the telescopic arm (q3)', 'le bras télescopique (q3)'), 'q3'], V(0.4, 0.46, 0), 'x', 0.025, () => linearAxis(), L('The ram slides out of the sleeve: it sets the distance between the shoulder and the tool.', 'La tige sort du fourreau : elle donne la distance entre l\'épaule et l\'outil.'), V(1, 0, 0)),
+      CAB(V(-0.75, 0, 0.4), 0.09)] },
+    hexapod: (() => {
+      const H = 0.34, ab = -16 * Math.PI / 180, ap = 104 * Math.PI / 180, a = V(0.3 * Math.cos(ab), 0.025, 0.3 * Math.sin(ab)), b = V(0.19 * Math.cos(ap), H - 0.029, 0.19 * Math.sin(ap));
+      return { build: () => hexapod({ Rb: 0.3, Rp: 0.19, H, r: 0.018 }), pose: V(0, H, 0), targets: [
+        tg([L('one of the six legs', 'l\'une des six jambes'), L('Leg 1', 'Jambe 1')], a.clone().lerp(b, 0.5), b.clone().sub(a).normalize(), 0.017, () => linearAxis(), L('Each leg is an electric cylinder: a motor turns a ball screw that pushes a rod in and out. The six lengths together set the position and the tilt of the platform.', 'Chaque jambe est un vérin électrique : un moteur fait tourner une vis à billes qui pousse une tige. Les six longueurs ensemble donnent la position et l\'inclinaison de la plateforme.'), V(0, 1, 0)),
+        CAB(V(-0.6, 0, 0.4), 0.07)] };
+    })(),
     mobile: { amr: true, targets: [
       tg([L('a drive wheel', 'une roue motrice'), L('Drive wheel', 'Roue motrice')], V(0, 0.9 * 0.075, 0.9 * 0.35 - 0.02), 'z', 0.026, () => planetary({ wheel: true }), L('Each drive wheel is a motor, a gearbox and an encoder in one block; two of them, driven at different speeds, steer the robot.', 'Chaque roue motrice réunit moteur, réducteur et codeur en un bloc ; deux roues entraînées à des vitesses différentes font tourner le robot.')),
       tg([L('the body: battery and electronics', 'le châssis : batterie et électronique'), L('Battery and electronics', 'Batterie et électronique')], V(0, 0.055, 0), 'up', 0.1, () => mobileBox(), L('Under the cover: the energy, the brain and the safety of the robot.', 'Sous le capot : l\'énergie, le cerveau et la sécurité du robot.'))] }
@@ -468,11 +492,12 @@ function mount(host) {
     if (holder) { scene.remove(holder); }
     mech = T.mech(); holder = new THREE.Group(); holder.add(mech.g); holder.position.copy(T.at); holder.scale.setScalar(T.k);
     const ax = T.axis;
-    if (mech.linear) { if (ax === 'z') holder.rotation.y = -Math.PI / 2; else if (ax === 'y') holder.rotation.z = Math.PI / 2; }
+    if (ax && ax.isVector3) holder.quaternion.setFromUnitVectors(mech.linear ? V(1, 0, 0) : V(0, 0, 1), ax);
+    else if (mech.linear) { if (ax === 'z') holder.rotation.y = -Math.PI / 2; else if (ax === 'y') holder.rotation.z = Math.PI / 2; }
     else if (ax === 'y') holder.rotation.x = -Math.PI / 2; else if (ax === 'x') holder.rotation.y = Math.PI / 2; else if (ax === 'down') holder.rotation.x = Math.PI / 2;
     scene.add(holder);
     mech.g.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
-    axisW = ax === 'y' || ax === 'down' ? V(0, 1, 0) : ax === 'x' ? V(1, 0, 0) : ax === 'up' ? V(0, 0, 1) : V(0, 0, 1);
+    axisW = ax && ax.isVector3 ? ax.clone() : ax === 'y' || ax === 'down' ? V(0, 1, 0) : ax === 'x' ? V(1, 0, 0) : ax === 'up' ? V(0, 0, 1) : V(0, 0, 1);
     const box = ax === 'up';                                        // a cabinet or the body of a mobile robot: looked at from the front
     const side = box ? V(0.55, 0.55, 1) : axisW.y > 0.5 ? V(1, 0.35, 0.75) : axisW.x > 0.5 ? V(0.45, 0.5, 1) : V(1, 0.45, 0.42); side.normalize(); S = T.k * mech.len;
     const mid = box ? T.at.clone().add(V(0, mech.kind === 'cab' ? 3.2 * T.k : 1.2 * T.k, 0)) : T.at;

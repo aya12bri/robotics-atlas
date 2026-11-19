@@ -120,6 +120,37 @@ Inverse model (MGI):   q1 = atan2(y, x)    q3 = √(x² + y²)     q2 = z − h 
       <p>A gripper or a vacuum cup that points radially, or downwards with a small wrist. Add a fourth joint at the end of the arm to turn the part.</p>
     </div>
 
+    <!-- BEGIN operations -->
+    <h2>Inside the robot: the real components</h2>
+    <p>Dive into one joint, step by step: the camera goes in, the cover comes off, every part comes out with its real name and role, then the joint runs so you can see how it works.</p>
+    <div class="insdemo" data-robot="cylindrical"></div>
+    <script type="module" src="inside-demo.js"></script>
+    <h2>Industrial operations</h2>
+    <p>The most common operations in a factory, explained simply, and how well this robot suits each one. Operations done mostly by dedicated machines (bundling, serialisation, conveying) are often only fed or unloaded by a robot.</p>
+    <div class="cmp-wrap ops-wrap">
+      <table class="dh ops">
+        <thead><tr><th class="left">Operation</th><th class="left">Simple explanation</th><th>For this robot</th></tr></thead>
+        <tbody>
+          <tr><td class="left"><strong>Palletizing / depalletizing</strong></td><td class="left">Stacking parcels on a pallet following a plan (or taking them off).</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Case packing</strong></td><td class="left">Putting products (bottles, trays, vials) into a carton.</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Quality control / vision</strong></td><td class="left">A camera checks the product instead of the human eye (presence, readability of a code, defect).</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Screwing / unscrewing, assembly, filling</strong></td><td class="left">Repetitive gestures made automatic, often to relieve the operators.</td><td><span class="opfit f2">Possible</span></td></tr>
+          <tr><td class="left"><strong>Bundling (shrink wrapping)</strong></td><td class="left">Grouping products and wrapping them in plastic film.</td><td><span class="opfit f1">Rarely</span></td></tr>
+          <tr><td class="left"><strong>Labelling / laser marking</strong></td><td class="left">Sticking on a label or engraving information (batch, date, code) with a laser.</td><td><span class="opfit f1">Rarely</span></td></tr>
+          <tr><td class="left"><strong>Serialisation</strong></td><td class="left">Giving each box a unique number (DataMatrix code) for traceability, especially in pharmacy.</td><td><span class="opfit f1">Rarely</span></td></tr>
+          <tr><td class="left"><strong>Bin picking</strong></td><td class="left">A vision-guided robot picks parts lying loose in a bin.</td><td><span class="opfit f1">Rarely</span></td></tr>
+          <tr><td class="left"><strong>Separating joined products</strong></td><td class="left">Separating products that are joined together.</td><td><span class="opfit f1">Rarely</span></td></tr>
+          <tr><td class="left"><strong>Conveying</strong></td><td class="left">Moving products from one station to the next on belts or rollers.</td><td><span class="opfit f1">Rarely</span></td></tr>
+          <tr><td class="left"><strong>Mobility with an AMR</strong></td><td class="left">An autonomous mobile robot carries loads around the factory with no rail and no guide on the floor.</td><td><span class="opfit f1">Rarely</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2>Operations demo</h2>
+    <p>Choose an operation: the robot performs it in a small 3D cell, step by step. Turn the view with the mouse or a finger, and use Pause to look closely.</p>
+    <div class="opsdemo" data-robot="cylindrical"></div>
+    <script type="module" src="ops-demo.js"></script>
+    <!-- END operations -->
+
     <p class="try"><a href="learn-parallel.html#l2">Course: from joint limits to the real workspace →</a></p>
 
     <script>

@@ -30,6 +30,10 @@ const PAGES = {
   delta:       { pal: 1, enc: 3, far: 2, eti: 1, ser: 1, vis: 3, bin: 1, deg: 3, con: 2, amr: 1, ass: 2 },
   gantry:      { pal: 3, enc: 3, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 1, con: 2, amr: 1, ass: 3 },
   scara:       { pal: 1, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 2, deg: 2, con: 1, amr: 1, ass: 3 },
+  cylindrical: { pal: 2, enc: 2, far: 1, eti: 1, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 2 },
+  spherical:   { pal: 2, enc: 2, far: 1, eti: 1, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 1 },
+  redundant:   { pal: 2, enc: 2, far: 1, eti: 2, ser: 1, vis: 2, bin: 3, deg: 2, con: 1, amr: 3, ass: 3 },
+  hexapod:     { pal: 1, enc: 1, far: 1, eti: 2, ser: 1, vis: 2, bin: 1, deg: 1, con: 1, amr: 1, ass: 2 },
   mobile:      { pal: 1, enc: 1, far: 1, eti: 1, ser: 1, vis: 1, bin: 1, deg: 1, con: 3, amr: 3, ass: 1 }
 };
 const H2 = ['Industrial operations', 'Opérations industrielles'];
