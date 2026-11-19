@@ -113,9 +113,6 @@
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Charge</b></button><p>Une cabine de simulateur de vol, un miroir de télescope, une machine-outil ou un outil chirurgical : la plateforme de Stewart déplace de lourdes charges avec une grande précision.</p></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
-    <ul><li><strong>Six vérins électriques</strong> : chacun a un moteur et une vis à billes dans un fourreau (vus aux rayons X) ; les versions hydrauliques utilisent des vérins à huile pour les très lourdes charges comme les simulateurs de vol.</li><li><strong>Cardans et rotules</strong> : des liaisons à faible frottement et sans jeu, car tout jeu se voit directement dans la pose de la plateforme.</li><li><strong>Codeurs ou capteurs linéaires</strong> qui mesurent chaque longueur ; le contrôleur transforme la pose voulue en six longueurs (cinématique inverse) et exécute six boucles de position.</li><li><strong>La cinématique directe est le sens difficile</strong> : passer de six longueurs à une pose demande une résolution itérative, l'inverse d'un robot série.</li></ul>
-    <p>Les six longueurs de vérins sont calculées en direct à partir de la pose de la plateforme (cinématique inverse : une formule simple par vérin, la distance entre la rotule de la base et celle de la plateforme). Un vérin devient rouge quand il sort de sa course (550 à 950 mm ici) et la pose n'est alors pas atteignable. Les angles sont le roulis (autour de l'axe avant), le tangage et le lacet. Le modèle est simplifié : l'intérieur réel dépend de la marque. Les plateformes de Stewart ont aussi des poses singulières (voir la leçon 8 du cours sur les singularités).</p>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="stewart" data-set="arm"></div>
@@ -132,6 +129,14 @@
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Six vérins électriques</strong> : chacun a un moteur et une vis à billes dans un fourreau (vus aux rayons X) ; les versions hydrauliques utilisent des vérins à huile pour les très lourdes charges comme les simulateurs de vol.</li><li><strong>Cardans et rotules</strong> : des liaisons à faible frottement et sans jeu, car tout jeu se voit directement dans la pose de la plateforme.</li><li><strong>Codeurs ou capteurs linéaires</strong> qui mesurent chaque longueur ; le contrôleur transforme la pose voulue en six longueurs (cinématique inverse) et exécute six boucles de position.</li><li><strong>La cinématique directe est le sens difficile</strong> : passer de six longueurs à une pose demande une résolution itérative, l'inverse d'un robot série.</li></ul>
+    <p>Les six longueurs de vérins sont calculées en direct à partir de la pose de la plateforme (cinématique inverse : une formule simple par vérin, la distance entre la rotule de la base et celle de la plateforme). Un vérin devient rouge quand il sort de sa course (550 à 950 mm ici) et la pose n'est alors pas atteignable. Les angles sont le roulis (autour de l'axe avant), le tangage et le lacet. Le modèle est simplifié : l'intérieur réel dépend de la marque. Les plateformes de Stewart ont aussi des poses singulières (voir la leçon 8 du cours sur les singularités).</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h2>Où utilise-t-on un hexapode ?</h2>
@@ -165,6 +170,7 @@
     <div class="opsdemo" data-robot="hexapod"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
     <p class="try"><a href="learn-parallel-fr.html#l5">Cours : robots parallèles et mobilité de Grübler →</a> · <a href="learn-parallel-fr.html#l6">Modèles et singularités →</a></p>

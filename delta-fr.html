@@ -171,9 +171,6 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
         <div class="ancard" style="--c:#ff5a5f"><button type="button" class="anhead"><span class="ann">5</span><b>Effecteur</b></button><p>La petite plateforme mobile avec l'outil (ici une ventouse). Elle a 3 degrés de liberté : x, y et z. Un quatrième moteur facultatif au centre peut faire tourner l'outil.</p></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
-    <ul><li><strong>Trois servomoteurs avec réducteurs</strong> sur la plaque supérieure : ils sont fixes, donc seuls les bras légers bougent.</li><li><strong>Bras et tiges en fibre de carbone</strong> : très légers, donc des accélérations de plusieurs g sont possibles et plus de 100 prises par minute.</li><li><strong>Rotules</strong> aux extrémités des tiges, maintenues par des ressorts : pas de jeu, donc l'effecteur reste rigide.</li><li><strong>Arbre télescopique central</strong> (facultatif, vu aux rayons X) : un quatrième axe qui fait tourner l'outil, entraîné par un moteur sur la plaque supérieure.</li><li><strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.</li></ul>
-    <p>Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="delta" data-set="arm"></div>
@@ -190,6 +187,14 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Trois servomoteurs avec réducteurs</strong> sur la plaque supérieure : ils sont fixes, donc seuls les bras légers bougent.</li><li><strong>Bras et tiges en fibre de carbone</strong> : très légers, donc des accélérations de plusieurs g sont possibles et plus de 100 prises par minute.</li><li><strong>Rotules</strong> aux extrémités des tiges, maintenues par des ressorts : pas de jeu, donc l'effecteur reste rigide.</li><li><strong>Arbre télescopique central</strong> (facultatif, vu aux rayons X) : un quatrième axe qui fait tourner l'outil, entraîné par un moteur sur la plaque supérieure.</li><li><strong>Contrôleur et caméra</strong> : en général un système de vision au-dessus du convoyeur indique au robot où est chaque produit.</li></ul>
+    <p>Les angles moteurs θ sont mesurés comme sur la page Delta : 0° quand le bras est horizontal, positif vers le bas. La position de l'effecteur est calculée en direct à partir des trois angles (cinématique directe). Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h2>Où utilise-t-on un robot Delta ?</h2>
@@ -231,6 +236,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
     <div class="opsdemo" data-robot="delta"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

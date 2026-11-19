@@ -657,8 +657,9 @@
     // 3. uses and inside (where it is used, the real components, the operations)
     const usesAt = body.querySelector(':scope > .robot');
     if (h1 && view && bodyH2[0] && usesAt && [...body.children].indexOf(usesAt) > [...body.children].indexOf(bodyH2[0])) {
-      const anatAt = body.querySelector(':scope > .part-anat') || body.querySelector(':scope > .part-inside');   // the 3D anatomy and the inside of the robot
-      if (anatAt && [...body.children].indexOf(anatAt) < [...body.children].indexOf(usesAt)) makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], anatAt, usesAt], fr ? ['Aperçu', 'Cinématique', 'Anatomie', 'Applications'] : ['Overview', 'Kinematics', 'Anatomy', 'Applications'], ['robot', 'kinematics', 'anatomy', 'uses']);
+      const ix = (el) => (el ? [...body.children].indexOf(el) : -1), anatAt = body.querySelector(':scope > .part-anat'), insAt = body.querySelector(':scope > .part-inside');   // the 3D anatomy, the dive inside the robot
+      const parts = [[body.querySelector(':scope > .stage') || view, fr ? 'Aperçu' : 'Overview', 'robot'], [bodyH2[0], fr ? 'Cinématique' : 'Kinematics', 'kinematics'], [anatAt, fr ? 'Anatomie' : 'Anatomy', 'anatomy'], [insAt, fr ? 'Intérieur' : 'Inside', 'inside'], [usesAt, fr ? 'Applications' : 'Applications', 'uses']].filter(([el]) => el && ix(el) <= ix(usesAt));
+      if (anatAt || insAt) makeTabs(parts.map((x) => x[0]), parts.map((x) => x[1]), parts.map((x) => x[2]));
       else makeTabs([body.querySelector(':scope > .stage') || view, bodyH2[0], usesAt], fr ? ['Aperçu', 'Cinématique', 'Applications'] : ['Overview', 'Kinematics', 'Applications'], ['robot', 'kinematics', 'uses']);
     }
     // 3D anatomy pages: 1. the robot in 3D (the model, X-ray, the axes), 2. inside each joint, 3. all the components

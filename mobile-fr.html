@@ -147,9 +147,6 @@ Inverse :   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
         <div class="ancard" style="--c:#1fb5c9"><button type="button" class="anhead"><span class="ann">6</span><b>Contrôleur</b></button><p>Un microcontrôleur exécute les boucles rapides (PID sur les vitesses des roues, avec les codeurs) et un petit ordinateur exécute la navigation et la cartographie. Visible aux rayons X.</p></div>
       </div>
     </div>
-    <h2>Que contient chaque articulation ?</h2>
-    <ul><li><strong>Deux motoréducteurs avec codeurs</strong> : les codeurs mesurent la vitesse de chaque roue pour les boucles PID et pour l'odométrie (qui dérive, voir le cours sur la perception).</li><li><strong>Roue folle</strong> : une roue libre, le troisième point d'appui.</li><li><strong>Batterie</strong> placée bas, et <strong>variateurs de moteurs</strong> (ponts en H) qui transforment les ordres du contrôleur en courant moteur.</li><li><strong>Petit ordinateur</strong> (monocarte) pour la navigation, la cartographie et la communication, par exemple avec ROS 2.</li><li><strong>Capteurs</strong> : lidar pour les obstacles et les cartes, pare-chocs et capteurs de vide pour la sécurité, centrale inertielle pour le cap.</li></ul>
-    <p>Les vitesses des roues sont en rad/s : v = r (ωG + ωD) / 2 et ω = r (ωD − ωG) / L, avec r = 0,07 m et L = 0,40 m comme sur la page du robot mobile. La ligne orange est le chemin parcouru par le robot (odométrie). Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="mobile" data-set="mobile"></div>
@@ -166,6 +163,14 @@ Inverse :   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <script type="module" src="inside-demo.js"></script>
     </div>
     <!-- END inside -->
+
+    <!-- BEGIN joints -->
+    <div class="part-joints">
+    <h2>Que contient chaque articulation ?</h2>
+    <ul><li><strong>Deux motoréducteurs avec codeurs</strong> : les codeurs mesurent la vitesse de chaque roue pour les boucles PID et pour l'odométrie (qui dérive, voir le cours sur la perception).</li><li><strong>Roue folle</strong> : une roue libre, le troisième point d'appui.</li><li><strong>Batterie</strong> placée bas, et <strong>variateurs de moteurs</strong> (ponts en H) qui transforment les ordres du contrôleur en courant moteur.</li><li><strong>Petit ordinateur</strong> (monocarte) pour la navigation, la cartographie et la communication, par exemple avec ROS 2.</li><li><strong>Capteurs</strong> : lidar pour les obstacles et les cartes, pare-chocs et capteurs de vide pour la sécurité, centrale inertielle pour le cap.</li></ul>
+    <p>Les vitesses des roues sont en rad/s : v = r (ωG + ωD) / 2 et ω = r (ωD − ωG) / L, avec r = 0,07 m et L = 0,40 m comme sur la page du robot mobile. La ligne orange est le chemin parcouru par le robot (odométrie). Le modèle est simplifié : l'intérieur réel dépend de la marque.</p>
+    </div>
+    <!-- END joints -->
 
     <div class="robot">
       <h2>Où utilise-t-on un robot mobile ?</h2>
@@ -207,6 +212,7 @@ Inverse :   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
     <div class="opsdemo" data-robot="mobile"></div>
     <script type="module" src="ops-demo.js"></script>
     <!-- END operations -->
+
 
 
 

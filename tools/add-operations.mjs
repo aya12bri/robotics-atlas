@@ -69,7 +69,7 @@ for (const [file, fit] of Object.entries(PAGES)) {
     <!-- END inside -->
 `;
   h = h.replace(/ *<!-- BEGIN inside -->[\s\S]*?<!-- END inside -->\n\n?/, '');
-  { const i0 = h.indexOf('    <div class="robot">'); if (i0 < 0) throw new Error('no robot box in ' + file); h = h.slice(0, i0) + inside + '\n' + h.slice(i0); }
+  { const iJ = h.indexOf('    <!-- BEGIN joints -->'), i0 = iJ >= 0 ? iJ : h.indexOf('    <div class="robot">'); if (i0 < 0) throw new Error('no robot box in ' + file); h = h.slice(0, i0) + inside + '\n' + h.slice(i0); }   // before "what is inside each joint", if the page has it
   const block = `    <!-- BEGIN operations -->
     <h2>${H2[0]}</h2>
     <p>${INTRO[0]}</p>
