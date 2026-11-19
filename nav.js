@@ -25,6 +25,7 @@
   // the robots that have only a 3D anatomy page (legged, aerial, underwater)
   const MORE_ROBOTS = [
     ['anatomy-humanoid.html',  { en: 'Humanoid',         fr: 'Humanoïde' },        '2 legs / 2 jambes'],
+    ['anatomy-tracked.html',   { en: 'Tracked robot',    fr: 'Robot à chenilles' }, '2 tracks / 2 chenilles'],
     ['anatomy-quadruped.html', { en: 'Quadruped',        fr: 'Quadrupède' },       '4 legs / 4 pattes'],
     ['anatomy-quadrotor.html', { en: 'Drone',            fr: 'Drone' },            '4 rotors / 4 hélices'],
     ['anatomy-auv.html',       { en: 'Underwater robot', fr: 'Robot sous-marin' }, 'AUV']
@@ -36,6 +37,7 @@
       [{ en: 'Parallel', fr: 'Parallèles' }, ['delta.html', 'hexapod.html']]]],
     [{ en: 'Mobile robots', fr: 'Robots mobiles' }, [
       [{ en: 'On wheels', fr: 'À roues' }, ['mobile.html', 'wheels.html']],
+      [{ en: 'On tracks', fr: 'À chenilles' }, ['anatomy-tracked.html']],
       [{ en: 'On legs', fr: 'À pattes' }, ['anatomy-humanoid.html', 'anatomy-quadruped.html']],
       [{ en: 'Aerial', fr: 'Aériens' }, ['anatomy-quadrotor.html']],
       [{ en: 'Underwater', fr: 'Sous-marins' }, ['anatomy-auv.html']]]]
@@ -44,7 +46,7 @@
   const ROBOT_FAMILIES = [
     [{ en: 'Serial arms', fr: 'Bras série' }, ['arm.html', 'gantry.html', 'cylindrical.html', 'spherical.html', 'scara.html', 'articulated.html', 'cobot.html', 'redundant.html']],
     [{ en: 'Parallel robots', fr: 'Robots parallèles' }, ['delta.html', 'hexapod.html']],
-    [{ en: 'Mobile robots on wheels', fr: 'Robots mobiles à roues' }, ['mobile.html', 'wheels.html']],
+    [{ en: 'On wheels and tracks', fr: 'À roues et à chenilles' }, ['mobile.html', 'wheels.html', 'anatomy-tracked.html']],
     [{ en: 'Legged robots', fr: 'Robots à pattes' }, ['anatomy-humanoid.html', 'anatomy-quadruped.html']],
     [{ en: 'Aerial and underwater', fr: 'Aériens et sous-marins' }, ['anatomy-quadrotor.html', 'anatomy-auv.html']]
   ];

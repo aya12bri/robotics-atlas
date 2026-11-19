@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright-core');
-const PAGES = ['anatomy', 'anatomy-scara', 'anatomy-cobot', 'anatomy-delta', 'anatomy-gantry', 'anatomy-mobile', 'anatomy-wheels', 'anatomy-drives', 'anatomy-stewart', 'anatomy-quadruped', 'anatomy-auv', 'anatomy-quadrotor', 'anatomy-humanoid'];
+const PAGES = ['anatomy', 'anatomy-scara', 'anatomy-cobot', 'anatomy-delta', 'anatomy-gantry', 'anatomy-mobile', 'anatomy-wheels', 'anatomy-drives', 'anatomy-stewart', 'anatomy-quadruped', 'anatomy-auv', 'anatomy-tracked', 'anatomy-quadrotor', 'anatomy-humanoid'];
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined });
 for (const theme of ['light', 'dark']) for (const f of PAGES) {
   const page = await browser.newPage({ viewport: { width: 900, height: 900 }, deviceScaleFactor: 1 });

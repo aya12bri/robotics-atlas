@@ -58,6 +58,7 @@ const DESC = {
   'anatomy-drives.html': '3D anatomy of eight drive layouts for mobile robots: differential, Ackermann, omni, Mecanum and more.',
   'anatomy-stewart.html': '3D anatomy of a Stewart platform: six legs, actuators and joints, with an X-ray mode.',
   'anatomy-quadrotor.html': '3D anatomy of a quadrotor drone that really flies: motors, ESC, flight controller, battery and sensors, with an X-ray mode.',
+  'anatomy-tracked.html': '3D anatomy of a tracked robot that really drives: tracks, sprockets, road wheels, motors, sensors and skid steering, with an X-ray mode.',
   'anatomy-quadruped.html': '3D anatomy of a quadruped robot that really trots: 12 joints, legs, cameras, battery and computer, with an X-ray mode.',
   'anatomy-auv.html': '3D anatomy of an autonomous underwater robot (AUV): propeller, fins, pressure hull, sonars and navigation without GPS, with an X-ray mode.',
   'anatomy-humanoid.html': '3D anatomy of a humanoid robot that really walks: gait, leg kinematics, balance, actuators and battery, with an X-ray mode.'
@@ -114,6 +115,7 @@ const DESC_FR = {
   'anatomy-drives.html': 'Anatomie 3D de huit configurations de robots mobiles : différentielle, Ackermann, omni, Mecanum et d\'autres.',
   'anatomy-stewart.html': 'Anatomie 3D d\'une plateforme de Stewart : six jambes, actionneurs et liaisons, avec un mode rayons X.',
   'anatomy-quadrotor.html': 'Anatomie 3D d\'un drone quadrirotor qui vole vraiment : moteurs, ESC, contrôleur de vol, batterie et capteurs, avec un mode rayons X.',
+  'anatomy-tracked.html': 'Anatomie 3D d\'un robot à chenilles qui roule vraiment : chenilles, barbotins, galets, moteurs, capteurs et direction par glissement, avec un mode rayons X.',
   'anatomy-quadruped.html': 'Anatomie 3D d\'un robot quadrupède qui trotte vraiment : 12 articulations, pattes, caméras, batterie et ordinateur, avec un mode rayons X.',
   'anatomy-auv.html': 'Anatomie 3D d\'un robot sous-marin autonome (AUV) : hélice, gouvernes, coque étanche, sonars et navigation sans GPS, avec un mode rayons X.',
   'anatomy-humanoid.html': 'Anatomie 3D d\'un robot humanoïde qui marche vraiment : marche, cinématique des jambes, équilibre, actionneurs et batterie, avec un mode rayons X.'

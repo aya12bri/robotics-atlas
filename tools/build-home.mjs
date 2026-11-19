@@ -22,9 +22,10 @@ const FAMILIES = [
   ['par', ['Parallel', 'Parallèles'], ['Several chains hold one platform.', 'Plusieurs chaînes tiennent une plateforme.'], [
     [['Delta', 'Delta'], ['Parallel', 'Parallèle'], ['Picks hundreds of chocolates per minute.', 'Prend des centaines de chocolats par minute.'], 'delta.html', 'delta.html#anatomy', 'anatomy-delta'],
     [['Hexapod', 'Hexapode'], '6-UPS', ['Six legs move a platform in 6 directions: flight simulators.', 'Six jambes bougent une plateforme dans 6 directions : simulateurs de vol.'], 'hexapod.html', 'hexapod.html#anatomy', 'anatomy-stewart']]],
-  ['mob', ['Mobile on wheels', 'Mobiles à roues'], ['Robots that move around on wheels.', 'Des robots qui se déplacent sur des roues.'], [
+  ['mob', ['On wheels and tracks', 'À roues et à chenilles'], ['Robots that roll on wheels or on tracks.', 'Des robots qui roulent sur des roues ou des chenilles.'], [
     [['Mobile robot', 'Robot mobile'], ['2 wheels', '2 roues'], ['Two motor wheels: it goes forward and turns.', 'Deux roues motrices : il avance et tourne.'], 'mobile.html', 'mobile.html#anatomy', 'anatomy-mobile'],
-    [['Wheels', 'Roues'], ['7 types', '7 types'], ['From the simple wheel to the omni and Mecanum wheel.', 'De la roue simple à la roue omni et Mecanum.'], 'wheels.html', 'anatomy-wheels.html', 'anatomy-wheels']]],
+    [['Wheels', 'Roues'], ['7 types', '7 types'], ['From the simple wheel to the omni and Mecanum wheel.', 'De la roue simple à la roue omni et Mecanum.'], 'wheels.html', 'anatomy-wheels.html', 'anatomy-wheels'],
+    [['Tracked robot', 'Robot à chenilles'], ['2 tracks', '2 chenilles'], ['Two tracks like a small tank: stairs, mud and rubble.', 'Deux chenilles comme un petit char : escaliers, boue et gravats.'], null, 'anatomy-tracked.html', 'anatomy-tracked']]],
   ['leg', ['On legs', 'À pattes'], ['They walk: on two legs like us, or on four like a dog.', 'Ils marchent : sur deux jambes comme nous, ou sur quatre comme un chien.'], [
     [['Humanoid', 'Humanoïde'], ['2 legs', '2 jambes'], ['Walks on two legs and keeps its balance.', 'Marche sur deux jambes et garde son équilibre.'], null, 'anatomy-humanoid.html', 'anatomy-humanoid'],
     [['Quadruped', 'Quadrupède'], ['4 legs', '4 pattes'], ['Trots on four legs and climbs stairs, like Spot.', 'Trotte sur quatre pattes et monte les escaliers, comme Spot.'], null, 'anatomy-quadruped.html', 'anatomy-quadruped']]],

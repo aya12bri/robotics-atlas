@@ -196,6 +196,7 @@ SETS.drone = { parts: SETS.mobile.parts.filter((p) => !['bumper', 'track', 'hobb
   wires: SETS.mobile.wires.filter((w) => !w.some((x) => ['bumper', 'track', 'hobby'].includes(x))).map((w) => w.map((x) => (x === 'wheel' ? 'prop' : x === 'driver' ? 'esc' : x))).concat([['esc', 'prop', 'mot']]) };
 SETS.quadruped = { parts: SETS.humanoid.parts.filter((p) => !['hobby', 'stepper', 'cyl', 'bumper'].includes(p[0])), wires: SETS.humanoid.wires.filter((w) => !w.some((x) => ['hobby', 'stepper', 'cyl', 'bumper'].includes(x))) };
 SETS.auv = { parts: SETS.drone.parts.filter((p) => !['lidar', 'scanner', 'dc', 'planet'].includes(p[0])), wires: SETS.drone.wires.filter((w) => !w.some((x) => ['lidar', 'scanner', 'dc', 'planet'].includes(x))).concat([['enc', 'esc', 'fb']]) };
+SETS.tracked = { parts: SETS.mobile.parts.filter((p) => !['wheel', 'hobby', 'stepper', 'cyl'].includes(p[0])), wires: SETS.mobile.wires.filter((w) => !w.some((x) => ['wheel', 'hobby', 'stepper', 'cyl'].includes(x))).concat([['planet', 'track', 'mech']]) };
 SETS.cobot = { parts: SETS.arm.parts.map((p) => (p[0] === 'curtain' ? ['scanner', p[1], p[2]] : p)).concat([['jtq', 2.1, 0.3]]), wires: SETS.arm.wires.map((w) => w.map((x) => (x === 'curtain' ? 'scanner' : x))).concat([['jtq', 'srelay', 'safe']]) };
 const WIRE = { sig: ['#1aa0c8', L('sensor signals', 'signaux capteurs')], bus: ['#f1c40f', L('network / fieldbus', 'réseau / bus de terrain')], pow: ['#e5484d', L('power', 'alimentation')],
   mot: ['#ff8a2a', L('motor current', 'courant moteur')], fb: ['#30c67c', L('encoder feedback', 'retour codeur')], mech: ['#9aa5b1', L('mechanical link', 'liaison mécanique')], safe: ['#111111', L('safety loop', 'boucle de sécurité')] };
@@ -257,6 +258,14 @@ function auvModel() {                                            // an underwate
   g.add(cy(0.012, 0.15, C.dark, -0.25, y + R - 0.01, 0)); g.add(bx(0.05, 0.025, 0.03, C.white, -0.25, y + R + 0.13, 0));
   return { g, slots: { front: V(0.66, y, 0), center: V(0, y, R + 0.01), hull: V(0.2, y + R, 0), mast: V(-0.25, y + R + 0.15, 0), bottom: V(0.3, y - R, 0.04), tail: V(-0.68, y, 0.06), prop: V(-0.9, y, 0) } };
 }
+function trackedModel() {                                       // a small tracked robot: body, two tracks, lidar mast, camera, antenna
+  const g = new THREE.Group(), y0 = 0.1;
+  g.add(bx(0.66, 0.16, 0.34, C.orange, 0, 0.13)); g.add(bx(0.6, 0.025, 0.3, C.dark, 0, 0.29));
+  for (const z of [-0.25, 0.25]) { const t = new THREE.Mesh(new THREE.CapsuleGeometry(y0, 0.62, 6, 20).rotateZ(Math.PI / 2), C.rubber); t.scale.z = 0.65; t.position.set(0, y0 + 0.005, z); t.castShadow = true; g.add(t);
+    for (const x of [-0.31, 0.31]) g.add(cyZ(0.085, 0.14, C.dark, x, y0 + 0.005, z - 0.07)); }
+  g.add(cy(0.012, 0.05, C.dark, 0.12, 0.31)); g.add(cy(0.05, 0.05, C.dark, 0.12, 0.36)); g.add(bx(0.04, 0.1, 0.2, C.black, 0.34, 0.16)); g.add(cy(0.008, 0.26, C.dark, -0.26, 0.31, 0.1));
+  return { g, slots: { lidar: V(0.12, 0.42, 0), front: V(0.36, 0.22, 0), top: V(-0.1, 0.32, 0), inside: V(0, 0.2, 0.17), sprocket: V(-0.31, 0.1, 0.32), side: V(0, 0.2, 0.18), bumper: V(0.36, 0.1, 0.1), back: V(-0.33, 0.22, 0), mast: V(-0.26, 0.5, 0.1) } };
+}
 function stewartModel() {
   const g = new THREE.Group(); g.add(cy(0.45, 0.06, C.dark)); g.add(cy(0.3, 0.05, C.orange, 0, 0.66));
   for (let i = 0; i < 6; i++) { const a = (Math.floor(i / 2) * 2 * Math.PI) / 3 + (i % 2 ? 0.3 : -0.3), b2 = (Math.floor(((i + 1) % 6) / 2) * 2 * Math.PI) / 3 + 1.05 * (i % 2 ? -1 : 1) * 0;
@@ -289,6 +298,7 @@ function makeRobot(key) {
   else if (key === 'quadrotor') { ({ g, slots } = droneModel()); }
   else if (key === 'quadruped') { ({ g, slots } = quadrupedModel()); }
   else if (key === 'auv') { ({ g, slots } = auvModel()); }
+  else if (key === 'tracked') { ({ g, slots } = trackedModel()); }
   else { const a = makeAMR(0.9); g = new THREE.Group(); g.add(a); slots = { lidar: V(0.36, 0.34, 0), front: V(0.46, 0.18, 0), top: V(0, 0.35, 0), inside: V(0, 0.18, 0), wheel: V(0, 0.07, 0.3), side: V(0, 0.2, 0.32), bumper: V(0.46, 0.06, 0.1), back: V(-0.42, 0.25, 0) }; }
   g.traverse((m) => { if (m.isMesh) { m.castShadow = m.receiveShadow = true; } });
   return { g, slots };
@@ -308,6 +318,7 @@ SLOT.quadruped = { lidar: 'front', cam3d: 'front', us: 'chest', imu: 'torso', ca
   dc: 'hip', planet: 'hip', enc: 'knee', fsr: 'foot', mot3: 'hip', chassis: 'torso', enclosure: 'torso', bumper: 'base', scanner: 'front', estop: 'back', laptop: 'desk', pid: 'torso', srelay: 'torso' };
 SLOT.auv = { cam3d: 'front', us: 'bottom', imu: 'center', cam: 'front', prox: 'front', gps: 'mast', ai: 'center', sbc: 'center', mcu: 'center', pcb: 'center', radio: 'mast', router: 'pole', battery: 'center', esc: 'tail', heatsink: 'center', cables: 'center',
   dc: 'tail', planet: 'tail', enc: 'tail', prop: 'prop', chassis: 'hull', enclosure: 'hull', scanner: 'bottom', estop: 'desk', laptop: 'desk', pid: 'center', srelay: 'center' };
+SLOT.tracked = Object.assign({}, SLOT.mobile, { track: 'sprocket', dc: 'sprocket', planet: 'sprocket', enc: 'sprocket', radio: 'mast', gps: 'top', srelay: 'inside' });
 SLOT.arm.srelay = 'cabinet'; SLOT.arm.jtq = 'j2'; SLOT.mobile.srelay = 'inside'; SLOT.humanoid.srelay = 'torso'; SLOT.drone.srelay = 'center';
 SLOT.cobot = SLOT.arm;
 const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dans les mains de l\'opératrice (pupitre de programmation)'), j1: L('axis 1, in the base', 'axe 1, dans la base'), j2: L('the shoulder (axis 2)', 'l\'épaule (axe 2)'), j3: L('the elbow (axis 3)', 'le coude (axe 3)'), wrist: L('the wrist', 'le poignet'), tool: L('the tool, at the end of the arm', 'l\'outil, au bout du bras'),
@@ -318,6 +329,7 @@ const WHERE = { operator: L('in the hands of the operator (teach pendant)', 'dan
   side: L('on the sides', 'sur les côtés'), bumper: L('all around, at the bottom', 'tout autour, en bas'), back: L('at the back', 'à l\'arrière'), head: L('in the head', 'dans la tête'), chest: L('in the chest', 'dans la poitrine'), torso: L('in the torso', 'dans le torse'),
   shoulder: L('in the shoulders and arms', 'dans les épaules et les bras'), hand: L('in the hands', 'dans les mains'), hip: L('in the hips and legs', 'dans les hanches et les jambes'), knee: L('in the knees', 'dans les genoux'), foot: L('under the feet', 'sous les pieds'),
   center: L('in the centre body', 'dans le corps central'), mast: L('on the GPS mast', 'sur le mât GPS'), bottom: L('underneath', 'en dessous'), arm: L('in the arms', 'dans les bras'), motor: L('at the end of each arm', 'au bout de chaque bras'), prop: L('on top of each motor', 'sur chaque moteur'),
+  sprocket: L('at the drive sprocket, at the back of each track', 'au barbotin, à l\'arrière de chaque chenille'),
   tail: L('in the tail, behind the hull', 'dans la queue, derrière la coque'), hull: L('the watertight hull itself', 'la coque étanche elle-même') };
 
 // ---------------------------------------------------------------- "how it works": a few key components, laid out clearly, with big callout cards
@@ -331,7 +343,7 @@ const HOWSET = {
   mobile: [[['lidar'], -2.05, -1.05, 1], [['cam', 'cam3d'], -2.05, -0.3, 1], [['us'], -2.05, 0.4, 1], [['imu'], -2.05, 1.0, 1],
     [['sbc', 'ai'], -1.0, -1.0, 2], [['mcu'], -1.0, -0.2, 2], [['radio'], -1.0, 0.55, 2],
     [['battery'], 0.05, -1.0, 3], [['driver', 'esc'], 0.05, -0.15, 3],
-    [['mot3', 'dc'], 1.0, -0.75, 4], [['enc'], 1.0, -1.18, 5], [['planet'], 1.95, -0.75, 4], [['wheel', 'prop', 'fsr'], 1.95, 0.2, 4],
+    [['mot3', 'dc'], 1.0, -0.75, 4], [['enc'], 1.0, -1.18, 5], [['planet'], 1.95, -0.75, 4], [['wheel', 'prop', 'fsr', 'track'], 1.95, 0.2, 4],
     [['estop'], -1.0, 1.65, 0], [['bumper'], 0.05, 1.65, 0], [['scanner'], 1.0, 1.0, 0], [['srelay'], 1.95, 1.65, 0]]
 };
 const HOWTXT = {
@@ -373,6 +385,7 @@ const HOWTXT = {
   radio: [L('Wi-Fi / Bluetooth', 'Wi-Fi / Bluetooth'), L('Receives the missions from the fleet manager', 'Reçoit les missions du gestionnaire de flotte')],
   planet: [L('Gearbox', 'Réducteur'), L('Slows the motor down and makes it stronger', 'Ralentit le moteur et le rend plus fort')],
   wheel: [L('Drive wheel', 'Roue motrice'), L('Pushes on the floor: the robot moves', 'Pousse sur le sol : le robot avance')],
+  track: [L('Track', 'Chenille'), L('Grips the ground: the robot moves', 'Accroche le sol : le robot avance')],
   fsr: [L('Foot sensor', 'Capteur de pied'), L('Feels when the foot touches the ground', 'Sent quand le pied touche le sol')],
   robot: [L('The robot moves', 'Le robot bouge'), L('The result: a precise motion', 'Le résultat : un mouvement précis')]
 };
@@ -476,7 +489,7 @@ function mount(host) {
       [L('Camera on its stand', 'Caméra sur son support'), V(1.6, 1.42, -0.4)], [L('Light curtain (entrance of the cell)', 'Barrière immatérielle (entrée de la cellule)'), V(1.0, 1.0, 0.95)]]
     : [[L('Wi-Fi access point', 'Point d\'accès Wi-Fi'), V(-1.7, 1.55, -0.3)], [L('Supervision desk', 'Poste de supervision'), V(-1.6, 0.75, 0.6)]];
   // the operator, at real size next to the robot, with the teach pendant (a tablet for mobile robots)
-  const HUMAN = { six: 0.58, cobot: 0.6, scara: 0.72, delta: 0.75, gantry: 0.62, stewart: 0.7, humanoid: 0.95, quadrotor: 0.6, quadruped: 0.8, auv: 0.75, mobile: 1, wheels: 1, drives: 1 }[host.dataset.robot || 'six'] || 0.7;
+  const HUMAN = { six: 0.58, cobot: 0.6, scara: 0.72, delta: 0.75, gantry: 0.62, stewart: 0.7, humanoid: 0.95, quadrotor: 0.6, quadruped: 0.8, auv: 0.75, tracked: 1, mobile: 1, wheels: 1, drives: 1 }[host.dataset.robot || 'six'] || 0.7;
   const oper = makePerson({ female: true, pendant: true, helmet: armSet }); oper.scale.setScalar(Math.min(1.25, HUMAN * robotG.scale.x)); oper.position.set(RC.x - (armSet ? 1.05 : 1.3), 0, RC.z + (armSet ? 0.3 : -0.45)); oper.rotation.y = Math.PI / 2; scene.add(oper);
   oper.updateMatrixWorld(true); const pendantW = oper.userData.pendant.getWorldPosition(V(0, 0, 0));
   const CELL = { cabinet: V(-1.6, 0.45, -0.08), panel: V(-1.6, 0.6, -0.08), desk: V(-1.6, 0.42, 0.6), conveyor: V(1.6, 0.33, 0.05), camstand: V(1.58, 1.28, -0.4), fence: V(1.0, 0.55, 0.95), pole: V(-1.7, 1.25, -0.24) };
@@ -507,6 +520,7 @@ function mount(host) {
   HOW.push({ id: 'robot', step: 4, robot: true });
   const RK = host.dataset.robot, BYROBOT = {
     quadruped: { mot3: [L('Leg motor', 'Moteur de patte'), L('Moves the hip and the knee', 'Fait bouger la hanche et le genou')], enc: [L('Encoder (in the joint)', 'Codeur (dans l\'articulation)'), L('Measures the angle of each joint', 'Mesure l\'angle de chaque articulation')] },
+    tracked: { dc: [L('Track motor', 'Moteur de chenille'), L('Turns the drive sprocket of one track', 'Fait tourner le barbotin d\'une chenille')], enc: [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the sprocket', 'Compte les tours du barbotin')] },
     auv: { prop: [L('Thruster (motor + propeller)', 'Propulseur (moteur + hélice)'), L('Pushes the vehicle through the water', 'Pousse le véhicule dans l\'eau')], esc: [L('Motor controller', 'Contrôleur moteur'), L('Sends the current to the thruster', 'Envoie le courant au propulseur')], enc: [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the propeller', 'Compte les tours de l\'hélice')], us: [L('Sonar', 'Sonar'), L('Measures the distance with sound under water', 'Mesure la distance avec le son sous l\'eau')] }
   };
   const TX = (id) => ((BYROBOT[RK] || {})[id] || (isCobot && id === 'cabinet' ? HOWTXT.cobotcab : isCobot && id === 'drive' ? HOWTXT.cobotdrv : !isArm && id === 'enc' ? [L('Encoder (on the motor)', 'Codeur (sur le moteur)'), L('Counts the turns of the wheel', 'Compte les tours de la roue')] : HOWTXT[id]));
