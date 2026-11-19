@@ -793,4 +793,6 @@ function mount(host) {
   host.__layer = (i) => { setLayer(i); camK = 1; const H = layer === 0 ? ROBOTCAM : layer === LAYERS.length - 1 ? HOME : LAYERCAM; camera.position.copy(H.p); orbit.target.copy(H.t); for (const p of list) { const g = goals[p.id], u = objs[p.id].userData; u.cur = (g || u.slot).clone(); u.sc = g ? (layer === LAYERS.length - 1 ? u.rowS * 1.15 : u.rowS) : 0.3; } };
   host.__test = () => ({ parts: list.length, wires: wires.length, missing: SET.parts.filter(([id]) => !PARTS[id] || !B[PARTS[id][1]]).map((p) => p[0]) });
 }
-document.querySelectorAll('.sysdemo').forEach(mount);
+// each demo is built only when it comes near the screen (a robot page holds several: they would all start at once)
+const lazyMount = (sel, fn) => { const els = document.querySelectorAll(sel); if (!('IntersectionObserver' in window)) { els.forEach(fn); return; } const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); fn(e.target); } }), { rootMargin: '300px 0px' }); els.forEach((el) => io.observe(el)); };
+lazyMount('.sysdemo', mount);

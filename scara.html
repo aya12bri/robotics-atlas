@@ -135,7 +135,11 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
     <h2>All the components, from A to Z</h2>
     <p>First the whole robot with a number on each component where it sits; then take the components out onto a workbench, wired up: sensors, controller, drives, power, motors, gearboxes, encoders, safety, network and software. Click a number to see what it is, real examples and how it works, then press "How it works" to follow the signals around the loop.</p>
     <div class="sysdemo" data-robot="scara" data-set="arm"></div>
-    <script type="module" src="anatomy.js"></script>
+    <script type="module">
+      // the 3D anatomy starts when its viewer comes near the screen (on a robot page it sits in a tab that is closed at first)
+      const v = document.getElementById('anatView'), go = () => import('./anatomy.js');
+      if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
+    </script>
     <script type="module" src="system-demo.js"></script>
     </div>
     <!-- END anatomy -->
@@ -531,7 +535,9 @@ q4 = q1 + q2                              (keeps the cube pointing the same way)
 
       let lastTime = performance.now();
       studio(THREE, renderer, scene);
-      renderer.setAnimationLoop((now) => {
+      const onScreen = { v: true, t: 0 };   // nothing is drawn while the view is off the screen or in a closed tab, and at most 30 times a second
+      if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen.v = es[0].isIntersecting; }).observe(renderer.domElement);
+      renderer.setAnimationLoop((now) => { if (!onScreen.v || document.hidden) return; { const t = performance.now(); if (t - onScreen.t < 30) return; onScreen.t = t; }
         const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;
         stepDemo(dt);

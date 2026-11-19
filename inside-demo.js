@@ -622,4 +622,6 @@ function mount(host) {
   host.__target = (i) => { T = R.targets[i]; placeTarget(); };
   host.__go = (i) => { go(i); camK = 1; const s = shotCam(i); camera.position.copy(s.p); orbit.target.copy(s.t); for (let n = 0; n < 90; n++) frame(1 / 30); };
 }
-document.querySelectorAll('.insdemo').forEach(mount);
+// each demo is built only when it comes near the screen (a robot page holds several: they would all start at once)
+const lazyMount = (sel, fn) => { const els = document.querySelectorAll(sel); if (!('IntersectionObserver' in window)) { els.forEach(fn); return; } const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); fn(e.target); } }), { rootMargin: '300px 0px' }); els.forEach((el) => io.observe(el)); };
+lazyMount('.insdemo', mount);

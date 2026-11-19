@@ -5,25 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Robot cartésien (portique)</title>
-    <!-- seo -->
-    <meta name="description" content="Robot cartésien (portique) 3D interactif à trois axes linéaires : cinématique, espace de travail et prise-dépose." />
-    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/gantry-fr" />
-    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/gantry" />
-    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/gantry-fr" />
-    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/gantry" />
-    <meta property="og:locale" content="fr_FR" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Robotics Atlas" />
-    <meta property="og:title" content="Robot cartésien (portique)" />
-    <meta property="og:description" content="Robot cartésien (portique) 3D interactif à trois axes linéaires : cinématique, espace de travail et prise-dépose." />
-    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/gantry-fr" />
-    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#2f6bff" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <!-- /seo -->
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="anatomy.css" />
     <style>
@@ -114,7 +95,11 @@ z0 = q1             (le long des grands rails)</pre>
     <h2>Tous les composants, de A à Z</h2>
     <p>D'abord le robot entier, avec un numéro sur chaque composant à l'endroit où il se trouve ; puis sortez les composants sur un établi, câblés : capteurs, contrôleur, variateurs, alimentation, moteurs, réducteurs, codeurs, sécurité, réseau et logiciels. Cliquez sur un numéro pour voir ce que c'est, des exemples réels et comment ça marche, puis appuyez sur « Comment ça marche » pour suivre les signaux dans la boucle.</p>
     <div class="sysdemo" data-robot="gantry" data-set="arm"></div>
-    <script type="module" src="anatomy.js"></script>
+    <script type="module">
+      // the 3D anatomy starts when its viewer comes near the screen (on a robot page it sits in a tab that is closed at first)
+      const v = document.getElementById('anatView'), go = () => import('./anatomy.js');
+      if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '300px 0px' }); io.observe(v); } else go();
+    </script>
     <script type="module" src="system-demo.js"></script>
     </div>
     <!-- END anatomy -->
@@ -361,7 +346,9 @@ z0 = q1             (le long des grands rails)</pre>
       });
 
       studio(THREE, renderer, scene);
-      renderer.setAnimationLoop(() => {
+      const onScreen = { v: true, t: 0 };   // nothing is drawn while the view is off the screen or in a closed tab, and at most 30 times a second
+      if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen.v = es[0].isIntersecting; }).observe(renderer.domElement);
+      renderer.setAnimationLoop(() => { if (!onScreen.v || document.hidden) return; { const t = performance.now(); if (t - onScreen.t < 30) return; onScreen.t = t; }
         orbit.update();
         renderer.render(scene, camera);
       });

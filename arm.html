@@ -307,7 +307,9 @@
 
       studio(THREE, renderer, scene);
       window.RA3D_VIEW = { THREE, scene, camera, orbit, renderer };   // for tools that take pictures (thumbnails)
-      renderer.setAnimationLoop(() => {
+      const onScreen = { v: true, t: 0 };   // nothing is drawn while the view is off the screen or in a closed tab, and at most 30 times a second
+      if ('IntersectionObserver' in window) new IntersectionObserver((es) => { onScreen.v = es[0].isIntersecting; }).observe(renderer.domElement);
+      renderer.setAnimationLoop(() => { if (!onScreen.v || document.hidden) return; { const t = performance.now(); if (t - onScreen.t < 30) return; onScreen.t = t; }
         orbit.update();
         renderer.render(scene, camera);
       });

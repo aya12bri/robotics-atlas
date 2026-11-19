@@ -64,7 +64,8 @@ let visible = true;
 new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(box);
 studio(THREE, renderer, scene);
 window.RA3D_VIEW = { THREE, scene, camera, orbit, renderer };   // for tools that take pictures (thumbnails)
-renderer.setAnimationLoop(() => { if (!visible) return; if (R.tick) R.tick(); orbit.update(); renderer.render(scene, camera); });
+let lastDraw = 0;                                                    // at most 30 images a second, none while off the screen
+renderer.setAnimationLoop(() => { if (!visible || document.hidden) return; { const t = performance.now(); if (t - lastDraw < 30) return; lastDraw = t; } if (R.tick) R.tick(); orbit.update(); renderer.render(scene, camera); });
 
 // ================= diagram =================
 const svg = document.getElementById('schema');

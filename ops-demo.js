@@ -1188,6 +1188,8 @@ function mount(host) {
   };
   run(R.ops[0]);
 }
-document.querySelectorAll('.opsdemo').forEach(mount);
+// each demo is built only when it comes near the screen (a robot page holds several: they would all start at once)
+const lazyMount = (sel, fn) => { const els = document.querySelectorAll(sel); if (!('IntersectionObserver' in window)) { els.forEach(fn); return; } const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); fn(e.target); } }), { rootMargin: '300px 0px' }); els.forEach((el) => io.observe(el)); };
+lazyMount('.opsdemo', mount);
 
 export { makePerson, articulated, arm3, cylindrical, spherical, hexapod, scara, gantry, delta, makeAMR, MAT, M, box, cyl, cylZ, cylX, V, ease, textTexture };
