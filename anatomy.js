@@ -1046,7 +1046,7 @@ const frameTags = FRAME.map(([name, col, dir]) => {
 const gizmo = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); gizmo.setAttribute('class', 'angizmo'); gizmo.setAttribute('viewBox', '-50 -50 100 100'); gizmo.setAttribute('aria-hidden', 'true'); box.appendChild(gizmo);
 const gq = new THREE.Quaternion(), gv = new THREE.Vector3();
 function drawFrame(w, h) {
-  frameTags.forEach(({ tip, t }) => { gv.copy(tip).project(camera); const off = gv.z > 1; t.style.display = off ? 'none' : ''; if (!off) { t.style.left = ((gv.x * 0.5 + 0.5) * w) + 'px'; t.style.top = ((-gv.y * 0.5 + 0.5) * h) + 'px'; } });
+  frameTags.forEach(({ tip, t }) => { gv.copy(tip).project(camera); const x = (gv.x * 0.5 + 0.5) * w, y = (-gv.y * 0.5 + 0.5) * h, R = lens.on && lens.x >= 0 ? lensSize() / 2 + 8 : -1; const off = gv.z > 1 || (Math.abs(x - lens.x) < R && Math.abs(y - lens.y) < R); t.style.display = off ? 'none' : ''; if (!off) { t.style.left = x + 'px'; t.style.top = y + 'px'; } });
   gq.copy(camera.quaternion).invert();
   const ax = FRAME.map(([name, col, dir]) => { gv.copy(dir).applyQuaternion(gq); return { name, col, x: gv.x * 34, y: -gv.y * 34, z: gv.z }; }).sort((a, b) => a.z - b.z);
   gizmo.innerHTML = '<circle r="46" class="bg"/>' + ax.map((a) => '<line x1="0" y1="0" x2="' + a.x.toFixed(1) + '" y2="' + a.y.toFixed(1) + '" stroke="' + a.col + '" stroke-width="3.5" stroke-linecap="round" opacity="' + (a.z < -0.2 ? 0.45 : 1) + '"/><circle cx="' + a.x.toFixed(1) + '" cy="' + a.y.toFixed(1) + '" r="8" fill="' + a.col + '"/><text x="' + a.x.toFixed(1) + '" y="' + (a.y + 3.5).toFixed(1) + '">' + a.name + '</text>').join('');
@@ -1098,7 +1098,10 @@ const ICON = {
   front: '<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M12 8l2.5 4L12 16l-2.5-4z"/>',
   side: '<path d="M7 4h6v6h4v10h-4v-6H7z"/>',
   full: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
-  exit: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>'
+  exit: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+  loupe: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M8 10.5h5M10.5 8v5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  minus: '<path d="M5 12h14"/>'
 };
 const svgIcon = (k) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">' + ICON[k] + '</svg>';
 const VIEWS = [['iso', L('3D view', 'Vue 3D')], ['top', L('Top', 'Dessus')], ['front', L('Front', 'Face')], ['side', L('Side', 'Côté')]];
@@ -1129,6 +1132,68 @@ if (box.requestFullscreen) {
   fullBtn.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else box.requestFullscreen().catch(() => {}); });
   document.addEventListener('fullscreenchange', () => { syncFull(); resize(); });
   syncFull(); box.appendChild(fullBtn);
+}
+// ------------------------------------------------------------------ the loupe and the zoom buttons
+// Loupe: a square lens follows the pointer (mouse or finger) and shows the part under it ×2 to ×8 (wheel or +/− change it);
+// a click (tap) in loupe mode brings the camera closer to the part you clicked. It works the same in X-ray mode.
+const lensEl = document.createElement('div'); lensEl.className = 'anlens'; lensEl.setAttribute('aria-hidden', 'true');
+const lensTag = document.createElement('span'); lensEl.appendChild(lensTag); box.appendChild(lensEl);
+const lens = { on: false, x: -1, y: -1, z: 3, down: null };
+const lensHint = document.createElement('div'); lensHint.className = 'anlenshint';
+lensHint.textContent = matchMedia('(pointer: coarse)').matches ? L('Slide your finger over a part · tap to move closer · +/− = stronger', 'Glissez le doigt sur une pièce · touchez pour vous rapprocher · +/− = plus fort') : L('Point at a part · wheel = stronger · click to move closer · Esc to leave', 'Pointez une pièce · molette = plus fort · clic pour vous rapprocher · Échap pour quitter');
+box.appendChild(lensHint);
+const loupeBtn = document.createElement('button'); loupeBtn.type = 'button'; loupeBtn.className = 'anfull anloupe'; loupeBtn.innerHTML = svgIcon('loupe');
+loupeBtn.setAttribute('aria-pressed', 'false'); loupeBtn.setAttribute('aria-label', L('Magnifying glass', 'Loupe')); loupeBtn.title = L('Magnifying glass: point at a part to see it bigger (wheel = stronger), click to move closer', 'Loupe : pointez une pièce pour la voir en grand (molette = plus fort), cliquez pour vous rapprocher');
+const zoomBox = document.createElement('div'); zoomBox.className = 'anzoom';
+const zoomBy = (k) => { fly = null; camera.position.sub(orbit.target).multiplyScalar(k).add(orbit.target); };
+[['plus', L('Zoom in', 'Agrandir'), 0.8], ['minus', L('Zoom out', 'Réduire'), 1.25]].forEach(([ic, lab, k]) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'anfull'; b.innerHTML = svgIcon(ic); b.setAttribute('aria-label', lab); b.title = lab;
+  b.addEventListener('click', () => { if (lens.on) { lens.z = Math.max(2, Math.min(8, lens.z * (k < 1 ? 1.25 : 0.8))); showLens(); } else zoomBy(k); });
+  zoomBox.appendChild(b);
+});
+box.appendChild(loupeBtn); box.appendChild(zoomBox);
+function lensSize() { return Math.round(Math.min(240, box.clientWidth * 0.42, box.clientHeight * 0.55)); }
+function showLens() {
+  const S = lensSize(), vis = lens.on && lens.x >= 0;
+  lensEl.style.display = vis ? 'block' : 'none';
+  if (!vis) return;
+  lensEl.style.width = lensEl.style.height = S + 'px'; lensEl.style.left = (lens.x - S / 2) + 'px'; lensEl.style.top = (lens.y - S / 2) + 'px';
+  lensTag.textContent = '×' + (Math.round(lens.z * 10) / 10).toString().replace('.', FR ? ',' : '.');
+}
+function setLoupe(on) {
+  lens.on = on; orbit.enabled = !on; box.classList.toggle('loupe', on); lensHint.style.display = on ? 'block' : 'none';
+  loupeBtn.classList.toggle('on', on); loupeBtn.setAttribute('aria-pressed', on);
+  if (on && lens.x < 0) { lens.x = box.clientWidth / 2; lens.y = box.clientHeight / 2; }
+  if (on) { spin = false; syncBtn(); }
+  showLens();
+}
+loupeBtn.addEventListener('click', () => setLoupe(!lens.on));
+const cv = renderer.domElement, ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+const at = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+cv.addEventListener('pointermove', (e) => { if (!lens.on) return; [lens.x, lens.y] = at(e); showLens(); });
+cv.addEventListener('pointerdown', (e) => { if (!lens.on) return; [lens.x, lens.y] = at(e); lens.down = [lens.x, lens.y]; showLens(); });
+cv.addEventListener('pointerup', (e) => {
+  if (!lens.on || !lens.down) return;
+  const [x, y] = at(e), moved = Math.hypot(x - lens.down[0], y - lens.down[1]); lens.down = null;
+  if (moved > 6) return;                                         // a drag only moves the lens; a click goes closer to the part
+  ndc.set(x / cv.clientWidth * 2 - 1, -(y / cv.clientHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(scene.children, true).filter((h) => h.object.visible && h.object.isMesh && !h.object.userData.floor);
+  const hit = hits.find((h) => !(h.object.material && h.object.material.transparent && h.object.material.opacity < 0.3)) || hits[0];   // in X-ray: a part inside first, else the shell
+  if (!hit) return;
+  const to = hit.point.clone(), d = Math.max(VIEW_R * 0.18, camera.position.distanceTo(orbit.target) * 0.55);
+  fly = { from: camera.position.clone(), to: to.clone().add(camera.position.clone().sub(orbit.target).normalize().multiplyScalar(d)), tFrom: orbit.target.clone(), tTo: to, t0: performance.now() };
+});
+cv.addEventListener('wheel', (e) => { if (!lens.on) return; e.preventDefault(); lens.z = Math.max(2, Math.min(8, lens.z * (e.deltaY < 0 ? 1.15 : 1 / 1.15))); showLens(); }, { passive: false });
+cv.addEventListener('pointerleave', (e) => { if (lens.on && e.pointerType === 'mouse') { lens.x = -1; showLens(); } });
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && lens.on) setLoupe(false); });
+// draws the magnified square over the normal picture, with the same camera looking at a smaller piece of the screen
+function drawLens(w, h) {
+  if (!lens.on || lens.x < 0) return;
+  const S = lensSize(), s = S / lens.z, x0 = lens.x - S / 2, y0 = lens.y - S / 2;
+  camera.setViewOffset(w, h, lens.x - s / 2, lens.y - s / 2, s, s);
+  renderer.setScissorTest(true); renderer.setScissor(x0, h - y0 - S, S, S); renderer.setViewport(x0, h - y0 - S, S, S);
+  renderer.render(scene, camera);
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h); camera.clearViewOffset();
 }
 function setXray(on) {
   xray = on; shells.forEach((m) => { m.transparent = on; m.opacity = on ? 0.16 : 1; m.depthWrite = !on; m.needsUpdate = true; });
@@ -1183,6 +1248,7 @@ function layoutTags(w, h) {
   let svg = '';
   ids.forEach((i) => {
     tags[i].style.left = pos[i].x + 'px'; tags[i].style.top = pos[i].y + 'px';
+    if (lens.on && lens.x >= 0) { const S = lensSize() / 2 + 12; tags[i].style.visibility = Math.abs(pos[i].x - lens.x) < S && Math.abs(pos[i].y - lens.y) < S ? 'hidden' : ''; } else tags[i].style.visibility = '';
     const dx = at[i].x - pos[i].x, dy = at[i].y - pos[i].y, d = Math.hypot(dx, dy);
     if (d < TAG_R + 6) return;
     const ux = dx / d, uy = dy / d, x1 = pos[i].x + ux * TAG_R, y1 = pos[i].y + uy * TAG_R, x2 = at[i].x, y2 = at[i].y, hx = x2 - ux * 9, hy = y2 - uy * 9, c = COL[i], sw = sel === i ? 2.6 : 1.6;
@@ -1233,6 +1299,7 @@ function loop(now) {
   sun.target.position.copy(orbit.target); sun.position.set(orbit.target.x + VIEW_R * 1.2, orbit.target.y + VIEW_R * 2.4, orbit.target.z + VIEW_R * 0.9);
   renderer.render(scene, camera);
   const w = box.clientWidth, h = box.clientHeight;
+  drawLens(w, h);
   if (!arranged) arrange();
   layoutTags(w, h);
   drawFrame(w, h);
@@ -1248,4 +1315,4 @@ function arrange() {
   sides.forEach((side, k) => side.sort((a, b) => a.y - b.y).forEach((o, row) => { cards[o.i].dataset.side = k ? 'right' : 'left'; cards[o.i].style.gridRow = row + 1; }));
 }
 pose(); select(CFG.panel ? 0 : -1); requestAnimationFrame(loop);
-window.RA_ANATOMY = { q, select, setXray, pose };
+window.RA_ANATOMY = { q, select, setXray, pose, setLoupe };
