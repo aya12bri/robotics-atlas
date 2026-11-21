@@ -52,3 +52,15 @@
   .ancard:not(.info):not(.on) p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
   .ancall { display: block; }
 }
+
+/* the loupe (magnifying glass) and the zoom buttons, under the full-screen button */
+.anloupe { right: 48px; }
+#anatView .anloupe.on { color: #fff; border-color: #8b7bff; background: linear-gradient(160deg, #6d5dfc, #3b4fd8); }
+.anzoom { position: absolute; right: 10px; top: 48px; z-index: 3; display: grid; gap: 4px; }
+.anzoom .anfull { position: static; }
+#anatView.loupe canvas { cursor: crosshair; }
+.anlens { display: none; position: absolute; z-index: 2; pointer-events: none; border: 3px solid #fff; border-radius: 6px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 10px 30px -6px rgba(0, 0, 0, 0.6); }
+.anlens span { position: absolute; right: 4px; bottom: 4px; padding: 1px 6px; border-radius: 6px; background: rgba(18, 20, 28, 0.75); color: #fff; font: 700 11px var(--sans, inherit); }
+#anatView.light .anlens { border-color: #6d5dfc; }
+.anlenshint { display: none; position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 3; max-width: calc(100% - 140px); padding: 5px 12px; border-radius: 10px; background: rgba(18, 20, 28, 0.75); color: #fff; font: 600 12px var(--sans, inherit); text-align: center; pointer-events: none; }
+@media (max-width: 600px) { .anlenshint { bottom: auto; top: 54px; max-width: calc(100% - 70px); } }
