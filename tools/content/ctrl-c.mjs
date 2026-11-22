@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { vibFig } from './mk-figs.mjs';
 const PRE = 'ctrl-';
 
 export function partC() {
@@ -109,6 +110,7 @@ lesson(PRE, 9, {
     EQ('<i>f</i> = (1 / 2π) √( <i>k</i> (1/<i>J</i><sub>m</sub> + 1/<i>J</i><sub>l</sub>) )'),
     P('For <i>k</i> = 10 000 N·m/rad, <i>J</i><sub>m</sub> = 0.2 and <i>J</i><sub>l</sub> = 0.5 kg·m² (both seen at the joint): <i>f</i> = (1/2π) √(10 000 × (5 + 2)) = (1/2π) √70 000 ≈ 42 Hz. The position loop bandwidth must stay well under this frequency, or the controller will excite the resonance. A trajectory whose acceleration changes abruptly every 24 ms (about 42 Hz) would excite it: this is what a jerk-limited profile avoids.',
       'Pour <i>k</i> = 10 000 N·m/rad, <i>J</i><sub>m</sub> = 0,2 et <i>J</i><sub>l</sub> = 0,5 kg·m² (vues à l\'articulation) : <i>f</i> = (1/2π) √(10 000 × (5 + 2)) = (1/2π) √70 000 ≈ 42 Hz. La bande passante de la boucle de position doit rester bien sous cette fréquence, sinon le contrôleur excitera la résonance. Une trajectoire dont l\'accélération change brutalement toutes les 24 ms (environ 42 Hz) l\'exciterait : c\'est ce qu\'un profil à à-coup limité évite.'),
+    vibFig(),
     BOX('keep', ['Input shaping', 'Filtrage d\'entrée'],
       P('If you know the vibration frequency <i>f</i>, send each command as <strong>two half-size commands separated by half a period</strong> (1/(2<i>f</i>)). The vibrations created by the two halves cancel each other. This “zero-vibration shaper” is used on cranes, 3D printers and long robot arms, and costs only a delay of half a period.',
         'Si l\'on connaît la fréquence de vibration <i>f</i>, envoyer chaque commande en <strong>deux demi-commandes séparées d\'une demi-période</strong> (1/(2<i>f</i>)). Les vibrations créées par les deux moitiés s\'annulent. Ce « filtre sans vibration » est utilisé sur les grues, les imprimantes 3D et les longs bras robots, et ne coûte qu\'un retard d\'une demi-période.')),

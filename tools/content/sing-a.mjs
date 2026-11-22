@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { jacFig } from './mk-figs.mjs';
 const PRE = 'sing-';
 const J = (a, b, c, d) => MX(2, [a, b, c, d]);
 const V2 = (a, b) => MX(1, [a, b]);
@@ -62,6 +63,7 @@ lesson(PRE, 2, {
   time: 10,
   goal: ['to recognise a singularity in a drawing, and to name it with the Jacobian.', 'reconnaître une singularité sur un dessin, et la nommer avec la jacobienne.'],
   body: [
+    jacFig(true),
     H4('2.1 The stretched arm', '2.1 Le bras tendu'),
     P('Put the two-joint arm with <i>θ</i><sub>2</sub> = 0: the arm is perfectly stretched. Replace in the Jacobian of lesson 1 (cos <i>θ</i><sub>12</sub> = cos <i>θ</i><sub>1</sub>, sin <i>θ</i><sub>12</sub> = sin <i>θ</i><sub>1</sub>):',
       'Mettez le bras à deux articulations avec <i>θ</i><sub>2</sub> = 0 : le bras est parfaitement tendu. Remplacez dans la jacobienne de la leçon 1 (cos <i>θ</i><sub>12</sub> = cos <i>θ</i><sub>1</sub>, sin <i>θ</i><sub>12</sub> = sin <i>θ</i><sub>1</sub>) :'),
