@@ -756,11 +756,20 @@
       const apply = () => {
         pending = false;
         try {
-          const b = svg.getBBox(); if (!b.width || !b.height) return;
+          // the box of the drawing without the floor line (a long flat line across the whole picture would stop any zoom)
+          let b = null;
+          [].forEach.call(svg.children, (el) => {
+            if (!el.getBBox || el.tagName === 'defs' || el.classList.contains('rb-leader')) return;
+            let r; try { r = el.getBBox(); } catch (e) { return; }
+            if (!r.width && !r.height) return;
+            if (r.height < 4 && r.width > 300) return;
+            b = b ? { x: Math.min(b.x, r.x), y: Math.min(b.y, r.y), width: Math.max(b.x + b.width, r.x + r.width) - Math.min(b.x, r.x), height: Math.max(b.y + b.height, r.y + r.height) - Math.min(b.y, r.y) } : { x: r.x, y: r.y, width: r.width, height: r.height };
+          });
+          if (!b || !b.width || !b.height) return;
           box = box ? { x0: Math.min(box.x0, b.x), y0: Math.min(box.y0, b.y), x1: Math.max(box.x1, b.x + b.width), y1: Math.max(box.y1, b.y + b.height) } : { x0: b.x, y0: b.y, x1: b.x + b.width, y1: b.y + b.height };
           const pad = 44, R = 700 / 420; let w = box.x1 - box.x0 + 2 * pad, h = box.y1 - box.y0 + 2 * pad;
           if (w / h < R) w = h * R; else h = w / R;
-          w = Math.min(Math.max(w, 330), 900); h = w / R;
+          w = Math.min(Math.max(w, 300), 900); h = w / R;
           const cx = (box.x0 + box.x1) / 2, cy = (box.y0 + box.y1) / 2;
           svg.setAttribute('viewBox', [cx - w / 2, cy - h / 2, w, h].map((v) => v.toFixed(1)).join(' '));
         } catch (e) { /* svg not displayed yet */ }

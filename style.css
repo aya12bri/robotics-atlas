@@ -1986,3 +1986,10 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .stepbar button { padding: 0.45rem 0.9rem; border-radius: 10px; border: 1px solid var(--line, #c9d1dc); background: var(--card, #fff); color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
 .stepbar button:disabled { opacity: 0.4; cursor: default; }
 .stepbar .dots { display: flex; gap: 6px; } .stepbar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line, #c9d1dc); cursor: pointer; } .stepbar .dots i.on { background: #2f6bff; }
+
+/* the common perpendicular, case by case: one small drawing per case, with its text under it */
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.8rem; }
+.cases .case { margin: 0; background: var(--fpanel); border-radius: 12px; padding: 0.5rem 0.7rem 0.7rem; }
+.cases .case svg { width: 100%; height: auto; display: block; }
+.cases .case svg text { font-family: var(--font); }
+.cases .case figcaption { font-size: 0.92rem; line-height: 1.45; text-align: left; margin-top: 0.3rem; }

@@ -195,3 +195,40 @@ export function dhSteps(std) {
   const figs = T.map(([te, tf, ce, cf], k) => `<figure class="figure wide step"><svg viewBox="0 0 660 430" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${(title(k + 1, te, tf) + draw(k + 1)).replace(/(dh[zxp])\b/g, `$1${std ? 's' : 'm'}${k}`)}</svg><figcaption>${tx(ce, cf)}</figcaption></figure>`).join('');
   return `<div class="steps">${figs}</div>`;
 }
+
+// ---------------------------------------------------------------------------------------- the common perpendicular, case by case
+// One small 3D drawing per case: the two joint axes zᵢ₋₁ and zᵢ (blue), the common perpendicular (yellow) and the xᵢ placed on it (red).
+// items = the texts of the cases ([en, fr] each, in the order skew, crossing, parallel, same axis, prismatic).
+export function perpCases(items) {
+  const HL = '#ffd23f';
+  const draw = (k) => {
+    const V = view(50, 190, 205);
+    const seg = (a, b, c, w, dash) => V.line(a, b, c, w, dash);
+    const halo = (a, b) => { const [x1, y1] = V.P(a), [x2, y2] = V.P(b); return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${HL}" stroke-width="10" stroke-linecap="round" opacity="0.6"/>`; };
+    const zax = (a, b, name, dx = 6, dy = 4) => V.arrow(a, b, ZC, 'dhz', 3) + V.text(b, name, ZC, dx, dy, 'start', 15, true);
+    const xax = (a, b, name, dx = 4, dy = -8) => halo(a, b) + V.arrow(a, b, XC, 'dhx', 3) + V.text(b, name, XC, dx, dy, 'start', 15, true);
+    const dot = (p, name, dx = -8, dy = 16) => V.dot(p, '#2b3340', 4) + (name ? V.text(p, name, '#5d6878', dx, dy, 'end', 13, true) : '');
+    let s = V.defs;
+    if (k === 0) {        // skew: vertical, and horizontal going into the page, 0.6 to the right
+      s += zax([0, 0, 0], [0, 0, 0.8], 'zᵢ₋₁') + seg([0.6, 0.55, 0.5], [0.6, -0.15, 0.5], ZC, 1.4, '4 4') + zax([0.6, -0.15, 0.5], [0.6, 0.55, 0.5], 'zᵢ');
+      s += xax([0, 0, 0.5], [0.6, 0, 0.5], 'xᵢ', -6, -10) + dot([0, 0, 0.5], 'Oᵢ₋₁') + dot([0.6, 0, 0.5]) + V.text([0.3, 0, 0.5], 'aᵢ > 0', PC, 0, 20, 'middle', 13, true);
+    } else if (k === 1) { // crossing: vertical, and horizontal through it
+      s += zax([0, 0, 0], [0, 0, 0.8], 'zᵢ₋₁') + seg([0, 0.6, 0.5], [0, -0.3, 0.5], ZC, 1.4, '4 4') + zax([0, -0.3, 0.5], [0, 0.6, 0.5], 'zᵢ');
+      s += xax([0, 0, 0.5], [0.55, 0, 0.5], 'xᵢ') + dot([0, 0, 0.5]) + V.text([0.3, 0, 0.5], 'aᵢ = 0', PC, 0, 20, 'middle', 13, true);
+    } else if (k === 2) { // parallel: two verticals; many perpendiculars (dashed), the one through Oᵢ₋₁ is chosen
+      s += zax([0, 0, 0], [0, 0, 0.8], 'zᵢ₋₁') + zax([0.6, 0, 0], [0.6, 0, 0.8], 'zᵢ');
+      [0.12, 0.66].forEach((h) => { s += seg([0, 0, h], [0.6, 0, h], '#9aa5b4', 1.4, '4 4'); });
+      s += xax([0, 0, 0.4], [0.6, 0, 0.4], 'xᵢ', -6, -10) + dot([0, 0, 0.4], 'Oᵢ₋₁') + V.text([0.3, 0, 0.4], 'dᵢ = 0', PC, 0, 20, 'middle', 13, true);
+    } else if (k === 3) { // same axis: one vertical line, xᵢ any perpendicular
+      s += zax([0, 0, 0], [0, 0, 0.45], 'zᵢ₋₁', -42, 26) + zax([0, 0, 0.5], [0, 0, 0.8], 'zᵢ');
+      s += seg([0, 0, 0.5], [-0.3, 0.5, 0.5], '#9aa5b4', 1.4, '4 4') + seg([0, 0, 0.5], [0, 0.6, 0.5], '#9aa5b4', 1.4, '4 4');
+      s += xax([0, 0, 0.5], [0.55, 0, 0.5], 'xᵢ') + dot([0, 0, 0.5]) + V.text([0.3, 0, 0.5], svgtx('any one', 'au choix'), PC, 0, 20, 'middle', 13, true);
+    } else {              // prismatic: only the direction counts; the line is moved to pass through the origin
+      s += seg([0.55, -0.2, 0.05], [0.55, -0.2, 0.85], '#9aa5b4', 2, '5 4') + V.text([0.55, -0.2, 0.85], svgtx('slide', 'glissière'), '#7d8796', 6, 0, 'start', 12);
+      s += V.arrow([0.48, -0.2, 0.45], [0.12, 0, 0.45], PC, 'dhp', 2) + zax([0, 0, 0], [0, 0, 0.8], 'zᵢ', 8, 4) + dot([0, 0, 0.1], 'Oᵢ₋₁', -8, 4);
+      s += V.text([0.3, -0.1, 0.45], svgtx('moved parallel', 'déplacée parallèlement'), PC, 0, 24, 'middle', 12, true);
+    }
+    return s.replace(/(dh[zxp])\b/g, `$1c${k}`);
+  };
+  return `<div class="cases">${items.map((it, k) => `<figure class="case"><svg viewBox="0 0 270 210" role="img" aria-hidden="true" style="color:var(--text)">${draw(k)}</svg><figcaption>${tx(it[0], it[1])}</figcaption></figure>`).join('')}</div>`;
+}
