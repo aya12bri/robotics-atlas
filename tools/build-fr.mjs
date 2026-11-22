@@ -62,7 +62,8 @@ let n = 0;
 for (const f of pages) {
   await page.goto(base + f, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.RA_DONE === true, null, { timeout: 20000 });
-  const { body, title } = await page.evaluate(() => ({ body: document.body.innerHTML, title: document.title }));
+  // the figure sizes set by nav.js at run time are not part of the page: take them out before saving the French twin
+  const { body, title } = await page.evaluate(() => { document.querySelectorAll('svg[data-sized]').forEach((s) => { s.removeAttribute('data-sized'); s.style.maxWidth = ''; if (!s.getAttribute('style')) s.removeAttribute('style'); }); return { body: document.body.innerHTML, title: document.title }; });
   const src = fs.readFileSync(path.join(root, f), 'utf8');
   const open = src.match(/<body[^>]*>/), close = src.lastIndexOf('</body>');
   if (!open || close < 0) { console.log('no body:', f); continue; }

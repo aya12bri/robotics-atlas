@@ -1,5 +1,13 @@
 // Français — page learn-model. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1kz15j1c58m": "bang-bang",
+"suz698vo35": "trapèze",
+"fssp55b1xa": "trapèze d'accél.",
+"1hum21y6kbl": "sinus carré",
+"4qgshwmjk6": "accélération",
+"1mlq3iku1zg": "vitesse",
+"iipi6ive": "position",
+"d75hj8jim0": "temps →",
 "13cbqq7bn4m": "Les fondations",
 "2brd6hnxyjx": "12 leçons courtes : les idées derrière tous les robots",
 "140x0i4zc1j": "Maths et mouvement, pas à pas",
