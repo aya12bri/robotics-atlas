@@ -1,5 +1,6 @@
 // The maths of robotics, lessons 1 to 3: angles and trigonometry, vectors, matrices.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, TRY, lesson } from '../lib.mjs';
+import { crossFig, orderFig } from './mk-figs.mjs';
 const PRE = 'mk-';
 import { grid } from './mk-grid.mjs';
 // lesson 2.2: a + b on a graduated grid (1 square = 1), each arrow with its steps right and up
@@ -115,6 +116,7 @@ lesson(PRE, 2, {
     P('In 3D, <strong>a</strong> × <strong>b</strong> is a new <strong>vector</strong>, perpendicular to both <strong>a</strong> and <strong>b</strong>. Its direction is given by the right hand: index along <strong>a</strong>, middle finger along <strong>b</strong>, the thumb shows <strong>a</strong> × <strong>b</strong>.',
       'En 3D, <strong>a</strong> × <strong>b</strong> est un nouveau <strong>vecteur</strong>, perpendiculaire à la fois à <strong>a</strong> et à <strong>b</strong>. Son sens est donné par la main droite : index selon <strong>a</strong>, majeur selon <strong>b</strong>, le pouce montre <strong>a</strong> × <strong>b</strong>.'),
     EQ('<strong>x</strong> × <strong>y</strong> = <strong>z</strong> &emsp;&emsp; <strong>y</strong> × <strong>z</strong> = <strong>x</strong> &emsp;&emsp; <strong>z</strong> × <strong>x</strong> = <strong>y</strong>'),
+    crossFig(),
     UL([
       ['It builds the third axis of a frame from the two others (lessons 5 and 6).', 'Il construit le troisième axe d\'un repère à partir des deux autres (leçons 5 et 6).'],
       ['It gives the speed of a point that turns: <strong>v</strong> = <strong>ω</strong> × <strong>r</strong>, and the torque of a force: <strong>τ</strong> = <strong>r</strong> × <strong>F</strong>.', 'Il donne la vitesse d\'un point qui tourne : <strong>v</strong> = <strong>ω</strong> × <strong>r</strong>, et le couple d\'une force : <strong>τ</strong> = <strong>r</strong> × <strong>F</strong>.']
@@ -149,6 +151,7 @@ lesson(PRE, 3, {
     BOX('warn', ['The order matters', 'L\'ordre compte'],
       P(`In general <i>A</i> <i>B</i> ≠ <i>B</i> <i>A</i>. With the same two matrices in the other order: ${MX(2, ['0', '1', '1', '0'])} ${MX(2, ['1', '2', '3', '4'])} = ${MX(2, ['3', '4', '1', '2'])}. It is normal: “turn then move forward” does not lead to the same place as “move forward then turn”.`,
         `En général <i>A</i> <i>B</i> ≠ <i>B</i> <i>A</i>. Avec les deux mêmes matrices dans l'autre ordre : ${MX(2, ['0', '1', '1', '0'])} ${MX(2, ['1', '2', '3', '4'])} = ${MX(2, ['3', '4', '1', '2'])}. C'est normal : « tourner puis avancer » ne mène pas au même endroit que « avancer puis tourner ».`)),
+    orderFig(),
     H4('3.3 Four words to know', '3.3 Quatre mots à connaître'),
     TABLE([['Word', 'Mot'], ['What it is', 'Ce que c\'est'], ['For a 2×2 matrix', 'Pour une matrice 2×2'], ['Use in robotics', 'Usage en robotique']], [
       [['<strong>Identity</strong> <i>I</i>', '<strong>Identité</strong> <i>I</i>'], ['The matrix that changes nothing: <i>I</i> <strong>v</strong> = <strong>v</strong>.', 'La matrice qui ne change rien : <i>I</i> <strong>v</strong> = <strong>v</strong>.'], MX(2, ['1', '0', '0', '1']), ['“No rotation, no move”.', '« Pas de rotation, pas de déplacement ».']],

@@ -1,5 +1,6 @@
 // The maths of robotics, lessons 6 to 8: standard DH alone, modified DH (DHM) alone, then the two side by side.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, TRY, lesson } from '../lib.mjs';
+import { movesFig } from './mk-figs.mjs';
 import { AXM, frame } from './mk-b.mjs';
 import { paramFig, armFrames, dhSteps, perpCases } from './mk-dh3d.mjs';
 const PRE = 'mk-';
@@ -122,6 +123,7 @@ lesson(PRE, 6, {
     H4('6.7 The matrix of one row', '6.7 La matrice d\'une ligne'),
     P('The four parameters are four simple moves, applied in the order of the columns: turn by θ around z, slide by d along z, slide by a along x, turn by α around x.', 'Les quatre paramètres sont quatre mouvements simples, appliqués dans l\'ordre des colonnes : tourner de θ autour de z, glisser de d le long de z, glisser de a le long de x, tourner de α autour de x.'),
     EQ(`<sup>i−1</sup><i>T</i><sub>i</sub> = Rot(<i>z</i>, ${I('θ', 'i')}) · Trans(<i>z</i>, ${I('d', 'i')}) · Trans(<i>x</i>, ${I('a', 'i')}) · Rot(<i>x</i>, ${I('α', 'i')}) = ${MX(4, ['cθ', '−sθ cα', 'sθ sα', '<i>a</i> cθ', 'sθ', 'cθ cα', '−cθ sα', '<i>a</i> sθ', '0', 'sα', 'cα', '<i>d</i>', '0', '0', '0', '1'])}`),
+    movesFig(true),
     BOX('example', ['Check with numbers', 'Vérification avec des nombres'],
       P(`${I('q', '1')} = 25°, ${I('q', '2')} = 70°, ${I('q', '3')} = −80°. Multiplying the three matrices gives the tool at <strong>(0.479, 0.223, 0.757) m</strong>. By hand: <i>r</i> = 0.45 cos 70° + 0.38 cos(−10°) = 0.528; <i>x</i> = <i>r</i> cos 25° = 0.479; <i>y</i> = <i>r</i> sin 25° = 0.223; <i>z</i> = 0.40 + 0.45 sin 70° + 0.38 sin(−10°) = 0.757. The table and the drawing agree.`,
         `${I('q', '1')} = 25°, ${I('q', '2')} = 70°, ${I('q', '3')} = −80°. Le produit des trois matrices donne l'outil en <strong>(0,479 ; 0,223 ; 0,757) m</strong>. À la main : <i>r</i> = 0,45 cos 70° + 0,38 cos(−10°) = 0,528 ; <i>x</i> = <i>r</i> cos 25° = 0,479 ; <i>y</i> = <i>r</i> sin 25° = 0,223 ; <i>z</i> = 0,40 + 0,45 sin 70° + 0,38 sin(−10°) = 0,757. Le tableau et le dessin sont d'accord.`)),
@@ -203,6 +205,7 @@ lesson(PRE, 7, {
     ]),
     H4('7.6 The matrix of one row', '7.6 La matrice d\'une ligne'),
     EQ(`<sup>j−1</sup><i>T</i><sub>j</sub> = Rot(<i>x</i>, ${I('α', 'j−1')}) · Trans(<i>x</i>, ${I('a', 'j−1')}) · Rot(<i>z</i>, ${I('θ', 'j')}) · Trans(<i>z</i>, ${I('d', 'j')}) = ${MX(4, ['cθ', '−sθ', '0', '<i>a</i>', 'sθ cα', 'cθ cα', '−sα', '−<i>d</i> sα', 'sθ sα', 'cθ sα', 'cα', '<i>d</i> cα', '0', '0', '0', '1'])}`),
+    movesFig(false),
     P('With 25°, 70° and −80° the product of the four matrices gives <strong>(0.479, 0.223, 0.757) m</strong>: the same tool position as with the standard table of lesson 6. Compare the two tables: the numbers 0.40, 90°, 0.45, 0.38 are all there, but 90° and the lengths have moved <strong>one row down</strong>.',
       'Avec 25°, 70° et −80°, le produit des quatre matrices donne <strong>(0,479 ; 0,223 ; 0,757) m</strong> : la même position d\'outil qu\'avec le tableau standard de la leçon 6. Comparez les deux tableaux : les nombres 0,40, 90°, 0,45, 0,38 sont tous là, mais le 90° et les longueurs sont descendus <strong>d\'une ligne</strong>.'),
     BOX('idea', ['To remember', 'À retenir'],

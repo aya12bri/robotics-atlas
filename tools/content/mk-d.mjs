@@ -1,5 +1,6 @@
 // The maths of robotics, lessons 9 and 10: derivatives and partial derivatives (towards the Jacobian); probability (towards Kalman).
 import { tx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, lesson } from '../lib.mjs';
+import { fdFig, jacFig, fuseFig } from './mk-figs.mjs';
 import { plot, COL } from '../practice/fig.mjs';
 const PRE = 'mk-';
 const I = (s, i) => `<i>${s}</i><sub>${i}</sub>`;
@@ -39,6 +40,7 @@ lesson(PRE, 9, {
     P('A robot does not have the formula of its motion: it has <strong>measurements</strong> at regular times. It estimates the derivative with the change divided by the time step:', 'Un robot n\'a pas la formule de son mouvement : il a des <strong>mesures</strong> à intervalles réguliers. Il estime la dérivée avec la variation divisée par le pas de temps :'),
     EQ('<i>θ̇</i> ≈ ( <i>θ</i>(<i>t</i> + Δ<i>t</i>) − <i>θ</i>(<i>t</i>) ) / Δ<i>t</i>'),
     P('Example: the encoder reads 1.00 rad, then 1.02 rad 10 ms later: <i>θ̇</i> ≈ 0.02 / 0.01 = <strong>2 rad/s</strong>.', 'Exemple : le codeur lit 1,00 rad, puis 1,02 rad 10 ms plus tard : <i>θ̇</i> ≈ 0,02 / 0,01 = <strong>2 rad/s</strong>.'),
+    fdFig(),
     BOX('warn', ['Deriving amplifies noise', 'Dériver amplifie le bruit'],
       P('If the encoder has a noise of 0.001 rad, dividing by Δ<i>t</i> = 0.001 s gives a speed noise of about 1 rad/s. This is why the D term of a PID is always filtered (control course), and why speeds are often estimated with a filter rather than a raw difference.',
         'Si le codeur a un bruit de 0,001 rad, diviser par Δ<i>t</i> = 0,001 s donne un bruit de vitesse d\'environ 1 rad/s. C\'est pour cela que le terme D d\'un PID est toujours filtré (cours de commande), et que les vitesses sont souvent estimées avec un filtre plutôt qu\'avec une différence brute.')),
@@ -49,6 +51,7 @@ lesson(PRE, 9, {
     EQ(`∂<i>y</i>/∂${I('θ', '1')} = ${I('L', '1')} cos ${I('θ', '1')} + ${I('L', '2')} cos(${I('θ', '1')} + ${I('θ', '2')}) &emsp;&emsp; ∂<i>y</i>/∂${I('θ', '2')} = ${I('L', '2')} cos(${I('θ', '1')} + ${I('θ', '2')})`),
     P(`Look at ∂<i>x</i>/∂${I('θ', '2')}: the first term ${I('L', '1')} cos ${I('θ', '1')} disappeared, because it does not contain ${I('θ', '2')}. Motor 2 only moves the second link.`,
       `Regardez ∂<i>x</i>/∂${I('θ', '2')} : le premier terme ${I('L', '1')} cos ${I('θ', '1')} a disparu, car il ne contient pas ${I('θ', '2')}. Le moteur 2 ne bouge que le second segment.`),
+    jacFig(),
     H4('9.5 The Jacobian: the table of all partial derivatives', '9.5 La jacobienne : le tableau de toutes les dérivées partielles'),
     P('Put the four partial derivatives in a matrix: one row per coordinate of the tool, one column per joint. This is the <strong>Jacobian</strong> <i>J</i>. When all the joints move together, the speeds add (chain rule with several variables):',
       'Rangez les quatre dérivées partielles dans une matrice : une ligne par coordonnée de l\'outil, une colonne par liaison. C\'est la <strong>jacobienne</strong> <i>J</i>. Quand toutes les liaisons bougent ensemble, les vitesses s\'additionnent (dérivée composée à plusieurs variables) :'),
@@ -106,6 +109,7 @@ lesson(PRE, 10, {
     EQ('<i>x</i> = (<i>x</i><sub>1</sub>/<i>σ</i><sub>1</sub>² + <i>x</i><sub>2</sub>/<i>σ</i><sub>2</sub>²) / (1/<i>σ</i><sub>1</sub>² + 1/<i>σ</i><sub>2</sub>²) &emsp;&emsp; 1/<i>σ</i>² = 1/<i>σ</i><sub>1</sub>² + 1/<i>σ</i><sub>2</sub>²'),
     P('Here: weights 1/9 = 0.111 and 1/16 = 0.0625, so <i>x</i> = (10 × 0.111 + 12 × 0.0625) / 0.174 = <strong>10.72 m</strong>, and 1/<i>σ</i>² = 0.174, so <i>σ</i> = <strong>2.4 m</strong>: better than each sensor alone. The <strong>Kalman filter</strong> repeats this fusion at every step, between the prediction of the motion and the new measurement.',
       'Ici : poids 1/9 = 0,111 et 1/16 = 0,0625, donc <i>x</i> = (10 × 0,111 + 12 × 0,0625) / 0,174 = <strong>10,72 m</strong>, et 1/<i>σ</i>² = 0,174, donc <i>σ</i> = <strong>2,4 m</strong> : mieux que chaque capteur seul. Le <strong>filtre de Kalman</strong> répète cette fusion à chaque pas, entre la prédiction du mouvement et la nouvelle mesure.'),
+    fuseFig(),
     BOX('keep', ['What to remember', 'Ce qu\'il faut retenir'],
       P('A measurement without its <i>σ</i> is half a measurement. Robots carry, with every estimate, its uncertainty: this is what lets them combine sensors, decide when to trust them, and stop safely.',
         'Une mesure sans son <i>σ</i> n\'est qu\'une demi-mesure. Les robots gardent, avec chaque estimation, son incertitude : c\'est ce qui leur permet de combiner des capteurs, de décider quand leur faire confiance, et de s\'arrêter en sécurité.'))

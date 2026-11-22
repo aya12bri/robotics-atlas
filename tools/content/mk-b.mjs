@@ -1,5 +1,6 @@
 // The maths of robotics, lessons 4 and 5: rotation matrices; frames and homogeneous transformations.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, TRY, lesson } from '../lib.mjs';
+import { rot3Fig, homFig, chainFig } from './mk-figs.mjs';
 const PRE = 'mk-';
 export const AXM = '<defs><marker id="mkax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>';
 const RED = '#ff6b6b', GREEN = '#4ed17f';
@@ -102,6 +103,7 @@ lesson(PRE, 4, {
     EQ(`<i>R</i><sub>z</sub>(<i>θ</i>) = ${MX(3, ['c', '−s', '0', 's', 'c', '0', '0', '0', '1'])}    <i>R</i><sub>y</sub>(<i>θ</i>) = ${MX(3, ['c', '0', 's', '0', '1', '0', '−s', '0', 'c'])}    <i>R</i><sub>x</sub>(<i>θ</i>) = ${MX(3, ['1', '0', '0', '0', 'c', '−s', '0', 's', 'c'])}`),
     P('with c = cos <i>θ</i> and s = sin <i>θ</i>. <i>R</i><sub>z</sub> is the plane rotation of 4.1 with a third axis that does not move: it is the rotation of a revolute joint around its own z axis, the one you will meet in every DH table.',
       'avec c = cos <i>θ</i> et s = sin <i>θ</i>. <i>R</i><sub>z</sub> est la rotation plane du 4.1 avec un troisième axe qui ne bouge pas : c\'est la rotation d\'une liaison rotoïde autour de son propre axe z, celle que vous retrouverez dans tous les tableaux DH.'),
+    rot3Fig(),
     BOX('warn', ['In 3D the order of rotations matters', 'En 3D, l\'ordre des rotations compte'],
       P('Take the x axis (1, 0, 0). Turn it by 90° around x (nothing happens), then by 90° around z: it becomes (0, 1, 0). In the other order, 90° around z gives (0, 1, 0), then 90° around x gives <strong>(0, 0, 1)</strong>. Two different results. In the plane the order did not matter; in space it does. Try it with a book in your hands.',
         'Prenez l\'axe x (1, 0, 0). Tournez-le de 90° autour de x (rien ne se passe), puis de 90° autour de z : il devient (0, 1, 0). Dans l\'autre ordre, 90° autour de z donne (0, 1, 0), puis 90° autour de x donne <strong>(0, 0, 1)</strong>. Deux résultats différents. Dans le plan l\'ordre ne comptait pas ; dans l\'espace, si. Essayez avec un livre dans les mains.'))
@@ -146,6 +148,7 @@ lesson(PRE, 5, {
     EQ(`${MX(1, ['<strong>p</strong><sub>A</sub>', '1'])} = ${MX(2, ['<i>R</i>', '<strong>t</strong>', '0', '1'])} ${MX(1, ['<strong>p</strong><sub>B</sub>', '1'])} &emsp;&emsp; <sup>A</sup><i>T</i><sub>B</sub> = ${MX(2, ['<i>R</i>', '<strong>t</strong>', '0', '1'])}`),
     P(`In the plane it is a 3×3 matrix; in space a <strong>4×4</strong> matrix (<i>R</i> is 3×3, <strong>t</strong> has 3 numbers, the last row is always 0 0 0 1). With our example: ${MX(3, ['0', '−1', '3', '1', '0', '1', '0', '0', '1'])} ${MX(1, ['2', '1', '1'])} = ${MX(1, ['0×2 − 1×1 + 3×1', '1×2 + 0×1 + 1×1', '1'])} = ${MX(1, ['2', '3', '1'])}.`,
       `Dans le plan, c'est une matrice 3×3 ; dans l'espace, une matrice <strong>4×4</strong> (<i>R</i> est 3×3, <strong>t</strong> a 3 nombres, la dernière ligne vaut toujours 0 0 0 1). Avec notre exemple : ${MX(3, ['0', '−1', '3', '1', '0', '1', '0', '0', '1'])} ${MX(1, ['2', '1', '1'])} = ${MX(1, ['0×2 − 1×1 + 3×1', '1×2 + 0×1 + 1×1', '1'])} = ${MX(1, ['2', '3', '1'])}.`),
+    homFig(),
     BOX('idea', ['How to read a homogeneous matrix', 'Comment lire une matrice homogène'],
       UL([
         ['The <strong>last column</strong> is the position of the frame: where it is.', 'La <strong>dernière colonne</strong> est la position du repère : où il est.'],
@@ -156,6 +159,7 @@ lesson(PRE, 5, {
     EQ('<sup>0</sup><i>T</i><sub>2</sub> = <sup>0</sup><i>T</i><sub>1</sub> <sup>1</sup><i>T</i><sub>2</sub>'),
     P('To go from frame 2 to frame 0, go through frame 1: multiply the matrices. Reading trick: the indices that touch “cancel” (the 1 below and the 1 above). For a robot with <i>n</i> joints: <sup>0</sup><i>T</i><sub>n</sub> = <sup>0</sup><i>T</i><sub>1</sub> <sup>1</sup><i>T</i><sub>2</sub> … <sup>n−1</sup><i>T</i><sub>n</sub>, and the last column of the result is the position of the tool.',
       'Pour aller du repère 2 au repère 0, on passe par le repère 1 : on multiplie les matrices. Astuce de lecture : les indices qui se touchent « s\'annulent » (le 1 du bas et le 1 du haut). Pour un robot à <i>n</i> liaisons : <sup>0</sup><i>T</i><sub>n</sub> = <sup>0</sup><i>T</i><sub>1</sub> <sup>1</sup><i>T</i><sub>2</sub> … <sup>n−1</sup><i>T</i><sub>n</sub>, et la dernière colonne du résultat est la position de l\'outil.'),
+    chainFig(),
     BOX('example', ['Worked example: a 2-axis arm', 'Exemple résolu : un bras à 2 axes'],
       P(`<i>L</i><sub>1</sub> = 0.5 m, <i>L</i><sub>2</sub> = 0.4 m, <i>θ</i><sub>1</sub> = 30°, <i>θ</i><sub>2</sub> = 45°. Each matrix says “turn by <i>θ</i>, then move forward by <i>L</i> along the new x”: its last column is (<i>L</i> cos <i>θ</i>, <i>L</i> sin <i>θ</i>).`,
         `<i>L</i><sub>1</sub> = 0,5 m, <i>L</i><sub>2</sub> = 0,4 m, <i>θ</i><sub>1</sub> = 30°, <i>θ</i><sub>2</sub> = 45°. Chaque matrice dit « tourner de <i>θ</i>, puis avancer de <i>L</i> selon le nouvel x » : sa dernière colonne vaut (<i>L</i> cos <i>θ</i>, <i>L</i> sin <i>θ</i>).`),
