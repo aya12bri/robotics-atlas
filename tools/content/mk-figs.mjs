@@ -176,7 +176,7 @@ export function fdFig() {
 }
 
 // 9.4 / 9.5 the columns of the Jacobian on the arm: what happens if only one motor turns
-export function jacFig() {
+export function jacFig(alt) {
   const U = 330, OX = 120, OY = 300, X = (u) => OX + u * U, Yy = (v) => OY - v * U;
   const p1 = [0.5 * Math.cos(30 * D), 0.5 * Math.sin(30 * D)], p2 = [0.537, 0.636];
   let s = L(X(-0.2), Yy(0), X(0.9), Yy(0), GR, 1.2, '6 5');
@@ -194,6 +194,7 @@ export function jacFig() {
   s += T(420, 60, svgtx('Only motor 1 turns:', 'Seul le moteur 1 tourne :'), O, { b: 1, fs: 14 }) + T(420, 82, svgtx('the tool goes round the base', 'l\'outil tourne autour de la base'), 'currentColor', { fs: 13 }) + T(420, 102, svgtx('→ ∂x/∂θ₁, ∂y/∂θ₁ (column 1)', '→ ∂x/∂θ₁, ∂y/∂θ₁ (colonne 1)'), O, { fs: 13 });
   s += T(420, 140, svgtx('Only motor 2 turns:', 'Seul le moteur 2 tourne :'), P, { b: 1, fs: 14 }) + T(420, 162, svgtx('the tool goes round the elbow', 'l\'outil tourne autour du coude'), 'currentColor', { fs: 13 }) + T(420, 182, svgtx('→ ∂x/∂θ₂, ∂y/∂θ₂ (column 2)', '→ ∂x/∂θ₂, ∂y/∂θ₂ (colonne 2)'), P, { fs: 13 });
   s += T(420, 222, svgtx('Both turn: the two arrows add', 'Les deux tournent : les flèches s\'ajoutent'), 'currentColor', { b: 1, fs: 14 }) + T(420, 244, 'Ẋ = J θ̇', 'currentColor', { b: 1, fs: 16 });
+  if (alt) return fig('0 0 700 330', s, ['Each column of the Jacobian is the speed of the tool when only one motor turns (1 rad/s): around the base for column 1, around the elbow for column 2 (arm with L₁ = 0.5 m, L₂ = 0.4 m, θ₁ = 30°, θ₂ = 45°).', 'Chaque colonne de la jacobienne est la vitesse de l\'outil quand un seul moteur tourne (1 rad/s) : autour de la base pour la colonne 1, autour du coude pour la colonne 2 (bras avec L₁ = 0,5 m, L₂ = 0,4 m, θ₁ = 30°, θ₂ = 45°).']);
   return fig('0 0 700 330', s, ['Each column of the Jacobian is the speed of the tool when only one motor turns (1 rad/s): around the base for column 1, around the elbow for column 2. The arm of the worked example: L₁ = 0.5 m, L₂ = 0.4 m, θ₁ = 30°, θ₂ = 45°.', 'Chaque colonne de la jacobienne est la vitesse de l\'outil quand un seul moteur tourne (1 rad/s) : autour de la base pour la colonne 1, autour du coude pour la colonne 2. Le bras de l\'exemple résolu : L₁ = 0,5 m, L₂ = 0,4 m, θ₁ = 30°, θ₂ = 45°.']);
 }
 
@@ -236,4 +237,126 @@ export function rpyFig() {
   s += T(3 * 190 + 95, 68, svgtx('yaw axis = roll axis', 'axe de lacet = axe de roulis'), R, { a: 'middle', b: 1, fs: 13 });
   s += V.arc([0, 0, 0.6], Xl, [1, 0, 0], 1.5 * Math.PI, 0.22, R) + T(3 * 190 + 95, 290, svgtx('ψ and φ do the same', 'ψ et φ font la même chose'), R, { a: 'middle', b: 1, fs: 13 });
   return fig('0 0 770 305', s, ['Roll–pitch–yaw: three turns, each around an axis of the frame obtained so far (grey dashed: before; in colour: after). When the pitch reaches 90°, the roll axis lies on the yaw axis: two angles describe the same motion.', 'Roulis–tangage–lacet : trois rotations, chacune autour d\'un axe du repère obtenu jusque-là (gris pointillé : avant ; en couleur : après). Quand le tangage atteint 90°, l\'axe de roulis se couche sur l\'axe de lacet : deux angles décrivent le même mouvement.']);
+}
+
+// Euler angles ZXZ: φ around z, θ around the new x, ψ around the new z
+export function eulerFig() {
+  const ph = 45 * D, te = 40 * D, ps = 35 * D;
+  let X = [1, 0, 0], Yv = [0, 1, 0], Z = [0, 0, 1], s = '';
+  const steps = [['z', ph, svgtx('1. precession φ', '1. précession φ'), svgtx('around z', 'autour de z'), B], ['x', te, svgtx('2. nutation θ', '2. nutation θ'), svgtx('around the new x (u)', 'autour du nouveau x (u)'), R], ['z', ps, svgtx('3. proper rotation ψ', '3. rotation propre ψ'), svgtx('around the new z (z′)', 'autour du nouveau z (z′)'), B]];
+  steps.forEach(([k, a, t1, t2, c], i) => {
+    const ox = i * 240, V = view(ox + 80, 230, 160), prev = { X, Yv, Z };
+    s += T(ox + 120, 26, t1, 'currentColor', { a: 'middle', b: 1, fs: 15 }) + T(ox + 120, 46, t2, GR, { a: 'middle', fs: 13 });
+    const ax = k === 'z' ? Z : X;
+    if (k === 'z') { X = rot(X, Z, a); Yv = rot(Yv, Z, a); } else { Yv = rot(Yv, X, a); Z = rot(Z, X, a); }
+    s += frame3(V, [0, 0, 0], prev.X, prev.Yv, prev.Z, null, 0.7, { ghost: 1 }) + frame3(V, [0, 0, 0], X, Yv, Z, ['x', 'y', 'z'], 0.7);
+    s += V.arc(mul(ax, 0.08), ax, k === 'z' ? prev.X : prev.Yv, a, 0.4, c, 2.6);
+  });
+  return fig('0 0 720 300', s, ['Euler angles (ZXZ): each rotation is done around an axis of the frame obtained so far (grey dashed: before; in colour: after). The product is Rot(z, φ) Rot(x, θ) Rot(z, ψ), multiplied on the right.', 'Angles d\'Euler (ZXZ) : chaque rotation se fait autour d\'un axe du repère obtenu jusque-là (gris pointillé : avant ; en couleur : après). Le produit est Rot(z, φ) Rot(x, θ) Rot(z, ψ), multiplié à droite.']);
+}
+
+// the two solutions of the inverse model of a planar 2R arm (SCARA), a₁ = a₂ = 0.3, target (0.3, 0.3)
+export function ikFig() {
+  const U = 520, OX = 110, OY = 300, X = (u) => OX + u * U, Yy = (v) => OY - v * U, a = 0.3;
+  let s = '';
+  for (let u = 0; u <= 0.5001; u += 0.1) s += `<line x1="${X(u)}" y1="${Yy(0)}" x2="${X(u)}" y2="${Yy(0.45)}" stroke="currentColor" stroke-opacity="0.08"/>`;
+  for (let v = 0; v <= 0.4501; v += 0.1) s += `<line x1="${X(0)}" y1="${Yy(v)}" x2="${X(0.5)}" y2="${Yy(v)}" stroke="currentColor" stroke-opacity="0.08"/>`;
+  const E = [0.3, 0.3];
+  s += L(X(0), Yy(0), X(E[0]), Yy(E[1]), GR, 1.6, '6 5') + T(X(0.13), Yy(0.17), 'OE', GR, { b: 1 });
+  const arm = (el, c, lab, dx, dy) => L(X(0), Yy(0), X(el[0]), Yy(el[1]), c, 10) + L(X(el[0]), Yy(el[1]), X(E[0]), Yy(E[1]), c, 8) + `<circle cx="${X(el[0])}" cy="${Yy(el[1])}" r="9" fill="#262c35" stroke="${c}" stroke-width="3"/>` + T(X(el[0]) + dx, Yy(el[1]) + dy, lab, c, { b: 1, fs: 15 });
+  s += arm([0.3, 0], B, svgtx('δ = +1: θ₁ = 0°, θ₂ = +90°', 'δ = +1 : θ₁ = 0°, θ₂ = +90°'), 14, 26) + arm([0, 0.3], O, svgtx('δ = −1: θ₁ = 90°, θ₂ = −90°', 'δ = −1 : θ₁ = 90°, θ₂ = −90°'), -14, -16);
+  s += `<circle cx="${X(0)}" cy="${Yy(0)}" r="10" fill="#262c35" stroke="#e8eef5" stroke-width="2"/><circle cx="${X(E[0])}" cy="${Yy(E[1])}" r="8" fill="${R}"/>` + T(X(E[0]) + 14, Yy(E[1]) - 10, svgtx('target E (0.3, 0.3)', 'cible E (0,3 ; 0,3)'), R, { b: 1, fs: 15 });
+  s += T(X(0) - 10, Yy(0) + 22, 'O', 'currentColor', { a: 'end', b: 1 });
+  s += T(420, 210, svgtx('Same point, two arms:', 'Même point, deux bras :'), 'currentColor', { b: 1, fs: 15 }) + T(420, 234, svgtx('cos θ₂ = 0, so θ₂ = ±90°', 'cos θ₂ = 0, donc θ₂ = ±90°'), 'currentColor', { fs: 14 }) + T(420, 258, svgtx('δ chooses the elbow side', 'δ choisit le côté du coude'), 'currentColor', { fs: 14 });
+  return fig('0 0 700 330', s, ['The worked example: a₁ = a₂ = 0.3 m, target (0.3, 0.3). The formula gives two arms that reach the same point, one for each sign δ: elbow on one side or the other of the line OE.', 'L\'exemple résolu : a₁ = a₂ = 0,3 m, cible (0,3 ; 0,3). La formule donne deux bras qui atteignent le même point, un pour chaque signe δ : le coude d\'un côté ou de l\'autre de la droite OE.']);
+}
+
+// speed laws: trapezoid and sine squared, speed and acceleration (same acceleration time T)
+export function sinLawFig() {
+  const x0 = 70, w = 520, h1 = 120, top1 = 40, top2 = 200, h2 = 80, X = (t) => x0 + t * w;    // t from 0 to 1 (phase 1, cruise, phase 3)
+  const Ta = 0.25, vTr = (t) => (t < Ta ? t / Ta : t > 1 - Ta ? (1 - t) / Ta : 1), vS = (t) => (t < Ta ? Math.sin(Math.PI / 2 * t / Ta) ** 2 : t > 1 - Ta ? Math.sin(Math.PI / 2 * (1 - t) / Ta) ** 2 : 1);
+  const aTr = (t) => (t < Ta ? 1 : t > 1 - Ta ? -1 : 0), aS = (t) => (t < Ta ? Math.sin(Math.PI * t / Ta) * Math.PI / 2 : t > 1 - Ta ? -Math.sin(Math.PI * (1 - t) / Ta) * Math.PI / 2 : 0);
+  const path = (fn, Y0, H, k, c, w2, dash) => { let d = ''; for (let i = 0; i <= 400; i++) { const t = i / 400; d += (i ? 'L' : 'M') + f(X(t)) + ',' + f(Y0 - fn(t) * H * k); } return `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w2}"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`; };
+  let s = L(x0, top1 + h1, x0 + w, top1 + h1, 'currentColor', 1.2) + L(x0, top1, x0, top1 + h1, 'currentColor', 1.2) + T(x0 - 8, top1 + 8, 'V', 'currentColor', { a: 'end', b: 1 });
+  s += path(vTr, top1 + h1, h1, 0.9, O, 3) + path(vS, top1 + h1, h1, 0.9, B, 3);
+  const mid = top2 + h2 / 2; s += L(x0, mid, x0 + w, mid, 'currentColor', 1.2) + L(x0, top2 - 10, x0, top2 + h2 + 10, 'currentColor', 1.2) + T(x0 - 8, top2, 'A', 'currentColor', { a: 'end', b: 1 });
+  s += path(aTr, mid, h2 / 2, 0.55, O, 3) + path(aS, mid, h2 / 2, 0.55, B, 3);
+  s += T(X(Ta / 2), mid - h2 / 2 - 2, svgtx('jump', 'saut'), O, { a: 'middle', b: 1, fs: 13 });
+  const lx = 610; s += L(lx, 60, lx + 24, 60, O, 3) + T(lx + 30, 65, svgtx('trapezoid', 'trapèze'), O, { b: 1 }) + L(lx, 88, lx + 24, 88, B, 3) + T(lx + 30, 93, svgtx('sine squared', 'sinus carré'), B, { b: 1 });
+  s += T(lx, 140, svgtx('speed V', 'vitesse V'), 'currentColor', { fs: 13 }) + T(lx, 240, svgtx('acceleration A', 'accélération A'), 'currentColor', { fs: 13 });
+  s += T(lx, 270, svgtx('sin²: no jump,', 'sin² : pas de saut,'), B, { fs: 13 }) + T(lx, 290, svgtx('smooth current', 'courant sans à-coup'), B, { fs: 13 });
+  return fig('0 0 760 310', s, ['Top: the speed. Bottom: the acceleration. With the trapezoid the acceleration jumps at the start and the end of each phase; with the sine-squared law it rises and falls smoothly, which spares the motor and the mechanics.', 'En haut : la vitesse. En bas : l\'accélération. Avec le trapèze, l\'accélération saute au début et à la fin de chaque phase ; avec la loi en sinus carré, elle monte et descend en douceur, ce qui ménage le moteur et la mécanique.']);
+}
+
+// singularities 5.2: τ = Jᵀ F on the stretched arm (L₁ = 0.5, L₂ = 0.3): a force along the arm costs no torque, a sideways one does
+export function forceFig() {
+  const U = 520, OX = 70, X = (u) => OX + u * U;
+  const arm = (y0, F, title, res) => {
+    let s = T(30, y0 - 70, title, 'currentColor', { b: 1, fs: 15 });
+    s += L(X(0), y0, X(0.5), y0, '#8b96a5', 11) + L(X(0.5), y0, X(0.8), y0, '#f5963a', 9);
+    s += `<circle cx="${X(0)}" cy="${y0}" r="10" fill="#262c35" stroke="#e8eef5" stroke-width="2"/><circle cx="${X(0.5)}" cy="${y0}" r="10" fill="#262c35" stroke="#e8eef5" stroke-width="2"/><circle cx="${X(0.8)}" cy="${y0}" r="6" fill="${R}"/>`;
+    if (F === 'x') s += A(X(0.8) + 8, y0, X(0.8) + 90, y0, R, 4) + T(X(0.8) + 50, y0 - 12, 'F', R, { a: 'middle', b: 1, fs: 17 });
+    else { s += A(X(0.8), y0 - 8, X(0.8), y0 - 70, R, 4) + T(X(0.8) + 12, y0 - 50, 'F', R, { b: 1, fs: 17 }); [[0, 24, 'τ₁'], [0.5, 20, 'τ₂']].forEach(([u, r, n]) => { s += `<path d="M${X(u) + r},${y0} A${r},${r} 0 1 0 ${X(u)},${y0 - r}" fill="none" stroke="${O}" stroke-width="2.6"/>` + A(X(u) + 2, y0 - r, X(u) - 6, y0 - r, O, 2.6) + T(X(u) - r - 6, y0 - r - 4, n, O, { a: 'end', b: 1, fs: 16 }); }); }
+    return s + T(500, y0 - 70, res, F === 'x' ? G : O, { b: 1, fs: 15 });
+  };
+  let s = arm(120, 'x', svgtx('Force along the arm', 'Effort le long du bras'), svgtx('τ₁ = τ₂ = 0', 'τ₁ = τ₂ = 0'));
+  s += T(500, 74, svgtx('the structure carries it', 'la structure le porte'), 'currentColor', { fs: 13 });
+  s += arm(290, 'y', svgtx('Force sideways (10 N)', 'Effort sur le côté (10 N)'), svgtx('τ₁ = 0.8 × 10 = 8 N·m', 'τ₁ = 0,8 × 10 = 8 N·m'));
+  s += T(500, 244, svgtx('τ₂ = 0.3 × 10 = 3 N·m', 'τ₂ = 0,3 × 10 = 3 N·m'), O, { b: 1, fs: 15 }) + T(500, 268, svgtx('the motors must hold it', 'les moteurs doivent le tenir'), 'currentColor', { fs: 13 });
+  return fig('0 0 760 320', s, ['τ = Jᵀ F on the stretched arm: a force along the arm goes straight into the structure (no torque), a force sideways must be held by both motors, in proportion to their lever arms 0.8 m and 0.3 m.', 'τ = Jᵀ F sur le bras tendu : un effort le long du bras passe directement dans la structure (aucun couple), un effort sur le côté doit être tenu par les deux moteurs, selon leurs bras de levier 0,8 m et 0,3 m.']);
+}
+
+// control 3.1: accuracy and repeatability, four targets
+export function accFig() {
+  const tgt = (cx, title, sub, pts, c) => {
+    let s = [56, 38, 20].map((r, i) => `<circle cx="${cx}" cy="150" r="${r}" fill="none" stroke="${i === 2 ? R : 'currentColor'}" stroke-opacity="${i === 2 ? 1 : 0.3}" stroke-width="2"/>`).join('') + `<circle cx="${cx}" cy="150" r="4" fill="${R}"/>`;
+    s += pts.map(([x, y]) => `<circle cx="${f(cx + x)}" cy="${f(150 + y)}" r="4.5" fill="${c}" stroke="#fff" stroke-width="1"/>`).join('');
+    return s + T(cx, 40, title, 'currentColor', { a: 'middle', b: 1, fs: 14 }) + T(cx, 60, sub, GR, { a: 'middle', fs: 12 });
+  };
+  const ring = (mx, my, r, n, seed) => Array.from({ length: n }, (_, i) => { const a = i * 2.4 + seed, d = r * (0.3 + 0.7 * ((i * 37 + seed * 11) % 10) / 10); return [mx + d * Math.cos(a), my + d * Math.sin(a)]; });
+  let s = tgt(95, svgtx('accurate and', 'exact et'), svgtx('repeatable', 'répétable'), ring(0, 0, 8, 8, 1), G);
+  s += tgt(275, svgtx('repeatable,', 'répétable,'), svgtx('not accurate', 'pas exact'), ring(28, -22, 8, 8, 2), O);
+  s += tgt(455, svgtx('accurate on average,', 'exact en moyenne,'), svgtx('not repeatable', 'pas répétable'), ring(0, 0, 46, 9, 3), B);
+  s += tgt(635, svgtx('neither', 'ni l\'un'), svgtx('nor the other', 'ni l\'autre'), ring(-20, 22, 40, 9, 4), GR);
+  s += T(365, 245, svgtx('Industrial robots: repeatable (±0.02 mm), less accurate until calibrated → like the 2nd target', 'Robots industriels : répétables (±0,02 mm), moins exacts avant étalonnage → comme la 2ᵉ cible'), 'currentColor', { a: 'middle', fs: 13 });
+  return fig('0 0 730 265', s, ['Each dot is one try to reach the centre. Repeatability = the dots are close together; accuracy = they are around the centre. Calibration moves a repeatable cluster onto the centre.', 'Chaque point est un essai pour atteindre le centre. Répétabilité = les points sont serrés ; exactitude = ils sont autour du centre. L\'étalonnage ramène un nuage répétable sur le centre.']);
+}
+
+// control 6.4: hybrid position / force control while wiping a table
+export function hybridFig() {
+  let s = `<rect x="40" y="200" width="620" height="26" rx="4" fill="#8b96a5" fill-opacity="0.35" stroke="#8b96a5"/>` + T(350, 250, svgtx('table', 'table'), GR, { a: 'middle', fs: 13 });
+  s += `<path d="M90,192 C200,180 300,196 420,186 S580,190 630,188" fill="none" stroke="${B}" stroke-width="3" stroke-dasharray="8 6"/>` + A(560, 188, 630, 188, B, 3);
+  s += `<rect x="300" y="120" width="60" height="66" rx="8" fill="#f5963a" fill-opacity="0.35" stroke="#f5963a" stroke-width="2"/><rect x="292" y="182" width="76" height="14" rx="4" fill="#3a4552"/>` + L(330, 40, 330, 120, '#8b96a5', 10);
+  s += A(392, 100, 392, 180, R, 4) + T(402, 132, svgtx('force: press with 10 N', 'effort : appuyer avec 10 N'), R, { b: 1, fs: 15 }) + T(402, 154, svgtx('(along the normal z)', '(selon la normale z)'), R, { fs: 13 });
+  s += T(90, 172, svgtx('position: follow the path', 'position : suivre le chemin'), B, { b: 1, fs: 15 }) + T(90, 150, svgtx('(in the plane x, y)', '(dans le plan x, y)'), B, { fs: 13 });
+  s += T(560, 60, svgtx('S = diag(1, 1, 0)'), 'currentColor', { a: 'middle', b: 1, fs: 15 }) + T(560, 82, svgtx('1 = position, 0 = force', '1 = position, 0 = effort'), GR, { a: 'middle', fs: 13 });
+  return fig('0 0 700 270', s, ['Wiping a table: the controller follows the path in the plane of the table (position) and presses with a set force along the normal (force). The selection matrix S says, axis by axis, which law is used.', 'Essuyer une table : le contrôleur suit le chemin dans le plan de la table (position) et appuie avec un effort fixé selon la normale (effort). La matrice de sélection S dit, axe par axe, quelle loi est utilisée.']);
+}
+
+// control 9.1: two masses and a spring, and the vibration of the load after a move
+export function vibFig() {
+  let s = L(30, 130, 60, 130, 'currentColor', 2) + `<rect x="60" y="100" width="70" height="60" rx="6" fill="${B}" fill-opacity="0.25" stroke="${B}" stroke-width="2"/>` + T(95, 136, 'Jₘ', B, { a: 'middle', b: 1, fs: 16 }) + T(95, 180, svgtx('motor', 'moteur'), B, { a: 'middle', fs: 13 });
+  let z = 'M130,130'; for (let i = 0; i < 8; i++) z += ` L${140 + i * 10},${i % 2 ? 145 : 115}`; z += ' L220,130';
+  s += `<path d="${z}" fill="none" stroke="${G}" stroke-width="2.5"/>` + T(175, 100, svgtx('k (gearbox)', 'k (réducteur)'), G, { a: 'middle', b: 1, fs: 14 });
+  s += `<rect x="220" y="95" width="90" height="70" rx="6" fill="${O}" fill-opacity="0.25" stroke="${O}" stroke-width="2"/>` + T(265, 136, 'Jₗ', O, { a: 'middle', b: 1, fs: 16 }) + T(265, 185, svgtx('load (arm)', 'charge (bras)'), O, { a: 'middle', fs: 13 });
+  s += T(170, 230, 'f ≈ 42 Hz', 'currentColor', { a: 'middle', b: 1, fs: 16 });
+  const x0 = 360, w = 360, y0 = 130, X = (t) => x0 + t * w;
+  s += L(x0, y0, x0 + w, y0, 'currentColor', 1) + L(x0, 40, x0, 220, 'currentColor', 1.2) + T(x0 + w, y0 + 18, svgtx('time', 'temps'), 'currentColor', { a: 'end', fs: 12 });
+  let d = '', d2 = ''; for (let i = 0; i <= 300; i++) { const t = i / 300, p = Math.min(1, t / 0.3); const base = t < 0.3 ? 3 * p * p - 2 * p * p * p : 1; d += (i ? 'L' : 'M') + f(X(t)) + ',' + f(y0 + 60 - base * 120); const vib = t > 0.3 ? 0.18 * Math.exp(-(t - 0.3) * 6) * Math.sin((t - 0.3) * 60) : 0; d2 += (i ? 'L' : 'M') + f(X(t)) + ',' + f(y0 + 60 - (base + vib) * 120); }
+  s += `<path d="${d}" fill="none" stroke="${B}" stroke-width="2.5" stroke-dasharray="6 4"/><path d="${d2}" fill="none" stroke="${O}" stroke-width="2.5"/>`;
+  s += L(560, 30, 584, 30, B, 2.5) + T(590, 35, svgtx('motor position', 'position du moteur'), B, { fs: 13 }) + L(560, 52, 584, 52, O, 2.5) + T(590, 57, svgtx('load: rings at f', 'charge : oscille à f'), O, { fs: 13 });
+  return fig('0 0 740 250', s, ['A flexible gearbox is a spring between the motor and the load. After a fast move the motor stops, but the load keeps ringing at the resonance frequency f until the vibration dies out.', 'Un réducteur souple est un ressort entre le moteur et la charge. Après un mouvement rapide, le moteur s\'arrête, mais la charge continue d\'osciller à la fréquence de résonance f jusqu\'à ce que la vibration s\'éteigne.']);
+}
+
+// control 12.4: sampling and holding
+export function sampleFig() {
+  const x0 = 60, w = 600, y0 = 160, X = (t) => x0 + t * w, sig = (t) => 0.8 * Math.sin(2 * Math.PI * t * 1.3) + 0.25 * Math.sin(2 * Math.PI * t * 3.1);
+  let s = L(x0, y0, x0 + w + 10, y0, 'currentColor', 1.2) + L(x0, 40, x0, 280, 'currentColor', 1.2) + T(x0 + w + 12, y0 + 5, 't', 'currentColor', { b: 1 });
+  let d = ''; for (let i = 0; i <= 400; i++) { const t = i / 400; d += (i ? 'L' : 'M') + f(X(t)) + ',' + f(y0 - sig(t) * 110); }
+  s += `<path d="${d}" fill="none" stroke="${B}" stroke-width="2.5"/>`;
+  const n = 16; let h = ''; for (let k = 0; k < n; k++) { const t = k / n, t2 = (k + 1) / n, v = y0 - sig(t) * 110; h += (k ? 'L' : 'M') + f(X(t)) + ',' + f(v) + ' L' + f(X(t2)) + ',' + f(v); s += `<circle cx="${f(X(t))}" cy="${f(v)}" r="4.5" fill="${R}"/>`; }
+  s += `<path d="${h}" fill="none" stroke="${O}" stroke-width="2.5"/>`;
+  s += L(X(2 / n), 268, X(3 / n), 268, 'currentColor', 2) + L(X(2 / n), 262, X(2 / n), 274, 'currentColor', 2) + L(X(3 / n), 262, X(3 / n), 274, 'currentColor', 2) + T(X(2.5 / n), 290, 'Tₛ', 'currentColor', { a: 'middle', b: 1, fs: 15 });
+  s += L(470, 34, 494, 34, B, 2.5) + T(500, 39, svgtx('real signal', 'signal réel'), B, { fs: 13 }) + `<circle cx="482" cy="58" r="4.5" fill="${R}"/>` + T(500, 63, svgtx('samples (every Tₛ)', 'mesures (toutes les Tₛ)'), R, { fs: 13 }) + L(470, 82, 494, 82, O, 2.5) + T(500, 87, svgtx('held command', 'commande tenue'), O, { fs: 13 });
+  return fig('0 0 720 300', s, ['The computer reads the signal only at the sampling instants (red dots) and holds its value until the next one (orange steps). The steps lag the real signal by about Tₛ/2: this delay is why the loop must be sampled much faster than its bandwidth.', 'Le calculateur ne lit le signal qu\'aux instants d\'échantillonnage (points rouges) et garde sa valeur jusqu\'au suivant (marches orange). Les marches ont un retard d\'environ Tₛ/2 sur le signal réel : c\'est ce retard qui impose d\'échantillonner bien plus vite que la bande passante de la boucle.']);
 }

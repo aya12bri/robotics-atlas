@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { hybridFig } from './mk-figs.mjs';
 const PRE = 'ctrl-';
 
 export function partB() {
@@ -123,6 +124,7 @@ lesson(PRE, 6, {
     H4('6.4 Hybrid position / force control', '6.4 Commande hybride position / effort'),
     P('A task often has directions of motion and directions of contact. Wiping a table: <strong>force</strong> control along the normal (press with 10 N) and <strong>position</strong> control in the plane (follow the path). A selection matrix <i>S</i> (diagonal with 0 or 1) chooses, direction by direction, which law applies (Raibert and Craig). The force loop is slow and has a low gain, because with a stiff surface a fast force loop easily becomes unstable.',
       'Une tâche a souvent des directions de mouvement et des directions de contact. Essuyer une table : commande en <strong>effort</strong> selon la normale (appuyer avec 10 N) et en <strong>position</strong> dans le plan (suivre le chemin). Une matrice de sélection <i>S</i> (diagonale avec des 0 ou des 1) choisit, direction par direction, la loi appliquée (Raibert et Craig). La boucle d\'effort est lente et de faible gain, car avec une surface raide une boucle d\'effort rapide devient facilement instable.'),
+    hybridFig(),
     BOX('keep', ['Link with singularities', 'Lien avec les singularités'],
       P('The Cartesian stiffness of a robot with joint stiffness <i>K</i><sub>q</sub> is <i>K</i><sub>x</sub> = <i>J</i><sup>−T</sup> <i>K</i><sub>q</sub> <i>J</i><sup>−1</sup>. In a direction where the Jacobian is small (almost singular), the robot is <em>very stiff</em> and cannot be made soft by control: the structure carries the force (lesson 5 of the previous course). Compliant tasks are placed in well-conditioned poses.',
         'La raideur cartésienne d\'un robot de raideur articulaire <i>K</i><sub>q</sub> est <i>K</i><sub>x</sub> = <i>J</i><sup>−T</sup> <i>K</i><sub>q</sub> <i>J</i><sup>−1</sup>. Dans une direction où la jacobienne est petite (presque singulière), le robot est <em>très raide</em> et ne peut pas être rendu souple par la commande : la structure porte l\'effort (leçon 5 du cours précédent). Les tâches avec compliance sont placées dans des poses bien conditionnées.')),

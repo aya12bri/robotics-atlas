@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { accFig } from './mk-figs.mjs';
 const PRE = 'ctrl-';
 const M2 = (a, b, c, d) => MX(2, [a, b, c, d]);
 
@@ -133,6 +134,7 @@ lesson(PRE, 3, {
       ['<strong>Repeatability</strong>: how close the readings are when the same situation is repeated. Industrial robots are very repeatable (±0.02 mm) but less accurate (a fraction of a millimetre, until calibrated).', '<strong>Répétabilité</strong> : à quel point les lectures sont proches quand la même situation est répétée. Les robots industriels sont très répétables (±0,02 mm) mais moins exacts (une fraction de millimètre, tant qu\'ils ne sont pas étalonnés).'],
       ['<strong>Noise</strong> and <strong>quantisation</strong>: differentiating an encoder to get the speed amplifies both; speed is filtered (or estimated with an observer).', '<strong>Bruit</strong> et <strong>quantification</strong> : dériver un codeur pour obtenir la vitesse amplifie les deux ; la vitesse est filtrée (ou estimée avec un observateur).']
     ]),
+    accFig(),
     BOX('example', ['Worked example: resolution at the tool', 'Exemple résolu : résolution à l\'outil'],
       P('A 17-bit encoder on the motor, with a 100:1 gearbox: one count is 360° / (131 072 × 100) = 0.0000275° at the joint (0.48 µrad). At the end of a 1 m arm this is 0.48 µm: the sensor is far finer than the mechanics. In practice the limit is the elasticity and the backlash of the gearbox: that is why robots often add a <strong>second encoder on the output side</strong> (dual encoder) to measure the real joint angle.',
         'Un codeur 17 bits sur le moteur, avec un réducteur 100:1 : un point vaut 360° / (131 072 × 100) = 0,0000275° à l\'articulation (0,48 µrad). Au bout d\'un bras de 1 m cela fait 0,48 µm : le capteur est bien plus fin que la mécanique. En pratique la limite est l\'élasticité et le jeu du réducteur : c\'est pourquoi les robots ajoutent souvent un <strong>second codeur côté sortie</strong> (double codeur) pour mesurer le vrai angle de l\'articulation.')),

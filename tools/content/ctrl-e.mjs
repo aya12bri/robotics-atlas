@@ -2,6 +2,7 @@
 //   11: systems, transfer functions, poles and stability, the closed loop, state space
 //   12: frequency response, margins, delay, sampling and the digital PID
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, CODE, OUT, lesson } from '../lib.mjs';
+import { sampleFig } from './mk-figs.mjs';
 import { plot, chain, COL } from '../practice/fig.mjs';
 const PRE = 'ctrl-';
 const SP = ' &emsp;&emsp; ';
@@ -118,6 +119,7 @@ lesson(PRE, 12, {
       ['<strong>For control</strong>, sample <strong>10 to 30 times</strong> faster than the bandwidth of the loop. Sampling and holding behave like a delay of about <i>T</i><sub>s</sub>/2, which eats the phase margin.', '<strong>Pour la commande</strong>, échantillonnez <strong>10 à 30 fois</strong> plus vite que la bande passante de la boucle. Échantillonner et maintenir agit comme un retard d\'environ <i>T</i><sub>s</sub>/2, qui mange la marge de phase.'],
       ['<strong>Typical rates</strong> in a robot: current loop 10 to 20 kHz, speed loop 2 to 8 kHz, position loop 1 to 4 kHz, trajectory 100 Hz to 1 kHz, perception 10 to 60 Hz.', '<strong>Fréquences typiques</strong> dans un robot : boucle de courant 10 à 20 kHz, boucle de vitesse 2 à 8 kHz, boucle de position 1 à 4 kHz, trajectoire 100 Hz à 1 kHz, perception 10 à 60 Hz.']
     ]),
+    sampleFig(),
     H4('12.5 A digital PID, as it is coded in a drive', '12.5 Un PID numérique, tel qu\'il est codé dans un variateur'),
     P('The integral becomes a sum (add <i>K</i><sub>i</sub> <i>e</i> <i>T</i><sub>s</sub> at each sample); the derivative becomes a difference divided by <i>T</i><sub>s</sub> (maths course, lesson 9). Three details make the difference between a textbook PID and one that works on a robot:',
       'L\'intégrale devient une somme (ajouter <i>K</i><sub>i</sub> <i>e</i> <i>T</i><sub>s</sub> à chaque échantillon) ; la dérivée devient une différence divisée par <i>T</i><sub>s</sub> (cours de maths, leçon 9). Trois détails font la différence entre un PID de manuel et un PID qui marche sur un robot :'),

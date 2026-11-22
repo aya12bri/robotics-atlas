@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { forceFig } from './mk-figs.mjs';
 const PRE = 'sing-';
 const M2 = (a, b, c, d) => MX(2, [a, b, c, d]);
 const M3 = (...c) => MX(3, c);
@@ -43,6 +44,7 @@ lesson(PRE, 5, {
         ['The directions where the tool <strong>cannot move</strong> (lost by <i>J</i>) are the directions where the robot <strong>can carry any load without motor torque</strong> (null space of <i>J</i><sup>T</sup>).', 'Les directions où l\'outil <strong>ne peut pas bouger</strong> (perdues par <i>J</i>) sont les directions où le robot <strong>peut porter n\'importe quelle charge sans couple moteur</strong> (noyau de <i>J</i><sup>T</sup>).'],
         ['It looks like a bonus (a strong, light robot), but the motors cannot <em>control</em> the force in that direction: no force control, no way to push gently, and the structure may be overloaded without any motor feeling it.', 'Cela ressemble à un bonus (un robot fort et léger), mais les moteurs ne peuvent pas <em>contrôler</em> l\'effort dans cette direction : pas de commande en effort, pas de poussée douce, et la structure peut être surchargée sans qu\'aucun moteur ne le sente.']
       ])),
+    forceFig(),
     H4('5.3 Accuracy and noise', '5.3 Précision et bruit'),
     P('Going from the joints to the tool (forward) is benign: d<i>x</i> = <i>J</i> d<i>q</i>, the error of the encoders is passed on without amplification. Going from the tool to the joints is the problem: a tool error of d<i>x</i> asks for up to d<i>x</i>/<i>σ</i><sub>min</sub> of joint motion. With the arm of lesson 4, a tool step of 0.1 mm needs about 0.02° at θ₂ = 90° (<i>σ</i><sub>min</sub> = 0.25) but about 0.9° at θ₂ = 2° (<i>σ</i><sub>min</sub> = 0.0061): 40 times more, which can be below the resolution of the gearbox and the encoder. A small calibration error becomes a visible error.',
       'Aller des articulations vers l\'outil (direct) est bénin : d<i>x</i> = <i>J</i> d<i>q</i>, l\'erreur des codeurs est transmise sans amplification. Aller de l\'outil vers les articulations est le problème : une erreur d\'outil d<i>x</i> demande jusqu\'à d<i>x</i>/<i>σ</i><sub>min</sub> de mouvement articulaire. Avec le bras de la leçon 4, un pas d\'outil de 0,1 mm demande environ 0,02° à θ₂ = 90° (<i>σ</i><sub>min</sub> = 0,25) mais environ 0,9° à θ₂ = 2° (<i>σ</i><sub>min</sub> = 0,0061) : 40 fois plus, ce qui peut être en dessous de la résolution du réducteur et du codeur. Une petite erreur d\'étalonnage devient une erreur visible.'),
