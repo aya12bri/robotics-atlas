@@ -1,6 +1,26 @@
 // The maths of robotics, lessons 1 to 3: angles and trigonometry, vectors, matrices.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, TRY, lesson } from '../lib.mjs';
 const PRE = 'mk-';
+import { grid } from './mk-grid.mjs';
+// lesson 2.2: a + b on a graduated grid (1 square = 1), each arrow with its steps right and up
+function vecFig() {
+  const G = grid({ OX: 60, OY: 250, U: 50, x1: 5, y1: 4 }), { X, Y } = G;
+  const arr = (u0, v0, u1, v1, c, w) => `<line x1="${X(u0)}" y1="${Y(v0)}" x2="${X(u1)}" y2="${Y(v1)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" marker-end="url(#mkg2)"/>`;
+  let s = G.s + '<defs><marker id="mkg2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>';
+  s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(4)}" y2="${Y(3)}" stroke="#8a94a3" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#mkg)"/>`;
+  s += arr(0, 0, 3, 1, '#2f6bff', 5) + arr(3, 1, 4, 3, '#e07b00', 5);
+  // the steps of each arrow: right, then up
+  s += `<line x1="${X(0)}" y1="${Y(0) + 0}" x2="${X(3)}" y2="${Y(0)}" stroke="#2f6bff" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/><line x1="${X(3)}" y1="${Y(0)}" x2="${X(3)}" y2="${Y(1)}" stroke="#2f6bff" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/>`;
+  s += `<line x1="${X(3)}" y1="${Y(1)}" x2="${X(4)}" y2="${Y(1)}" stroke="#e07b00" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/><line x1="${X(4)}" y1="${Y(1)}" x2="${X(4)}" y2="${Y(3)}" stroke="#e07b00" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/>`;
+  s += `<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="currentColor"/><circle cx="${X(3)}" cy="${Y(1)}" r="5" fill="currentColor"/><circle cx="${X(4)}" cy="${Y(3)}" r="6" fill="#e5484d"/>`;
+  s += `<text x="${X(1.55)}" y="${Y(0.14)}" font-size="16" font-weight="700" fill="#2f6bff">a = (3, 1)</text>`;
+  s += `<text x="${X(4.15)}" y="${Y(2)}" font-size="16" font-weight="700" fill="#e07b00">b = (1, 2)</text>`;
+  s += `<text x="${X(1.2)}" y="${Y(2.4)}" font-size="16" font-weight="700" fill="#5d6878">a + b = (4, 3)</text>`;
+  s += `<text x="${X(6.4)}" y="${Y(3.6)}" font-size="14" fill="currentColor">${svgtx('a: 3 right, 1 up', 'a : 3 à droite, 1 en haut')}</text><text x="${X(6.4)}" y="${Y(3.1)}" font-size="14" fill="currentColor">${svgtx('b: 1 right, 2 up', 'b : 1 à droite, 2 en haut')}</text>`;
+  s += `<text x="${X(6.4)}" y="${Y(2.4)}" font-size="14" font-weight="700" fill="currentColor">${svgtx('a + b: 3 + 1 = 4 right,', 'a + b : 3 + 1 = 4 à droite,')}</text><text x="${X(6.4)}" y="${Y(1.95)}" font-size="14" font-weight="700" fill="currentColor">${svgtx('1 + 2 = 3 up', '1 + 2 = 3 en haut')}</text>`;
+  s += `<text x="${X(6.4)}" y="${Y(1.2)}" font-size="13" fill="#8a94a3">${svgtx('1 square = 1 unit', '1 carreau = 1 unité')}</text>`;
+  return `<figure class="figure wide"><svg viewBox="0 0 640 290" class="fig" role="img" aria-hidden="true">${s}</svg></figure>`;
+}
 const n = (s) => [s, s.replace(/(\d)\.(\d)/g, '$1,$2')];          // decimal point in English, comma in French
 
 export function partA() {
@@ -70,12 +90,7 @@ lesson(PRE, 2, {
     H4('2.2 Adding vectors: one arrow after the other', '2.2 Additionner des vecteurs : une flèche après l\'autre'),
     P(`To chain two moves, add the components one by one: ${MX(1, ['3', '1'])} + ${MX(1, ['1', '2'])} = ${MX(1, ['4', '3'])}.`,
       `Pour enchaîner deux déplacements, on additionne les composantes une à une : ${MX(1, ['3', '1'])} + ${MX(1, ['1', '2'])} = ${MX(1, ['4', '3'])}.`),
-    FIG('0 0 340 190', `
-      <line class="ax" x1="30" y1="170" x2="310" y2="170"/><line class="ax" x1="50" y1="185" x2="50" y2="15"/>
-      <line class="link1" x1="50" y1="170" x2="200" y2="120"/><line class="link2" x1="200" y1="120" x2="250" y2="20"/>
-      <line class="dash" x1="50" y1="170" x2="250" y2="20" style="stroke-width:2"/>
-      <circle class="jt" cx="50" cy="170" r="5"/><circle class="jt" cx="200" cy="120" r="5"/><circle class="pt" cx="250" cy="20" r="5"/>
-      <text x="125" y="165" class="c-l">a = (3, 1)</text><text x="236" y="80" class="c-l2">b = (1, 2)</text><text x="120" y="80" text-anchor="end">a + b = (4, 3)</text>`),
+    vecFig(),
     BOX('idea', ['This is a robot arm', 'C\'est un bras de robot'],
       P('Look at the picture again: the blue arrow is link 1, the orange arrow is link 2, and the dashed arrow goes from the base to the tool. <strong>The position of the tool is the sum of the arrows of the links.</strong> All of forward kinematics is in this sentence.',
         'Regardez de nouveau le dessin : la flèche bleue est le segment 1, la flèche orange le segment 2, et la flèche en pointillés va de la base à l\'outil. <strong>La position de l\'outil est la somme des flèches des segments.</strong> Toute la cinématique directe est dans cette phrase.')),

@@ -1977,3 +1977,12 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
   .rbot .rb-panel { width: 100%; height: calc(100vh - 14.5rem); height: calc(100dvh - 14.5rem); }
 }
 @media print { .rbot { display: none; } }
+
+/* wide figures (3D drawings with many labels) use the whole width of the lesson; step-by-step figures show one step at a time */
+.figure.wide svg.fig { max-width: 100%; }
+.steps { margin: 1rem 0; }
+.steps.on .step { display: none; } .steps.on .step.cur { display: block; }
+.stepbar { display: flex; align-items: center; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin: 0.4rem 0 0.2rem; }
+.stepbar button { padding: 0.45rem 0.9rem; border-radius: 10px; border: 1px solid var(--line, #c9d1dc); background: var(--card, #fff); color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+.stepbar button:disabled { opacity: 0.4; cursor: default; }
+.stepbar .dots { display: flex; gap: 6px; } .stepbar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line, #c9d1dc); cursor: pointer; } .stepbar .dots i.on { background: #2f6bff; }

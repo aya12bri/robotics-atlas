@@ -348,6 +348,16 @@
 
   var WIDGETS = { jac2r: function (w) { jac2r(w, false); }, 'jac2r-ellipse': function (w) { jac2r(w, true); }, gimbal: gimbal, dls: dls, gravity: gravity, pid: pid, astar: astar, kalman: kalman, rrt: rrt };
   window.RA_WIDGETS = WIDGETS;                                 // other course files can add their own
-  function init() { [].forEach.call(document.querySelectorAll('.widget[data-widget]'), function (w) { var k = w.dataset.widget; if (WIDGETS[k] && !w.firstChild) WIDGETS[k](w); }); }
+  // step-by-step figures (<div class="steps"> with one <figure class="step"> per step): one step at a time, with buttons
+  function steps(box) {
+    var figs = [].slice.call(box.querySelectorAll(':scope > .step')), k = 0;
+    if (figs.length < 2 || box.classList.contains('on')) return;
+    var bar = el('div', { 'class': 'stepbar ra-own' }), prev = el('button', { type: 'button' }, '◀ ' + L('Previous step', 'Étape précédente')), next = el('button', { type: 'button' }, L('Next step', 'Étape suivante') + ' ▶'), dots = el('span', { 'class': 'dots' });
+    figs.forEach(function (f, i) { var d = el('i', { title: L('Step ', 'Étape ') + (i + 1) }); d.addEventListener('click', function () { show(i); }); dots.appendChild(d); });
+    function show(i) { k = Math.max(0, Math.min(figs.length - 1, i)); figs.forEach(function (f, j) { f.classList.toggle('cur', j === k); dots.children[j].classList.toggle('on', j === k); }); prev.disabled = k === 0; next.disabled = k === figs.length - 1; }
+    prev.addEventListener('click', function () { show(k - 1); }); next.addEventListener('click', function () { show(k + 1); });
+    bar.appendChild(prev); bar.appendChild(dots); bar.appendChild(next); box.appendChild(bar); box.classList.add('on'); show(0);
+  }
+  function init() { [].forEach.call(document.querySelectorAll('.widget[data-widget]'), function (w) { var k = w.dataset.widget; if (WIDGETS[k] && !w.firstChild) WIDGETS[k](w); }); [].forEach.call(document.querySelectorAll('.steps'), steps); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

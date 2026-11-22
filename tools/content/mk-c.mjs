@@ -1,7 +1,7 @@
 // The maths of robotics, lessons 6 to 8: standard DH alone, modified DH (DHM) alone, then the two side by side.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, TRY, lesson } from '../lib.mjs';
 import { AXM, frame } from './mk-b.mjs';
-import { paramFig, armFrames } from './mk-dh3d.mjs';
+import { paramFig, armFrames, dhSteps } from './mk-dh3d.mjs';
 const PRE = 'mk-';
 const sub = (s, i) => `${s}<tspan dy="4" font-size="9">${i}</tspan><tspan dy="-4"> </tspan>`;
 const I = (s, i) => `<i>${s}</i><sub>${i}</sub>`;
@@ -71,6 +71,9 @@ lesson(PRE, 6, {
         [`<strong>Same axis</strong> (two joints on one line): ${I('x', 'i')} is any line perpendicular to it; choose the simplest one.`, `<strong>Axes confondus</strong> (deux liaisons sur une même droite) : ${I('x', 'i')} est n'importe quelle droite perpendiculaire ; choisissez la plus simple.`],
         ['<strong>Prismatic joint</strong>: only the direction of its axis is fixed; you can move the line parallel to itself to a convenient place (usually through the origin before or after).', '<strong>Liaison prismatique</strong> : seule la direction de son axe est imposée ; on peut déplacer la droite parallèlement à elle-même à un endroit pratique (en général par l\'origine d\'avant ou d\'après).']
       ])),
+    H4('Demonstration: the 3-axis arm, step by step', 'Démonstration : le bras à 3 axes, pas à pas'),
+    P('Here is the method applied to a real arm. Use the buttons to go from one step to the next: at each step the new axes appear with a yellow halo.', 'Voici la méthode appliquée à un vrai bras. Utilisez les boutons pour passer d\'une étape à la suivante : à chaque étape, les nouveaux axes apparaissent avec un halo jaune.'),
+    dhSteps(true),
     H4('6.4 The four parameters: between which two axes', '6.4 Les quatre paramètres : entre quels deux axes'),
     P(`Once the axes are drawn, each row <i>i</i> of the table is read on <strong>two axes only</strong>: on the old axis ${I('z', 'i−1')} you measure between two x (that gives θ and d), and on the new axis ${I('x', 'i')} you measure between two z (that gives a and α).`,
       `Une fois les axes dessinés, chaque ligne <i>i</i> du tableau se lit sur <strong>deux axes seulement</strong> : sur l'ancien axe ${I('z', 'i−1')}, on mesure entre deux x (cela donne θ et d), et sur le nouvel axe ${I('x', 'i')}, on mesure entre deux z (cela donne a et α).`),
@@ -153,6 +156,9 @@ lesson(PRE, 7, {
         [`<strong>Step 4, frame 0 (base).</strong> Usually ${I('z', '0')} on the same line as ${I('z', '1')}, and ${I('x', '0')} in the direction of ${I('x', '1')} when ${I('q', '1')} = 0: row 1 is then as simple as possible.`, `<strong>Étape 4, le repère 0 (base).</strong> En général ${I('z', '0')} sur la même droite que ${I('z', '1')}, et ${I('x', '0')} dans le sens de ${I('x', '1')} quand ${I('q', '1')} = 0 : la ligne 1 est alors la plus simple possible.`],
         [`<strong>Step 5, the last joint and the tool.</strong> There is no ${I('z', 'n+1')}: choose ${I('x', 'n')} (usually towards the tool). The tool gets its own frame E, linked to frame <i>n</i> by one more <strong>fixed row</strong> (no variable).`, `<strong>Étape 5, la dernière liaison et l'outil.</strong> Il n'y a pas de ${I('z', 'n+1')} : choisissez ${I('x', 'n')} (en général vers l'outil). L'outil reçoit son propre repère E, relié au repère <i>n</i> par une <strong>ligne fixe</strong> de plus (sans variable).`]
       ])),
+    H4('Demonstration: the 3-axis arm, step by step', 'Démonstration : le bras à 3 axes, pas à pas'),
+    P('The same arm with the modified method. Compare with lesson 6: the z axes are numbered differently, and a frame E is added on the tool.', 'Le même bras avec la méthode modifiée. Comparez avec la leçon 6 : les axes z sont numérotés autrement, et un repère E est ajouté sur l\'outil.'),
+    dhSteps(false),
     H4('7.3 The four parameters: between which two axes', '7.3 Les quatre paramètres : entre quels deux axes'),
     P(`Row <i>j</i> goes from frame <i>j</i>−1 to frame <i>j</i>. It is read on two axes only: on the old axis ${I('x', 'j−1')} you measure between two z (α and a), then on the new axis ${I('z', 'j')} you measure between two x (θ and d). The letters below are those of the robot pages of this site (J. Craig); the column “Khalil” gives the letters of the French courses.`,
       `La ligne <i>j</i> va du repère <i>j</i>−1 au repère <i>j</i>. Elle se lit sur deux axes seulement : sur l'ancien axe ${I('x', 'j−1')}, on mesure entre deux z (α et a), puis sur le nouvel axe ${I('z', 'j')}, on mesure entre deux x (θ et d). Les lettres ci-dessous sont celles des pages des robots de ce site (J. Craig) ; la colonne « Khalil » donne les lettres des cours français.`),

@@ -34,7 +34,8 @@ function view(cx, cy, S) {
 }
 // one legend row = two text nodes (the symbol, then its sentence), so that the sentence is translated as one piece
 const legend = (x, y, rows) => rows.map(([sym, en, fr], k) => `<text x="${x}" y="${y + k * 19}" font-size="12.5" fill="${PC}" font-weight="700">${sym}</text><text x="${x + 44}" y="${y + k * 19}" font-size="12.5" fill="currentColor">${svgtx(en, fr)}</text>`).join('');
-const figure = (vb, svg, cap) => `<figure class="figure"><svg viewBox="${vb}" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${svg}</svg><figcaption>${tx(...cap)}</figcaption></figure>`;
+let FIGN = 0;
+const figure = (vb, svg, cap) => { const id = 'f' + (++FIGN); svg = svg.replace(/(dh[zxp])\b/g, '$1' + id); return `<figure class="figure wide"><svg viewBox="${vb}" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${svg}</svg><figcaption>${tx(...cap)}</figcaption></figure>`; };
 
 // ---------------------------------------------------------------------------------------- the four parameters
 // std = true: standard DH, row i (θᵢ, dᵢ on zᵢ₋₁ between xᵢ₋₁ and xᵢ; aᵢ, αᵢ on xᵢ between zᵢ₋₁ and zᵢ)
@@ -131,4 +132,66 @@ export function armFrames(std) {
   s += V.arc(sh, X, Z, 90 * D, 0.09, PC) + V.text(add(sh, [0, -0.05, 0.12]), 'α₁ = 90°', PC, -18, -8, 'end', 13, true);
   return figure('0 0 680 370', s, ['The same arm with the frames of modified DH. Each zⱼ is on joint j itself (z₁ vertical on joint 1; z₂, z₃ towards you on joints 2 and 3); each xⱼ goes from zⱼ to zⱼ₊₁; frames 1 and 2 share the same origin at the shoulder; a fixed frame E is added on the tool.',
     'Le même bras avec les repères du DH modifié. Chaque zⱼ est sur la liaison j elle-même (z₁ vertical sur la liaison 1 ; z₂, z₃ vers vous sur les liaisons 2 et 3) ; chaque xⱼ va de zⱼ à zⱼ₊₁ ; les repères 1 et 2 ont la même origine, à l\'épaule ; un repère fixe E est ajouté sur l\'outil.']);
+}
+
+// ---------------------------------------------------------------------------------------- step-by-step demonstration
+// Five pictures of the same 3-axis arm: at each step the new axes appear, with a yellow halo; what was drawn before stays.
+// std = true: standard DH; false: modified DH. On the page a small script (learn-more-widgets.js) shows one step at a time.
+export function dhSteps(std) {
+  const V = view(120, 395, 470), sh = [0, 0, 0.4], el = [0.45, 0, 0.4], tool = [0.83, 0, 0.4], out = [0, -1, 0], X = [1, 0, 0], Z = [0, 0, 1];
+  const LZ = 0.16, LO = 0.3, HL = '#ffd23f';
+  const halo = (a, b) => { const [x1, y1] = V.P(a), [x2, y2] = V.P(b); return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${HL}" stroke-width="12" stroke-linecap="round" opacity="0.55"/>`; };
+  const ax = (o, d, len, c, id, name, dx, dy, cur) => { const e = add(o, mul(d, len)); return (cur ? halo(o, e) : '') + V.arrow(o, e, c, id, 3) + V.text(e, name, c, dx, dy, 'start', 17, true); };
+  const zA = (o, d, name, cur, dx = 8, dy = 4) => ax(o, d, d === out ? LO : LZ, ZC, 'dhz', name, dx, dy, cur);
+  const xA = (o, name, cur, dx = 4, dy = -8) => ax(o, X, LZ, XC, 'dhx', name, dx, dy, cur);
+  const org = (p, name, cur, dx, dy, anchor = 'end') => { const [x, y] = V.P(p); return (cur ? `<circle cx="${f(x)}" cy="${f(y)}" r="11" fill="${HL}" opacity="0.6"/>` : '') + `<circle cx="${f(x)}" cy="${f(y)}" r="5" fill="#2b3340" stroke="#fff" stroke-width="1.5"/>` + V.text(p, name, '#5d6878', dx, dy, anchor, 15, true); };
+  // the robot and the axes of its joints (dashed): this is what you start from
+  const robot = () => {
+    let s = V.line([-0.2, 0, 0], [1.05, 0, 0], GC, 1.2, '6 5');
+    s += V.line([0, 0, 0.02], sh, '#8b96a5', 14) + V.line(sh, el, '#8b96a5', 12) + V.line(el, tool, '#f5963a', 10);
+    const jt = (p) => { const [x, y] = V.P(p); return `<circle cx="${f(x)}" cy="${f(y)}" r="12" fill="#262c35" stroke="#e8eef5" stroke-width="2"/><circle cx="${f(x)}" cy="${f(y)}" r="3.5" fill="#e8eef5"/>`; };
+    s += jt(sh) + jt(el) + V.dot(tool, '#ff5c5c', 6);
+    s += V.line([0, 0, -0.03], [0, 0, 0.66], '#7d8796', 1.4, '3 5') + V.line([0, 0.45, 0.4], [0, -0.55, 0.4], '#7d8796', 1.4, '3 5') + V.line([0.45, 0.45, 0.4], [0.45, -0.55, 0.4], '#7d8796', 1.4, '3 5');
+    s += V.text([0, 0, 0.66], svgtx('axis of joint 1', 'axe de la liaison 1'), '#7d8796', 8, 4, 'start', 13);
+    s += V.text([0, 0.45, 0.4], svgtx('axis of joint 2', 'axe de la liaison 2'), '#7d8796', 6, -4, 'start', 13);
+    s += V.text([0.45, 0.45, 0.4], svgtx('axis of joint 3', 'axe de la liaison 3'), '#7d8796', 6, -4, 'start', 13);
+    s += V.text(tool, svgtx('tool', 'outil'), '#ff5c5c', 10, 22, 'start', 14);
+    return s;
+  };
+  const title = (k, en, fr) => `<text x="14" y="28" font-size="18" font-weight="700" fill="currentColor">${svgtx(`Step ${k} / 5: ${en}`, `Étape ${k} / 5 : ${fr}`)}</text>`;
+  // what each step adds, step by step (k = the step being shown)
+  const draw = (k) => {
+    let s = V.defs + robot();
+    if (std) {
+      s += zA([0, 0, 0.02], Z, 'z₀', k === 1, 8, 4) + zA(sh, out, 'z₁', k === 1, -30, 14) + zA(el, out, 'z₂', k === 1, -30, 14);
+      if (k >= 2) s += xA(sh, 'x₁', k === 2, 4, -10) + xA(el, 'x₂', k === 2, 4, -10);
+      if (k === 2) s += V.line(add(sh, [0.02, 0, 0.05]), add(el, [-0.02, 0, 0.05]), HL, 4) + V.text([0.22, 0, 0.45], svgtx('common perpendicular of z₁ and z₂', 'perpendiculaire commune de z₁ et z₂'), '#b58900', 0, -8, 'middle', 13, true);
+      if (k >= 3) s += org(sh, 'O₁', k === 3, -14, -12) + org(el, 'O₂', k === 3, -8, -16);
+      if (k >= 4) s += xA([0, 0, 0.02], 'x₀', k === 4, 4, 18) + org([0, 0, 0.02], 'O₀', k === 4, -12, 18);
+      if (k >= 5) s += zA(tool, out, 'z₃', k === 5, -30, 14) + xA(tool, 'x₃', k === 5, 4, -10) + org(tool, 'O₃', k === 5, 2, -16, 'middle');
+    } else {
+      s += zA(sh, Z, 'z₁', k === 1, 8, 4) + zA(sh, out, 'z₂', k === 1, -30, 14) + zA(el, out, 'z₃', k === 1, -30, 14);
+      if (k >= 2) s += xA(sh, 'x₁ x₂', k === 2, 4, -10);
+      if (k === 2) s += V.line(add(sh, [0.02, 0, 0.05]), add(el, [-0.02, 0, 0.05]), HL, 4) + V.text([0.22, 0, 0.45], svgtx('common perpendicular of z₂ and z₃', 'perpendiculaire commune de z₂ et z₃'), '#b58900', 0, -8, 'middle', 13, true);
+      if (k >= 3) s += org(sh, 'O₁ = O₂', k === 3, -14, -12);
+      if (k >= 4) s += zA([0, 0, 0.02], Z, 'z₀', k === 4, 8, 4) + xA([0, 0, 0.02], 'x₀', k === 4, 4, 18) + org([0, 0, 0.02], 'O₀', k === 4, -12, 18);
+      if (k >= 5) s += xA(el, 'x₃', k === 5, 4, -10) + org(el, 'O₃', k === 5, -8, -16) + zA(tool, out, 'zₑ', k === 5, -30, 14) + xA(tool, 'xₑ', k === 5, 4, -10) + org(tool, 'E', k === 5, 2, -16, 'middle');
+    }
+    return s;
+  };
+  const T = std ? [
+    ['the z axes', 'les axes z', 'Draw the axis of each joint first (dashed). z₀ goes on the axis of joint 1 (vertical), z₁ on the axis of joint 2 and z₂ on the axis of joint 3 (both towards you): zᵢ₋₁ is on joint i.', 'Tracez d\'abord l\'axe de chaque liaison (pointillés). z₀ va sur l\'axe de la liaison 1 (vertical), z₁ sur l\'axe de la liaison 2 et z₂ sur l\'axe de la liaison 3 (tous deux vers vous) : zᵢ₋₁ est sur la liaison i.'],
+    ['the x axes', 'les axes x', 'z₀ and z₁ cross at the shoulder: x₁ goes through that point, perpendicular to both (to the right). z₁ and z₂ are parallel: x₂ is the common perpendicular (yellow) that goes from z₁ to z₂, along the upper arm.', 'z₀ et z₁ se coupent à l\'épaule : x₁ passe par ce point, perpendiculaire aux deux (vers la droite). z₁ et z₂ sont parallèles : x₂ est la perpendiculaire commune (en jaune) qui va de z₁ à z₂, le long du bras.'],
+    ['the origins', 'les origines', 'O₁ is where x₁ meets z₁: the shoulder. O₂ is where x₂ meets z₂: the elbow.', 'O₁ est le point où x₁ rencontre z₁ : l\'épaule. O₂ est le point où x₂ rencontre z₂ : le coude.'],
+    ['frame 0 (base)', 'le repère 0 (base)', 'O₀ on z₀, on the floor. x₀ to the right, in the direction of x₁, so that θ₁ = 0 in this pose.', 'O₀ sur z₀, au sol. x₀ vers la droite, dans le sens de x₁, pour que θ₁ = 0 dans cette pose.'],
+    ['the tool frame', 'le repère de l\'outil', 'O₃ on the tool, z₃ parallel to z₂, x₃ from z₂ towards the tool. The drawing is finished: now read the table (θ, d on each old z; a, α on each new x).', 'O₃ sur l\'outil, z₃ parallèle à z₂, x₃ de z₂ vers l\'outil. Le dessin est fini : lisez maintenant le tableau (θ, d sur chaque ancien z ; a, α sur chaque nouvel x).']
+  ] : [
+    ['the z axes', 'les axes z', 'Draw the axis of each joint first (dashed). Each z takes the number of its own joint: z₁ on joint 1 (vertical), z₂ on joint 2 and z₃ on joint 3 (towards you).', 'Tracez d\'abord l\'axe de chaque liaison (pointillés). Chaque z prend le numéro de sa propre liaison : z₁ sur la liaison 1 (vertical), z₂ sur la liaison 2 et z₃ sur la liaison 3 (vers vous).'],
+    ['the x axes', 'les axes x', 'z₁ and z₂ cross at the shoulder: x₁ goes through that point, perpendicular to both (to the right). z₂ and z₃ are parallel: x₂ is the common perpendicular (yellow) from z₂ to z₃, along the upper arm.', 'z₁ et z₂ se coupent à l\'épaule : x₁ passe par ce point, perpendiculaire aux deux (vers la droite). z₂ et z₃ sont parallèles : x₂ est la perpendiculaire commune (en jaune) de z₂ à z₃, le long du bras.'],
+    ['the origins', 'les origines', 'O₁ = where x₁ meets z₁, O₂ = where x₂ meets z₂: both are at the shoulder, so frames 1 and 2 have the same origin.', 'O₁ = où x₁ rencontre z₁, O₂ = où x₂ rencontre z₂ : les deux sont à l\'épaule, donc les repères 1 et 2 ont la même origine.'],
+    ['frame 0 (base)', 'le repère 0 (base)', 'z₀ on the same line as z₁, O₀ on the floor, x₀ to the right like x₁.', 'z₀ sur la même droite que z₁, O₀ au sol, x₀ vers la droite comme x₁.'],
+    ['the last frame and the tool', 'le dernier repère et l\'outil', 'There is no z₄: x₃ points towards the tool and O₃ is at the elbow. The tool frame E sits on the gripper: it gives the fixed row of the table.', 'Il n\'y a pas de z₄ : x₃ va vers l\'outil et O₃ est au coude. Le repère E de l\'outil est posé sur la pince : il donne la ligne fixe du tableau.']
+  ];
+  const figs = T.map(([te, tf, ce, cf], k) => `<figure class="figure wide step"><svg viewBox="0 0 660 430" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${(title(k + 1, te, tf) + draw(k + 1)).replace(/(dh[zxp])\b/g, `$1${std ? 's' : 'm'}${k}`)}</svg><figcaption>${tx(ce, cf)}</figcaption></figure>`).join('');
+  return `<div class="steps">${figs}</div>`;
 }
