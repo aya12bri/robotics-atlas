@@ -11,6 +11,28 @@ export const frame = (x, y, deg, len, nx, ny) => {
     (nx ? `<text x="${f(x1 + 10 * cx - 4)}" y="${f(y1 - 10 * sy + 4)}" fill="${RED}">${nx}</text>` : '') + (ny ? `<text x="${f(x2 - 10 * sy - 4)}" y="${f(y2 - 10 * cx + 4)}" fill="${GREEN}">${ny}</text>` : '');
 };
 
+// lesson 4.1: the two axes turned by θ = 30° on a circle of radius 1, with graduations, and the coordinates of their tips
+function rotFig() {
+  const U = 150, OX = 250, OY = 230, X = (u) => OX + u * U, Y = (v) => OY - v * U, c = Math.cos(Math.PI / 6), s3 = Math.sin(Math.PI / 6), f = (v) => v.toFixed(1);
+  let s = AXM;
+  s += `<circle cx="${OX}" cy="${OY}" r="${U}" fill="none" stroke="currentColor" stroke-opacity="0.18" stroke-dasharray="4 4"/>`;
+  s += `<line x1="${X(-1.35)}" y1="${OY}" x2="${X(1.4)}" y2="${OY}" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.5" marker-end="url(#mkax)"/><line x1="${OX}" y1="${Y(-0.25)}" x2="${OX}" y2="${Y(1.35)}" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.5" marker-end="url(#mkax)"/>`;
+  [[-1, '−1'], [1, '1']].forEach(([u, l]) => { s += `<line x1="${X(u)}" y1="${OY - 5}" x2="${X(u)}" y2="${OY + 5}" stroke="currentColor"/><text x="${X(u)}" y="${OY + 20}" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">${l}</text>`; });
+  s += `<line x1="${OX - 5}" y1="${Y(1)}" x2="${OX + 5}" y2="${Y(1)}" stroke="currentColor"/><text x="${OX + 9}" y="${Y(1) - 6}" font-size="13" fill="currentColor" opacity="0.7">1</text>`;
+  s += `<text x="${X(1.45)}" y="${OY + 5}" font-size="16" font-weight="700" fill="currentColor">x</text><text x="${OX - 8}" y="${Y(1.38)}" text-anchor="end" font-size="16" font-weight="700" fill="currentColor">y</text><text x="${OX - 8}" y="${OY + 18}" text-anchor="end" font-size="14" fill="currentColor" opacity="0.8">O</text>`;
+  // the turned axes x' and y', and their projections
+  const xp = [X(c), Y(s3)], yp = [X(-s3), Y(c)];
+  s += `<line x1="${OX}" y1="${OY}" x2="${f(xp[0])}" y2="${f(xp[1])}" stroke="${RED}" stroke-width="3.5" marker-end="url(#mkax)"/><line x1="${OX}" y1="${OY}" x2="${f(yp[0])}" y2="${f(yp[1])}" stroke="${GREEN}" stroke-width="3.5" marker-end="url(#mkax)"/>`;
+  s += `<line x1="${f(xp[0])}" y1="${f(xp[1])}" x2="${f(xp[0])}" y2="${OY}" stroke="${RED}" stroke-dasharray="4 4"/><line x1="${f(xp[0])}" y1="${f(xp[1])}" x2="${OX}" y2="${f(xp[1])}" stroke="${RED}" stroke-dasharray="4 4" opacity="0.6"/>`;
+  s += `<line x1="${f(yp[0])}" y1="${f(yp[1])}" x2="${f(yp[0])}" y2="${OY}" stroke="${GREEN}" stroke-dasharray="4 4" opacity="0.6"/><line x1="${f(yp[0])}" y1="${f(yp[1])}" x2="${OX}" y2="${f(yp[1])}" stroke="${GREEN}" stroke-dasharray="4 4"/>`;
+  s += `<text x="${f(xp[0] + 10)}" y="${f(xp[1] - 8)}" font-size="17" font-weight="700" fill="${RED}">x'</text><text x="${f(yp[0] - 10)}" y="${f(yp[1] - 8)}" text-anchor="end" font-size="17" font-weight="700" fill="${GREEN}">y'</text>`;
+  s += `<text x="${f(xp[0] + 10)}" y="${f(xp[1] + 16)}" font-size="14" fill="${RED}">${svgtx('(cos θ, sin θ)')}</text><text x="${f(yp[0] - 10)}" y="${f(yp[1] + 16)}" text-anchor="end" font-size="14" fill="${GREEN}">${svgtx('(−sin θ, cos θ)')}</text>`;
+  s += `<path d="M${X(0.32)},${OY} A${0.32 * U},${0.32 * U} 0 0 0 ${f(X(0.32 * c))},${f(Y(0.32 * s3))}" fill="none" stroke="#e07b00" stroke-width="2"/><text x="${X(0.38)}" y="${OY - 8}" font-size="15" font-weight="700" fill="#e07b00">θ</text>`;
+  s += `<path d="M${OX},${Y(0.32)} A${0.32 * U},${0.32 * U} 0 0 0 ${f(X(-0.32 * s3))},${f(Y(0.32 * c))}" fill="none" stroke="#e07b00" stroke-width="2"/><text x="${X(-0.1)}" y="${Y(0.42)}" text-anchor="end" font-size="15" font-weight="700" fill="#e07b00">θ</text>`;
+  s += `<text x="${X(1.25)}" y="${Y(1.15)}" font-size="14" fill="currentColor">${svgtx('dashed circle: radius 1', 'cercle en pointillés : rayon 1')}</text><text x="${X(1.25)}" y="${Y(0.98)}" font-size="14" fill="currentColor">${svgtx('both axes turn by θ', 'les deux axes tournent de θ')}</text>`;
+  return `<figure class="figure wide"><svg viewBox="0 0 680 300" class="fig" role="img" aria-hidden="true">${s}</svg></figure>`;
+}
+
 // lesson 5.1: frame A (fixed, with its grid and graduations) and frame B (at (3, 1), turned by 90°, with its own graduations)
 function frameFig() {
   const U = 40, OX = 70, OY = 260, X = (u) => OX + u * U, Y = (v) => OY - v * U, sub = (n, s) => `${n}<tspan dy="4" font-size="11">${s}</tspan>`;
@@ -43,7 +65,7 @@ function frameFig() {
   s += `<text x="${X(6.9)}" y="${Y(4.6)}" font-size="15" font-weight="700">${svgtx('Frame A: fixed', 'Repère A : fixe')}</text><text x="${X(6.9)}" y="${Y(4.15)}" font-size="15" font-weight="700">${svgtx('Frame B: at (3, 1),', 'Repère B : en (3, 1),')}</text><text x="${X(6.9)}" y="${Y(3.7)}" font-size="15" font-weight="700">${svgtx('turned by 90°', 'tourné de 90°')}</text>`;
   s += `<text x="${X(6.9)}" y="${Y(2.9)}" font-size="16">${svgtx('P in A: (2, 3)', 'P dans A : (2, 3)')}</text><text x="${X(6.9)}" y="${Y(2.35)}" font-size="16">${svgtx('P in B: (2, 1)', 'P dans B : (2, 1)')}</text>`;
   s += `<text x="${X(6.9)}" y="${Y(1.6)}" font-size="14" fill="#9aa5b4">${svgtx('1 square = 1 unit', '1 carreau = 1 unité')}</text>`;
-  return FIG('0 0 610 300', s);
+  return `<figure class="figure wide"><svg viewBox="0 0 610 300" class="fig" role="img" aria-hidden="true">${s}</svg></figure>`;
 }
 
 export function partB() {
@@ -57,13 +79,7 @@ lesson(PRE, 4, {
     H4('4.1 Build it from its columns', '4.1 La construire à partir de ses colonnes'),
     P('We want the matrix that turns every vector by an angle <i>θ</i> (counter-clockwise). Use the idea of lesson 3: <strong>where do the axes go?</strong>',
       'On veut la matrice qui fait tourner tout vecteur d\'un angle <i>θ</i> (sens inverse des aiguilles d\'une montre). Utilisons l\'idée de la leçon 3 : <strong>où vont les axes ?</strong>'),
-    FIG('-40 0 380 200', `${AXM}
-      <line class="ax" x1="40" y1="165" x2="310" y2="165"/><line class="ax" x1="150" y1="190" x2="150" y2="15"/>
-      <text x="316" y="169">x</text><text x="146" y="12" text-anchor="end">y</text>
-      ${frame(150, 165, 30, 120, "x'", "y'")}
-      <path class="arc" d="M200,165 A50,50 0 0 0 193.3,140"/><text x="206" y="152">θ</text>
-      <line class="dash" x1="253.9" y1="105" x2="253.9" y2="165"/><line class="dash" x1="90" y1="61.1" x2="150" y2="61.1"/>
-      <text x="160" y="92" fill="${RED}">${svgtx('(cos θ, sin θ)')}</text><text x="72" y="42" text-anchor="end" fill="${GREEN}">${svgtx('(−sin θ, cos θ)')}</text>`),
+    rotFig(),
     UL([
       [`The x axis ${MX(1, ['1', '0'])} turns to ${MX(1, ['cos <i>θ</i>', 'sin <i>θ</i>'])} (lesson 1). This is the first column.`, `L'axe x ${MX(1, ['1', '0'])} tourne vers ${MX(1, ['cos <i>θ</i>', 'sin <i>θ</i>'])} (leçon 1). C'est la première colonne.`],
       [`The y axis ${MX(1, ['0', '1'])} turns to ${MX(1, ['−sin <i>θ</i>', 'cos <i>θ</i>'])}. This is the second column.`, `L'axe y ${MX(1, ['0', '1'])} tourne vers ${MX(1, ['−sin <i>θ</i>', 'cos <i>θ</i>'])}. C'est la deuxième colonne.`]
