@@ -1,7 +1,7 @@
 // The maths of robotics, lessons 6 to 8: standard DH alone, modified DH (DHM) alone, then the two side by side.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, TRY, lesson } from '../lib.mjs';
 import { AXM, frame } from './mk-b.mjs';
-import { paramFig, armFrames, dhSteps } from './mk-dh3d.mjs';
+import { paramFig, armFrames, dhSteps, perpCases } from './mk-dh3d.mjs';
 const PRE = 'mk-';
 const sub = (s, i) => `${s}<tspan dy="4" font-size="9">${i}</tspan><tspan dy="-4"> </tspan>`;
 const I = (s, i) => `<i>${s}</i><sub>${i}</sub>`;
@@ -64,7 +64,7 @@ lesson(PRE, 6, {
          `<strong>Étape 5, le repère <i>n</i> (outil).</strong> Il n'y a pas de liaison <i>n</i>+1 : placez ${I('O', 'n')} sur le point outil, ${I('z', 'n')} parallèle à ${I('z', 'n−1')} (ou dans la direction où pointe l'outil), et ${I('x', 'n')} de ${I('z', 'n−1')} vers l'outil.`]
       ])),
     BOX('warn', ['The common perpendicular: four cases', 'La perpendiculaire commune : quatre cas'],
-      UL([
+      perpCases([
         [`<strong>Skew axes</strong> (not parallel, not crossing): there is one common perpendicular. ${I('x', 'i')} is on it.`, `<strong>Axes quelconques</strong> (ni parallèles, ni sécants) : il y a une seule perpendiculaire commune. ${I('x', 'i')} est dessus.`],
         [`<strong>Axes that cross</strong> (very common: a vertical axis and a horizontal one): the distance is 0, so ${I('a', 'i')} = 0. ${I('x', 'i')} goes through the crossing point, perpendicular to <em>both</em> axes (two possible directions: choose one; it sets the sign of ${I('α', 'i')}).`, `<strong>Axes sécants</strong> (très fréquent : un axe vertical et un axe horizontal) : la distance est 0, donc ${I('a', 'i')} = 0. ${I('x', 'i')} passe par le point de croisement, perpendiculaire aux <em>deux</em> axes (deux sens possibles : choisissez-en un ; il fixe le signe de ${I('α', 'i')}).`],
         [`<strong>Parallel axes</strong> (shoulder and elbow): there are infinitely many common perpendiculars. Choose the one that goes through ${I('O', 'i−1')}, so that ${I('d', 'i')} = 0.`, `<strong>Axes parallèles</strong> (épaule et coude) : il y a une infinité de perpendiculaires communes. Choisissez celle qui passe par ${I('O', 'i−1')}, pour que ${I('d', 'i')} = 0.`],
