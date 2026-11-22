@@ -22,7 +22,7 @@ lesson(PRE, 7, {
       <rect class="pn" x="440" y="55" width="100" height="36" rx="18"/><text x="490" y="78" text-anchor="middle">${svgtx('Carry', 'Transporter')}</text>
       <line class="ax" x1="100" y1="73" x2="150" y2="73"/><line class="ax" x1="250" y1="73" x2="300" y2="73"/><line class="ax" x1="390" y1="73" x2="440" y2="73"/>
       <text x="125" y="48" text-anchor="middle">${svgtx('found', 'trouvé')}</text><text x="275" y="48" text-anchor="middle">${svgtx('close', 'proche')}</text><text x="415" y="48" text-anchor="middle">${svgtx('closed', 'fermée')}</text>
-      <path class="ax" fill="none" d="M345 91 C345 130 55 130 55 91"/><text x="200" y="125" text-anchor="middle">${svgtx('grasp failed → search again', 'saisie échouée → chercher à nouveau')}</text>
+      <path class="ax" fill="none" d="M345 91 C345 130 55 130 55 91"/><text x="200" y="140" text-anchor="middle">${svgtx('grasp failed → search again', 'saisie échouée → chercher à nouveau')}</text>
       </g>`),
     H4('7.2 Behaviour trees', '7.2 Arbres de comportement'),
     P('A <strong>behaviour tree</strong> (BT) is a tree that is “ticked” from the root several times per second. Each node returns <em>Success</em>, <em>Failure</em> or <em>Running</em>. The main nodes:',

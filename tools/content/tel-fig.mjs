@@ -8,7 +8,7 @@ const MK = (id, c) => `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" 
 const DEFS = `<defs>${MK('tA', V.axis)}${MK('tB', V.b)}${MK('tO', V.o)}${MK('tG', V.g)}${MK('tR', V.r)}${MK('tY', V.y)}</defs>`;
 const mk = { [V.axis]: 'tA', [V.b]: 'tB', [V.o]: 'tO', [V.g]: 'tG', [V.r]: 'tR', [V.y]: 'tY' };
 const box = (x, y, w, h, fill, label, sub, o = {}) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" style="fill:${fill};fill-opacity:${o.op || 0.22};stroke:${fill};stroke-width:2"/>` +
-  `<text x="${x + w / 2}" y="${y + h / 2 + (sub ? -4 : 5)}" text-anchor="middle" style="font-weight:700">${t(label)}</text>` + (sub ? `<text x="${x + w / 2}" y="${y + h / 2 + 15}" text-anchor="middle" class="sm" style="fill:${V.axis}">${t(sub)}</text>` : '');
+  `<text x="${x + w / 2}" y="${o.top ? y + 26 : y + h / 2 + (sub ? -4 : 5)}" text-anchor="middle" style="font-weight:700">${t(label)}</text>` + (sub ? `<text x="${x + w / 2}" y="${y + h / 2 + 15}" text-anchor="middle" class="sm" style="fill:${V.axis}">${t(sub)}</text>` : '');
 const arr = (x1, y1, x2, y2, c = V.axis, w = 2.2, dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:${c};stroke-width:${w}${dash ? ';stroke-dasharray:6 5' : ''}" marker-end="url(#${mk[c] || 'tA'})"/>`;
 const lab = (x, y, s, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.a || 'middle'}"${o.sm ? ' class="sm"' : ''} style="fill:${o.c || V.ink}${o.b ? ';font-weight:700' : ''}">${t(s)}</text>`;
 

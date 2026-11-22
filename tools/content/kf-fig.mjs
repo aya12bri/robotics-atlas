@@ -10,16 +10,16 @@ export const sensors = () => {
   S.forEach((x, i) => { const y = 14 + i * 50; s += box(10, y, 190, 40, x[2], x[0], x[1]) + arr(202, y + 20, 318, 168, V.axis, 1.6); });
   s += box(320, 128, 150, 80, V.b, ['Fusion filter', 'Filtre de fusion'], ['Kalman, EKF…', 'Kalman, EKF…'], { op: 0.3 }) + arr(472, 168, 518, 168);
   s += box(520, 118, 160, 100, V.g, ['Best estimate', 'Meilleure estimation'], ['x̂ and its covariance Γ', 'x̂ et sa covariance Γ']);
-  s += lab(600, 250, ['position, speed, heading… and how sure we are', 'position, vitesse, cap… et à quel point on en est sûr'], { sm: 1, c: V.axis });
+  s += lab(600, 246, ['position, speed, heading…', 'position, vitesse, cap…'], { sm: 1, c: V.axis }) + lab(600, 264, ['and how sure we are', 'et à quel point on en est sûr'], { sm: 1, c: V.axis });
   return { vb: '0 0 690 310', svg: s };
 };
 
 // the loop of the Kalman filter
 export const loop = () => ({ vb: '0 0 690 290', svg: DEFS +
-  box(20, 40, 300, 110, V.b, ['1 · Prediction (the model)', '1 · Prédiction (le modèle)']) +
-  lab(170, 112, 'x̂ₖ₊₁|ₖ = Aₖ x̂ₖ|ₖ + uₖ', { sm: 1 }) + lab(170, 132, 'Γₖ₊₁|ₖ = Aₖ Γₖ|ₖ Aₖᵀ + Γα', { sm: 1 }) +
-  box(370, 40, 300, 110, V.g, ['2 · Correction (the measurement)', '2 · Correction (la mesure)']) +
-  lab(520, 106, 'ỹ = y − C x̂ , S = C Γ Cᵀ + Γβ', { sm: 1 }) + lab(520, 124, 'K = Γ Cᵀ S⁻¹', { sm: 1 }) + lab(520, 142, 'x̂ ← x̂ + K ỹ , Γ ← (I − K C) Γ', { sm: 1 }) +
+  box(20, 40, 300, 110, V.b, ['1 · Prediction (the model)', '1 · Prédiction (le modèle)'], null, { top: 1 }) +
+  lab(170, 98, 'x̂ₖ₊₁|ₖ = Aₖ x̂ₖ|ₖ + uₖ', { sm: 1 }) + lab(170, 122, 'Γₖ₊₁|ₖ = Aₖ Γₖ|ₖ Aₖᵀ + Γα', { sm: 1 }) +
+  box(370, 40, 300, 110, V.g, ['2 · Correction (the measurement)', '2 · Correction (la mesure)'], null, { top: 1 }) +
+  lab(520, 92, 'ỹ = y − C x̂ , S = C Γ Cᵀ + Γβ', { sm: 1 }) + lab(520, 114, 'K = Γ Cᵀ S⁻¹', { sm: 1 }) + lab(520, 136, 'x̂ ← x̂ + K ỹ , Γ ← (I − K C) Γ', { sm: 1 }) +
   `<path d="M320,70 C345,70 345,70 368,70" style="fill:none;stroke:${V.axis};stroke-width:2.2" marker-end="url(#tA)"/>` +
   `<path d="M520,152 C520,230 170,230 170,152" style="fill:none;stroke:${V.axis};stroke-width:2.2" marker-end="url(#tA)"/>` +
   lab(345, 222, ['k ← k + 1: the corrected estimate becomes the start of the next prediction', 'k ← k + 1 : l\'estimation corrigée devient le départ de la prédiction suivante'], { sm: 1, c: V.axis }) +

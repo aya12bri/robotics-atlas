@@ -42,17 +42,17 @@ lesson(PRE, 1, {
     EQ(`<i>s</i> = <i>r</i> <i>θ</i>`),
     P(`This is exactly what a wheel does: when it turns by <i>Δφ</i> radians, its contact point rolls a distance <i>r</i> <i>Δφ</i> on the floor. Odometry (lesson 14) is built on this single line.`,
       `C'est exactement ce que fait une roue : quand elle tourne de <i>Δφ</i> radians, son point de contact roule sur une distance <i>r</i> <i>Δφ</i> sur le sol. L'odométrie (leçon 14) repose sur cette seule ligne.`),
-    FIG(`0 0 440 250`, `
+    FIG(`0 0 620 250`, `
       <circle cx="140" cy="130" r="100" fill="none" stroke="#5b8fd6" stroke-width="2"/>
       <line x1="20" y1="130" x2="270" y2="130" class="ax"/><line x1="140" y1="10" x2="140" y2="250" class="ax"/>
       <line x1="140" y1="130" x2="211" y2="59" stroke="#ff9f43" stroke-width="3"/>
       <circle cx="211" cy="59" r="5" class="pt"/>
       <line x1="211" y1="59" x2="211" y2="130" class="dash"/><line x1="140" y1="59" x2="211" y2="59" class="dash"/>
       <path d="M 180 130 A 40 40 0 0 0 168 102" class="arc"/><text x="186" y="118" fill="#ff9f43">θ</text>
-      <text x="226" y="96" fill="#ff6b6b">${svgtx('( cos θ , sin θ )')}</text>
+      <text x="218" y="50" fill="#ff6b6b">${svgtx('( cos θ , sin θ )')}</text>
       <text x="211" y="146" text-anchor="middle">cos θ</text><text x="125" y="98" text-anchor="end">sin θ</text>
-      <text x="290" y="60">${svgtx('For a point on a circle of radius 1:', 'Pour un point sur un cercle de rayon 1 :')}</text>
-      <text x="290" y="82">${svgtx('x = cos θ')}</text><text x="290" y="102">${svgtx('y = sin θ')}</text><text x="290" y="130">${svgtx('tan θ = sin θ / cos θ')}</text>`),
+      <text x="350" y="60">${svgtx('For a point on a circle of radius 1:', 'Pour un point sur un cercle de rayon 1 :')}</text>
+      <text x="350" y="86">${svgtx('x = cos θ')}</text><text x="350" y="108">${svgtx('y = sin θ')}</text><text x="350" y="138">${svgtx('tan θ = sin θ / cos θ')}</text>`),
     P(`<strong>Sine and cosine</strong> give the coordinates of a point on the unit circle (radius 1) at the angle <i>θ</i> from the horizontal axis. Remember a few values:`,
       `Le <strong>sinus et le cosinus</strong> donnent les coordonnées d'un point du cercle unité (rayon 1) à l'angle <i>θ</i> depuis l'axe horizontal. Retenez quelques valeurs :`),
     TABLE([[`θ`, `θ`], [`0°`, `0°`], [`30°`, `30°`], [`45°`, `45°`], [`60°`, `60°`], [`90°`, `90°`]], [

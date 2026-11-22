@@ -853,3 +853,14 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
+// Course figures: each drawing is shown at about 1.7 times the size of its own drawing units (so an 11-unit label reads at ~19 px),
+// never wider than the lesson. Small diagrams were capped at 480 px before, which made their labels hard to read.
+(function () {
+  function size() {
+    [].forEach.call(document.querySelectorAll('.figure > svg.fig'), function (s) {
+      var vb = s.viewBox && s.viewBox.baseVal; if (!vb || !vb.width || s.dataset.sized) return;
+      s.dataset.sized = '1'; s.style.maxWidth = Math.round(Math.min(760, vb.width * 1.7)) + 'px';
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', size); else size();
+})();
