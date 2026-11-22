@@ -33,15 +33,15 @@ function view(cx, cy, S) {
   };
 }
 // one legend row = two text nodes (the symbol, then its sentence), so that the sentence is translated as one piece
-const legend = (x, y, rows) => rows.map(([sym, en, fr], k) => `<text x="${x}" y="${y + k * 19}" font-size="12.5" fill="${PC}" font-weight="700">${sym}</text><text x="${x + 44}" y="${y + k * 19}" font-size="12.5" fill="currentColor">${svgtx(en, fr)}</text>`).join('');
+const legend = (x, y, rows) => rows.map(([sym, en, fr], k) => `<text x="${x}" y="${y + k * 25}" font-size="15" fill="${PC}" font-weight="700">${sym}</text><text x="${x + 50}" y="${y + k * 25}" font-size="15" fill="currentColor">${svgtx(en, fr)}</text>`).join('');
 let FIGN = 0;
 const figure = (vb, svg, cap) => { const id = 'f' + (++FIGN); svg = svg.replace(/(dh[zxp])\b/g, '$1' + id); return `<figure class="figure wide"><svg viewBox="${vb}" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${svg}</svg><figcaption>${tx(...cap)}</figcaption></figure>`; };
 
 // ---------------------------------------------------------------------------------------- the four parameters
 // std = true: standard DH, row i (θᵢ, dᵢ on zᵢ₋₁ between xᵢ₋₁ and xᵢ; aᵢ, αᵢ on xᵢ between zᵢ₋₁ and zᵢ)
 // std = false: modified DH, row j (αⱼ₋₁, aⱼ₋₁ on xⱼ₋₁ between zⱼ₋₁ and zⱼ; θⱼ, dⱼ on zⱼ between xⱼ₋₁ and xⱼ)
-export function paramFig(std) {
-  const V = view(150, 250, 150), th = 38 * D, al = 42 * D, a = 0.95, d = 0.62;
+export function paramFig(std, khalil) {
+  const V = view(120, 340, 215), th = 38 * D, al = 42 * D, a = 0.95, d = 0.62;
   const Z = [0, 0, 1], X = [1, 0, 0];
   let s = V.defs;
   if (std) {
@@ -58,17 +58,18 @@ export function paramFig(std) {
     s += V.dim([0.04, 0, d + 0.05], [a - 0.04, 0, d + 0.05], 'aᵢ', 0, -10);
     s += V.arc(H, Z, xprev, th, 0.3, PC) + V.text(add(H, mul(rot(xprev, Z, th / 2), 0.36)), 'θᵢ', PC, 4, 16, 'start', 14, true);
     s += V.arc(B, X, Z, al, 0.36, PC) + V.text(add(B, mul(rot(Z, X, al / 2), 0.42)), 'αᵢ', PC, -2, -2, 'end', 14, true);
-    s += legend(420, 40, [
+    s += legend(450, 60, [
       ['θᵢ', 'angle from xᵢ₋₁ to xᵢ, around zᵢ₋₁', 'angle de xᵢ₋₁ à xᵢ, autour de zᵢ₋₁'],
       ['dᵢ', 'distance from xᵢ₋₁ to xᵢ, along zᵢ₋₁', 'distance de xᵢ₋₁ à xᵢ, le long de zᵢ₋₁'],
       ['aᵢ', 'distance from zᵢ₋₁ to zᵢ, along xᵢ', 'distance de zᵢ₋₁ à zᵢ, le long de xᵢ'],
       ['αᵢ', 'angle from zᵢ₋₁ to zᵢ, around xᵢ', 'angle de zᵢ₋₁ à zᵢ, autour de xᵢ']
     ]);
-    s += `<text x="420" y="132" font-size="12" fill="${GC}">${svgtx('θ, d: on the old z, between two x', 'θ, d : sur l\'ancien z, entre deux x')}</text><text x="420" y="150" font-size="12" fill="${GC}">${svgtx('a, α: on the new x, between two z', 'a, α : sur le nouvel x, entre deux z')}</text>`;
-    return figure('0 0 790 300', s, ['Standard DH, row i: θ and d are measured on zᵢ₋₁ (between xᵢ₋₁ and xᵢ), a and α on xᵢ (between zᵢ₋₁ and zᵢ). Dashed: an axis moved parallel to itself, to show the angle.',
+    s += `<text x="450" y="175" font-size="14" fill="${GC}">${svgtx('θ, d: on the old z, between two x', 'θ, d : sur l\'ancien z, entre deux x')}</text><text x="450" y="199" font-size="14" fill="${GC}">${svgtx('a, α: on the new x, between two z', 'a, α : sur le nouvel x, entre deux z')}</text>`;
+    return figure('0 0 820 410', s, ['Standard DH, row i: θ and d are measured on zᵢ₋₁ (between xᵢ₋₁ and xᵢ), a and α on xᵢ (between zᵢ₋₁ and zᵢ). Dashed: an axis moved parallel to itself, to show the angle.',
       'DH standard, ligne i : θ et d se mesurent sur zᵢ₋₁ (entre xᵢ₋₁ et xᵢ), a et α sur xᵢ (entre zᵢ₋₁ et zᵢ). En pointillés : un axe déplacé parallèlement à lui-même, pour montrer l\'angle.']);
   }
   // modified DH: xⱼ₋₁ goes from zⱼ₋₁ to zⱼ; on zⱼ, at the distance dⱼ, xⱼ leaves at the angle θⱼ
+  const nAl = khalil ? 'αⱼ' : 'αⱼ₋₁', nA = khalil ? 'dⱼ' : 'aⱼ₋₁', nD = khalil ? 'rⱼ' : 'dⱼ';
   const O = [0, 0, 0.35], B = [a, 0, 0.35], zj = rot(Z, X, al), C = add(B, mul(zj, d)), xj = rot(X, zj, th);
   s += V.arrow([0, 0, 0.05], [0, 0, 1.25], ZC, 'dhz') + V.text([0, 0, 1.25], 'zⱼ₋₁', ZC, -8, -6, 'end', 14, true);
   s += V.dot(O, '#7a8594', 3.5) + V.text(O, 'Oⱼ₋₁', GC, -8, 16, 'end', 12);
@@ -78,19 +79,22 @@ export function paramFig(std) {
   s += V.line(C, add(C, mul(X, 0.42)), XC, 1.3, '5 4');                            // xⱼ₋₁ carried up to the height of xⱼ
   s += V.arrow(C, add(C, mul(xj, 0.62)), XC, 'dhx') + V.text(add(C, mul(xj, 0.62)), 'xⱼ', XC, 8, 4, 'start', 14, true);
   s += V.dot(C, '#7a8594', 3.5) + V.text(C, 'Oⱼ', GC, -12, 4, 'end', 12);
-  s += V.dim([0.04, 0, 0.3], [a - 0.04, 0, 0.3], 'aⱼ₋₁', 0, 18);
-  s += V.dim(add(B, [-0.07, 0, 0]), add(C, [-0.07, 0, 0]), 'dⱼ', -18, 2);
-  s += V.arc(B, X, Z, al, 0.26, PC) + V.text(add(B, [0, 0, 0.26]), 'αⱼ₋₁', PC, 8, 2, 'start', 14, true);
+  s += V.dim([0.04, 0, 0.3], [a - 0.04, 0, 0.3], nA, 0, 18);
+  s += V.dim(add(B, [-0.07, 0, 0]), add(C, [-0.07, 0, 0]), nD, -18, 2);
+  s += V.arc(B, X, Z, al, 0.26, PC) + V.text(add(B, [0, 0, 0.26]), nAl, PC, 8, 2, 'start', 14, true);
   s += V.arc(C, zj, X, th, 0.3, PC) + V.text(add(C, mul(rot(X, zj, th / 2), 0.36)), 'θⱼ', PC, 8, 16, 'start', 14, true);
-  s += legend(420, 40, [
-    ['αⱼ₋₁', 'angle from zⱼ₋₁ to zⱼ, around xⱼ₋₁', 'angle de zⱼ₋₁ à zⱼ, autour de xⱼ₋₁'],
-    ['aⱼ₋₁', 'distance from zⱼ₋₁ to zⱼ, along xⱼ₋₁', 'distance de zⱼ₋₁ à zⱼ, le long de xⱼ₋₁'],
+  s += legend(450, 60, [
+    [nAl, 'angle from zⱼ₋₁ to zⱼ, around xⱼ₋₁', 'angle de zⱼ₋₁ à zⱼ, autour de xⱼ₋₁'],
+    [nA, 'distance from zⱼ₋₁ to zⱼ, along xⱼ₋₁', 'distance de zⱼ₋₁ à zⱼ, le long de xⱼ₋₁'],
     ['θⱼ', 'angle from xⱼ₋₁ to xⱼ, around zⱼ', 'angle de xⱼ₋₁ à xⱼ, autour de zⱼ'],
-    ['dⱼ', 'distance from xⱼ₋₁ to xⱼ, along zⱼ', 'distance de xⱼ₋₁ à xⱼ, le long de zⱼ']
+    [nD, 'distance from xⱼ₋₁ to xⱼ, along zⱼ', 'distance de xⱼ₋₁ à xⱼ, le long de zⱼ']
   ]);
-  s += `<text x="420" y="132" font-size="12" fill="${GC}">${svgtx('α, a: on the old x, between two z', 'α, a : sur l\'ancien x, entre deux z')}</text><text x="420" y="150" font-size="12" fill="${GC}">${svgtx('θ, d: on the new z, between two x', 'θ, d : sur le nouveau z, entre deux x')}</text>`;
-  s += `<text x="420" y="180" font-size="12" fill="${GC}">${svgtx('Khalil notation: αⱼ, dⱼ, θⱼ, rⱼ', 'Notation Khalil : αⱼ, dⱼ, θⱼ, rⱼ')}</text><text x="420" y="198" font-size="12" fill="${GC}">${svgtx('(their dⱼ = our aⱼ₋₁, their rⱼ = our dⱼ)', '(leur dⱼ = notre aⱼ₋₁, leur rⱼ = notre dⱼ)')}</text>`;
-  return figure('0 0 790 300', s, ['Modified DH, row j: α and a are measured on xⱼ₋₁ (between zⱼ₋₁ and zⱼ), θ and d on zⱼ (between xⱼ₋₁ and xⱼ). Dashed: an axis moved parallel to itself, to show the angle.',
+  s += `<text x="450" y="175" font-size="14" fill="${GC}">${svgtx(khalil ? 'α, d: on the old x, between two z' : 'α, a: on the old x, between two z', khalil ? 'α, d : sur l\'ancien x, entre deux z' : 'α, a : sur l\'ancien x, entre deux z')}</text><text x="450" y="199" font-size="14" fill="${GC}">${svgtx(khalil ? 'θ, r: on the new z, between two x' : 'θ, d: on the new z, between two x', khalil ? 'θ, r : sur le nouveau z, entre deux x' : 'θ, d : sur le nouveau z, entre deux x')}</text>`;
+  if (khalil) s += `<text x="450" y="236" font-size="14" fill="${GC}">${svgtx('Khalil letters (this course): αⱼ, dⱼ, θⱼ, rⱼ', 'Lettres de Khalil (ce cours) : αⱼ, dⱼ, θⱼ, rⱼ')}</text><text x="450" y="260" font-size="14" fill="${GC}">${svgtx('(Craig: αⱼ₋₁, aⱼ₋₁, θⱼ, dⱼ)', '(Craig : αⱼ₋₁, aⱼ₋₁, θⱼ, dⱼ)')}</text>`;
+  else s += `<text x="450" y="236" font-size="14" fill="${GC}">${svgtx('Khalil notation: αⱼ, dⱼ, θⱼ, rⱼ', 'Notation Khalil : αⱼ, dⱼ, θⱼ, rⱼ')}</text><text x="450" y="260" font-size="14" fill="${GC}">${svgtx('(their dⱼ = our aⱼ₋₁, their rⱼ = our dⱼ)', '(leur dⱼ = notre aⱼ₋₁, leur rⱼ = notre dⱼ)')}</text>`;
+  if (khalil) return figure('0 0 820 410', s, ['Modified DH (Khalil letters), row j: α and d are measured on xⱼ₋₁ (between zⱼ₋₁ and zⱼ), θ and r on zⱼ (between xⱼ₋₁ and xⱼ). Dashed: an axis moved parallel to itself, to show the angle.',
+    'DH modifié (lettres de Khalil), ligne j : α et d se mesurent sur xⱼ₋₁ (entre zⱼ₋₁ et zⱼ), θ et r sur zⱼ (entre xⱼ₋₁ et xⱼ). En pointillés : un axe déplacé parallèlement à lui-même, pour montrer l\'angle.']);
+  return figure('0 0 820 410', s, ['Modified DH, row j: α and a are measured on xⱼ₋₁ (between zⱼ₋₁ and zⱼ), θ and d on zⱼ (between xⱼ₋₁ and xⱼ). Dashed: an axis moved parallel to itself, to show the angle.',
     'DH modifié, ligne j : α et a se mesurent sur xⱼ₋₁ (entre zⱼ₋₁ et zⱼ), θ et d sur zⱼ (entre xⱼ₋₁ et xⱼ). En pointillés : un axe déplacé parallèlement à lui-même, pour montrer l\'angle.']);
 }
 
@@ -137,7 +141,7 @@ export function armFrames(std) {
 // ---------------------------------------------------------------------------------------- step-by-step demonstration
 // Five pictures of the same 3-axis arm: at each step the new axes appear, with a yellow halo; what was drawn before stays.
 // std = true: standard DH; false: modified DH. On the page a small script (learn-more-widgets.js) shows one step at a time.
-export function dhSteps(std) {
+export function dhSteps(std, final) {
   const V = view(120, 395, 470), sh = [0, 0, 0.4], el = [0.45, 0, 0.4], tool = [0.83, 0, 0.4], out = [0, -1, 0], X = [1, 0, 0], Z = [0, 0, 1];
   const LZ = 0.16, LO = 0.3, HL = '#ffd23f';
   const halo = (a, b) => { const [x1, y1] = V.P(a), [x2, y2] = V.P(b); return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${HL}" stroke-width="12" stroke-linecap="round" opacity="0.55"/>`; };
@@ -146,22 +150,22 @@ export function dhSteps(std) {
   const xA = (o, name, cur, dx = 4, dy = -8) => ax(o, X, LZ, XC, 'dhx', name, dx, dy, cur);
   const org = (p, name, cur, dx, dy, anchor = 'end') => { const [x, y] = V.P(p); return (cur ? `<circle cx="${f(x)}" cy="${f(y)}" r="11" fill="${HL}" opacity="0.6"/>` : '') + `<circle cx="${f(x)}" cy="${f(y)}" r="5" fill="#2b3340" stroke="#fff" stroke-width="1.5"/>` + V.text(p, name, '#5d6878', dx, dy, anchor, 15, true); };
   // the robot and the axes of its joints (dashed): this is what you start from
-  const robot = () => {
+  const robot = (k) => {
     let s = V.line([-0.2, 0, 0], [1.05, 0, 0], GC, 1.2, '6 5');
     s += V.line([0, 0, 0.02], sh, '#8b96a5', 14) + V.line(sh, el, '#8b96a5', 12) + V.line(el, tool, '#f5963a', 10);
     const jt = (p) => { const [x, y] = V.P(p); return `<circle cx="${f(x)}" cy="${f(y)}" r="12" fill="#262c35" stroke="#e8eef5" stroke-width="2"/><circle cx="${f(x)}" cy="${f(y)}" r="3.5" fill="#e8eef5"/>`; };
     s += jt(sh) + jt(el) + V.dot(tool, '#ff5c5c', 6);
     s += V.line([0, 0, -0.03], [0, 0, 0.66], '#7d8796', 1.4, '3 5') + V.line([0, 0.45, 0.4], [0, -0.55, 0.4], '#7d8796', 1.4, '3 5') + V.line([0.45, 0.45, 0.4], [0.45, -0.55, 0.4], '#7d8796', 1.4, '3 5');
-    s += V.text([0, 0, 0.66], svgtx('axis of joint 1', 'axe de la liaison 1'), '#7d8796', 8, 4, 'start', 13);
-    s += V.text([0, 0.45, 0.4], svgtx('axis of joint 2', 'axe de la liaison 2'), '#7d8796', 6, -4, 'start', 13);
-    s += V.text([0.45, 0.45, 0.4], svgtx('axis of joint 3', 'axe de la liaison 3'), '#7d8796', 6, -4, 'start', 13);
+    if (k < 6) s += V.text([0, 0, 0.66], svgtx('axis of joint 1', 'axe de la liaison 1'), '#7d8796', 8, 4, 'start', 13) +
+      V.text([0, 0.45, 0.4], svgtx('axis of joint 2', 'axe de la liaison 2'), '#7d8796', 6, -4, 'start', 13) +
+      V.text([0.45, 0.45, 0.4], svgtx('axis of joint 3', 'axe de la liaison 3'), '#7d8796', 6, -4, 'start', 13);
     s += V.text(tool, svgtx('tool', 'outil'), '#ff5c5c', 10, 22, 'start', 14);
     return s;
   };
   const title = (k, en, fr) => `<text x="14" y="28" font-size="18" font-weight="700" fill="currentColor">${svgtx(`Step ${k} / 5: ${en}`, `Étape ${k} / 5 : ${fr}`)}</text>`;
   // what each step adds, step by step (k = the step being shown)
   const draw = (k) => {
-    let s = V.defs + robot();
+    let s = V.defs + robot(k);
     if (std) {
       s += zA([0, 0, 0.02], Z, 'z₀', k === 1, 8, 4) + zA(sh, out, 'z₁', k === 1, -30, 14) + zA(el, out, 'z₂', k === 1, -30, 14);
       if (k >= 2) s += xA(sh, 'x₁', k === 2, 4, -10) + xA(el, 'x₂', k === 2, 4, -10);
@@ -176,6 +180,11 @@ export function dhSteps(std) {
       if (k >= 3) s += org(sh, 'O₁ = O₂', k === 3, -14, -12);
       if (k >= 4) s += zA([0, 0, 0.02], Z, 'z₀', k === 4, 8, 4) + xA([0, 0, 0.02], 'x₀', k === 4, 4, 18) + org([0, 0, 0.02], 'O₀', k === 4, -12, 18);
       if (k >= 5) s += xA(el, 'x₃', k === 5, 4, -10) + org(el, 'O₃', k === 5, -8, -16) + zA(tool, out, 'zₑ', k === 5, -30, 14) + xA(tool, 'xₑ', k === 5, 4, -10) + org(tool, 'E', k === 5, 2, -16, 'middle');
+    }
+    if (k === 6) {   // the finished drawing, with the numbers of the table
+      s += V.dim([-0.1, 0, 0.02], [-0.1, 0, 0.4], svgtx('d₁ = 0.40', 'd₁ = 0,40'), -48, 4);
+      s += V.dim([0.04, 0, 0.53], [0.41, 0, 0.53], svgtx('a₂ = 0.45', 'a₂ = 0,45'), 0, -10) + V.dim([0.49, 0, 0.53], [0.8, 0, 0.53], svgtx('a₃ = 0.38', 'a₃ = 0,38'), 0, -10);
+      s += V.arc(sh, X, Z, 90 * D, 0.13, PC) + V.text(add(sh, [0, -0.07, 0.15]), 'α₁ = 90°', PC, -14, -6, 'end', 15, true);
     }
     return s;
   };
@@ -192,6 +201,7 @@ export function dhSteps(std) {
     ['frame 0 (base)', 'le repère 0 (base)', 'z₀ on the same line as z₁, O₀ on the floor, x₀ to the right like x₁.', 'z₀ sur la même droite que z₁, O₀ au sol, x₀ vers la droite comme x₁.'],
     ['the last frame and the tool', 'le dernier repère et l\'outil', 'There is no z₄: x₃ points towards the tool and O₃ is at the elbow. The tool frame E sits on the gripper: it gives the fixed row of the table.', 'Il n\'y a pas de z₄ : x₃ va vers l\'outil et O₃ est au coude. Le repère E de l\'outil est posé sur la pince : il donne la ligne fixe du tableau.']
   ];
+  if (final) return figure('0 30 660 400', draw(6), std ? ['The 3-axis arm at its zero pose with all the frames of standard DH and the numbers of its table: each zᵢ₋₁ on joint i, each xᵢ from zᵢ₋₁ to zᵢ, frame 3 on the tool.', 'Le bras à 3 axes dans sa pose zéro, avec tous les repères du DH standard et les nombres de son tableau : chaque zᵢ₋₁ sur la liaison i, chaque xᵢ de zᵢ₋₁ à zᵢ, le repère 3 sur l\'outil.'] : ['The same arm with all the frames of modified DH and the numbers of its table: each zⱼ on joint j itself, each xⱼ from zⱼ to zⱼ₊₁, frames 1 and 2 at the shoulder, frame E on the tool.', 'Le même bras avec tous les repères du DH modifié et les nombres de son tableau : chaque zⱼ sur la liaison j elle-même, chaque xⱼ de zⱼ à zⱼ₊₁, les repères 1 et 2 à l\'épaule, le repère E sur l\'outil.']);
   const figs = T.map(([te, tf, ce, cf], k) => `<figure class="figure wide step"><svg viewBox="0 0 660 430" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${(title(k + 1, te, tf) + draw(k + 1)).replace(/(dh[zxp])\b/g, `$1${std ? 's' : 'm'}${k}`)}</svg><figcaption>${tx(ce, cf)}</figcaption></figure>`).join('');
   return `<div class="steps">${figs}</div>`;
 }
