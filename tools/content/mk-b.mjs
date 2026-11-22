@@ -11,6 +11,41 @@ export const frame = (x, y, deg, len, nx, ny) => {
     (nx ? `<text x="${f(x1 + 10 * cx - 4)}" y="${f(y1 - 10 * sy + 4)}" fill="${RED}">${nx}</text>` : '') + (ny ? `<text x="${f(x2 - 10 * sy - 4)}" y="${f(y2 - 10 * cx + 4)}" fill="${GREEN}">${ny}</text>` : '');
 };
 
+// lesson 5.1: frame A (fixed, with its grid and graduations) and frame B (at (3, 1), turned by 90°, with its own graduations)
+function frameFig() {
+  const U = 40, OX = 70, OY = 260, X = (u) => OX + u * U, Y = (v) => OY - v * U, sub = (n, s) => `${n}<tspan dy="4" font-size="11">${s}</tspan>`;
+  let s = AXM;
+  for (let u = 0; u <= 6; u++) s += `<line x1="${X(u)}" y1="${Y(0)}" x2="${X(u)}" y2="${Y(5)}" stroke="currentColor" stroke-opacity="0.09"/>`;
+  for (let v = 0; v <= 5; v++) s += `<line x1="${X(0)}" y1="${Y(v)}" x2="${X(6)}" y2="${Y(v)}" stroke="currentColor" stroke-opacity="0.09"/>`;
+  // frame A, graduated
+  s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(6.4)}" y2="${Y(0)}" stroke="${RED}" stroke-width="2.5" marker-end="url(#mkax)"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(5.4)}" stroke="${GREEN}" stroke-width="2.5" marker-end="url(#mkax)"/>`;
+  for (let u = 1; u <= 6; u++) s += `<line x1="${X(u)}" y1="${Y(0) - 4}" x2="${X(u)}" y2="${Y(0) + 4}" stroke="${RED}" stroke-width="2"/><text x="${X(u)}" y="${Y(0) + 18}" text-anchor="middle" font-size="14" fill="${RED}">${u}</text>`;
+  for (let v = 1; v <= 5; v++) s += `<line x1="${X(0) - 4}" y1="${Y(v)}" x2="${X(0) + 4}" y2="${Y(v)}" stroke="${GREEN}" stroke-width="2"/><text x="${X(0) - 10}" y="${Y(v) + 4}" text-anchor="end" font-size="14" fill="${GREEN}">${v}</text>`;
+  s += `<text x="${X(6.5)}" y="${Y(0) + 5}" fill="${RED}" font-weight="700">${sub('x', 'A')}</text><text x="${X(0) - 6}" y="${Y(5.5)}" text-anchor="end" fill="${GREEN}" font-weight="700">${sub('y', 'A')}</text>`;
+  s += `<text x="${X(0) - 8}" y="${Y(0) + 18}" text-anchor="end" font-size="14">${sub('O', 'A')}</text>`;
+  // t: from O_A to O_B
+  s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(3) - 5}" y2="${Y(1) + 2}" stroke="#9aa5b4" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#mkax)"/><text x="${X(1.9)}" y="${Y(0.18)}" font-size="15" fill="#8a94a3" font-weight="700">t = (3, 1)</text>`;
+  // frame B at (3, 1), turned by 90°: x_B up, y_B to the left, graduated
+  const bx = X(3), by = Y(1);
+  s += `<line x1="${bx}" y1="${by}" x2="${bx}" y2="${by - 2.7 * U}" stroke="${RED}" stroke-width="3" marker-end="url(#mkax)"/><line x1="${bx}" y1="${by}" x2="${bx - 1.7 * U}" y2="${by}" stroke="${GREEN}" stroke-width="3" marker-end="url(#mkax)"/>`;
+  for (let k = 1; k <= 2; k++) s += `<line x1="${bx - 5}" y1="${by - k * U}" x2="${bx + 5}" y2="${by - k * U}" stroke="${RED}" stroke-width="2"/><text x="${bx + 10}" y="${by - k * U + 4}" font-size="14" fill="${RED}">${k}</text>`;
+  s += `<line x1="${bx - U}" y1="${by - 5}" x2="${bx - U}" y2="${by + 5}" stroke="${GREEN}" stroke-width="2"/><text x="${bx - U}" y="${by - 10}" text-anchor="middle" font-size="14" fill="${GREEN}">1</text>`;
+  s += `<text x="${bx + 8}" y="${by - 2.75 * U}" fill="${RED}" font-weight="700">${sub('x', 'B')}</text><text x="${bx - 1.85 * U}" y="${by + 5}" text-anchor="end" fill="${GREEN}" font-weight="700">${sub('y', 'B')}</text>`;
+  s += `<circle cx="${bx}" cy="${by}" r="3.5" fill="currentColor"/><text x="${bx + 8}" y="${by + 16}" font-size="14">${sub('O', 'B')}</text>`;
+  // the path to P in B: 2 along x_B (up), then 1 along y_B (left)
+  const px = X(2), py = Y(3);
+  s += `<line x1="${bx + 30}" y1="${by - 4}" x2="${bx + 30}" y2="${py + 6}" stroke="${RED}" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mkax)"/><text x="${bx + 38}" y="${(by + py) / 2 + 4}" font-size="14" fill="${RED}">+2</text>`;
+  s += `<line x1="${bx - 4}" y1="${py - 12}" x2="${px + 8}" y2="${py - 12}" stroke="${GREEN}" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mkax)"/><text x="${(bx + px) / 2}" y="${py - 20}" text-anchor="middle" font-size="14" fill="${GREEN}">+1</text>`;
+  // P, with its projections on the axes of A
+  s += `<line x1="${px}" y1="${py}" x2="${px}" y2="${Y(0)}" stroke="#9aa5b4" stroke-dasharray="2 4"/><line x1="${px}" y1="${py}" x2="${X(0)}" y2="${py}" stroke="#9aa5b4" stroke-dasharray="2 4"/>`;
+  s += `<circle class="pt" cx="${px}" cy="${py}" r="6"/><text x="${px - 10}" y="${py - 10}" text-anchor="end" class="c-pt" font-weight="700">P</text>`;
+  // what the reader should find
+  s += `<text x="${X(6.9)}" y="${Y(4.6)}" font-size="15" font-weight="700">${svgtx('Frame A: fixed', 'Repère A : fixe')}</text><text x="${X(6.9)}" y="${Y(4.15)}" font-size="15" font-weight="700">${svgtx('Frame B: at (3, 1),', 'Repère B : en (3, 1),')}</text><text x="${X(6.9)}" y="${Y(3.7)}" font-size="15" font-weight="700">${svgtx('turned by 90°', 'tourné de 90°')}</text>`;
+  s += `<text x="${X(6.9)}" y="${Y(2.9)}" font-size="16">${svgtx('P in A: (2, 3)', 'P dans A : (2, 3)')}</text><text x="${X(6.9)}" y="${Y(2.35)}" font-size="16">${svgtx('P in B: (2, 1)', 'P dans B : (2, 1)')}</text>`;
+  s += `<text x="${X(6.9)}" y="${Y(1.6)}" font-size="14" fill="#9aa5b4">${svgtx('1 square = 1 unit', '1 carreau = 1 unité')}</text>`;
+  return FIG('0 0 610 300', s);
+}
+
 export function partB() {
   return [
 // ------------------------------------------------------------------------------------------------ 4
@@ -71,13 +106,15 @@ lesson(PRE, 5, {
     H4('5.1 The same point, seen from two frames', '5.1 Le même point, vu depuis deux repères'),
     P('A <strong>frame</strong> is an origin and axes: a place from which you measure. A robot has many: one on the floor, one on each link, one on the tool, one on the camera. The same point has <strong>different coordinates in each frame</strong>.',
       'Un <strong>repère</strong> est une origine et des axes : un endroit d\'où l\'on mesure. Un robot en a beaucoup : un au sol, un sur chaque segment, un sur l\'outil, un sur la caméra. Le même point a des <strong>coordonnées différentes dans chaque repère</strong>.'),
-    FIG('0 0 340 200', `${AXM}
-      ${frame(50, 175, 0, 150, 'x<tspan dy="4" font-size="9">A</tspan>', 'y<tspan dy="4" font-size="9">A</tspan>')}
-      ${frame(170, 135, 90, 70, 'x<tspan dy="4" font-size="9">B</tspan>', 'y<tspan dy="4" font-size="9">B</tspan>')}
-      <line class="dash" x1="50" y1="175" x2="170" y2="135"/><text x="176" y="160">t = (3, 1)</text>
-      <line class="dash" x1="170" y1="55" x2="130" y2="55"/><line class="dash" x1="130" y1="135" x2="130" y2="55"/>
-      <circle class="pt" cx="130" cy="55" r="5"/><text x="122" y="48" text-anchor="end" class="c-pt">P</text>
-      <text x="200" y="100">${svgtx('in B: (2, 1)', 'dans B : (2, 1)')}</text><text x="200" y="120">${svgtx('in A: (2, 3)', 'dans A : (2, 3)')}</text>`),
+    frameFig(),
+    UL([
+      ['<strong>How to name a frame.</strong> A frame is an origin O and two perpendicular axes x and y (z in 3D). The small letter under each name says which frame it belongs to: O<sub>A</sub>, x<sub>A</sub>, y<sub>A</sub> are the axes of frame A; O<sub>B</sub>, x<sub>B</sub>, y<sub>B</sub> those of frame B. Red is always x, green is always y.',
+       '<strong>Comment nommer un repère.</strong> Un repère, c\'est une origine O et deux axes perpendiculaires x et y (z en 3D). La petite lettre sous chaque nom dit à quel repère il appartient : O<sub>A</sub>, x<sub>A</sub>, y<sub>A</sub> sont les axes du repère A ; O<sub>B</sub>, x<sub>B</sub>, y<sub>B</sub> ceux du repère B. Le rouge est toujours x, le vert toujours y.'],
+      ['<strong>How to read the coordinates.</strong> Each axis is graduated in units (here 1 square = 1). For frame A, start at O<sub>A</sub>: P is 2 graduations along x<sub>A</sub> (to the right) and 3 along y<sub>A</sub> (up), so P = (2, 3) in A.',
+       '<strong>Comment lire les coordonnées.</strong> Chaque axe est gradué en unités (ici 1 carreau = 1). Pour le repère A, partez de O<sub>A</sub> : P est à 2 graduations selon x<sub>A</sub> (vers la droite) et 3 selon y<sub>A</sub> (vers le haut), donc P = (2, 3) dans A.'],
+      ['<strong>The same point for B.</strong> Frame B is turned by 90°: its x<sub>B</sub> axis points up and its y<sub>B</sub> axis points to the left. Start at O<sub>B</sub>: go 2 graduations along x<sub>B</sub> (up), then 1 along y<sub>B</sub> (to the left): you reach P. So P = (2, 1) in B.',
+       '<strong>Le même point pour B.</strong> Le repère B est tourné de 90° : son axe x<sub>B</sub> va vers le haut et son axe y<sub>B</sub> vers la gauche. Partez de O<sub>B</sub> : avancez de 2 graduations selon x<sub>B</sub> (vers le haut), puis de 1 selon y<sub>B</sub> (vers la gauche) : vous arrivez sur P. Donc P = (2, 1) dans B.']
+    ]),
     P('Frame B sits at <strong>t</strong> = (3, 1) in frame A, and is turned by 90°. The point P is at (2, 1) for B. Where is it for A? Two steps: <strong>turn</strong> the coordinates with the rotation of B, then <strong>add</strong> the position of B.',
       'Le repère B est en <strong>t</strong> = (3, 1) dans le repère A, et il est tourné de 90°. Le point P est en (2, 1) pour B. Où est-il pour A ? Deux étapes : <strong>tourner</strong> les coordonnées avec la rotation de B, puis <strong>ajouter</strong> la position de B.'),
     BOX('keep', ['Change of frame', 'Changement de repère'],
