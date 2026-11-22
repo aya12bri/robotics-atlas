@@ -1,5 +1,6 @@
 // The maths of robotics, lesson 11: describing an orientation in 3D — Euler angles, axis-angle, quaternions.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, lesson } from '../lib.mjs';
+import { rpyFig } from './mk-figs.mjs';
 import { AXM } from './mk-b.mjs';
 const PRE = 'mk-';
 
@@ -24,6 +25,7 @@ lesson(PRE, 11, {
     P('For a drone, a car or a gripper we often say: <strong>yaw</strong> <i>ψ</i> (turn around the vertical z), <strong>pitch</strong> <i>θ</i> (nose up or down, around y), <strong>roll</strong> <i>φ</i> (tilt the wings, around x). In the usual convention:',
       'Pour un drone, une voiture ou une pince, on dit souvent : <strong>lacet</strong> <i>ψ</i> (tourner autour de la verticale z), <strong>tangage</strong> <i>θ</i> (nez vers le haut ou le bas, autour de y), <strong>roulis</strong> <i>φ</i> (pencher les ailes, autour de x). Dans la convention usuelle :'),
     EQ('<i>R</i> = <i>R</i><sub>z</sub>(<i>ψ</i>) <i>R</i><sub>y</sub>(<i>θ</i>) <i>R</i><sub>x</sub>(<i>φ</i>)'),
+    rpyFig(),
     BOX('warn', ['Gimbal lock', 'Le blocage de cardan'],
       P('When the pitch reaches ±90° (nose straight up), the yaw axis and the roll axis line up: two of the three angles do the same thing, and one degree of freedom is lost <em>in the description</em> (not in the object). Near this pose, a small motion of the object can make the angles jump. The course “Singularities and the Jacobian” (lesson 6) shows it in 3D.',
         'Quand le tangage atteint ±90° (nez droit vers le haut), l\'axe de lacet et l\'axe de roulis s\'alignent : deux des trois angles font la même chose, et un degré de liberté est perdu <em>dans la description</em> (pas dans l\'objet). Près de cette pose, un petit mouvement de l\'objet peut faire sauter les angles. Le cours « Singularités et jacobienne » (leçon 6) le montre en 3D.')),
