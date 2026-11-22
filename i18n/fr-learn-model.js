@@ -1,5 +1,14 @@
 // Français — page learn-model. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1snf25eoigc": "DH modifié (lettres de Khalil), ligne j : α et d se mesurent sur xⱼ₋₁ (entre zⱼ₋₁ et zⱼ), θ et r sur zⱼ (entre xⱼ₋₁ et xⱼ). En pointillés : un axe déplacé parallèlement à lui-même, pour montrer l'angle.",
+"ycinyhenn": "angle de zⱼ₋₁ à zⱼ, autour de xⱼ₋₁",
+"24rfcwin0du": "distance de zⱼ₋₁ à zⱼ, le long de xⱼ₋₁",
+"798xw11b2f": "angle de xⱼ₋₁ à xⱼ, autour de zⱼ",
+"1ublwna0xdv": "distance de xⱼ₋₁ à xⱼ, le long de zⱼ",
+"684rkqye9c": "α, d : sur l'ancien x, entre deux z",
+"soe28py7y5": "θ, r : sur le nouveau z, entre deux x",
+"th146d4hdp": "Lettres de Khalil (ce cours) : αⱼ, dⱼ, θⱼ, rⱼ",
+"1e4tl09yzpp": "(Craig : αⱼ₋₁, aⱼ₋₁, θⱼ, dⱼ)",
 "1kz15j1c58m": "bang-bang",
 "suz698vo35": "trapèze",
 "fssp55b1xa": "trapèze d'accél.",
