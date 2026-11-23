@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { icrFig, parkFig, polarFig } from './wmr-figs.mjs';
 const PRE = 'wmr-';
 
 export function partC() {
@@ -26,6 +27,7 @@ lesson(PRE, 9, {
     BOX(`idea`, [`Mobility depends on independent constraints, not on the number of wheels`, `La mobilité dépend des contraintes indépendantes, pas du nombre de roues`],
       P(`A bicycle and a differential robot both have two non-omnidirectional wheels, but the bicycle has <strong>two</strong> independent constraints and the differential robot only <strong>one</strong>, because the second wheel has the same zero-motion line as the first. The number of independent constraints is the <strong>rank</strong> of <i>C</i><sub>1</sub>(<i>β</i><sub>s</sub>): the higher the rank, the more constrained the robot.`,
         `Un vélo et un robot différentiel ont tous deux deux roues non omnidirectionnelles, mais le vélo a <strong>deux</strong> contraintes indépendantes et le robot différentiel seulement <strong>une</strong>, parce que la seconde roue a la même ligne de mouvement nul que la première. Le nombre de contraintes indépendantes est le <strong>rang</strong> de <i>C</i><sub>1</sub>(<i>β</i><sub>s</sub>) : plus le rang est élevé, plus le robot est contraint.`)),
+    icrFig(),
     H4(`7.3 The three degrees`, `7.3 Les trois degrés`),
     TABLE([[`Degree`, `Degré`], [`Formula`, `Formule`], [`Range`, `Plage`], [`Meaning`, `Sens`]], [
       [[`<strong>Mobility</strong> <i>δ</i><sub>m</sub>`, `<strong>Mobilité</strong> <i>δ</i><sub>m</sub>`], [`3 − rank <i>C</i><sub>1</sub>(<i>β</i><sub>s</sub>)`, `3 − rang <i>C</i><sub>1</sub>(<i>β</i><sub>s</sub>)`], [`0 … 3`, `0 … 3`], [`Velocities the robot can produce <em>immediately</em> with its wheel speeds.`, `Vitesses que le robot peut produire <em>immédiatement</em> avec les vitesses de ses roues.`]],
@@ -83,6 +85,7 @@ lesson(PRE, 10, {
       [`<strong>Omnidirectional robot</strong>: no constraint at all, holonomic with DDOF = 3.`, `<strong>Robot omnidirectionnel</strong> : aucune contrainte, holonome avec DDDL = 3.`],
       [`<strong>Locked bicycle</strong> (steering blocked): all constraints can be integrated into constraints on the pose, it can only move on a curve: holonomic, but of no interest (DOF = 1).`, `<strong>Vélo bloqué</strong> (direction bloquée) : toutes les contraintes s'intègrent en contraintes sur la pose, il ne peut se déplacer que sur une courbe : holonome, mais sans intérêt (DDL = 1).`]
     ]),
+    parkFig(),
     H4(`8.3 Proof that a mobile robot is nonholonomic`, `8.3 Preuve qu'un robot mobile est non holonome`),
     P(`Take a robot that moves along a trajectory <i>s</i>(<i>t</i>). In a short time the distance travelled is d<i>s</i> = d<i>x</i> cos <i>θ</i> + d<i>y</i> sin <i>θ</i>. This could be integrated into a function <i>s</i>(<i>x</i>, <i>y</i>, <i>θ</i>) of the pose alone only if the second derivatives of <i>s</i> do not depend on the order of derivation:`,
       `Prenons un robot qui se déplace sur une trajectoire <i>s</i>(<i>t</i>). En un court instant la distance parcourue est d<i>s</i> = d<i>x</i> cos <i>θ</i> + d<i>y</i> sin <i>θ</i>. Cela ne pourrait s'intégrer en une fonction <i>s</i>(<i>x</i>, <i>y</i>, <i>θ</i>) de la seule pose que si les dérivées secondes de <i>s</i> ne dépendent pas de l'ordre de dérivation :`),
@@ -149,6 +152,7 @@ lesson(PRE, 11, {
     EQ(`<i>ρ̇</i> = −<i>v</i> cos <i>α</i> &nbsp;&nbsp;&nbsp; <i>α̇</i> = ( <i>v</i> sin <i>α</i> ) / <i>ρ</i> − <i>ω</i> &nbsp;&nbsp;&nbsp; <i>β̇</i> = −( <i>v</i> sin <i>α</i> ) / <i>ρ</i>`),
     P(`For <i>α</i> outside this range the robot has the goal behind it: the same equations hold with the robot's “front” redefined as its back, and <i>v</i> changes sign: the robot drives <strong>backwards</strong> and arrives with its back to the goal direction (<i>θ</i> ≈ 180° instead of 0). Note also that the transformation is <strong>not defined at <i>ρ</i> = 0</strong> (the goal itself), where the angles have no meaning.`,
       `Pour <i>α</i> hors de cette plage, le but est derrière le robot : les mêmes équations valent avec l'« avant » du robot redéfini comme son arrière, et <i>v</i> change de signe : le robot roule <strong>en marche arrière</strong> et arrive le dos tourné à la direction du but (<i>θ</i> ≈ 180° au lieu de 0). Notez aussi que la transformation n'est <strong>pas définie en <i>ρ</i> = 0</strong> (le but lui-même), où les angles n'ont plus de sens.`),
+    polarFig(),
     H4(`9.5 The control law`, `9.5 La loi de commande`),
     EQ(`<i>v</i> = <i>k</i><sub>ρ</sub> <i>ρ</i> &nbsp;&nbsp;&nbsp; <i>ω</i> = <i>k</i><sub>α</sub> <i>α</i> + <i>k</i><sub>β</sub> <i>β</i>`),
     P(`It is a <strong>proportional</strong> law: go faster when far from the goal, turn toward the goal with <i>k</i><sub>α</sub>, and turn to arrive in the right orientation with <i>k</i><sub>β</sub>. Closed loop, the system is:`,
