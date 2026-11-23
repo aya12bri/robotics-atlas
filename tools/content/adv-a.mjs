@@ -1,5 +1,6 @@
 // Advanced robotics (Master level), lessons 1 to 3: parallel robots, LQR, MPC.
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, MX, CODE, OUT, lesson } from '../lib.mjs';
+import { deltaArmFig, stewartFig } from './more-figs.mjs';
 const PRE = 'adv-';
 const SP = ' &emsp;&emsp; ';
 
@@ -28,6 +29,7 @@ lesson(PRE, 1, {
     EQ(`<i>k</i> = (<i>x</i><sub>q</sub>² + <i>y</i><sub>q</sub>² + <i>z</i><sub>q</sub>² + <i>L</i>² − <i>l</i>²) / (2<i>L</i>)${SP}<i>ρ</i> = √(<i>x</i><sub>q</sub>² + <i>z</i><sub>q</sub>²)${SP}<i>θ</i> = −atan2(<i>z</i><sub>q</sub>, <i>x</i><sub>q</sub>) − arccos(<i>k</i> / <i>ρ</i>)`),
     P('It comes from writing |elbow − wrist|² = <i>l</i>² and grouping the terms in cos <i>θ</i> and sin <i>θ</i>. If |<i>k</i>| > <i>ρ</i>, the point is out of reach. The second sign of arccos gives the elbow pointing inwards, which is never used.',
       'Elle vient de l\'écriture |coude − poignet|² = <i>l</i>² en regroupant les termes en cos <i>θ</i> et sin <i>θ</i>. Si |<i>k</i>| > <i>ρ</i>, le point est hors d\'atteinte. L\'autre signe de l\'arccos donne le coude tourné vers l\'intérieur, qu\'on n\'utilise jamais.'),
+    deltaArmFig(),
     CODE('delta_ik.py'),
     OUT('delta_ik.out.txt'),
     BOX('example', ['Read the output', 'Lire la sortie'],
@@ -39,6 +41,7 @@ lesson(PRE, 1, {
     EQ('<i>ℓ</i><sub>i</sub> = ‖ <strong>p</strong> + <i>R</i> <strong>b</strong><sub>i</sub> − <strong>a</strong><sub>i</sub> ‖'),
     P('Example: <strong>a</strong> = (0.5, 0, 0), <strong>b</strong> = (0.3, 0, 0), platform at <strong>p</strong> = (0, 0, 0.8) without rotation: <i>ℓ</i> = ‖(−0.2, 0, 0.8)‖ = <strong>0.825 m</strong>. Six such lines, and the controller knows the length to give each leg. The forward problem (six lengths → the pose) can have up to 40 solutions and is solved numerically, starting from the last known pose.',
       'Exemple : <strong>a</strong> = (0,5 ; 0 ; 0), <strong>b</strong> = (0,3 ; 0 ; 0), plateforme en <strong>p</strong> = (0 ; 0 ; 0,8) sans rotation : <i>ℓ</i> = ‖(−0,2 ; 0 ; 0,8)‖ = <strong>0,825 m</strong>. Six lignes comme celle-là, et le contrôleur connaît la longueur à donner à chaque jambe. Le problème direct (six longueurs → la pose) peut avoir jusqu\'à 40 solutions et se résout numériquement, en partant de la dernière pose connue.'),
+    stewartFig(),
     H4('1.4 Two kinds of singularities', '1.4 Deux sortes de singularités'),
     TABLE([['Kind', 'Sorte'], ['What happens', 'Ce qui se passe'], ['Example', 'Exemple']], [
       [['<strong>Serial</strong> (type 1)', '<strong>Série</strong> (type 1)'], ['a chain is stretched or folded: the platform <strong>loses</strong> a direction of motion, as in a serial arm', 'une chaîne est tendue ou repliée : la plateforme <strong>perd</strong> une direction de mouvement, comme un bras série'], ['the edge of the workspace', 'le bord de l\'espace de travail']],

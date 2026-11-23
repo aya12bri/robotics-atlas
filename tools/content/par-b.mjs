@@ -1,5 +1,6 @@
 // Workspaces, motion modes and parallel robots — lessons 4 to 6: several solutions and redundancy, parallel robots and mobility, models of parallel robots.
 import { tx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, lesson } from '../lib.mjs';
+import { newtonFig } from './more-figs.mjs';
 import * as F from './par-fig.mjs';
 const PRE = 'par-';
 const fig = (o) => FIG(o.vb, o.svg);
@@ -118,6 +119,7 @@ lesson(PRE, 6, {
     EQ('X<sub>k+1</sub> = X<sub>k</sub> + J (θₐ − G(X<sub>k</sub>)) &emsp;&emsp; with J = ∂H / ∂θₐ'),
     P('At 1 kHz the robot barely moves between two cycles, so the last position is an excellent guess: 2 or 3 iterations are enough, and Newton stays on the right one of the many solutions.',
       'À 1 kHz le robot bouge à peine entre deux cycles, donc la dernière position est une excellente estimation : 2 ou 3 itérations suffisent, et Newton reste sur la bonne des nombreuses solutions.'),
+    newtonFig(),
     H4('6.3 Kinematic model: A θ̇ + B Ẋ = 0', '6.3 Modèle cinématique : A θ̇ + B Ẋ = 0'),
     OL([['For each chain i, write the effector velocity as for a serial robot, with all its joints, active and passive: W = Jᵢ θ̇ᵢ.', 'Pour chaque chaîne i, écrire la vitesse de l\'effecteur comme pour un robot série, avec toutes ses articulations, actives et passives : W = Jᵢ θ̇ᵢ.'],
       ['Project these equations on well-chosen directions to <strong>eliminate the passive joint speeds</strong>, keeping one equation per actuated variable: Pᵢ W = Pᵢ Jᵢ θ̇ᵢ = −Aᵢ θ̇ₐᵢ.', 'Projeter ces équations sur des directions bien choisies pour <strong>éliminer les vitesses des articulations passives</strong>, en gardant une équation par variable actionnée : Pᵢ W = Pᵢ Jᵢ θ̇ᵢ = −Aᵢ θ̇ₐᵢ.'],
