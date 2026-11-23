@@ -1,5 +1,6 @@
 // Course: Code a robot arm in Python — lessons 4 to 6 (numerical IK, trajectories and a real arm, final exam).
 import { tx, P, H4, UL, OL, BOX, TABLE, CODE, OUT, EXS, LABCHK, lesson } from '../lib.mjs';
+import { servoFig } from './more-figs.mjs';
 const PRE = 'lab-';
 
 export function partB() {
@@ -56,6 +57,7 @@ lesson(PRE, 5, {
       ['Each servo is mounted a little off: measure its <strong>offset</strong> once (send 90°, measure the real angle) and add it in software.', 'Chaque servo est monté un peu de travers : mesurez son <strong>décalage</strong> une fois (envoyez 90°, mesurez l\'angle réel) et ajoutez-le dans le logiciel.'],
       ['Joint angle and servo angle differ: usually servo = 90° + <i>θ</i> (or 90° − <i>θ</i> if it is mounted the other way). Write this mapping in one function, and test it joint by joint.', 'Angle de liaison et angle du servo diffèrent : en général servo = 90° + <i>θ</i> (ou 90° − <i>θ</i> s\'il est monté dans l\'autre sens). Écrivez cette correspondance dans une seule fonction, et testez-la liaison par liaison.']
     ]),
+    servoFig(),
     H4('5.3 Build the arm', '5.3 Construire le bras'),
     TABLE([['Part', 'Pièce'], ['Example', 'Exemple'], ['Note', 'Remarque']], [
       [['3 servos', '3 servos'], ['MG996R (metal gears) for the base and the shoulder; SG90 for a very small arm', 'MG996R (engrenages métal) pour la base et l\'épaule ; SG90 pour un très petit bras'], ['the shoulder carries the most torque (control course, lesson 1)', 'l\'épaule porte le plus de couple (cours de commande, leçon 1)']],

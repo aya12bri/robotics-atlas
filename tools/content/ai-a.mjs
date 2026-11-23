@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { stereoFig } from './more-figs.mjs';
 const PRE = 'ai-';
 
 export function partA() {
@@ -28,6 +29,7 @@ lesson(PRE, 1, {
     BOX('example', ['Worked example', 'Exemple résolu'],
       P('<i>f</i> = 700 px, <i>B</i> = 0.1 m, Δ<i>d</i> = 0.5 px. At <i>Z</i> = 2 m: Δ<i>Z</i> = 4 × 0.5 / (700 × 0.1) ≈ 0.029 m = <strong>3 cm</strong>. At <i>Z</i> = 5 m: 25 × 0.5 / 70 ≈ 0.18 m = <strong>18 cm</strong>. The error grows with the <em>square</em> of the distance: a wider baseline helps, and stereo is for near and medium range.',
         '<i>f</i> = 700 px, <i>B</i> = 0,1 m, Δ<i>d</i> = 0,5 px. À <i>Z</i> = 2 m : Δ<i>Z</i> = 4 × 0,5 / (700 × 0,1) ≈ 0,029 m = <strong>3 cm</strong>. À <i>Z</i> = 5 m : 25 × 0,5 / 70 ≈ 0,18 m = <strong>18 cm</strong>. L\'erreur croît avec le <em>carré</em> de la distance : une base plus large aide, et la stéréo est pour la courte et moyenne portée.')),
+    stereoFig(),
     H4('1.2 Choosing sensors', '1.2 Choisir les capteurs'),
     TABLE([['Robot', 'Robot'], ['Typical sensors', 'Capteurs typiques']], [
       [['Robot vacuum', 'Robot aspirateur'], ['Bumper, cliff sensors, 2D lidar or a camera, wheel odometry, IMU.', 'Pare-chocs, capteurs de vide, lidar 2D ou caméra, odométrie des roues, centrale inertielle.']],

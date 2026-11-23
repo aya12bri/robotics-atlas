@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { supportFig, baseTorqueFig, tcpFig } from './more-figs.mjs';
 const PRE = 'world-';
 
 export function partA() {
@@ -41,6 +42,7 @@ lesson(PRE, 1, {
     P('A legged robot is <strong>statically stable</strong> if the vertical projection of its centre of mass lies inside the <strong>support polygon</strong> (the area between its feet on the ground). A quadruped that always keeps three feet down moves with a very safe “static walk”; a trot or a run lifts feet, the polygon becomes a line or disappears, and the robot is only <strong>dynamically</strong> stable, like a human running. Walking controllers use simple models: the <em>inverted pendulum</em> (the body falls forward and the foot is placed to catch it) and the <em>zero moment point</em> (ZMP), then whole-body control or learned policies on top.',
       'Un robot à pattes est <strong>statiquement stable</strong> si la projection verticale de son centre de masse est à l\'intérieur du <strong>polygone de sustentation</strong> (la surface entre ses pieds au sol). Un quadrupède qui garde toujours trois pieds au sol avance avec une « marche statique » très sûre ; un trot ou une course lève les pieds, le polygone devient un segment ou disparaît, et le robot n\'est plus que <strong>dynamiquement</strong> stable, comme un humain qui court. Les contrôleurs de marche utilisent des modèles simples : le <em>pendule inversé</em> (le corps tombe en avant et le pied est placé pour le rattraper) et le <em>point de moment nul</em> (ZMP), puis la commande corps entier ou des politiques apprises par-dessus.'),
     TRY('anatomy-humanoid.html', 'Walk a humanoid in 3D and look inside it →', 'Faire marcher un humanoïde en 3D et regarder à l\'intérieur →'),
+    supportFig(),
   ],
   terms: [['serial / parallel robot', 'robot série / parallèle'], ['legged robot', 'robot à pattes'], ['humanoid', 'humanoïde'], ['underactuated', 'sous-actionné'], ['support polygon', 'polygone de sustentation'], ['ZMP', 'ZMP'], ['ROV / AUV', 'ROV / AUV'], ['soft robot', 'robot souple']],
   quiz: [
@@ -73,6 +75,7 @@ lesson(PRE, 2, {
     BOX('example', ['Worked example', 'Exemple résolu'],
       P('A 5 kg payload at <i>L</i> = 0.8 m, with an arm of 8 kg: <i>τ</i> ≈ (5 + 4) × 9.81 × 0.8 ≈ <strong>71 N·m</strong> at the shoulder, before any acceleration. With an acceleration of 3 rad/s² and a total inertia of about 5 kg·m², add 15 N·m. With a 100:1 gearbox of efficiency 0.8, the motor must give 86 / (100 × 0.8) ≈ 1.1 N·m at peak: a larger motor than the wrist ones. This shows why shoulders are heavy and why big robots have counterbalance springs.',
         'Une charge de 5 kg à <i>L</i> = 0,8 m, avec un bras de 8 kg : <i>τ</i> ≈ (5 + 4) × 9,81 × 0,8 ≈ <strong>71 N·m</strong> à l\'épaule, avant toute accélération. Avec une accélération de 3 rad/s² et une inertie totale d\'environ 5 kg·m², ajouter 15 N·m. Avec un réducteur 100:1 de rendement 0,8, le moteur doit donner 86 / (100 × 0,8) ≈ 1,1 N·m en pointe : un moteur plus gros que ceux du poignet. Cela montre pourquoi les épaules sont lourdes et pourquoi les gros robots ont des ressorts d\'équilibrage.')),
+    baseTorqueFig(),
     H4('2.3 Stiffness: why accuracy is not repeatability', '2.3 La rigidité : pourquoi exactitude n\'est pas répétabilité'),
     P('Links bend. For a beam fixed at one end, the deflection under a force <i>F</i> at the free end is:',
       'Les corps fléchissent. Pour une poutre encastrée à une extrémité, la flèche sous une force <i>F</i> à l\'extrémité libre est :'),
@@ -136,7 +139,8 @@ lesson(PRE, 3, {
         ['Release is as important as grasp: pushing air to release a part, or a spring to open on power loss, avoids dropping or sticking.', 'Le relâchement est aussi important que la saisie : souffler de l\'air pour lâcher une pièce, ou un ressort pour ouvrir en cas de coupure, évite chute ou collage.']
       ])),
     P('<strong>Go further.</strong> To choose and size a gripper or a vacuum system like an engineer (accelerations, V-jaws, number of cups, wrist moment, friction cones, tests), read <a href="learn-advanced.html#l8">Advanced robotics, lesson 8: grasping in practice</a>.',
-      '<strong>Pour aller plus loin.</strong> Pour choisir et dimensionner une pince ou un système de vide comme un ingénieur (accélérations, mors en V, nombre de ventouses, moment au poignet, cônes de frottement, essais), lisez <a href="learn-advanced.html#l8">Robotique avancée, leçon 8 : la préhension en pratique</a>.')
+      '<strong>Pour aller plus loin.</strong> Pour choisir et dimensionner une pince ou un système de vide comme un ingénieur (accélérations, mors en V, nombre de ventouses, moment au poignet, cônes de frottement, essais), lisez <a href="learn-advanced.html#l8">Robotique avancée, leçon 8 : la préhension en pratique</a>.'),
+    tcpFig(),
   ],
   terms: [['end effector', 'effecteur'], ['gripper', 'pince'], ['vacuum cup', 'ventouse'], ['friction grip', 'prise par frottement'], ['form closure', 'fermeture de forme'], ['TCP', 'TCP'], ['flange', 'bride'], ['tool changer', 'changeur d\'outil']],
   quiz: [

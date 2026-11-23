@@ -1,5 +1,6 @@
 // Data fusion and the Kalman filter — lessons 1 to 4: why fuse, random vectors, the best linear estimator, the Kalman filter.
 import { tx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, lesson } from '../lib.mjs';
+import { covFig } from './more-figs.mjs';
 import * as F from './kf-fig.mjs';
 const PRE = 'kf-';
 const fig = (o) => FIG(o.vb, o.svg);
@@ -73,7 +74,8 @@ lesson(PRE, 2, {
     EQ('ȳ = A x̄ + b &emsp;&emsp; Γ<sub>y</sub> = A Γ<sub>x</sub> Aᵀ + Γ<sub>α</sub>'),
     P('This single line is the heart of the prediction step of the Kalman filter. It also tells how to <strong>generate</strong> any Gaussian vector: take a white unit vector s (x̄ = 0, Γ = I), then y = Γ<sub>y</sub><sup>½</sup> s + ȳ has the mean ȳ and the covariance Γ<sub>y</sub>.',
       'Cette seule ligne est le cœur de l\'étape de prédiction du filtre de Kalman. Elle dit aussi comment <strong>générer</strong> n\'importe quel vecteur gaussien : prendre un vecteur blanc unitaire s (x̄ = 0, Γ = I), alors y = Γ<sub>y</sub><sup>½</sup> s + ȳ a la moyenne ȳ et la covariance Γ<sub>y</sub>.'),
-    BOX('example', ['Worked example', 'Exemple corrigé'], P('x has Γ<sub>x</sub> = I (σ = 1 on each axis) and y = A x with A = [2 0 ; 0 1]. Then Γ<sub>y</sub> = A I Aᵀ = [4 0 ; 0 1]: the standard deviation of y₁ is 2. With A a rotation of 45°, Γ<sub>y</sub> = I: a circle stays a circle when it turns.', 'x a Γ<sub>x</sub> = I (σ = 1 sur chaque axe) et y = A x avec A = [2 0 ; 0 1]. Alors Γ<sub>y</sub> = A I Aᵀ = [4 0 ; 0 1] : l\'écart-type de y₁ vaut 2. Avec A une rotation de 45°, Γ<sub>y</sub> = I : un cercle reste un cercle quand il tourne.'))
+    BOX('example', ['Worked example', 'Exemple corrigé'], P('x has Γ<sub>x</sub> = I (σ = 1 on each axis) and y = A x with A = [2 0 ; 0 1]. Then Γ<sub>y</sub> = A I Aᵀ = [4 0 ; 0 1]: the standard deviation of y₁ is 2. With A a rotation of 45°, Γ<sub>y</sub> = I: a circle stays a circle when it turns.', 'x a Γ<sub>x</sub> = I (σ = 1 sur chaque axe) et y = A x avec A = [2 0 ; 0 1]. Alors Γ<sub>y</sub> = A I Aᵀ = [4 0 ; 0 1] : l\'écart-type de y₁ vaut 2. Avec A une rotation de 45°, Γ<sub>y</sub> = I : un cercle reste un cercle quand il tourne.')),
+    covFig(),
   ],
   terms: [['random vector', 'vecteur aléatoire'], ['covariance matrix', 'matrice de covariance'], ['white vector', 'vecteur blanc'], ['eigenvalues, eigenvectors', 'valeurs propres, vecteurs propres'], ['confidence ellipse', 'ellipse de confiance'], ['χ² law', 'loi du χ²'], ['Γy = A Γx Aᵀ + Γα', 'Γy = A Γx Aᵀ + Γα']],
   quiz: [['What does a zero covariance between two components mean, and what does it not mean?', 'Que veut dire une covariance nulle entre deux composantes, et que ne veut-elle pas dire ?', 'No linear link; it does not mean independence (the ring example).', 'Aucun lien linéaire ; cela ne veut pas dire l\'indépendance (l\'exemple de l\'anneau).'],

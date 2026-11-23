@@ -1,5 +1,6 @@
 // ROS 2 course, lessons 4 to 6: services, actions and parameters; launch files; tf2 and URDF.
 import { tx, P, H4, UL, OL, BOX, TABLE, FIG, CODE, lesson } from '../lib.mjs';
+import { urdfFig } from './more-figs.mjs';
 import { ARR, node, box, arrow, lab } from './ros-fig.mjs';
 const PRE = 'ros-';
 
@@ -124,6 +125,7 @@ lesson(PRE, 6, {
     BOX('example', ['Check the forward kinematics yourself', 'Vérifiez vous-même la cinématique directe'],
       P('Set joint1 = 0.5 rad and joint2 = 0.8 rad with the sliders. The origin of <code>link2</code> is at the end of link 1: x = 0.5 cos 0.5 = <strong>0.439 m</strong>, y = 0.5 sin 0.5 = <strong>0.240 m</strong>, z = 0.05 m. <code>tf2_echo base_link link2</code> must print the same translation. It is the formula x = L₁ cos θ₁ of the maths course, computed by ROS 2.',
         'Réglez joint1 = 0,5 rad et joint2 = 0,8 rad avec les curseurs. L\'origine de <code>link2</code> est au bout du segment 1 : x = 0,5 cos 0,5 = <strong>0,439 m</strong>, y = 0,5 sin 0,5 = <strong>0,240 m</strong>, z = 0,05 m. <code>tf2_echo base_link link2</code> doit afficher la même translation. C\'est la formule x = L₁ cos θ₁ du cours de maths, calculée par ROS 2.')),
+    urdfFig(),
     H4('6.3 RViz: see what the robot thinks', '6.3 RViz : voir ce que pense le robot'),
     P('<strong>RViz</strong> is the 3D viewer of ROS 2. It does not simulate anything: it <strong>draws the data</strong> that the nodes publish (the robot model, the frames, the laser points, the map, the planned path). Choose the <em>Fixed Frame</em> at the top left (<code>base_link</code>, <code>odom</code> or <code>map</code>), then add displays.',
       '<strong>RViz</strong> est le visualiseur 3D de ROS 2. Il ne simule rien : il <strong>dessine les données</strong> que les nœuds publient (le modèle du robot, les repères, les points du laser, la carte, le chemin planifié). Choisissez le <em>Fixed Frame</em> en haut à gauche (<code>base_link</code>, <code>odom</code> ou <code>map</code>), puis ajoutez des affichages.'),
