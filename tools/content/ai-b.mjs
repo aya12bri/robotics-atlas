@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { cspaceFig } from './more-figs.mjs';
 const PRE = 'ai-';
 
 export function partB() {
@@ -109,6 +110,7 @@ lesson(PRE, 6, {
     BOX('warn', ['The curse of dimension', 'La malédiction de la dimension'],
       P('A grid with 100 values per joint has 100² = 10⁴ cells for 2 joints but 100⁶ = <strong>10¹²</strong> cells for 6 joints: impossible to store or search. That is why arms use <strong>sampling</strong> methods instead of grids.',
         'Une grille de 100 valeurs par articulation a 100² = 10⁴ cellules pour 2 articulations mais 100⁶ = <strong>10¹²</strong> cellules pour 6 : impossible à stocker ou à parcourir. C\'est pourquoi les bras utilisent des méthodes d\'<strong>échantillonnage</strong> plutôt que des grilles.')),
+    cspaceFig(),
     H4('6.2 Checking a collision', '6.2 Tester une collision'),
     P('A planner needs thousands of collision checks per second. The robot and the scene are approximated by simple shapes (spheres, capsules, boxes, convex hulls) and arranged in trees so that most pairs are rejected quickly (libraries: FCL, Bullet, Coal). Distances (signed distance fields) are also used by optimisation methods. A motion between two free configurations is checked by testing several points in between; the margin must cover the gaps.',
       'Un planificateur a besoin de milliers de tests de collision par seconde. Le robot et la scène sont approchés par des formes simples (sphères, capsules, boîtes, enveloppes convexes) et organisés en arbres pour que la plupart des paires soient écartées rapidement (bibliothèques : FCL, Bullet, Coal). Les distances (champs de distance signée) servent aussi aux méthodes d\'optimisation. Un mouvement entre deux configurations libres est vérifié en testant plusieurs points intermédiaires ; la marge doit couvrir les écarts.'),
