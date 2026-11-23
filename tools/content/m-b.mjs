@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { diffFig, odoFig, ackFig } from './wmr-figs.mjs';
 const PRE = 'wmr-';
 
 export function partB() {
@@ -20,6 +21,7 @@ lesson(PRE, 5, {
     EQ(`<strong>Inverse:</strong> &nbsp; <i>V</i><sub>R</sub> = <i>v</i> + <i>ω</i> <i>L</i> / 2 &nbsp;&nbsp;&nbsp; <i>V</i><sub>L</sub> = <i>v</i> − <i>ω</i> <i>L</i> / 2`, `<strong>Inverse :</strong> &nbsp; <i>V</i><sub>R</sub> = <i>v</i> + <i>ω</i> <i>L</i> / 2 &nbsp;&nbsp;&nbsp; <i>V</i><sub>L</sub> = <i>v</i> − <i>ω</i> <i>L</i> / 2`),
     P(`The speed of the robot is the <strong>average</strong> of the two wheel speeds, and its rotation is their <strong>difference</strong> divided by the distance between the wheels. If you drive the right wheel faster, the robot turns left (counterclockwise).`,
       `La vitesse du robot est la <strong>moyenne</strong> des vitesses des deux roues, et sa rotation est leur <strong>différence</strong> divisée par l'écartement des roues. Si la roue droite va plus vite, le robot tourne à gauche (sens trigonométrique).`),
+    diffFig(),
     H4(`4.3 The turning circle and the ICC`, `4.3 Le cercle de virage et le CIR`),
     P(`At every instant both wheels follow circles around one point, the <strong>instantaneous centre of curvature</strong> (ICC, also called ICR). It lies on the axle line, at the distance <i>R</i> from the middle of the axle:`,
       `À chaque instant les deux roues suivent des cercles autour d'un même point, le <strong>centre instantané de courbure</strong> (ICC, ou CIR en français). Il est sur la ligne des essieux, à la distance <i>R</i> du milieu de l'axe :`),
@@ -53,7 +55,8 @@ lesson(PRE, 5, {
     EQ(`Δ<i>s</i> = ( Δ<i>s</i><sub>R</sub> + Δ<i>s</i><sub>L</sub> ) / 2 &nbsp;&nbsp; Δ<i>θ</i> = ( Δ<i>s</i><sub>R</sub> − Δ<i>s</i><sub>L</sub> ) / <i>L</i> &nbsp;&nbsp; <i>x</i> ← <i>x</i> + Δ<i>s</i> cos( <i>θ</i> + Δ<i>θ</i>/2 ) &nbsp; <i>y</i> ← <i>y</i> + Δ<i>s</i> sin( <i>θ</i> + Δ<i>θ</i>/2 ) &nbsp; <i>θ</i> ← <i>θ</i> + Δ<i>θ</i>`),
     BOX(`warn`, [`Pitfall: small errors, big drift`, `Piège : petites erreurs, grande dérive`],
       P(`The trajectory is very sensitive to the <strong>relative</strong> speed of the two wheels, not only to their average. A wheel diameter wrong by 1 % makes the robot curve instead of going straight, and odometry accumulates this error without limit. This is why real robots add a gyroscope, a lidar or a camera to correct the pose (see the “Perception” course).`,
-        `La trajectoire est très sensible à la vitesse <strong>relative</strong> des deux roues, pas seulement à leur moyenne. Un diamètre de roue faux de 1 % fait courber le robot au lieu d'aller droit, et l'odométrie accumule cette erreur sans limite. C'est pourquoi les robots réels ajoutent un gyroscope, un lidar ou une caméra pour corriger la pose (voir le cours « Perception »).`))
+        `La trajectoire est très sensible à la vitesse <strong>relative</strong> des deux roues, pas seulement à leur moyenne. Un diamètre de roue faux de 1 % fait courber le robot au lieu d'aller droit, et l'odométrie accumule cette erreur sans limite. C'est pourquoi les robots réels ajoutent un gyroscope, un lidar ou une caméra pour corriger la pose (voir le cours « Perception »).`)),
+    odoFig(),
   ],
   terms: [[`differential drive`, `entraînement différentiel`], [`ICC / ICR`, `CIC / CIR`], [`turning radius`, `rayon de virage`], [`odometry`, `odométrie`], [`encoder`, `codeur`], [`castor / ball wheel`, `roue folle / bille`]],
   quiz: [
@@ -104,7 +107,8 @@ lesson(PRE, 6, {
       `Vérification avec l'exemple : cot 14,0° − cot 16,2° = 4,01 − 3,44 = 0,56 = 1,4 / 2,5. ✓ La cotangente moyenne est celle de la roue centrale « virtuelle » <i>δ</i> = 15°. La direction d'Ackermann donne une estimation à l'estime assez précise et permet traction et garde au sol, c'est pourquoi c'est le choix habituel pour les <strong>véhicules autonomes d'extérieur</strong>.`),
     BOX(`idea`, [`What a car cannot do`, `Ce qu'une voiture ne peut pas faire`],
       P(`A car has only 2 control inputs (speed and steering) for 3 pose numbers, and its steering angle is limited, so it needs a series of manoeuvres to park sideways. Lesson 7 will count exactly how much freedom it has.`,
-        `Une voiture n'a que 2 entrées de commande (vitesse et braquage) pour 3 nombres de pose, et son angle de braquage est limité, donc il lui faut une série de manœuvres pour se garer en créneau. La leçon 9 comptera exactement sa liberté.`))
+        `Une voiture n'a que 2 entrées de commande (vitesse et braquage) pour 3 nombres de pose, et son angle de braquage est limité, donc il lui faut une série de manœuvres pour se garer en créneau. La leçon 9 comptera exactement sa liberté.`)),
+    ackFig(),
   ],
   terms: [[`tricycle`, `tricycle`], [`bicycle model`, `modèle bicyclette`], [`steering angle δ`, `angle de braquage δ`], [`wheelbase / track`, `empattement / voie`], [`Ackermann steering`, `Direction d'Ackermann`], [`ICC on the rear axle`, `CIR sur l'essieu arrière`]],
   quiz: [

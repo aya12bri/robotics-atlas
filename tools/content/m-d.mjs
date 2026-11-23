@@ -1,4 +1,5 @@
 import { tx, svgtx, P, H4, UL, OL, EQ, BOX, TABLE, FIG, WIDGET, TRY, MX, lesson } from '../lib.mjs';
+import { ppFig, stanleyFig } from './wmr-figs.mjs';
 const PRE = 'wmr-';
 
 export function partD() {
@@ -29,6 +30,7 @@ lesson(PRE, 12, {
         A car (<i>e</i> = 2.5 m) with a target at ( 5 , 0.6 ): <i>κ</i> = 1.2 / 25.36 = 0.0473 1/m, so <i>δ</i> = arctan( 2.5 × 0.0473 ) = <strong>6.7°</strong>.`,
         `Un robot différentiel (<i>L</i> = 0,4 m) avance à <i>v</i> = 0,5 m/s. La cible est en ( 1,0 ; 0,3 ) m dans son repère. Alors <i>L</i><sub>d</sub>² = 1,09, <i>κ</i> = 0,6 / 1,09 = <strong>0,55 1/m</strong> (<i>R</i> = 1,82 m) et <i>ω</i> = 0,5 × 0,55 = <strong>0,275 rad/s</strong> ; les roues tournent à <i>V</i><sub>R</sub> = 0,5 + 0,275 × 0,2 = 0,555 m/s et <i>V</i><sub>L</sub> = 0,445 m/s.
         Une voiture (<i>e</i> = 2,5 m) avec une cible en ( 5 ; 0,6 ) : <i>κ</i> = 1,2 / 25,36 = 0,0473 1/m, donc <i>δ</i> = arctan( 2,5 × 0,0473 ) = <strong>6,7°</strong>.`)),
+    ppFig(),
     H4(`12.3 Choosing the look-ahead distance`, `12.3 Choisir la distance d'anticipation`),
     P(`<i>L</i><sub>d</sub> is the only real parameter, and it is a compromise:`, `<i>L</i><sub>d</sub> est le seul vrai paramètre, et c'est un compromis :`),
     UL([
@@ -45,6 +47,7 @@ lesson(PRE, 12, {
     BOX(`example`, [`Worked example`, `Exemple résolu`],
       P(`<i>e</i><sub>θ</sub> = 0.1 rad, <i>e</i><sub>y</sub> = 0.5 m, <i>k</i> = 1, <i>v</i> = 2 m/s: <i>δ</i> = 0.1 + arctan( 1 × 0.5 / 2 ) = 0.1 + 0.245 = 0.345 rad = <strong>19.8°</strong>. At <i>v</i> = 8 m/s the same errors give 0.1 + arctan(0.0625) = 0.162 rad = 9.3°: the controller steers less when it goes fast, so it does not oscillate.`,
         `<i>e</i><sub>θ</sub> = 0,1 rad, <i>e</i><sub>y</sub> = 0,5 m, <i>k</i> = 1, <i>v</i> = 2 m/s : <i>δ</i> = 0,1 + arctan( 1 × 0,5 / 2 ) = 0,1 + 0,245 = 0,345 rad = <strong>19,8°</strong>. À <i>v</i> = 8 m/s les mêmes erreurs donnent 0,1 + arctan(0,0625) = 0,162 rad = 9,3° : le contrôleur braque moins quand il va vite, donc il n'oscille pas.`)),
+    stanleyFig(),
     H4(`12.5 Tracking a trajectory (position and time)`, `12.5 Suivre une trajectoire (position et temps)`),
     P(`If the path comes with a schedule (a <em>trajectory</em>: a reference pose ( <i>x</i><sub>r</sub> , <i>y</i><sub>r</sub> , <i>θ</i><sub>r</sub> ) and the speeds <i>v</i><sub>r</sub>, <i>ω</i><sub>r</sub> at every time), the robot must also be at the right place at the right time. Write the error in the robot frame: ( <i>e</i><sub>x</sub> , <i>e</i><sub>y</sub> , <i>e</i><sub>θ</sub> ) = <i>R</i>(<i>θ</i>) ( <i>p</i><sub>r</sub> − <i>p</i> ). The classical law of Kanayama (1990) for the unicycle is:`,
       `Si le chemin vient avec un horaire (une <em>trajectoire</em> : une pose de référence ( <i>x</i><sub>r</sub> , <i>y</i><sub>r</sub> , <i>θ</i><sub>r</sub> ) et les vitesses <i>v</i><sub>r</sub>, <i>ω</i><sub>r</sub> à chaque instant), le robot doit aussi être au bon endroit au bon moment. Écrivez l'erreur dans le repère robot : ( <i>e</i><sub>x</sub> , <i>e</i><sub>y</sub> , <i>e</i><sub>θ</sub> ) = <i>R</i>(<i>θ</i>) ( <i>p</i><sub>r</sub> − <i>p</i> ). La loi classique de Kanayama (1990) pour le robot unicycle est :`),
