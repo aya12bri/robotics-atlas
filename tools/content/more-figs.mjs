@@ -1,8 +1,8 @@
 // more-figs.mjs — drawings for the courses on perception and AI, the real world, ROS 2, the arm labs and Kalman:
 // stereo depth, configuration space, support polygon, torque at the shoulder, the TCP, a URDF tree, a servo pulse,
 // and how a matrix moves an uncertainty. Labels go through svgtx (translated with the course).
-import { svgtx } from '../lib.mjs';
-import { svgText as T, svgLine as L, svgArrow as A, svgFig as fig } from './mk-figs.mjs';
+import { tx, svgtx } from '../lib.mjs';
+import { svgText as T, svgLine as L, svgArrow as A, svgFig as fig, obliqueView as V3 } from './mk-figs.mjs';
 
 const R = '#e5484d', G = '#2e9e5b', B = '#2f6bff', O = '#e07b00', GR = '#8a94a3', P = '#8a5cf6', BODY = '#3a4552';
 const f = (v) => (+v).toFixed(1), D = Math.PI / 180;
@@ -180,4 +180,37 @@ export function newtonFig() {
   for (let k = 0; k < 3; k++) { const yk = g(xk), xn = xk + (target - yk) / dg(xk); s += `<circle cx="${f(X(xk))}" cy="${f(Y(yk))}" r="5" fill="${O}"/>` + L(X(xk), Y(yk), X(xn), Y(target), O, 2) + L(X(xn), Y(target), X(xn), Y(g(xn)), GR, 1.2, '3 3') + T(X(xk) + 8, Y(yk) + 18, 'X' + ['₀', '₁', '₂'][k], O, { b: 1, fs: 14 }); xk = xn; }
   s += T(600, 110, svgtx('start from the last position X₀', 'partir de la dernière position X₀'), 'currentColor', { fs: 13 }) + T(600, 132, svgtx('follow the tangent (the Jacobian)', 'suivre la tangente (la jacobienne)'), 'currentColor', { fs: 13 }) + T(600, 154, svgtx('2 or 3 steps are enough', '2 ou 3 pas suffisent'), O, { b: 1, fs: 13 });
   return fig('0 20 800 270', s, ['Newton\'s method in one dimension: from the last known position, the tangent of the model gives a better guess; each step lands much closer to the position that matches the measured motor angle.', 'La méthode de Newton en une dimension : depuis la dernière position connue, la tangente du modèle donne une meilleure estimation ; chaque pas arrive beaucoup plus près de la position qui correspond à l\'angle moteur mesuré.']);
+}
+
+// ---------------------------------------------------------------------------------------- the robots of the two hard DHM exercises
+// Drawn in 3D without frames: only the parts, the dimensions and the way each joint moves (x right, z up, y into the page).
+const dim3 = (V, a, b, txt, dx = 0, dy = 0, c = '#7d8796') => { const [x1, y1] = V.P(a), [x2, y2] = V.P(b); return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${c}" stroke-width="1.4"/><circle cx="${f(x1)}" cy="${f(y1)}" r="2.5" fill="${c}"/><circle cx="${f(x2)}" cy="${f(y2)}" r="2.5" fill="${c}"/>` + T((x1 + x2) / 2 + dx, (y1 + y2) / 2 + dy, txt, 'currentColor', { a: 'middle', b: 1, fs: 14 }); };
+const spin = (V, c, axis, r, col, lab, dx = 0, dy = 0) => { const u = axis[2] ? [1, 0, 0] : [0, 0, 1]; return V.arc(c, axis, u, 1.5 * Math.PI, r, col, 2.4) + V.text(c, lab, col, dx, dy, { b: 1, fs: 13 }); };
+
+// exercise 1: SCARA R R P R (shoulder 0.35, links 0.40 and 0.30, slide q₃, tool 0.10 under the last frame)
+export function scaraExFig() {
+  const V = V3(150, 300, 300), j1 = [0, 0, 0.35], j2 = [0.4, 0, 0.35], j3 = [0.7, 0, 0.35], tip = [0.7, 0, 0.12];
+  let s = V.poly([[-0.12, -0.12, 0], [0.12, -0.12, 0], [0.12, 0.12, 0], [-0.12, 0.12, 0]], '#8b96a5', 0.25);
+  s += V.line([0, 0, 0], [0, 0, 0.33], '#8b96a5', 22) + V.line(j1, j2, '#f5963a', 16) + V.line(j2, j3, '#f5963a', 13);
+  s += V.line([0.7, 0, 0.55], [0.7, 0, 0.18], '#5d6878', 8) + V.line([0.7, 0, 0.18], tip, R, 4) + `<circle cx="${f(V.P(tip)[0])}" cy="${f(V.P(tip)[1])}" r="5" fill="${R}"/>`;
+  s += spin(V, [0, 0, 0.42], [0, 0, 1], 0.09, B, svgtx('joint 1', 'liaison 1'), -86, -20) + spin(V, [0.4, 0, 0.42], [0, 0, 1], 0.08, B, svgtx('joint 2', 'liaison 2'), -30, -58);
+  s += V.arrow([0.78, 0, 0.3], [0.78, 0, 0.48], G, 3) + V.arrow([0.78, 0, 0.3], [0.78, 0, 0.14], G, 3) + V.text([0.78, 0, 0.5], svgtx('joint 3: slide q₃ (+ up)', 'liaison 3 : glissière q₃ (+ en haut)'), G, 8, -2, { b: 1, fs: 13 });
+  s += spin(V, [0.7, 0, 0.2], [0, 0, 1], 0.06, P, svgtx('joint 4: wrist', 'liaison 4 : poignet'), 26, 30);
+  s += V.text(tip, svgtx('tool tip', 'pointe de l\'outil'), R, -10, 18, { a: 'end', b: 1, fs: 13 });
+  return `<figure class="figure wide exfig"><svg viewBox="0 30 640 300" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${s}</svg><figcaption>${tx('The robot of exercise 1 at q = 0 (side view). Joints 1, 2 and 4 turn around vertical axes; joint 3 slides up and down.', 'Le robot de l\'exercice 1 à q = 0 (vue de côté). Les liaisons 1, 2 et 4 tournent autour d\'axes verticaux ; la liaison 3 glisse de haut en bas.')}</figcaption></figure>`;
+}
+
+// exercise 2: column, shoulder 0.15 in front of axis 1 at 0.50 m, upper arm 0.60, elbow shifted 0.10 towards you, forearm 0.50
+export function offsetExFig() {
+  const V = V3(130, 320, 300), sh = [0.15, 0, 0.5], el = [0.75, -0.1, 0.5], tool = [1.25, -0.1, 0.5];
+  let s = V.poly([[-0.12, -0.12, 0], [0.12, -0.12, 0], [0.12, 0.12, 0], [-0.12, 0.12, 0]], '#8b96a5', 0.25);
+  s += V.line([0, 0, 0], [0, 0, 0.56], '#8b96a5', 22) + V.line([0, 0, 0.5], sh, '#8b96a5', 14);
+  s += V.line(sh, [0.75, 0, 0.5], '#f5963a', 15) + V.line([0.75, 0, 0.5], el, '#5d6878', 10) + V.line(el, tool, '#f5963a', 12) + `<circle cx="${f(V.P(tool)[0])}" cy="${f(V.P(tool)[1])}" r="6" fill="${R}"/>`;
+  // joint axes (dashed) and their motion
+  s += V.line([0, 0, 0.02], [0, 0, 0.8], B, 1.4, '5 4') + spin(V, [0, 0, 0.66], [0, 0, 1], 0.09, B, svgtx('joint 1 (vertical)', 'liaison 1 (verticale)'), -150, -24);
+  s += V.line([0.15, 0.25, 0.5], [0.15, -0.5, 0.5], B, 1.4, '5 4') + V.text([0.15, -0.5, 0.5], svgtx('axis 2: towards you', 'axe 2 : vers vous'), B, -16, 14, { a: 'end', b: 1, fs: 13 });
+  s += V.line([0.75, 0.25, 0.5], [0.75, -0.5, 0.5], B, 1.4, '5 4') + V.text([0.75, -0.5, 0.5], svgtx('axis 3 (parallel)', 'axe 3 (parallèle)'), B, -10, 14, { a: 'end', b: 1, fs: 13 });
+  s += `<circle cx="${f(V.P(sh)[0])}" cy="${f(V.P(sh)[1])}" r="10" fill="#262c35" stroke="#e8eef5" stroke-width="2"/><circle cx="${f(V.P(el)[0])}" cy="${f(V.P(el)[1])}" r="9" fill="#262c35" stroke="#e8eef5" stroke-width="2"/>`;
+  s += V.text(tool, svgtx('tool', 'outil'), R, 10, 4, { b: 1, fs: 13 }) + V.text(sh, svgtx('shoulder', 'épaule'), 'currentColor', 10, 28, { fs: 13 }) + V.text(el, svgtx('elbow: shifted towards you', 'coude : décalé vers vous'), O, 14, 44, { b: 1, fs: 13 });
+  return `<figure class="figure wide exfig"><svg viewBox="-100 20 820 330" class="fig" role="img" aria-hidden="true" style="color:var(--text)">${s}</svg><figcaption>${tx('The robot of exercise 2 at q = 0 (“towards you” is drawn down and to the left). Axis 1 is vertical; axes 2 and 3 are horizontal and point towards you.', 'Le robot de l\'exercice 2 à q = 0 (« vers vous » est dessiné vers le bas et la gauche). L\'axe 1 est vertical ; les axes 2 et 3 sont horizontaux et dirigés vers vous.')}</figcaption></figure>`;
 }

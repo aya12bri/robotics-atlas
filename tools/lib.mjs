@@ -56,7 +56,7 @@ export function EXS(prefix, n, items, opts = {}) {
     const optsHtml = it.mcq ? `<ol class="opts" type="A">${it.mcq.map((o) => `<li${o[2] ? ' data-ok="1"' : ''}>${tx(o[0], o[1])}</li>`).join('')}</ol>` : '';
     return `<div class="ex" data-id="${id}" data-lv="${it.lv}"${it.exam ? ' data-exam="1"' : ''}>
 <div class="qh"><span class="lv l${it.lv}">${tx(...LV[it.lv - 1])}</span><span class="qn">${i + 1}</span></div>
-<p class="q">${tx(it.q[0], it.q[1])}</p>${input}${optsHtml}<p class="fb" aria-live="polite"></p>
+<p class="q">${tx(it.q[0], it.q[1])}</p>${it.fig || ""}${input}${optsHtml}<p class="fb" aria-live="polite"></p>
 ${it.hint ? `<details class="hint"><summary>${tx('Hint', 'Indice')}</summary><p>${tx(it.hint[0], it.hint[1])}</p></details>` : ''}<details class="sol"><summary>${tx('Solution', 'Solution')}</summary><p>${tx(it.sol[0], it.sol[1])}</p></details>
 </div>`;
   }).join('\n');
