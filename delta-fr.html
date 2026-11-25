@@ -73,7 +73,7 @@
 
     <h2>Schéma cinématique</h2>
     <div class="toolbar">
-      <button id="axesBtn">Masquer les axes</button>
+      <button id="axesBtn">Afficher les axes</button>
       <span><label for="frameSel">Repères :</label> <select id="frameSel">
         <option value="all">Les deux repères</option>
         <option value="0">Repère de base {0} seul (x0 y0 z0)</option>
@@ -455,7 +455,7 @@ A = −2L (x' − R),   B = 2L·z',   C = −[ (x' − R)² + y'² + z'² + L² 
       const frameSel = document.getElementById('frameSel');
       const viewSel = document.getElementById('viewSel');
       const legSel = document.getElementById('legSel');
-      let showAxes = true;
+      let showAxes = false;
       let th = [0, 0, 0, 0];
       let Pnow = [0, 0, -0.5];
 

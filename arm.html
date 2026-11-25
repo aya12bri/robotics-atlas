@@ -54,7 +54,7 @@
 
     <h2>Kinematic diagram (schéma cinématique), side view</h2>
     <div class="toolbar">
-      <button id="axesBtn">Hide axes</button>
+      <button id="axesBtn">Show axes</button>
       <span>Frames:
         <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
         <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
@@ -254,7 +254,7 @@
       const svg = document.getElementById('schema');
       const toRad = (deg) => (deg * Math.PI) / 180;
       const map = (u, v) => [350 + u * 120, 395 - v * 120];   // metres -> pixels
-      let showAxes = true;
+      let showAxes = false;
       let q = [30, -30, 60];
 
       function update() {

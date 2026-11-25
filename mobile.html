@@ -87,7 +87,7 @@
 
     <h2>Kinematic diagram (schéma cinématique), top view</h2>
     <div class="toolbar">
-      <button id="axesBtn">Hide axes</button>
+      <button id="axesBtn">Show axes</button>
       <label><input type="checkbox" id="iccBox" checked /> Show the ICC (centre of the turn)</label>
     </div>
     <svg id="schema" viewBox="0 0 700 420"
@@ -422,7 +422,7 @@ Inverse:   vR = v + ω · L / 2        vL = v − ω · L / 2</pre>
       const svg = document.getElementById('schema');
       const SCALE = 100;                                  // pixels per metre
       const mapXY = (x, y) => [350 + x * SCALE, 210 - y * SCALE];
-      let showAxes = true;
+      let showAxes = false;
       const wrapAngle = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
       function update() {
