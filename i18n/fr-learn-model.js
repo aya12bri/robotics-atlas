@@ -1,5 +1,18 @@
 // Français — page learn-model. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"jthq523vfn": "tout le cours : DHM, MGD, MGI, jacobienne, lois de mouvement, dynamique",
+"28x9o7dh9nd": "la notation DH modifiée",
+"24micm4cbey": "repères, transformations et angles d’Euler",
+"7hebdtyft7": "cinématique, jacobienne et trajectoires",
+"23ghkcph0ym": "dynamique (Lagrange)",
+"2cqp10bkyo1": "W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).",
+"b5ltu7rf96": "W. Khalil, J.-F. Kleinfinger, “A new geometric notation for open and closed-loop robots”, <i>IEEE International Conference on Robotics and Automation</i>, 1986.",
+"1bn6lhp2mho": "J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.",
+"smp4mliaa": "B. Siciliano, L. Sciavicco, L. Villani, G. Oriolo, <i>Robotics: Modelling, Planning and Control</i>, Springer, 2009.",
+"8er0jy0a73": "M. W. Spong, S. Hutchinson, M. Vidyasagar, <i>Robot Modeling and Control</i>, 2nd ed., Wiley, 2020.",
 "yu7cjopm9": "Chaque rotation de base garde un axe fixe (épais) et tourne les deux autres de θ (pointillés : avant, trait plein : après). La flèche orange montre le sens positif (main droite, pouce selon l'axe).",
 "s0m6d6qazt": "Angles d'Euler (ZXZ) : chaque rotation se fait autour d'un axe du repère obtenu jusque-là (gris pointillé : avant ; en couleur : après). Le produit est Rot(z, φ) Rot(x, θ) Rot(z, ψ), multiplié à droite.",
 "1f6ph0ukoew": "Roulis–tangage–lacet : trois rotations, chacune autour d'un axe du repère obtenu jusque-là (gris pointillé : avant ; en couleur : après). Quand le tangage atteint 90°, l'axe de roulis se couche sur l'axe de lacet : deux angles décrivent le même mouvement.",

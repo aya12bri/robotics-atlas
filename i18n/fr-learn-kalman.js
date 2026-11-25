@@ -1,5 +1,14 @@
 // Français — learn-kalman.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"1rks196woaw": "le filtre de Kalman",
+"17073akje5x": "le cours suit ses notations et ses TP (covariance, meilleur estimateur, EKF)",
+"pibttqsgat": "estimation probabiliste et EKF",
+"1py2jnaordp": "R. E. Kalman, “A new approach to linear filtering and prediction problems”, <i>Journal of Basic Engineering</i>, 82(1), 1960.",
+"1480xwhopns": "L. Jaulin, <i>Mobile Robotics</i>, 2nd ed., ISTE / Wiley, 2019 (French: <i>La robotique mobile</i>, ISTE, 2015).",
+"21hu276kc2n": "S. Thrun, W. Burgard, D. Fox, <i>Probabilistic Robotics</i>, MIT Press, 2005.",
  "1j0h2mso0k0": "Fusion de données et filtre de Kalman",
  "eu7t21nafz": "Comment un robot combine des capteurs imparfaits et un modèle de son mouvement pour savoir où il est, et à quel point il en est sûr. De la covariance et des ellipses de confiance au filtre de Kalman, à sa version étendue (EKF), à la localisation UWB et à la fusion multimodale, avec des labos en 3D.",
  "a5lay3rrdl": "Chaque leçon commence par <strong>une phrase</strong> qui dit l'idée sans maths, puis l'explique pas à pas, puis donne les formules et un labo. Les débutants peuvent lire les phrases et jouer avec les labos ; les étudiants de Master trouveront les démonstrations et les exercices des TD (moteur à courant continu, température d'une pièce, pendule, multilatération, fusion multimodale). Prérequis : les matrices et un peu de probabilités (voir les liens à la fin de chaque leçon).",

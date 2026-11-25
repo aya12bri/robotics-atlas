@@ -406,6 +406,18 @@ def kalman(x0, G0, u, y, Ga, Gb, A, C):
           <p>Tous les mots du cours au même endroit.</p>
 <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Terme</th><th class="left">Sens</th></tr><tr><td class="left">Fusion de données</td><td class="left">Combiner plusieurs sources (capteurs, modèles) en une seule estimation meilleure.</td></tr><tr><td class="left">Matrice de covariance</td><td class="left">Γ = E((x − x̄)(x − x̄)ᵀ) : les variances sur la diagonale, les variations conjointes hors diagonale.</td></tr><tr><td class="left">Ellipse de confiance</td><td class="left">La région qui contient l'état avec une probabilité donnée ; axes = vecteurs propres de Γ.</td></tr><tr><td class="left">Estimateur sans biais orthogonal</td><td class="left">x̂ = x̄ + Γxy Γy⁻¹ (y − ȳ) : le meilleur estimateur linéaire.</td></tr><tr><td class="left">Innovation</td><td class="left">La surprise d'une mesure : ỹ = y − C x̂.</td></tr><tr><td class="left">Gain de Kalman K</td><td class="left">K = Γ Cᵀ S⁻¹ : la part de l'innovation utilisée pour corriger l'estimation.</td></tr><tr><td class="left">Bruit d'état Γα</td><td class="left">Ce que le modèle du mouvement ignore ; le principal bouton de réglage.</td></tr><tr><td class="left">Bruit de mesure Γβ</td><td class="left">La variance des erreurs du capteur.</td></tr><tr><td class="left">Filtre de Kalman asymptotique</td><td class="left">Le filtre une fois que son gain et sa covariance ne changent plus.</td></tr><tr><td class="left">Filtre de Kalman étendu (EKF)</td><td class="left">Le filtre de Kalman appliqué à un modèle non linéaire linéarisé autour de l'estimation.</td></tr><tr><td class="left">Observabilité</td><td class="left">Le fait que les mesures, à travers le modèle, permettent de retrouver chaque composante de l'état.</td></tr><tr><td class="left">Multilatération</td><td class="left">Trouver une position à partir de distances à des points connus.</td></tr><tr><td class="left">TDOA (différence de temps d'arrivée)</td><td class="left">Différence de temps d'arrivée : une différence de distances à deux balises.</td></tr><tr><td class="left">Intersection de covariance</td><td class="left">Une façon sûre de fusionner deux estimations dont la corrélation est inconnue.</td></tr></tbody></table></div>
         </section>
+        <!-- BEGIN sources -->
+        <section class="sources" id="sources">
+          <h2>Sources et références</h2>
+          <p>Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.</p>
+          <ol class="srclist">
+            <li><span class="src">R. E. Kalman, “A new approach to linear filtering and prediction problems”, <i>Journal of Basic Engineering</i>, 82(1), 1960.</span> <span class="srcuse"><em>utilisé pour :</em> <span>le filtre de Kalman</span></span></li>
+            <li><span class="src">L. Jaulin, <i>Mobile Robotics</i>, 2nd ed., ISTE / Wiley, 2019 (French: <i>La robotique mobile</i>, ISTE, 2015).</span> <span class="srcuse"><em>utilisé pour :</em> <span>le cours suit ses notations et ses TP (covariance, meilleur estimateur, EKF)</span></span></li>
+            <li><span class="src">S. Thrun, W. Burgard, D. Fox, <i>Probabilistic Robotics</i>, MIT Press, 2005.</span> <span class="srcuse"><em>utilisé pour :</em> <span>estimation probabiliste et EKF</span></span></li>
+          </ol>
+        </section>
+        <!-- END sources -->
+
 
         <section class="finish">
           <h2>Vous savez maintenant construire l'estimateur d'un vrai robot !</h2>

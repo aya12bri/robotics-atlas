@@ -34,9 +34,10 @@
       <ol class="px-steps">
         <li><a href="#discover"><b>1</b><span>Découvrir en jouant</span><small>3 <em>outils</em></small></a></li>
         <li><a href="#program"><b>2</b><span>Programmer et mesurer</span><small>3 <em>outils</em></small></a></li>
-        <li><a href="#make"><b>3</b><span>Coder et fabriquer</span><small>2 <em>outils</em></small></a></li>
+        <li><a href="#labs"><b>3</b><span>Expérimenter : labos interactifs</span><small>8 <em>outils</em></small></a></li>
+        <li><a href="#make"><b>4</b><span>Coder et fabriquer</span><small>2 <em>outils</em></small></a></li>
       </ol>
-      <p class="px-facts"><span>8 <em>outils</em></span><span>gratuit</span><span>rien à installer</span><span>du débutant à l'avancé</span></p>
+      <p class="px-facts"><span>16 <em>outils</em></span><span>gratuit</span><span>rien à installer</span><span>du débutant à l'avancé</span></p>
     </header>
     <section class="px-step" id="discover">
       <div class="px-head"><span class="px-num">01</span><div><h2>Découvrir en jouant</h2><p>Rien à installer, rien à savoir : faites bouger des robots en 3D et voyez comment ils marchent.</p></div></div>
@@ -102,10 +103,64 @@
           </span>
         </a>
       </div>
-      <nav class="px-pager"><a href="#discover" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Découvrir en jouant</b></a><a href="#make" class="next"><small>Partie suivante <i aria-hidden="true">→</i></small><b>Coder et fabriquer</b></a></nav>
+      <nav class="px-pager"><a href="#discover" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Découvrir en jouant</b></a><a href="#labs" class="next"><small>Partie suivante <i aria-hidden="true">→</i></small><b>Expérimenter : labos interactifs</b></a></nav>
+    </section>
+    <section class="px-step" id="labs">
+      <div class="px-head"><span class="px-num">03</span><div><h2>Expérimenter : labos interactifs</h2><p>Tournez les boutons et regardez : une boucle PID, un filtre de Kalman, des planificateurs, des singularités. Chaque labo vient d'une leçon, indiquée en dessous.</p></div></div>
+      <div class="px-labs">
+        <article class="px-lab" id="lab-pid">
+          <header><b class="px-t">Régler un correcteur PID</b><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermédiaire</em><span>15 min</span></span></header>
+          <p class="px-d">Bougez Kp, Ki et Kd et regardez la liaison atteindre sa consigne : dépassement, oscillation, montée lente, erreur statique.</p>
+          <div class="widget" data-widget="pid"></div>
+          <a class="px-lesson" href="learn-control-fr.html#l4"><span>Vient de la leçon :</span> <span>Dynamique et commande, leçon 4 : asservissement et PID</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-gravity">
+          <header><b class="px-t">La gravité sur un segment</b><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermédiaire</em><span>10 min</span></span></header>
+          <p class="px-d">Changez l'angle, la masse et la longueur : voyez le couple que le moteur doit fournir pour tenir le bras.</p>
+          <div class="widget" data-widget="gravity"></div>
+          <a class="px-lesson" href="learn-control-fr.html#l1"><span>Vient de la leçon :</span> <span>Dynamique et commande, leçon 1 : dynamique</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-kalman">
+          <header><b class="px-t">Un filtre de Kalman à une dimension</b><span class="px-meta"><i class="pr-lv l3"><b></b><b></b><b></b></i><em>Avancé</em><span>15 min</span></span></header>
+          <p class="px-d">Des mesures bruitées en entrée, une estimation lisse en sortie : changez le bruit et voyez combien le filtre fait confiance à chacune.</p>
+          <div class="widget" data-widget="kalman"></div>
+          <a class="px-lesson" href="learn-intelligence-fr.html#l3"><span>Vient de la leçon :</span> <span>Perception, planification et IA, leçon 3 : Kalman</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-astar">
+          <header><b class="px-t">Planifier un chemin : Dijkstra et A*</b><span class="px-meta"><i class="pr-lv l2"><b></b><b></b><b></b></i><em>Intermédiaire</em><span>10 min</span></span></header>
+          <p class="px-d">Dessinez des murs sur la grille et comparez combien chaque planificateur explore avant de trouver le chemin.</p>
+          <div class="widget" data-widget="astar"></div>
+          <a class="px-lesson" href="learn-intelligence-fr.html#l5"><span>Vient de la leçon :</span> <span>Perception, planification et IA, leçon 5 : planification</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-rrt">
+          <header><b class="px-t">Faire pousser un arbre aléatoire (RRT)</b><span class="px-meta"><i class="pr-lv l3"><b></b><b></b><b></b></i><em>Avancé</em><span>10 min</span></span></header>
+          <p class="px-d">Regardez un planificateur par échantillonnage explorer l'espace libre vers le but, la méthode utilisée pour les bras.</p>
+          <div class="widget" data-widget="rrt"></div>
+          <a class="px-lesson" href="learn-intelligence-fr.html#l6"><span>Vient de la leçon :</span> <span>Perception, planification et IA, leçon 6 : planification de mouvement</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-jac2r-ellipse">
+          <header><b class="px-t">Les singularités d'un bras à 2 axes</b><span class="px-meta"><i class="pr-lv l3"><b></b><b></b><b></b></i><em>Avancé</em><span>10 min</span></span></header>
+          <p class="px-d">Bougez le bras et regardez son ellipse de vitesse s'aplatir quand il se tend ou se replie.</p>
+          <div class="widget" data-widget="jac2r-ellipse"></div>
+          <a class="px-lesson" href="learn-singularities-fr.html#l4"><span>Vient de la leçon :</span> <span>Singularités, leçon 4 : manipulabilité</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-gimbal">
+          <header><b class="px-t">Le blocage de cardan</b><span class="px-meta"><i class="pr-lv l3"><b></b><b></b><b></b></i><em>Avancé</em><span>10 min</span></span></header>
+          <p class="px-d">Tournez trois cardans et voyez deux d'entre eux s'aligner : une direction de rotation est perdue.</p>
+          <div class="widget" data-widget="gimbal"></div>
+          <a class="px-lesson" href="learn-singularities-fr.html#l6"><span>Vient de la leçon :</span> <span>Singularités, leçon 6 : blocage de cardan</span> <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="px-lab" id="lab-dls">
+          <header><b class="px-t">Apprivoiser une singularité : l'inverse amorti</b><span class="px-meta"><i class="pr-lv l3"><b></b><b></b><b></b></i><em>Avancé</em><span>10 min</span></span></header>
+          <p class="px-d">Faites passer le bras par une singularité avec et sans amortissement, et comparez les vitesses articulaires.</p>
+          <div class="widget" data-widget="dls"></div>
+          <a class="px-lesson" href="learn-singularities-fr.html#l8"><span>Vient de la leçon :</span> <span>Singularités, leçon 8 : l'inverse amorti</span> <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+      <nav class="px-pager"><a href="#program" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Programmer et mesurer</b></a><a href="#make" class="next"><small>Partie suivante <i aria-hidden="true">→</i></small><b>Coder et fabriquer</b></a></nav>
     </section>
     <section class="px-step" id="make">
-      <div class="px-head"><span class="px-num">03</span><div><h2>Coder et fabriquer</h2><p>Du vrai code et de vrais robots, étape par étape, jusqu'à un projet terminé.</p></div></div>
+      <div class="px-head"><span class="px-num">04</span><div><h2>Coder et fabriquer</h2><p>Du vrai code et de vrais robots, étape par étape, jusqu'à un projet terminé.</p></div></div>
       <div class="px-grid two">
         <a class="px-card" href="learn-armlab-fr.html" style="--c:#8a5cf6">
           <span class="px-img"><span class="px-code" aria-hidden="true"><i></i><i></i><i></i><code><s>import</s> numpy <s>as</s> np
@@ -133,8 +188,9 @@ arm.<u>move_to</u>(0.25, 0.10)</code></span></span>
           </span>
         </a>
       </div>
-      <nav class="px-pager"><a href="#program" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Programmer et mesurer</b></a></nav>
+      <nav class="px-pager"><a href="#labs" class="prev"><small><i aria-hidden="true">←</i> Partie précédente</small><b>Expérimenter : labos interactifs</b></a></nav>
     </section>
+    <script src="learn-more-widgets.js" defer=""></script>
     <script>
       // one part at a time: the three cards at the top (and the buttons at the bottom of each part) open their part
       (function () {

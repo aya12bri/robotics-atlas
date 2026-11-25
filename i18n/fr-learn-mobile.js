@@ -1,5 +1,14 @@
 // Français — learn-mobile.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"18hcfdf7ju1": "tout le cours : roues, contraintes cinématiques, CIR, manœuvrabilité",
+"4ba3l6349f": "classification des robots à roues (degré de mobilité et de dirigeabilité)",
+"21bhdyzyyti": "contraintes non holonomes",
+"1gdsjwyaphk": "R. Siegwart, I. R. Nourbakhsh, D. Scaramuzza, <i>Introduction to Autonomous Mobile Robots</i>, 2nd ed., MIT Press, 2011.",
+"1nf05wndyva": "G. Campion, G. Bastin, B. d’Andréa-Novel, “Structural properties and classification of kinematic and dynamic models of wheeled mobile robots”, <i>IEEE Transactions on Robotics and Automation</i>, 12(1), 1996.",
+"gwyflgtycq": "K. M. Lynch, F. C. Park, <i>Modern Robotics: Mechanics, Planning, and Control</i>, Cambridge University Press, 2017 (free at modernrobotics.org).",
  "168qrlxjmof": "Robots mobiles à roues, partie 1 : comment un robot roule",
  "1m0gur484oi": "Partie 1 du cours, en 10 leçons, depuis zéro : les maths nécessaires (depuis le début), le fonctionnement de chaque roue et motorisation (différentiel, tricycle, voiture, omni, Mecanum, swerve, chenilles), les contraintes, le CIR, la mobilité et la manœuvrabilité, et l'holonomie. Chaque leçon a des exemples résolus et des exercices gradués avec indices et solutions, beaucoup corrigés automatiquement. La partie 2 vous amène ensuite au niveau professionnel : commande, planification, étalonnage, filtre de Kalman, dimensionnement, ROS 2, sécurité, examen et TP.",
  "21krh4kkkkr": "Le cours a deux parties (deux pages) et quatre blocs. Cette page est la partie 1. Vous pouvez sauter un bloc si vous le connaissez déjà, mais faites d'abord les exercices de la leçon : si vous les résolvez, passez à la suite.",

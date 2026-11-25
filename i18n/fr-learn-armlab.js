@@ -1,5 +1,17 @@
 // Français — learn-armlab.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"14a5w2btdvm": "modèles direct et inverse, DH",
+"gxapay0hav": "cinématique inverse numérique",
+"ethxan1wf8": "lois de mouvement polynomiales",
+"1ruv34azn4x": "le code Python",
+"1bn6lhp2mho": "J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.",
+"gwyflgtycq": "K. M. Lynch, F. C. Park, <i>Modern Robotics: Mechanics, Planning, and Control</i>, Cambridge University Press, 2017 (free at modernrobotics.org).",
+"ijcznqqiyh": "C. W. Wampler, “Manipulator inverse kinematic solutions based on vector formulations and damped least-squares methods”, <i>IEEE Transactions on Systems, Man, and Cybernetics</i>, 16(1), 1986.",
+"2cqp10bkyo1": "W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).",
+"1zlg70jcylg": "NumPy documentation, numpy.org/doc.",
  "r1vxgt0476": "Coder un bras robot en Python",
  "y5h9ejfg0c": "Le cours pratique des bras robots : écrire le modèle direct, un moteur DH pour n'importe quel robot, le modèle inverse exact puis numérique, des trajectoires douces, puis piloter un vrai bras à 3 servos avec un Arduino. Chaque programme est donné en entier et a été exécuté pour produire les sorties affichées. Le cours se termine par un examen écrit et cinq TP.",
  "1nn20x9m4ug": "Il vous faut des bases de Python (variables, fonctions, boucles) et les idées du cours de maths : trigonométrie, matrices, repères, DH. Chaque leçon donne un fichier complet : tapez-le (ne vous contentez pas de le copier), lancez-le, comparez avec la sortie affichée, puis changez quelque chose et prédisez le résultat avant de relancer.",

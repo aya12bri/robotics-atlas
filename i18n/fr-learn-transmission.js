@@ -1,5 +1,14 @@
 // Français — learn-transmission.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"1lp41ut4or4": "engrenages, courroies, vis et leur dimensionnement",
+"1j0n9e9vrsh": "préhenseurs",
+"gsljrnrkwr": "actionneurs et transmissions des robots",
+"vgjco4stu6": "R. G. Budynas, J. K. Nisbett, <i>Shigley’s Mechanical Engineering Design</i>, McGraw-Hill (any recent edition).",
+"1o64gwy890b": "G. J. Monkman, S. Hesse, R. Steinmann, H. Schunk, <i>Robot Grippers</i>, Wiley-VCH, 2007.",
+"620x5lsvo0": "B. Siciliano, O. Khatib (eds.), <i>Springer Handbook of Robotics</i>, 2nd ed., Springer, 2016.",
  "19jsr78y35m": "Transmissions mécaniques et préhenseurs",
  "152jrh8zdh9": "Ce qui se trouve entre le moteur et le travail d'un robot : courroies, engrenages, vis, trains planétaires et harmonic drives, comment dimensionner une articulation, et les préhenseurs qui tiennent les pièces. Avec des labos 3D où de vrais engrenages engrènent.",
  "1a4pzxhu07k": "Chaque leçon commence par une phrase qui donne l'idée, puis le vocabulaire, les formules et un exemple corrigé avec des nombres, puis un labo : tournez les scènes 3D à la souris. Aucun prérequis au-delà de ω = 2π n / 60 et P = T ω ; le cours de dynamique va plus loin sur les moteurs et la commande.",

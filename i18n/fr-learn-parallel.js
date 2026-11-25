@@ -1,5 +1,14 @@
 // Français — learn-parallel.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"mb8zjvc2t9": "robots parallèles, leurs modèles et leurs singularités",
+"bj3a5vit87": "les trois types de singularités",
+"26q9hqr7yij": "espaces articulaire et opérationnel, espace de travail, aspects",
+"lrz9d5rytq": "J.-P. Merlet, <i>Parallel Robots</i>, 2nd ed., Springer, 2006.",
+"2arqoinihag": "C. Gosselin, J. Angeles, “Singularity analysis of closed-loop kinematic chains”, <i>IEEE Transactions on Robotics and Automation</i>, 6(3), 1990.",
+"2cqp10bkyo1": "W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).",
  "j0xpace5te": "Espaces de travail, modes de déplacement et robots parallèles",
  "2fy7ixbeflk": "Où un robot peut aller et comment il y va : espaces articulaire et opérationnel, limites articulaires et espace de travail, déplacements linéaires et articulaires, aspects et redondance, puis les robots parallèles — Delta, cinq barres, hexapodes — leur mobilité, leurs modèles et leurs singularités. Avec des labos 3D à faire tourner et à piloter.",
  "badw6xer8a": "Chaque leçon commence par une phrase qui donne l'idée, puis l'explique avec un dessin, un exemple corrigé avec des nombres et un labo. Les seules maths nécessaires sont la trigonométrie du triangle (cosinus, sinus, loi des cosinus) ; les encadrés « Liens avec les autres cours » à la fin de chaque leçon disent où réviser et où aller ensuite.",

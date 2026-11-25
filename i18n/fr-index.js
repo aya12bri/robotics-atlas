@@ -1,5 +1,6 @@
 // Français — page index. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1qs12wf8nfa": "Huit niveaux, dans l'ordre où les suivre, de votre premier robot au niveau Master. Chaque niveau a un objectif ; les étapes numérotées sont le parcours, les pages marquées « facultatif » vont plus loin. Cochez chaque page terminée.",
 "26uilwih4xd": "Conçu, dessiné et codé par",
 "5pdpyaa4jn": "Robotics Atlas est un projet pour apprendre les robots, leur cinématique et leurs usages. Fait avec soin, three.js et beaucoup de café.",
 "2hk7qx8wzt": "Voir le code sur GitHub",

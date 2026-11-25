@@ -34,6 +34,16 @@ const STEPS = [
     ['sensors.html', 'sensor', '#2e9e5b', ['Sensor test bench', 'Banc d\'essai des capteurs'], ['Ten sensors live: encoder, IMU, lidar, camera, ultrasonic, GNSS, force, infrared, compass and limit switch. See what each one measures and how it fails.', 'Dix capteurs en direct : codeur, centrale inertielle, lidar, caméra, ultrason, GNSS, effort, infrarouge, boussole et fin de course. Voyez ce que chacun mesure et comment il se trompe.'], 2, 30, 'sensors'],
     ['anatomy-drives.html', 'drive', '#1fb5c9', ['Drive 8 mobile robots', 'Conduire 8 robots mobiles'], ['Differential, Ackermann, omni, Mecanum and more: drive each one with the keyboard.', 'Différentiel, Ackermann, omni, Mecanum et d\'autres : conduisez chacun au clavier.'], 2, 20, 'drives']
   ]],
+  ['labs', ['Experiment: interactive labs', 'Expérimenter : labos interactifs'], ['Turn the knobs and watch: a PID loop, a Kalman filter, path planners, singularities. Each lab comes from a lesson, linked below it.', 'Tournez les boutons et regardez : une boucle PID, un filtre de Kalman, des planificateurs, des singularités. Chaque labo vient d\'une leçon, indiquée en dessous.'], [
+    { w: 'pid', t: ['Tune a PID controller', 'Régler un correcteur PID'], d: ['Move Kp, Ki and Kd and watch the joint reach its target: overshoot, oscillation, slow rise, static error.', 'Bougez Kp, Ki et Kd et regardez la liaison atteindre sa consigne : dépassement, oscillation, montée lente, erreur statique.'], href: 'learn-control.html#l4', lesson: ['Dynamics and control, lesson 4: feedback and PID', 'Dynamique et commande, leçon 4 : asservissement et PID'], lv: 2, min: 15 },
+    { w: 'gravity', t: ['Gravity on one link', 'La gravité sur un segment'], d: ['Change the angle, the mass and the length: see the torque the motor must give to hold the arm.', 'Changez l\'angle, la masse et la longueur : voyez le couple que le moteur doit fournir pour tenir le bras.'], href: 'learn-control.html#l1', lesson: ['Dynamics and control, lesson 1: dynamics', 'Dynamique et commande, leçon 1 : dynamique'], lv: 2, min: 10 },
+    { w: 'kalman', t: ['A Kalman filter in one dimension', 'Un filtre de Kalman à une dimension'], d: ['Noisy measurements in, a smooth estimate out: change the noise and see how much the filter trusts each one.', 'Des mesures bruitées en entrée, une estimation lisse en sortie : changez le bruit et voyez combien le filtre fait confiance à chacune.'], href: 'learn-intelligence.html#l3', lesson: ['Perception, planning and AI, lesson 3: Kalman', 'Perception, planification et IA, leçon 3 : Kalman'], lv: 3, min: 15 },
+    { w: 'astar', t: ['Plan a path: Dijkstra and A*', 'Planifier un chemin : Dijkstra et A*'], d: ['Draw walls on the grid and compare how much each planner explores before it finds the way.', 'Dessinez des murs sur la grille et comparez combien chaque planificateur explore avant de trouver le chemin.'], href: 'learn-intelligence.html#l5', lesson: ['Perception, planning and AI, lesson 5: path planning', 'Perception, planification et IA, leçon 5 : planification'], lv: 2, min: 10 },
+    { w: 'rrt', t: ['Grow a random tree (RRT)', 'Faire pousser un arbre aléatoire (RRT)'], d: ['Watch a sampling planner explore free space towards the goal, the method used for robot arms.', 'Regardez un planificateur par échantillonnage explorer l\'espace libre vers le but, la méthode utilisée pour les bras.'], href: 'learn-intelligence.html#l6', lesson: ['Perception, planning and AI, lesson 6: motion planning', 'Perception, planification et IA, leçon 6 : planification de mouvement'], lv: 3, min: 10 },
+    { w: 'jac2r-ellipse', t: ['Singularities of a 2-axis arm', 'Les singularités d\'un bras à 2 axes'], d: ['Move the arm and watch its velocity ellipse flatten when it gets stretched or folded.', 'Bougez le bras et regardez son ellipse de vitesse s\'aplatir quand il se tend ou se replie.'], href: 'learn-singularities.html#l4', lesson: ['Singularities, lesson 4: manipulability', 'Singularités, leçon 4 : manipulabilité'], lv: 3, min: 10 },
+    { w: 'gimbal', t: ['Gimbal lock', 'Le blocage de cardan'], d: ['Turn three gimbals and see two of them line up: one direction of rotation is lost.', 'Tournez trois cardans et voyez deux d\'entre eux s\'aligner : une direction de rotation est perdue.'], href: 'learn-singularities.html#l6', lesson: ['Singularities, lesson 6: gimbal lock', 'Singularités, leçon 6 : blocage de cardan'], lv: 3, min: 10 },
+    { w: 'dls', t: ['Taming a singularity: the damped inverse', 'Apprivoiser une singularité : l\'inverse amorti'], d: ['Drive the arm through a singularity with and without damping, and compare the joint speeds.', 'Faites passer le bras par une singularité avec et sans amortissement, et comparez les vitesses articulaires.'], href: 'learn-singularities.html#l8', lesson: ['Singularities, lesson 8: the damped inverse', 'Singularités, leçon 8 : l\'inverse amorti'], lv: 3, min: 10 }
+  ]],
   ['make', ['Code and make', 'Coder et fabriquer'], ['Real code and real robots, step by step, up to a finished project.', 'Du vrai code et de vrais robots, étape par étape, jusqu\'à un projet terminé.'], [
     ['learn-armlab.html', 'python', '#8a5cf6', ['Code a robot arm in Python', 'Coder un bras robot en Python'], ['Forward and inverse models, a DH engine, trajectories, then a real servo arm.', 'Modèles direct et inverse, un moteur DH, des trajectoires, puis un vrai bras à servos.'], 2, 150, 'code'],
     ['projects.html', 'project', '#e0a100', ['Guided projects', 'Projets guidés'], ['A servo arm, a line follower and a ROS 2 mobile robot: parts, prices, wiring, code and tests.', 'Un bras à servos, un suiveur de ligne et un robot mobile ROS 2 : pièces, prix, câblage, code et tests.'], 3, 600, 'projects']
@@ -76,11 +86,19 @@ ${STEPS.map(([id, h, , list], k) => `        <li><a href="#${id}"><b>${k + 1}</b
     </header>
 ${STEPS.map(([id, h, p, list], k) => `    <section class="px-step" id="${id}">
       <div class="px-head"><span class="px-num">${String(k + 1).padStart(2, '0')}</span><div><h2>${tx(...h)}</h2><p>${tx(...p)}</p></div></div>
-      <div class="px-grid${list.length === 2 ? ' two' : ''}">
+      ${list[0] && list[0].w ? `<div class="px-labs">
+        ${list.map((L) => `<article class="px-lab" id="lab-${L.w}">
+          <header><b class="px-t">${tx(...L.t)}</b><span class="px-meta"><i class="pr-lv l${L.lv}"><b></b><b></b><b></b></i><em>${tx(...LV[L.lv - 1])}</em><span>${dur(L.min)}</span></span></header>
+          <p class="px-d">${tx(...L.d)}</p>
+          <div class="widget" data-widget="${L.w}"></div>
+          <a class="px-lesson" href="${L.href}"><span>${tx('From the lesson:', 'Vient de la leçon :')}</span> <span>${tx(...L.lesson)}</span> <span aria-hidden="true">→</span></a>
+        </article>`).join('\n        ')}
+      </div>` : `<div class="px-grid${list.length === 2 ? ' two' : ''}">
         ${list.map((t, i) => card(t, k === 0 && i === 0)).join('\n        ')}
-      </div>
+      </div>`}
       <nav class="px-pager">${k > 0 ? `<a href="#${STEPS[k - 1][0]}" class="prev"><small><i aria-hidden="true">←</i> ${tx('Previous part', 'Partie précédente')}</small><b>${tx(...STEPS[k - 1][1])}</b></a>` : '<span></span>'}${k < STEPS.length - 1 ? `<a href="#${STEPS[k + 1][0]}" class="next"><small>${tx('Next part', 'Partie suivante')} <i aria-hidden="true">→</i></small><b>${tx(...STEPS[k + 1][1])}</b></a>` : ''}</nav>
     </section>`).join('\n')}
+    <script src="learn-more-widgets.js" defer></script>
     <script>
       // one part at a time: the three cards at the top (and the buttons at the bottom of each part) open their part
       (function () {

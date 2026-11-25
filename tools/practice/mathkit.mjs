@@ -1,6 +1,7 @@
 // Practice blocks for learn-mathkit.html ("The maths of robotics, one tool per lesson").
 import { plot, COL } from './fig.mjs';
 import { scaraExFig, offsetExFig } from '../content/more-figs.mjs';
+import { SOL } from './mathkit-sol.mjs';
 const D = Math.PI / 180, c = Math.cos, s = Math.sin;
 const e = (x, d = 2) => String(+x.toFixed(d)), f = (x, d = 2) => String(+x.toFixed(d)).replace('.', ',');
 
@@ -104,3 +105,5 @@ export const PRACTICE = {
       { lv: 2, q: ['A ROS message gives the orientation of a mobile robot (x, y, z, w) = (0, 0, 0.383, 0.924). Heading ψ in degrees?', 'Un message ROS donne l\'orientation d\'un robot mobile (x, y, z, w) = (0 ; 0 ; 0,383 ; 0,924). Cap ψ en degrés ?'], num: { ans: 45, tol: 0.3, unit: '°' }, sol: ['ψ = 2 atan2(z, w) = 2 atan2(0.383, 0.924) = 2 × 22.5° = <b>45°</b>.', 'ψ = 2 atan2(z, w) = 2 atan2(0,383 ; 0,924) = 2 × 22,5° = <b>45°</b>.'] },
       { lv: 3, q: ['A rotation matrix has a trace of 2. Angle of the rotation (degrees)?', 'Une matrice de rotation a une trace de 2. Angle de la rotation (degrés) ?'], num: { ans: 60, tol: 0.3, unit: '°' }, hint: ['cos θ = (trace − 1) / 2.', 'cos θ = (trace − 1) / 2.'], sol: ['cos θ = (2 − 1) / 2 = 0.5, so θ = <b>60°</b>, whatever the axis.', 'cos θ = (2 − 1) / 2 = 0,5, donc θ = <b>60°</b>, quel que soit l\'axe.'] }] }
 };
+// the detailed solutions (rule used, where it is in the course, steps, tables) replace the short ones
+for (const [n, L] of Object.entries(PRACTICE)) L.ex.forEach((e, k) => { if (SOL[n] && SOL[n][k]) e.sx = SOL[n][k]; });
