@@ -52,7 +52,7 @@
 
     <h2>Schéma cinématique, vue de côté</h2>
     <div class="toolbar">
-      <button id="axesBtn">Masquer les axes</button>
+      <button id="axesBtn">Afficher les axes</button>
       <span>Repères :
         <label><input type="radio" name="conv" value="std" checked=""> DH (standard)</label>
         <label><input type="radio" name="conv" value="mod"> DHM (modifié)</label>
@@ -236,7 +236,7 @@
       const svg = document.getElementById('schema');
       const toRad = (deg) => (deg * Math.PI) / 180;
       const map = (u, v) => [350 + u * 120, 395 - v * 120];   // metres -> pixels
-      let showAxes = true;
+      let showAxes = false;
       let q = [30, -30, 60];
 
       function update() {

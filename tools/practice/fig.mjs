@@ -15,7 +15,9 @@ export const ARC = (cx, cy, r, a0, a1, c = C.y) => { const p = (a) => [cx + r * 
 
 // a graph: plot({ x: [0, 5], y: [-1, 1], curves: [{ f, c, label }], xl, yl, marks, w, h, ticks })
 export function plot(o) {
-  const W = o.w || 640, H = o.h || 300, L = 56, R = 18, Tp = 24, B = 44, pw = W - L - R, ph = H - Tp - B;
+  // the legend sits above the graph, in its own band, so it never covers a curve
+  const nLab = (o.curves || []).filter((cv) => cv.label).length, band = nLab ? 10 + nLab * 20 : 0;
+  const W = o.w || 640, H = (o.h || 300) + band, L = 56, R = 18, Tp = 24 + band, B = 44, pw = W - L - R, ph = H - Tp - B;
   const X = (x) => L + (x - o.x[0]) / (o.x[1] - o.x[0]) * pw, Y = (y) => Tp + (1 - (y - o.y[0]) / (o.y[1] - o.y[0])) * ph;
   let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="#1b1f25" rx="10"/>`;
   const nx = o.ticks ? o.ticks[0] : 5, ny = o.ticks ? o.ticks[1] : 4;
@@ -27,8 +29,9 @@ export function plot(o) {
     const n = 160; let d = '';
     for (let i = 0; i <= n; i++) { const x = o.x[0] + (o.x[1] - o.x[0]) * i / n, y = cv.f(x); if (!isFinite(y)) continue; d += (d ? 'L' : 'M') + fx(X(x)) + ',' + fx(Y(Math.max(o.y[0] - 1e3, Math.min(o.y[1] + 1e3, y)))); }
     s += `<path d="${d}" fill="none" stroke="${cv.c || C.o}" stroke-width="${cv.w || 3}"${cv.dash ? ` stroke-dasharray="${cv.dash}"` : ''}/>`;
-    if (cv.label) s += `<rect x="${L + 10}" y="${Tp + 8 + k * 22}" width="14" height="4" fill="${cv.c || C.o}"/>` + T(L + 30, Tp + 14 + k * 22, cv.label, { fs: 13, c: cv.c || C.o });
+
   });
+  (o.curves || []).filter((cv) => cv.label).forEach((cv, k) => { s += `<rect x="${L + 4}" y="${14 + k * 20}" width="18" height="4" fill="${cv.c || C.o}"/>` + T(L + 30, 20 + k * 20, cv.label, { fs: 13, c: cv.c || C.o }); });
   (o.segs || []).forEach(([x1, y1, x2, y2, c, w]) => { s += LINE(X(x1), Y(y1), X(x2), Y(y2), c || C.o, w || 8); });
   (o.marks || []).forEach(([x, y, lab, c]) => { s += DOT(X(x), Y(y), c || C.y, 5) + (lab ? T(X(x) + 8, Y(y) - 8, lab, { fs: 13, c: c || C.y }) : ''); });
   if (o.xl) s += T(L + pw, H - 6, o.xl, { a: 'end', fs: 13, c: C.axis });

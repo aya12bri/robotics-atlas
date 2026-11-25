@@ -55,7 +55,7 @@
 
     <h2>Kinematic diagram (schéma cinématique)</h2>
     <div class="toolbar">
-      <button id="axesBtn">Hide axes</button>
+      <button id="axesBtn">Show axes</button>
       <span>Frames:
         <label><input type="radio" name="conv" value="std" checked /> DH (standard)</label>
         <label><input type="radio" name="conv" value="mod" /> DHM (modified)</label>
@@ -307,7 +307,7 @@ z0 = q1             (along the long rails)</pre>
       const svg = document.getElementById('schema');
       const frameSel = document.getElementById('frameSel');
       const viewSel = document.getElementById('viewSel');
-      let showAxes = true;
+      let showAxes = false;
       let q = [0.5, 0.4, 0.2];
 
       const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];

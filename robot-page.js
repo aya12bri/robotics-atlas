@@ -71,7 +71,7 @@ renderer.setAnimationLoop(() => { if (!visible || document.hidden) return; { con
 const svg = document.getElementById('schema');
 const frameSel = document.getElementById('frameSel');
 const viewSel = document.getElementById('viewSel');
-let showAxes = true;
+let showAxes = false;
 let q = R.joints.map((j) => (j.type === 'P' ? j.value / 100 : j.value));
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const origin = (T) => [T[0][3], T[1][3], T[2][3]];

@@ -53,7 +53,7 @@
 
     <h2>Schéma cinématique</h2>
     <div class="toolbar">
-      <button id="axesBtn">Masquer les axes</button>
+      <button id="axesBtn">Afficher les axes</button>
       <span>Repères :
         <label><input type="radio" name="conv" value="std" checked=""> DH (standard)</label>
         <label><input type="radio" name="conv" value="mod"> DHM (modifié)</label>
@@ -288,7 +288,7 @@ z0 = q1             (le long des grands rails)</pre>
       const svg = document.getElementById('schema');
       const frameSel = document.getElementById('frameSel');
       const viewSel = document.getElementById('viewSel');
-      let showAxes = true;
+      let showAxes = false;
       let q = [0.5, 0.4, 0.2];
 
       const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
