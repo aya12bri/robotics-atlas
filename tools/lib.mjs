@@ -57,7 +57,7 @@ export function EXS(prefix, n, items, opts = {}) {
     return `<div class="ex" data-id="${id}" data-lv="${it.lv}"${it.exam ? ' data-exam="1"' : ''}>
 <div class="qh"><span class="lv l${it.lv}">${tx(...LV[it.lv - 1])}</span><span class="qn">${i + 1}</span></div>
 <p class="q">${tx(it.q[0], it.q[1])}</p>${it.fig || ""}${input}${optsHtml}<p class="fb" aria-live="polite"></p>
-${it.hint ? `<details class="hint"><summary>${tx('Hint', 'Indice')}</summary><p>${tx(it.hint[0], it.hint[1])}</p></details>` : ''}<details class="sol"><summary>${tx('Solution', 'Solution')}</summary><p>${tx(it.sol[0], it.sol[1])}</p></details>
+${it.hint ? `<details class="hint"><summary>${tx('Hint', 'Indice')}</summary><p>${tx(it.hint[0], it.hint[1])}</p></details>` : ''}<details class="sol"><summary>${tx('Solution', 'Solution')}</summary>${it.sx ? it.sx : `<p>${tx(it.sol[0], it.sol[1])}</p>`}</details>
 </div>`;
   }).join('\n');
   const note = opts.note || [`Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.`, `Essayez d'abord chaque exercice vous-même. Tapez votre réponse dans la case (le vérificateur accepte une petite tolérance) ou choisissez une option ; n'utilisez l'indice que si vous êtes bloqué, et lisez la solution pour comparer votre méthode.`];
@@ -65,6 +65,15 @@ ${it.hint ? `<details class="hint"><summary>${tx('Hint', 'Indice')}</summary><p>
 ${rows}
 </section>`;
 }
+// a detailed solution: the rule used and where it is in the course, the steps one by one, a table if the answer is a table, the answer
+// SX({ rule: [en, fr], where: [en, fr], steps: [[en, fr], …], table: { head, rows }, ans: [en, fr] })
+export const SX = (o) => `<div class="solx">` +
+  (o.rule ? `<p class="solrule"><b>${tx('Rule used', 'Règle utilisée')}</b> <span>${tx(o.rule[0], o.rule[1])}</span>${o.where ? ` <span class="solwhere">${tx(o.where[0], o.where[1])}</span>` : ''}</p>` : '') +
+  (o.steps ? `<ol class="solsteps">${o.steps.map((s) => `<li>${tx(s[0], s[1])}</li>`).join('')}</ol>` : '') +
+  (o.table ? TABLE(o.table.head.map(dec), o.table.rows.map((r) => r.map(dec)), 'soltab') : '') +
+  (o.ans ? `<p class="solans"><b>${tx('Answer', 'Réponse')}</b> <span>${tx(o.ans[0], o.ans[1])}</span></p>` : '') + `</div>`;
+// a plain decimal number in a table cell gets its French comma
+const dec = (c) => (typeof c === 'string' && /^[−-]?\d+\.\d+$/.test(c) ? [c, c.replace('.', ',')] : c);
 // a "I did this lab" tick, remembered in the browser
 export const LABCHK = (id) => `<label class="labchk"><input type="checkbox" data-lab="${id}"><span>${tx('I did this lab and met the pass criteria', 'J\'ai fait ce TP et atteint les critères de réussite')}</span></label>`;
 

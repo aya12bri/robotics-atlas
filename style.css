@@ -1993,3 +1993,33 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 .cases .case svg { width: 100%; height: auto; display: block; }
 .cases .case svg text { font-family: var(--font); }
 .cases .case figcaption { font-size: 0.92rem; line-height: 1.45; text-align: left; margin-top: 0.3rem; }
+
+/* detailed solutions: the rule and where it is in the course, the numbered steps, an optional table, the answer */
+.solx { font-size: 0.95rem; }
+.solx .solrule { margin: 0.4rem 0; padding: 0.4rem 0.6rem; border-left: 3px solid var(--accent, #2f6bff); background: var(--surface-2, rgba(47,107,255,0.06)); border-radius: 0 6px 6px 0; }
+.solx .solwhere { color: var(--muted); font-size: 0.88rem; }
+.solx .solsteps { margin: 0.4rem 0 0.4rem 1.2rem; } .solx .solsteps li { margin: 0.25rem 0; }
+.solx .solans { margin: 0.5rem 0 0.2rem; padding: 0.35rem 0.6rem; border-radius: 6px; background: rgba(46,158,91,0.1); }
+.solx table { margin: 0.4rem 0; }
+.solx .cmp-wrap { overflow-x: auto; } .solx table.soltab { font-size: 0.86rem; } .solx table.soltab td, .solx table.soltab th { padding: 0.3rem 0.5rem; }
+.solx .cmp-wrap table.dh.soltab { min-width: 0; }
+
+/* Practise page: the interactive labs, each with its widget and the lesson it comes from */
+.px-labs { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1rem; }
+.px-lab { border: 1px solid var(--border); border-radius: 16px; padding: 1rem 1.1rem; background: var(--card, var(--surface)); }
+.px-lab header { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+.px-lab .px-t { font-size: 1.08rem; } .px-lab .px-d { display: block; color: var(--muted); margin: 0.35rem 0 0.6rem; }
+.px-lab .widget { margin: 0.4rem 0; }
+.px-lab .px-lesson { display: inline-block; margin-top: 0.5rem; font-size: 0.9rem; }
+@media (max-width: 520px) { .px-labs { grid-template-columns: 1fr; } }
+
+/* roadmap: the step number of the main pages, "optional" on the side pages, the goal of each level */
+.rm-node .rm-step, .rm-node .rm-opt { position: absolute; top: -0.7rem; left: 1rem; padding: 0.1rem 0.55rem; border-radius: 999px; font: 700 0.72rem var(--mono); letter-spacing: 0.04em; }
+.rm-node .rm-step { background: var(--accent); color: #fff; }
+.rm-node .rm-opt { background: var(--surface); color: var(--muted); border: 1px dashed var(--border); }
+.rm-level .rm-goal { margin-top: 0.3rem; font-size: 0.9rem; color: var(--text); }
+
+/* course pages: sources and references */
+.sources { margin: 2rem 0 1rem; }
+.sources .srclist { margin: 0.6rem 0 0 1.2rem; } .sources .srclist li { margin: 0.45rem 0; line-height: 1.5; }
+.sources .srcuse { display: block; color: var(--muted); font-size: 0.9rem; }

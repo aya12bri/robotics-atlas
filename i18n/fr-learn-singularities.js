@@ -1,5 +1,18 @@
 // Français — learn-singularities.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"1tm3zr55qqy": "manipulabilité et ellipse de vitesse",
+"1k33yeya9hx": "redondance et noyau",
+"1puacri9wp7": "l’inverse amortie (moindres carrés amortis)",
+"vz9ro0qdtz": "singularités cinématiques des bras et des poignets",
+"2m9z2a2eix": "jacobienne et statique τ = Jᵀ F",
+"gwsk9idmr9": "T. Yoshikawa, “Manipulability of robotic mechanisms”, <i>The International Journal of Robotics Research</i>, 4(2), 1985.",
+"5vmw3lkhzp": "Y. Nakamura, <i>Advanced Robotics: Redundancy and Optimization</i>, Addison-Wesley, 1991.",
+"ijcznqqiyh": "C. W. Wampler, “Manipulator inverse kinematic solutions based on vector formulations and damped least-squares methods”, <i>IEEE Transactions on Systems, Man, and Cybernetics</i>, 16(1), 1986.",
+"smp4mliaa": "B. Siciliano, L. Sciavicco, L. Villani, G. Oriolo, <i>Robotics: Modelling, Planning and Control</i>, Springer, 2009.",
+"gwyflgtycq": "K. M. Lynch, F. C. Park, <i>Modern Robotics: Mechanics, Planning, and Control</i>, Cambridge University Press, 2017 (free at modernrobotics.org).",
  "btcb600bq5": "Singularités et jacobienne",
  "caqx8c74gl": "La partie de la robotique qui surprend tout le monde : pourquoi un bras robot perd soudain une direction de mouvement, pourquoi ses moteurs s'emballent, pourquoi l'orientation d'un outil « se bloque », et comment les professionnels vivent avec. On part des vitesses articulaires pour finir avec les robots redondants et parallèles. Il faut avoir suivi le cours « Maths et mouvement » (ou savoir ce qu'est un bras à 2 axes et une matrice).",
  "9rvmbsqqu4": "Tendez complètement le bras devant vous et demandez à un ami de pousser votre main vers vous, le long du bras. Vous résistez sans effort : les os portent la charge. Essayez maintenant de déplacer la main <strong>le long</strong> du bras sans plier le coude : impossible. Dans cette pose votre bras a <strong>perdu une direction</strong>. Les robots ont exactement le même problème, et il a un nom : une <strong>singularité</strong>.",

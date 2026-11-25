@@ -1,5 +1,14 @@
 // Français — page learn-maths. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"auxbd4conx": "modèles direct et inverse du bras à 2 axes",
+"r51iy1iys1": "lois de mouvement et trajectoires",
+"13fsiu75klv": "lois trapézoïdales et polynomiales",
+"1bn6lhp2mho": "J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.",
+"8er0jy0a73": "M. W. Spong, S. Hutchinson, M. Vidyasagar, <i>Robot Modeling and Control</i>, 2nd ed., Wiley, 2020.",
+"2cqp10bkyo1": "W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).",
 "1kz15j1c58m": "bang-bang",
 "suz698vo35": "trapèze",
 "fssp55b1xa": "trapèze d'accél.",

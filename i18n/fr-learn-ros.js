@@ -1,5 +1,14 @@
 // Français — learn-ros.html. Clé = empreinte du texte anglais, valeur = traduction. (généré par tools/build.mjs)
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"1u1fhxaiaqo": "toutes les commandes, nœuds et paquets du cours",
+"1tltdyorgox": "la conception de ROS 2",
+"1fz5ivv9skl": "la programmation des robots en pratique",
+"1pphcb7nafw": "ROS 2 documentation, docs.ros.org (Jazzy Jalisco); Navigation 2, docs.nav2.org; MoveIt 2, moveit.picknik.ai.",
+"2fh1i94ay9y": "S. Macenski, T. Foote, B. Gerkey, C. Lalancette, W. Woodall, “Robot Operating System 2: Design, architecture, and uses in the wild”, <i>Science Robotics</i>, 7(66), 2022.",
+"1mp4phm0dv4": "P. Corke, <i>Robotics, Vision and Control</i>, 3rd ed., Springer, 2023.",
  "2c51142iegu": "ROS 2 depuis zéro",
  "1p4ayhnlcco": "ROS 2 est le logiciel sur lequel tournent la plupart des robots de recherche, de service et mobiles. Ce cours part de rien : ce qu'est ROS 2, les nœuds et les topics, vos premiers nœuds en Python, les services et les actions, les fichiers de lancement, les repères et le modèle du robot, la simulation, les grandes piles de navigation et de bras, et un premier projet complet. Il vous faut seulement des bases de Python et un ordinateur sous Ubuntu.",
  "8hyu1rz39n": "ROS 2 s'apprend <strong>au clavier</strong>. Chaque leçon donne des commandes et de courts programmes : tapez-les, lancez-les, changez une valeur et regardez ce qui se passe. Les leçons 1 à 5 ne demandent que ROS 2 ; les leçons 6 à 9 utilisent un simulateur gratuit, vous n'avez donc pas besoin d'un vrai robot.",

@@ -1,5 +1,14 @@
 // Français — page learn. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"21xhxwt8n8d": "Sources et références",
+"2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
+"1d15cz9ovk": "utilisé pour :",
+"y9ogyu3nj4": "liaisons, degrés de liberté, repères et tableau DH",
+"1dvq5xqb1k5": "degrés de liberté et espace des configurations, à un niveau débutant",
+"nqip18jwl6": "les mots officiels de la robotique",
+"1bn6lhp2mho": "J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.",
+"gwyflgtycq": "K. M. Lynch, F. C. Park, <i>Modern Robotics: Mechanics, Planning, and Control</i>, Cambridge University Press, 2017 (free at modernrobotics.org).",
+"1jqop8i3zr": "ISO 8373:2021, <i>Robotics — Vocabulary</i>.",
 "28rd9ytkujh": "Rotoïde",
 "dnv2962gt1": "Prismatique",
 "1yo83x43a4t": "Corps",

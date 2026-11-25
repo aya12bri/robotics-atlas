@@ -570,6 +570,20 @@ with serial.Serial(PORT, 115200, timeout=1) as link:
           <p>Tous les mots du cours au même endroit.</p>
 <div class="cmp-wrap"><table class="dh "><tbody><tr><th class="left">Terme</th><th class="left">Sens</th></tr><tr><td class="left">Modèle direct (MGD)</td><td class="left">Des angles des liaisons à la pose de l'outil.</td></tr><tr><td class="left">Modèle inverse (MGI)</td><td class="left">De la pose voulue de l'outil aux angles des liaisons.</td></tr><tr><td class="left">Test de l'aller-retour</td><td class="left">Vérifier un modèle inverse en appliquant le modèle direct à sa réponse.</td></tr><tr><td class="left">Différence finie</td><td class="left">Une dérivée estimée par (variation de la sortie) / (petite variation de l'entrée).</td></tr><tr><td class="left">Moindres carrés amortis</td><td class="left">Un pas de modèle inverse numérique qui reste petit près des singularités.</td></tr><tr><td class="left">Trajectoire quintique</td><td class="left">Un mouvement polynomial de degré 5 avec vitesse et accélération nulles aux deux bouts.</td></tr><tr><td class="left">Décalage d'un servo</td><td class="left">L'erreur d'angle d'un servo monté, mesurée une fois et corrigée par logiciel.</td></tr></tbody></table></div>
         </section>
+        <!-- BEGIN sources -->
+        <section class="sources" id="sources">
+          <h2>Sources et références</h2>
+          <p>Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.</p>
+          <ol class="srclist">
+            <li><span class="src">J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.</span> <span class="srcuse"><em>utilisé pour :</em> <span>modèles direct et inverse, DH</span></span></li>
+            <li><span class="src">K. M. Lynch, F. C. Park, <i>Modern Robotics: Mechanics, Planning, and Control</i>, Cambridge University Press, 2017 (free at modernrobotics.org).</span> <span class="srcuse"><em>utilisé pour :</em> <span>cinématique inverse numérique</span></span></li>
+            <li><span class="src">C. W. Wampler, “Manipulator inverse kinematic solutions based on vector formulations and damped least-squares methods”, <i>IEEE Transactions on Systems, Man, and Cybernetics</i>, 16(1), 1986.</span> <span class="srcuse"><em>utilisé pour :</em> <span>moindres carrés amortis</span></span></li>
+            <li><span class="src">W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).</span> <span class="srcuse"><em>utilisé pour :</em> <span>lois de mouvement polynomiales</span></span></li>
+            <li><span class="src">NumPy documentation, numpy.org/doc.</span> <span class="srcuse"><em>utilisé pour :</em> <span>le code Python</span></span></li>
+          </ol>
+        </section>
+        <!-- END sources -->
+
 
         <section class="finish">
           <h2>Vous savez maintenant coder et piloter un bras robot !</h2>

@@ -569,6 +569,20 @@ with serial.Serial(PORT, 115200, timeout=1) as link:
           <p>All the words of the course in one place.</p>
 <div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Forward kinematics (FK, MGD)</td><td class="left">From the joint angles to the pose of the tool.</td></tr><tr><td class="left">Inverse kinematics (IK, MGI)</td><td class="left">From the wanted pose of the tool to the joint angles.</td></tr><tr><td class="left">Round trip test</td><td class="left">Checking an inverse model by applying the forward model to its answer.</td></tr><tr><td class="left">Finite difference</td><td class="left">A derivative estimated as (change of output) / (small change of input).</td></tr><tr><td class="left">Damped least squares</td><td class="left">A numerical IK step that stays small near singularities.</td></tr><tr><td class="left">Quintic trajectory</td><td class="left">A degree-5 polynomial motion with zero speed and acceleration at both ends.</td></tr><tr><td class="left">Servo offset</td><td class="left">The angle error of a mounted servo, measured once and corrected in software.</td></tr></table></div>
         </section>
+        <!-- BEGIN sources -->
+        <section class="sources" id="sources">
+          <h2>Sources and references</h2>
+          <p>This course was written from these books, papers, standards and documentation. They are also the best way to go further.</p>
+          <ol class="srclist">
+            <li><span class="src">J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.</span> <span class="srcuse"><em>used for:</em> <span>forward and inverse kinematics, DH</span></span></li>
+            <li><span class="src">K. M. Lynch, F. C. Park, <i>Modern Robotics: Mechanics, Planning, and Control</i>, Cambridge University Press, 2017 (free at modernrobotics.org).</span> <span class="srcuse"><em>used for:</em> <span>numerical inverse kinematics</span></span></li>
+            <li><span class="src">C. W. Wampler, “Manipulator inverse kinematic solutions based on vector formulations and damped least-squares methods”, <i>IEEE Transactions on Systems, Man, and Cybernetics</i>, 16(1), 1986.</span> <span class="srcuse"><em>used for:</em> <span>damped least squares</span></span></li>
+            <li><span class="src">W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).</span> <span class="srcuse"><em>used for:</em> <span>polynomial motion laws</span></span></li>
+            <li><span class="src">NumPy documentation, numpy.org/doc.</span> <span class="srcuse"><em>used for:</em> <span>the Python code</span></span></li>
+          </ol>
+        </section>
+        <!-- END sources -->
+
 
         <section class="finish">
           <h2>You can now code and drive a robot arm!</h2>
