@@ -5,6 +5,7 @@ RA.add({
 "1d15cz9ovk": "utilisé pour :",
 "1q658uljngn": "Supports de cours",
 "y6kzufu8yt": "Références",
+"1upz9nvn5ja": "Vidéos pour aller plus loin",
 "14a5w2btdvm": "modèles direct et inverse, DH",
 "gxapay0hav": "cinématique inverse numérique",
 "ethxan1wf8": "lois de mouvement polynomiales",
@@ -331,6 +332,9 @@ RA.add({
  "2c3vfnfuuvh": "Téléopération, cobotique, architectures, sécurité",
  "1qe3jf726eq": "Maître-esclave en 3D (TD1, TD2), variables d'onde, comanipulation, architecture PAT, marquage CE",
  "zwq4h5amsm": "≈ 4 h · Avant : Dynamique, actionneurs et commande",
+ "1agepi5n396": "Robotique médicale",
+ "1v2tj586akv": "Master : histoire, le médecin dans la boucle, trocart et RCM, comanipulation, sécurité et stérilité, robots à l'hôpital, télé-échographie, un projet",
+ "1wufzob3eb5": "≈ 3 h 40 · Avant : Modélisation d'un robot, cours complet, Téléopération, cobotique, architectures, sécurité",
  "26p10icwb5n": "période 20 ms",
  "80f01m3bpx": "largeur d'impulsion → angle",
  "105bshitjon": "(vérifiez la fiche technique)"

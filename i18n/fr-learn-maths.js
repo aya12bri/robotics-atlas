@@ -1,5 +1,6 @@
 // Français — page learn-maths. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1upz9nvn5ja": "Vidéos pour aller plus loin",
 "1q658uljngn": "Supports de cours",
 "y6kzufu8yt": "Références",
 "21xhxwt8n8d": "Sources et références",
