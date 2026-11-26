@@ -1,5 +1,8 @@
 // Français — page learn-model. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1upz9nvn5ja": "Vidéos pour aller plus loin",
+"1cyxzp3cb0n": "la jacobienne : mouvements différentiels, vitesses et efforts statiques",
+"r02wysrzoq": "O. Khatib, <i>Introduction to Robotics</i>, course notes, Stanford University, chapter 4: The Jacobian.",
 "1h1wk0df6nx": "M. Abbas, <i>Modélisation des robots</i> (UE33c) : DHm, modèles géométriques direct et inverse, modèles cinématiques, Master MARS, Université d’Orléans.",
 "1q658uljngn": "Supports de cours",
 "y6kzufu8yt": "Références",

@@ -20,6 +20,7 @@ export const CARDS = [
   { page: 'learn-teleop.html', key: 'tel', prefix: 'tel-', total: 12, t: ['Teleoperation, cobotics, architectures, safety', 'Téléopération, cobotique, architectures, sécurité'], d: ['Master-slave in 3D (TD1, TD2), wave variables, co-manipulation, PAT architecture, CE marking', 'Maître-esclave en 3D (TD1, TD2), variables d\'onde, comanipulation, architecture PAT, marquage CE'] },
   { page: 'learn-kalman.html', key: 'kf', prefix: 'kf-', total: 8, t: ['Data fusion and the Kalman filter', 'Fusion de données et filtre de Kalman'], d: ['Sensors, covariance, best linear estimator, Kalman and EKF in 3D, UWB beacons, multi-sensor fusion', 'Capteurs, covariance, meilleur estimateur linéaire, Kalman et EKF en 3D, balises UWB, fusion multicapteur'] },
   { page: 'learn-transmission.html', key: 'tr', prefix: 'tr-', total: 8, t: ['Mechanical transmissions and grippers', 'Transmissions mécaniques et préhenseurs'], d: ['Belts, gears, screws, planetary and harmonic drives in 3D, sizing a joint, grippers', 'Courroies, engrenages, vis, trains planétaires et harmonic drives en 3D, dimensionner une articulation, préhenseurs'] },
+  { page: 'learn-medical.html', key: 'med', prefix: 'med-', total: 8, t: ['Medical robotics', 'Robotique médicale'], d: ['Master: history, the doctor in the loop, trocar and RCM, co-manipulation, safety and sterility, hospital robots, tele-ultrasound, a project', 'Master : histoire, le médecin dans la boucle, trocart et RCM, comanipulation, sécurité et stérilité, robots à l\'hôpital, télé-échographie, un projet'] },
   { page: 'learn-parallel.html', key: 'par', prefix: 'par-', total: 6, t: ['Workspaces, motion modes and parallel robots', 'Espaces de travail, modes de déplacement et robots parallèles'], d: ['Joint and operational spaces, workspace, MoveL / MoveJ, aspects, redundancy, five-bar, 3-RPR, singularities', 'Espaces articulaire et opérationnel, espace de travail, MoveL / MoveJ, aspects, redondance, cinq barres, 3-RPR, singularités'] }
 ];
 
@@ -30,12 +31,12 @@ export const LEVELS = [
   [['Level 3 · Robot kinematics', 'Niveau 3 · Cinématique des robots'], ['model', 'armlab', 'sing', 'par']],
   [['Level 4 · Dynamics and control', 'Niveau 4 · Dynamique et commande'], ['ctrl', 'tr']],
   [['Level 5 · Mobile robots', 'Niveau 5 · Robots mobiles'], ['wmr', 'wmrpro']],
-  [['Level 6 · Intelligent robotics and Master', 'Niveau 6 · Robotique intelligente et Master'], ['ros', 'ai', 'world', 'kf', 'adv', 'tel']]
+  [['Level 6 · Intelligent robotics and Master', 'Niveau 6 · Robotique intelligente et Master'], ['ros', 'ai', 'world', 'kf', 'adv', 'tel', 'med']]
 ];
 const META = {
   learn: [45, []], py: [200, []], el: [225, []], mk: [145, []], maths: [65, ['mk']], model: [200, ['learn', 'mk']], armlab: [150, ['learn', 'maths']], sing: [100, ['model']], par: [135, ['model']],
   ctrl: [175, ['model']], tr: [170, ['learn']], wmr: [160, ['learn', 'mk']], wmrpro: [290, ['wmr']], ros: [115, ['learn']], ai: [115, ['mk']], world: [115, ['learn']],
-  kf: [180, ['mk']], adv: [150, ['model', 'ctrl']], tel: [240, ['ctrl']]
+  kf: [180, ['mk']], adv: [150, ['model', 'ctrl']], tel: [240, ['ctrl']], med: [220, ['model', 'tel']]
 };
 const dur = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') : ''}`);
 const byKey = (k) => CARDS.find((c) => c.key === k);
@@ -51,7 +52,7 @@ export const courseCards = (current) =>
   `<nav class="courses" aria-label="Courses">${LEVELS.map(([name, keys]) => `<h3 class="courses-lv">${tx(...name)}</h3>${keys.map((k) => card(byKey(k), current)).join('')}`).join('')}</nav>`;
 
 export const COURSES = [];
-for (const [file, page, key, prefix, total] of [['python', 'learn-python.html', 'py', 'py-', 8], ['electronics', 'learn-electronics.html', 'el', 'el-', 8], ['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 11], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 12], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['labs', 'learn-armlab.html', 'armlab', 'lab-', 6], ['adv', 'learn-advanced.html', 'adv', 'adv-', 8], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 10], ['mobile-pro', 'learn-mobile-pro.html', 'wmrpro', 'wmr-', 10], ['teleop', 'learn-teleop.html', 'tel', 'tel-', 12], ['kalman', 'learn-kalman.html', 'kf', 'kf-', 8], ['transmission', 'learn-transmission.html', 'tr', 'tr-', 8], ['parallel', 'learn-parallel.html', 'par', 'par-', 6]]) {
+for (const [file, page, key, prefix, total] of [['python', 'learn-python.html', 'py', 'py-', 8], ['electronics', 'learn-electronics.html', 'el', 'el-', 8], ['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 11], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 12], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['labs', 'learn-armlab.html', 'armlab', 'lab-', 6], ['adv', 'learn-advanced.html', 'adv', 'adv-', 8], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 10], ['mobile-pro', 'learn-mobile-pro.html', 'wmrpro', 'wmr-', 10], ['teleop', 'learn-teleop.html', 'tel', 'tel-', 12], ['kalman', 'learn-kalman.html', 'kf', 'kf-', 8], ['transmission', 'learn-transmission.html', 'tr', 'tr-', 8], ['parallel', 'learn-parallel.html', 'par', 'par-', 6], ['medical', 'learn-medical.html', 'med', 'med-', 8]]) {
   let mod; try { mod = await import(`./content/${file}.mjs`); } catch (e) { if (e.code === 'ERR_MODULE_NOT_FOUND') continue; throw e; }
   COURSES.push({ page, key, prefix, total, ...mod.meta, build: mod.build });
 }
