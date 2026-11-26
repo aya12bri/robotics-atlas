@@ -3,6 +3,8 @@ import { tx } from './lib.mjs';
 
 export const CARDS = [
   { page: 'learn.html', key: 'learn', prefix: 'lesson-', total: 12, t: ['Foundations', 'Les fondations'], d: ['12 short lessons: the ideas behind every robot', '12 leçons courtes : les idées derrière tous les robots'] },
+  { page: 'learn-python.html', key: 'py', prefix: 'py-', total: 8, t: ['Python for robotics', 'Python pour la robotique'], d: ['From zero: variables, angles, loops, functions, lists, NumPy, plots, classes and a first controller', 'Depuis zéro : variables, angles, boucles, fonctions, listes, NumPy, graphiques, classes et un premier correcteur'] },
+  { page: 'learn-electronics.html', key: 'el', prefix: 'el-', total: 8, t: ['Electronics and Arduino', 'Électronique et Arduino'], d: ['From zero: Ohm\'s law, batteries, Arduino, sensors, PWM, H-bridge and encoder, servos, steppers and a first robot', 'Depuis zéro : loi d\'Ohm, batteries, Arduino, capteurs, PWM, pont en H et codeur, servos, pas à pas et un premier robot'] },
   { page: 'learn-mathkit.html', key: 'mk', prefix: 'mk-', total: 11, t: ['The maths of robotics', 'Les maths de la robotique'], d: ['One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability, quaternions', 'Un outil par leçon : trigonométrie, vecteurs, matrices, rotations, transformations, DH, DHM, dérivées, probabilités, quaternions'] },
   { page: 'learn-maths.html', key: 'maths', prefix: 'maths-', total: 8, t: ['Maths and motion, step by step', 'Maths et mouvement, pas à pas'], d: ['Applied: the 2-axis arm from A to Z, its direct and inverse models, its motion laws', 'Appliqué : le bras à 2 axes de A à Z, ses modèles direct et inverse, ses lois de mouvement'] },
   { page: 'learn-model.html', key: 'model', prefix: 'model-', total: 11, t: ['Robot modelling, full course', "Modélisation d'un robot, cours complet"], d: ['Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics', 'Niveau Master : rotations, DHm, MGD, MGI, jacobienne, dynamique'] },
@@ -23,7 +25,7 @@ export const CARDS = [
 
 // the six levels of the roadmap (index.html), the time each course takes and what to know before it
 export const LEVELS = [
-  [['Level 1 · Discover robotics', 'Niveau 1 · Découvrir la robotique'], ['learn']],
+  [['Level 1 · Discover robotics', 'Niveau 1 · Découvrir la robotique'], ['learn', 'py', 'el']],
   [['Level 2 · Mathematics for robotics', 'Niveau 2 · Mathématiques pour la robotique'], ['mk', 'maths']],
   [['Level 3 · Robot kinematics', 'Niveau 3 · Cinématique des robots'], ['model', 'armlab', 'sing', 'par']],
   [['Level 4 · Dynamics and control', 'Niveau 4 · Dynamique et commande'], ['ctrl', 'tr']],
@@ -31,7 +33,7 @@ export const LEVELS = [
   [['Level 6 · Intelligent robotics and Master', 'Niveau 6 · Robotique intelligente et Master'], ['ros', 'ai', 'world', 'kf', 'adv', 'tel']]
 ];
 const META = {
-  learn: [45, []], mk: [145, []], maths: [65, ['mk']], model: [200, ['learn', 'mk']], armlab: [150, ['learn', 'maths']], sing: [100, ['model']], par: [135, ['model']],
+  learn: [45, []], py: [200, []], el: [225, []], mk: [145, []], maths: [65, ['mk']], model: [200, ['learn', 'mk']], armlab: [150, ['learn', 'maths']], sing: [100, ['model']], par: [135, ['model']],
   ctrl: [175, ['model']], tr: [170, ['learn']], wmr: [160, ['learn', 'mk']], wmrpro: [290, ['wmr']], ros: [115, ['learn']], ai: [115, ['mk']], world: [115, ['learn']],
   kf: [180, ['mk']], adv: [150, ['model', 'ctrl']], tel: [240, ['ctrl']]
 };
@@ -49,7 +51,7 @@ export const courseCards = (current) =>
   `<nav class="courses" aria-label="Courses">${LEVELS.map(([name, keys]) => `<h3 class="courses-lv">${tx(...name)}</h3>${keys.map((k) => card(byKey(k), current)).join('')}`).join('')}</nav>`;
 
 export const COURSES = [];
-for (const [file, page, key, prefix, total] of [['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 11], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 12], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['labs', 'learn-armlab.html', 'armlab', 'lab-', 6], ['adv', 'learn-advanced.html', 'adv', 'adv-', 8], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 10], ['mobile-pro', 'learn-mobile-pro.html', 'wmrpro', 'wmr-', 10], ['teleop', 'learn-teleop.html', 'tel', 'tel-', 12], ['kalman', 'learn-kalman.html', 'kf', 'kf-', 8], ['transmission', 'learn-transmission.html', 'tr', 'tr-', 8], ['parallel', 'learn-parallel.html', 'par', 'par-', 6]]) {
+for (const [file, page, key, prefix, total] of [['python', 'learn-python.html', 'py', 'py-', 8], ['electronics', 'learn-electronics.html', 'el', 'el-', 8], ['mathkit', 'learn-mathkit.html', 'mk', 'mk-', 11], ['sing', 'learn-singularities.html', 'sing', 'sing-', 8], ['control', 'learn-control.html', 'ctrl', 'ctrl-', 12], ['intelligence', 'learn-intelligence.html', 'ai', 'ai-', 9], ['world', 'learn-world.html', 'world', 'world-', 9], ['ros', 'learn-ros.html', 'ros', 'ros-', 9], ['labs', 'learn-armlab.html', 'armlab', 'lab-', 6], ['adv', 'learn-advanced.html', 'adv', 'adv-', 8], ['mobile', 'learn-mobile.html', 'wmr', 'wmr-', 10], ['mobile-pro', 'learn-mobile-pro.html', 'wmrpro', 'wmr-', 10], ['teleop', 'learn-teleop.html', 'tel', 'tel-', 12], ['kalman', 'learn-kalman.html', 'kf', 'kf-', 8], ['transmission', 'learn-transmission.html', 'tr', 'tr-', 8], ['parallel', 'learn-parallel.html', 'par', 'par-', 6]]) {
   let mod; try { mod = await import(`./content/${file}.mjs`); } catch (e) { if (e.code === 'ERR_MODULE_NOT_FOUND') continue; throw e; }
   COURSES.push({ page, key, prefix, total, ...mod.meta, build: mod.build });
 }

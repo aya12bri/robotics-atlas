@@ -1,0 +1,7 @@
+step 0: q1 =  12.0 deg, error =  60.0
+step 1: q1 =  21.6 deg, error =  48.0
+step 2: q1 =  29.3 deg, error =  38.4
+step 3: q1 =  35.4 deg, error =  30.7
+step 4: q1 =  40.3 deg, error =  24.6
+step 5: q1 =  44.3 deg, error =  19.7
+tool at (0.64, 0.63) m

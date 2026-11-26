@@ -73,7 +73,7 @@ export const SX = (o) => `<div class="solx">` +
   (o.table ? TABLE(o.table.head.map(dec), o.table.rows.map((r) => r.map(dec)), 'soltab') : '') +
   (o.ans ? `<p class="solans"><b>${tx('Answer', 'Réponse')}</b> <span>${tx(o.ans[0], o.ans[1])}</span></p>` : '') + `</div>`;
 // a plain decimal number in a table cell gets its French comma
-const dec = (c) => (typeof c === 'string' && /^[−-]?\d+\.\d+$/.test(c) ? [c, c.replace('.', ',')] : c);
+const dec = (c) => (typeof c === 'string' && /\d\.\d/.test(c) && !/<code>/.test(c) ? [c, c.replace(/(\d)\.(\d)/g, '$1,$2')] : c);   // a decimal point becomes a comma in French
 // a "I did this lab" tick, remembered in the browser
 export const LABCHK = (id) => `<label class="labchk"><input type="checkbox" data-lab="${id}"><span>${tx('I did this lab and met the pass criteria', 'J\'ai fait ce TP et atteint les critères de réussite')}</span></label>`;
 

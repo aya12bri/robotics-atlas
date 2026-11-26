@@ -1,0 +1,8 @@
+-120 too low
+0 ok
+45 ok
+100 too high
+joint at 15
+joint at 30
+joint at 45
+joint at 60

@@ -1,0 +1,6 @@
+robot arm2 with 4 waypoints
+point 0: theta1 = 0, theta2 = 0
+point 1: theta1 = 30, theta2 = 45
+point 2: theta1 = 60, theta2 = -30
+point 3: theta1 = 90, theta2 = 0
+last point: (0, 0) - total: 5

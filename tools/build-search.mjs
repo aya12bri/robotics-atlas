@@ -125,7 +125,7 @@ function findLesson(term, lessonsOfPage) {
 }
 const { CARDS } = await import('./courses.mjs');
 const cardTitle = (page) => (CARDS.find((c) => c.page === page + '.html') || {}).t;
-const ORDER = ['learn', 'learn-mathkit', 'learn-maths', 'learn-model', 'learn-singularities', 'learn-control', 'learn-armlab', 'learn-ros', 'learn-intelligence', 'learn-world', 'learn-mobile', 'learn-mobile-pro', 'learn-advanced', 'learn-teleop', 'learn-kalman', 'learn-transmission', 'learn-parallel'];
+const ORDER = ['learn', 'learn-python', 'learn-electronics', 'learn-mathkit', 'learn-maths', 'learn-model', 'learn-singularities', 'learn-control', 'learn-armlab', 'learn-ros', 'learn-intelligence', 'learn-world', 'learn-mobile', 'learn-mobile-pro', 'learn-advanced', 'learn-teleop', 'learn-kalman', 'learn-transmission', 'learn-parallel'];
 GL.sort((a, b) => ORDER.indexOf(a.page) - ORDER.indexOf(b.page));
 const gloss = new Map();
 for (const g of GL) for (const [[te, de], [tf, df]] of g.rows) {

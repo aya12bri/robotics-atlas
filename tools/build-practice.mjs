@@ -50,7 +50,7 @@ const STEPS = [
   ]]
 ];
 const dur = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') : ''}`);
-const pic = (n) => `<img class="th-light" src="thumbs/${n}.jpg" alt="" width="640" height="400" decoding="async"><img class="th-dark" src="thumbs/${n}-dark.jpg" alt="" width="640" height="400" decoding="async">`;
+const pic = (n) => `<img class="th-light" src="thumbs/${n}.jpg" alt="" width="1280" height="800" decoding="async"><img class="th-dark" src="thumbs/${n}-dark.jpg" alt="" width="1280" height="800" decoding="async">`;
 const PREVIEW = {
   code: `<span class="px-code" aria-hidden="true"><i></i><i></i><i></i><code><s>import</s> numpy <s>as</s> np\n\n<s>def</s> <u>fk</u>(q1, q2):\n    x = L1*np.cos(q1) + L2*np.cos(q1+q2)\n    y = L1*np.sin(q1) + L2*np.sin(q1+q2)\n    <s>return</s> x, y\n\narm.<u>move_to</u>(0.25, 0.10)</code></span>`,
   projects: `<span class="px-duo">${pic('robot-arm')}</span><span class="px-duo">${pic('anatomy-mobile')}</span>`
@@ -94,7 +94,7 @@ ${STEPS.map(([id, h, p, list], k) => `    <section class="px-step" id="${id}">
           <a class="px-lesson" href="${L.href}"><span>${tx('From the lesson:', 'Vient de la leçon :')}</span> <span>${tx(...L.lesson)}</span> <span aria-hidden="true">→</span></a>
         </article>`).join('\n        ')}
       </div>` : `<div class="px-grid${list.length === 2 ? ' two' : ''}">
-        ${list.map((t, i) => card(t, k === 0 && i === 0)).join('\n        ')}
+        ${list.map((t, i) => card(t, false)).join('\n        ')}
       </div>`}
       <nav class="px-pager">${k > 0 ? `<a href="#${STEPS[k - 1][0]}" class="prev"><small><i aria-hidden="true">←</i> ${tx('Previous part', 'Partie précédente')}</small><b>${tx(...STEPS[k - 1][1])}</b></a>` : '<span></span>'}${k < STEPS.length - 1 ? `<a href="#${STEPS[k + 1][0]}" class="next"><small>${tx('Next part', 'Partie suivante')} <i aria-hidden="true">→</i></small><b>${tx(...STEPS[k + 1][1])}</b></a>` : ''}</nav>
     </section>`).join('\n')}

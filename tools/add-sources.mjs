@@ -58,11 +58,20 @@ const R = {
   ros2: 'ROS 2 documentation, docs.ros.org (Jazzy Jalisco); Navigation 2, docs.nav2.org; MoveIt 2, moveit.picknik.ai.',
   macenski: 'S. Macenski, T. Foote, B. Gerkey, C. Lalancette, W. Woodall, “Robot Operating System 2: Design, architecture, and uses in the wild”, <i>Science Robotics</i>, 7(66), 2022.',
   ifr: 'International Federation of Robotics, <i>World Robotics</i> (yearly report), ifr.org.',
-  numpy: 'NumPy documentation, numpy.org/doc.'
+  numpy: 'NumPy documentation, numpy.org/doc.',
+  horowitz: 'P. Horowitz, W. Hill, <i>The Art of Electronics</i>, 3rd ed., Cambridge University Press, 2015.',
+  arduino: 'Arduino documentation and language reference, docs.arduino.cc; ATmega328P datasheet, Microchip.',
+  hcsr04: 'HC-SR04 ultrasonic ranging module, datasheet (Elecfreaks).',
+  tb6612: 'Toshiba TB6612FNG dual motor driver, datasheet; Allegro A4988 stepper driver, datasheet.',
+  python: 'The Python Tutorial, docs.python.org/3/tutorial (Python Software Foundation).',
+  mpl: 'J. D. Hunter, “Matplotlib: a 2D graphics environment”, <i>Computing in Science &amp; Engineering</i>, 9(3), 2007; matplotlib.org.',
+  harris: 'C. R. Harris et al., “Array programming with NumPy”, <i>Nature</i>, 585, 2020.',
 };
 const U = (en, fr) => [en, fr];
 // page → [[reference, [what it is used for, EN, FR]], …]
 const SOURCES = {
+  'learn-electronics.html': [['horowitz', U('Ohm\'s law, dividers, regulators, transistors, diodes', 'loi d\'Ohm, ponts diviseurs, régulateurs, transistors, diodes')], ['arduino', U('pins, analogRead, analogWrite, interrupts, limits of the board', 'broches, analogRead, analogWrite, interruptions, limites de la carte')], ['hcsr04', U('the ultrasonic sensor', 'le capteur à ultrasons')], ['tb6612', U('the H-bridge and stepper drivers', 'les pilotes de pont en H et de pas à pas')], ['siegwart', U('encoders and the first mobile robot', 'codeurs et premier robot mobile')], ['astrom', U('the proportional controller', 'le correcteur proportionnel')]],
+  'learn-python.html': [['python', U('the language: types, loops, functions, lists, dictionaries, classes', 'le langage : types, boucles, fonctions, listes, dictionnaires, classes')], ['numpy', U('vectors, matrices, linspace', 'vecteurs, matrices, linspace')], ['harris', U('why array computing is fast', 'pourquoi le calcul sur tableaux est rapide')], ['mpl', U('plots', 'graphiques')], ['craig', U('forward kinematics of the 2-link arm', 'modèle direct du bras à 2 segments')], ['astrom', U('the proportional controller and its stability', 'le correcteur proportionnel et sa stabilité')]],
   'learn.html': [['craig', U('joints, degrees of freedom, frames and the DH table', 'liaisons, degrés de liberté, repères et tableau DH')], ['lynch', U('degrees of freedom and configuration space, at a beginner level', 'degrés de liberté et espace des configurations, à un niveau débutant')], ['iso8373', U('the official words of robotics', 'les mots officiels de la robotique')]],
   'learn-mathkit.html': [['strang', U('vectors, matrices, determinants', 'vecteurs, matrices, déterminants')], ['craig', U('rotations, frames, homogeneous matrices, DH (Craig’s modified convention)', 'rotations, repères, matrices homogènes, DH (convention modifiée de Craig)')], ['dh55', U('the original DH convention', 'la convention DH d’origine')], ['kk86', U('the modified convention and Khalil’s letters', 'la convention modifiée et les lettres de Khalil')], ['khalil', U('DHM as taught in French courses', 'le DHM tel qu’il est enseigné dans les cours français')], ['lynch', U('rotations, quaternions, Jacobian', 'rotations, quaternions, jacobienne')], ['thrun', U('probability and sensor fusion', 'probabilités et fusion de capteurs')]],
   'learn-maths.html': [['craig', U('direct and inverse models of the 2-axis arm', 'modèles direct et inverse du bras à 2 axes')], ['spong', U('motion laws and trajectories', 'lois de mouvement et trajectoires')], ['khalil', U('trapezoidal and polynomial motion laws', 'lois trapézoïdales et polynomiales')]],
