@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Python for robotics</title>
+    <!-- seo -->
+    <meta name="description" content="Python for robotics from zero: variables and types, angles and the math module, conditions and loops, functions and forward kinematics, lists and dictionaries, NumPy vectors and matrices, Matplotlib plots and data files, classes and a first proportional controller, with exercises and detailed solutions." />
+    <link rel="canonical" href="https://roboticsatlas.ayabriksine.com/learn-python" />
+    <link rel="alternate" hreflang="en" href="https://roboticsatlas.ayabriksine.com/learn-python" />
+    <link rel="alternate" hreflang="fr" href="https://roboticsatlas.ayabriksine.com/learn-python-fr" />
+    <link rel="alternate" hreflang="x-default" href="https://roboticsatlas.ayabriksine.com/learn-python" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Robotics Atlas" />
+    <meta property="og:title" content="Python for robotics" />
+    <meta property="og:description" content="Python for robotics from zero: variables and types, angles and the math module, conditions and loops, functions and forward kinematics, lists and dictionaries, NumPy vectors and matrices, Matplotlib plots and data files, classes and a first proportional controller, with exercises and detailed solutions." />
+    <meta property="og:url" content="https://roboticsatlas.ayabriksine.com/learn-python" />
+    <meta property="og:image" content="https://roboticsatlas.ayabriksine.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2f6bff" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- /seo -->
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }</script>
+  <script src="nav.js" defer></script></head>
+  <body class="learn">
+    <h1>Python for robotics</h1>
+    <p><a href="index.html" style="color:#ff9f43">← Robot list</a> · <a href="learn.html" style="color:#ff9f43">The basics</a></p>
+    <p class="lead">The programming every other course needs, from zero: variables, angles and the math module, loops, functions, lists, NumPy, plots and data files, classes — and, at the end, the loop of a first controller. Every example is about a robot and every program was run: what you see under it is its real output.</p>
+    <nav class="courses" aria-label="Courses"><h3 class="courses-lv">Level 1 · Discover robotics</h3><a class="course" href="learn.html" data-prefix="lesson-" data-total="12" data-key="learn"><b>Foundations</b><span>12 short lessons: the ideas behind every robot</span><small class="cmeta">≈ 45 min · No prerequisite</small><em class="cnt"></em></a><a class="course current" href="learn-python.html" data-prefix="py-" data-total="8" data-key="py"><b>Python for robotics</b><span>From zero: variables, angles, loops, functions, lists, NumPy, plots, classes and a first controller</span><small class="cmeta">≈ 3 h 20 · No prerequisite</small><em class="cnt"></em></a><a class="course" href="learn-electronics.html" data-prefix="el-" data-total="8" data-key="el"><b>Electronics and Arduino</b><span>From zero: Ohm's law, batteries, Arduino, sensors, PWM, H-bridge and encoder, servos, steppers and a first robot</span><small class="cmeta">≈ 3 h 45 · No prerequisite</small><em class="cnt"></em></a><h3 class="courses-lv">Level 2 · Mathematics for robotics</h3><a class="course" href="learn-mathkit.html" data-prefix="mk-" data-total="11" data-key="mk"><b>The maths of robotics</b><span>One tool per lesson: trigonometry, vectors, matrices, rotations, transformations, DH, DHM, derivatives, probability, quaternions</span><small class="cmeta">≈ 2 h 25 · No prerequisite</small><em class="cnt"></em></a><a class="course" href="learn-maths.html" data-prefix="maths-" data-total="8" data-key="maths"><b>Maths and motion, step by step</b><span>Applied: the 2-axis arm from A to Z, its direct and inverse models, its motion laws</span><small class="cmeta">≈ 1 h 05 · Before: The maths of robotics</small><em class="cnt"></em></a><h3 class="courses-lv">Level 3 · Robot kinematics</h3><a class="course" href="learn-model.html" data-prefix="model-" data-total="11" data-key="model"><b>Robot modelling, full course</b><span>Master level: rotations, DHm, MGD, MGI, Jacobian, dynamics</span><small class="cmeta">≈ 3 h 20 · Before: Foundations, The maths of robotics</small><em class="cnt"></em></a><a class="course" href="learn-armlab.html" data-prefix="lab-" data-total="6" data-key="armlab"><b>Code a robot arm in Python</b><span>FK, a DH engine, exact and numerical IK, trajectories, a real servo arm, exam and labs</span><small class="cmeta">≈ 2 h 30 · Before: Foundations, Maths and motion, step by step</small><em class="cnt"></em></a><a class="course" href="learn-singularities.html" data-prefix="sing-" data-total="8" data-key="sing"><b>Singularities and the Jacobian</b><span>Speeds, forces, lost directions, gimbal lock, redundancy</span><small class="cmeta">≈ 1 h 40 · Before: Robot modelling, full course</small><em class="cnt"></em></a><a class="course" href="learn-parallel.html" data-prefix="par-" data-total="6" data-key="par"><b>Workspaces, motion modes and parallel robots</b><span>Joint and operational spaces, workspace, MoveL / MoveJ, aspects, redundancy, five-bar, 3-RPR, singularities</span><small class="cmeta">≈ 2 h 15 · Before: Robot modelling, full course</small><em class="cnt"></em></a><h3 class="courses-lv">Level 4 · Dynamics and control</h3><a class="course" href="learn-control.html" data-prefix="ctrl-" data-total="12" data-key="ctrl"><b>Dynamics, actuators and control</b><span>Motors, sensors, PID, computed torque, force control, trajectories</span><small class="cmeta">≈ 2 h 55 · Before: Robot modelling, full course</small><em class="cnt"></em></a><a class="course" href="learn-transmission.html" data-prefix="tr-" data-total="8" data-key="tr"><b>Mechanical transmissions and grippers</b><span>Belts, gears, screws, planetary and harmonic drives in 3D, sizing a joint, grippers</span><small class="cmeta">≈ 2 h 50 · Before: Foundations</small><em class="cnt"></em></a><h3 class="courses-lv">Level 5 · Mobile robots</h3><a class="course" href="learn-mobile.html" data-prefix="wmr-" data-total="10" data-key="wmr"><b>Wheeled mobile robots, part 1</b><span>How a robot rolls: maths from zero, every wheel and drive, constraints, ICR, maneuverability, holonomy</span><small class="cmeta">≈ 2 h 40 · Before: Foundations, The maths of robotics</small><em class="cnt"></em></a><a class="course" href="learn-mobile-pro.html" data-prefix="wmr-" data-total="10" data-start="11" data-key="wmrpro"><b>Wheeled mobile robots, part 2</b><span>Professional level: control, planning, calibration, EKF, sizing, ROS 2, safety, exam and labs</span><small class="cmeta">≈ 4 h 50 · Before: Wheeled mobile robots, part 1</small><em class="cnt"></em></a><h3 class="courses-lv">Level 6 · Intelligent robotics and Master</h3><a class="course" href="learn-ros.html" data-prefix="ros-" data-total="9" data-key="ros"><b>ROS 2 from zero</b><span>Nodes, topics, Python, launch files, tf2, URDF, simulation, Nav2, MoveIt 2 and a first project</span><small class="cmeta">≈ 1 h 55 · Before: Foundations</small><em class="cnt"></em></a><a class="course" href="learn-intelligence.html" data-prefix="ai-" data-total="9" data-key="ai"><b>Perception, planning and AI</b><span>Vision, Kalman, SLAM, A*, RRT, learning, multi-robot</span><small class="cmeta">≈ 1 h 55 · Before: The maths of robotics</small><em class="cnt"></em></a><a class="course" href="learn-world.html" data-prefix="world-" data-total="9" data-key="world"><b>Robots in the real world</b><span>Every robot family, grippers, electronics, ROS, safety, careers</span><small class="cmeta">≈ 1 h 55 · Before: Foundations</small><em class="cnt"></em></a><a class="course" href="learn-kalman.html" data-prefix="kf-" data-total="8" data-key="kf"><b>Data fusion and the Kalman filter</b><span>Sensors, covariance, best linear estimator, Kalman and EKF in 3D, UWB beacons, multi-sensor fusion</span><small class="cmeta">≈ 3 h · Before: The maths of robotics</small><em class="cnt"></em></a><a class="course" href="learn-advanced.html" data-prefix="adv-" data-total="8" data-key="adv"><b>Advanced robotics (Master)</b><span>Parallel robots, LQR, MPC, legged and aerial robots, vision in practice, reinforcement learning, grasping in practice</span><small class="cmeta">≈ 2 h 30 · Before: Robot modelling, full course, Dynamics, actuators and control</small><em class="cnt"></em></a><a class="course" href="learn-teleop.html" data-prefix="tel-" data-total="12" data-key="tel"><b>Teleoperation, cobotics, architectures, safety</b><span>Master-slave in 3D (TD1, TD2), wave variables, co-manipulation, PAT architecture, CE marking</span><small class="cmeta">≈ 4 h · Before: Dynamics, actuators and control</small><em class="cnt"></em></a></nav>
+    <section class="intro">
+<div class="box idea"><div class="bt">How to use this course</div><div class="bb"><p>No prerequisite: you only need a computer. Type each program yourself rather than copying it, run it, check that you get the same output, then change one value and predict the new result before running it again. Each lesson ends with exercises whose solutions give the rule used and where it is in the lesson.</p>
+<ul><li>Lessons 1 to 4: the language (types, maths, loops, functions).</li><li>Lessons 5 to 8: the tools of robotics (lists, NumPy, plots, classes and a controller).</li><li>Next: the course “Code a robot arm in Python” and ROS 2 from zero.</li></ul></div></div>
+    </section>
+
+    <div class="learn-layout">
+      <aside class="lesson-nav" id="lessonNav" aria-label="Checklist"></aside>
+      <div class="lessons">
+
+        <article class="lesson" id="l1" data-id="py-1">
+          <header class="lesson-head"><span class="num">1</span><h2>Your first program: variables and types</h2><span class="time">20 min</span></header>
+          <div class="goal"><b>You will learn</b><p>why robots are programmed in Python, how to install it, how to run a program, and the four basic types of values: whole numbers, decimal numbers, texts and true/false.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>A program is a list of instructions run from top to bottom; a variable is a name that holds a value.</p></div></div>
+<h4>1.1 Why Python?</h4>
+<p>Python is the most used language to <strong>prototype</strong> robots: it is easy to read, it has ready-made libraries for maths (NumPy), plots (Matplotlib), vision (OpenCV) and robots (ROS 2 speaks Python). The fast loops inside a motor drive are written in C or C++, but almost everything around them — tests, calculations, planning, data — is written in Python.</p>
+<h4>1.2 Install and run</h4>
+<ol><li>Install Python 3 from python.org (on Windows, tick “Add Python to PATH”). On Linux and macOS it is often already there.</li><li>Install an editor: <strong>Thonny</strong> (made for beginners) or <strong>VS Code</strong> with the Python extension.</li><li>Write the program below in a file <code>hello.py</code> and run it (the Run button, or <code>python hello.py</code> in a terminal).</li><li>Later, add the libraries of this course with <code>pip install numpy matplotlib</code>.</li></ol>
+<h4>1.3 Variables and types</h4>
+<pre class="code"><code># my first robot program: variables, types and print
+name = "R2"              # a text (str)
+joints = 3               # a whole number (int)
+length = 0.45            # a decimal number (float), in metres
+powered = True           # True or False (bool)
+
+print("Robot", name, "has", joints, "joints")
+print("Link length:", length, "m")
+print("Powered:", powered)
+print(type(joints), type(length))</code></pre>
+<p>What it prints:</p>
+<pre class="out"><code>Robot R2 has 3 joints
+Link length: 0.45 m
+Powered: True
+&lt;class 'int'&gt; &lt;class 'float'&gt;</code></pre>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Type</th><th class="left">Example</th><th class="left">In a robot</th></tr><tr><td class="left"><code>int</code></td><td class="left"><code>3</code>, <code>-90</code></td><td class="left">a number of joints, an encoder count</td></tr><tr><td class="left"><code>float</code></td><td class="left"><code>0.45</code>, <code>-1.5e-3</code></td><td class="left">a length, an angle, a speed</td></tr><tr><td class="left"><code>str</code></td><td class="left"><code>"R2"</code></td><td class="left">a name, a message</td></tr><tr><td class="left"><code>bool</code></td><td class="left"><code>True</code>, <code>False</code></td><td class="left">powered or not, a limit switch pressed</td></tr></table></div>
+<div class="box warn"><div class="bt">Three beginner traps</div><div class="bb"><ul><li>Python counts the <strong>spaces</strong> at the start of a line: they say which lines belong together (lesson 3).</li><li>The decimal mark is a <strong>point</strong>: <code>0.45</code>, never <code>0,45</code> (a comma makes two values).</li><li><code>=</code> stores a value; <code>==</code> compares two values.</li></ul></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>program</li><li>variable</li><li>int, float, str, bool</li><li>print</li><li>editor</li></ul>
+<section class="exs" data-for="py-1"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-1-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">What is the type of the value <code>True</code>?</p><ol class="opts" type="A"><li>int</li><li>str</li><li data-ok="1">bool</li><li>float</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>True and False are the two values of the type bool (true/false)</span> <span class="solwhere">lesson 1 — 1.3 Variables and types (table)</span></p><ol class="solsteps"><li>True has no quotes, so it is not a text (str).</li><li>It is not a number either: it is one of the two values of a yes/no question.</li></ol><p class="solans"><b>Answer</b> <span><b>bool</b> (C)</span></p></div></details>
+</div>
+<div class="ex" data-id="py-1-2" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">2</span></div>
+<p class="q">After <code>n = 6</code> then <code>n = n + 1</code>, what does <code>print(n)</code> show?</p><div class="numin" data-ans="7" data-tol="0" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>= computes the right-hand side first, then stores the result in the name on the left</span> <span class="solwhere">lesson 1 — 1.3, box “Three beginner traps”</span></p><ol class="solsteps"><li>n holds 6.</li><li>n + 1 is computed with the old value: 6 + 1 = 7.</li><li>7 is stored in n, which replaces 6.</li></ol><p class="solans"><b>Answer</b> <span><b>7</b></span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the type of 0.45?</p><p class="a">float (a decimal number).</p></li><li><p class="q">How do you write one and a half in Python?</p><p class="a">1.5 — with a point, not a comma.</p></li><li><p class="q">What is the difference between = and ==?</p><p class="a">= stores a value in a variable, == compares two values and gives True or False.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="1"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l2" data-id="py-2">
+          <header class="lesson-head"><span class="num">2</span><h2>Computing with angles: the math module</h2><span class="time">20 min</span></header>
+          <div class="goal"><b>You will learn</b><p>the operators, the math module, radians and degrees, and how to compute the end of a robot link with cos and sin, and an angle with atan2.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>The functions of math work in radians: convert with math.radians before cos and sin, and back with math.degrees.</p></div></div>
+<h4>2.1 Operators</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Operator</th><th class="left">Meaning</th><th class="left">Example</th></tr><tr><td class="left"><code>+ - * /</code></td><td class="left">the four operations</td><td class="left"><code>7 / 2</code> → 3.5</td></tr><tr><td class="left"><code>//</code></td><td class="left">whole division</td><td class="left"><code>7 // 2</code> → 3</td></tr><tr><td class="left"><code>%</code></td><td class="left">remainder</td><td class="left"><code>370 % 360</code> → 10</td></tr><tr><td class="left"><code>**</code></td><td class="left">power</td><td class="left"><code>3 ** 2</code> → 9</td></tr></table></div>
+<p>The remainder <code>%</code> is very useful for angles: <code>a % 360</code> brings any angle back between 0 and 360°.</p>
+<h4>2.2 The end of a link</h4>
+<p>A link of length <i>L</i> turned by an angle <i>θ</i> ends at <i>x</i> = <i>L</i> cos <i>θ</i>, <i>y</i> = <i>L</i> sin <i>θ</i> (the maths course, lesson 1). In Python:</p>
+<pre class="code"><code># where is the end of a link? the math module works in radians
+import math
+
+L = 0.5                        # link length (m)
+theta_deg = 30                 # joint angle in degrees
+theta = math.radians(theta_deg)
+
+x = L * math.cos(theta)
+y = L * math.sin(theta)
+print(f"x = {x:.3f} m, y = {y:.3f} m")
+
+# and back: the angle of a point with atan2 (right in every quadrant)
+angle = math.degrees(math.atan2(y, x))
+print(f"angle = {angle:.1f} deg")</code></pre>
+<pre class="out"><code>x = 0.433 m, y = 0.250 m
+angle = 30.0 deg</code></pre>
+<ul><li><code>import math</code> loads the module once, at the top of the file.</li><li><code>f"x = {x:.3f}"</code> is an <strong>f-string</strong>: the value of x is written with 3 decimals.</li><li><code>math.atan2(y, x)</code> gives the angle of a point in every quadrant; <code>math.atan(y / x)</code> gets it wrong when x is negative.</li></ul>
+<div class="box warn"><div class="bt">The most common bug in robot code</div><div class="bb"><p>Passing degrees to <code>math.cos</code>: <code>math.cos(90)</code> is −0.448, not 0, because 90 is read as 90 radians. Always convert: <code>math.cos(math.radians(90))</code> ≈ 0.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>operator</li><li>module, import</li><li>radian</li><li>f-string</li><li>atan2</li></ul>
+<section class="exs" data-for="py-2"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-2-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">A link of length L = 0.8 m is turned by 60°. What does <code>0.8 * math.cos(math.radians(60))</code> give (in m)?</p><div class="numin" data-ans="0.4" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>end of a link: x = L cos θ, with θ in radians for math.cos</span> <span class="solwhere">lesson 2 — 2.2 The end of a link</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Step</th><th class="left">Value</th></tr><tr><td class="left"><code>math.radians(60)</code></td><td class="left">1.047</td></tr><tr><td class="left"><code>math.cos(1.047)</code></td><td class="left">0.5</td></tr><tr><td class="left"><code>0.8 * 0.5</code></td><td class="left"><b>0.4</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>x = 0.4 m</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-2-2" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">2</span></div>
+<p class="q">What does <code>math.degrees(math.atan2(1, -1))</code> give (in degrees)?</p><div class="numin" data-ans="135" data-tol="0.5" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>atan2(y, x) gives the angle of the point (x, y) in every quadrant; note the order: y first</span> <span class="solwhere">lesson 2 — 2.2, list under the program</span></p><ol class="solsteps"><li>y = 1 and x = −1: the point is up and to the left, between 90° and 180°.</li><li>|y| = |x|, so it is at 45° from the negative x axis: 180° − 45° = 135°.</li><li>atan2 gives 2.356 rad; math.degrees turns it into 135.</li></ol><p class="solans"><b>Answer</b> <span><b>135°</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-2-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">What does <code>-30 % 360</code> give?</p><div class="numin" data-ans="330" data-tol="0" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>In Python the remainder % has the sign of the divisor (here 360, positive).</p></details><details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>a % 360 brings any angle back between 0 and 360°</span> <span class="solwhere">lesson 2 — 2.1 Operators (table and the line below)</span></p><ol class="solsteps"><li>Find the whole number of turns below −30: −30 // 360 = −1.</li><li>Remainder = −30 − (−1 × 360) = −30 + 360 = 330.</li><li>Check: −30° and 330° are the same direction.</li></ol><p class="solans"><b>Answer</b> <span><b>330</b></span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does 370 % 360 give?</p><p class="a">10: the remainder of the division, useful to bring an angle back between 0 and 360°.</p></li><li><p class="q">Why does math.cos(90) not give 0?</p><p class="a">Because math works in radians: 90 is read as 90 rad. Use math.cos(math.radians(90)).</p></li><li><p class="q">Which function gives the angle of the point (−1, 1) correctly?</p><p class="a">math.atan2(1, −1) → 135°.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="2"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l3" data-id="py-3">
+          <header class="lesson-head"><span class="num">3</span><h2>Deciding and repeating: conditions and loops</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>if, elif and else to take a decision (a joint at its limit), for and while to repeat (a list of points, a control loop), and why indentation matters.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>if chooses which lines run; for repeats over a list; while repeats as long as a condition is true — and the indented lines are the ones inside.</p></div></div>
+<h4>3.1 A joint and its limits</h4>
+<pre class="code"><code># check a joint against its limits, then move it step by step
+LOW, HIGH = -90, 90            # joint limits in degrees
+
+def check(angle):
+    if angle &lt; LOW:
+        return "too low"
+    elif angle &gt; HIGH:
+        return "too high"
+    else:
+        return "ok"
+
+for a in [-120, 0, 45, 100]:
+    print(a, check(a))
+
+# a simple loop: move from 0 to 60 degrees in steps of 15
+angle = 0
+while angle &lt; 60:
+    angle += 15
+    print("joint at", angle)</code></pre>
+<pre class="out"><code>-120 too low
+0 ok
+45 ok
+100 too high
+joint at 15
+joint at 30
+joint at 45
+joint at 60</code></pre>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Keyword</th><th class="left">What it does</th><th class="left">In a robot</th></tr><tr><td class="left"><code>if / elif / else</code></td><td class="left">runs the first block whose condition is true</td><td class="left">refuse an angle outside the limits, react to a sensor</td></tr><tr><td class="left"><code>for x in …</code></td><td class="left">repeats once for each element</td><td class="left">visit every waypoint, every joint</td></tr><tr><td class="left"><code>while condition:</code></td><td class="left">repeats as long as the condition is true</td><td class="left">the control loop: read, compute, command</td></tr><tr><td class="left"><code>break</code></td><td class="left">leaves the loop at once</td><td class="left">stop when the emergency button is pressed</td></tr></table></div>
+<h4>3.2 The loop of every robot</h4>
+<p>Every robot runs the same loop, many times per second: <strong>read</strong> the sensors, <strong>compute</strong> what to do, <strong>command</strong> the motors, wait for the next period. In Python it is a <code>while</code> loop; on a microcontroller it is the <code>loop()</code> function of the electronics course.</p>
+<div class="box warn"><div class="bt">Indentation</div><div class="bb"><p>Use 4 spaces for each level. A line that is not indented any more is <em>after</em> the block, not inside it. A missing or extra space gives an <code>IndentationError</code> or, worse, a program that does something else.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>condition</li><li>if / elif / else</li><li>for, while</li><li>indentation</li><li>control loop</li></ul>
+<section class="exs" data-for="py-3"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-3-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">How many lines does <code>for k in range(5): print(k)</code> print?</p><div class="numin" data-ans="5" data-tol="0" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>for repeats once for each element; range(5) gives 0, 1, 2, 3, 4</span> <span class="solwhere">lesson 3 — 3.1 (table of keywords)</span></p><ol class="solsteps"><li>range(5) starts at 0 and stops <em>before</em> 5.</li><li>That is 5 values, so 5 lines: 0 1 2 3 4.</li></ol><p class="solans"><b>Answer</b> <span><b>5 lines</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-3-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q"><code>angle = 0</code>, then <code>while angle &lt; 60: angle = angle + 25</code>. What is <code>angle</code> after the loop?</p><div class="numin" data-ans="75" data-tol="0" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>Write the value of angle and the test at each turn.</p></details><details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>while tests the condition before each turn and stops as soon as it is false</span> <span class="solwhere">lesson 3 — 3.1 (table of keywords)</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Turn</th><th class="left">angle before</th><th class="left">angle &lt; 60?</th><th class="left">angle after</th></tr><tr><td class="left">1</td><td class="left">0</td><td class="left">yes</td><td class="left">25</td></tr><tr><td class="left">2</td><td class="left">25</td><td class="left">yes</td><td class="left">50</td></tr><tr><td class="left">3</td><td class="left">50</td><td class="left">yes</td><td class="left">75</td></tr><tr><td class="left">—</td><td class="left">75</td><td class="left">no: stop</td><td class="left"><b>75</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>75</b> — the loop goes past 60 because it adds 25 before testing again</span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">How many times does “for a in [-120, 0, 45, 100]” run?</p><p class="a">4 times, once for each element of the list.</p></li><li><p class="q">In the program, why does the while loop stop at 60?</p><p class="a">Because the condition angle < 60 becomes false once angle reaches 60.</p></li><li><p class="q">What are the three steps of the loop of every robot?</p><p class="a">Read the sensors, compute, command the motors (then wait for the next period).</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="3"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l4" data-id="py-4">
+          <header class="lesson-head"><span class="num">4</span><h2>Functions: the forward kinematics of an arm</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how to write a function with def, give it parameters and default values, return several results, and turn the forward kinematics of a 2-link arm into one reusable line.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>A function packs a calculation under a name: you write it once, test it once, and call it everywhere.</p></div></div>
+<h4>4.1 The forward kinematics as a function</h4>
+<figure class="figure"><svg viewBox="0 0 520 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="520" height="300" fill="#1b1f25" rx="10"/><line x1="60" y1="270" x2="490" y2="270" stroke="#ff5c5c" stroke-width="2" stroke-linecap="round"/><path d="M490,270 L480.8,273.9 L480.8,266.1 z" fill="#ff5c5c"/><text x="488" y="290" fill="#ff5c5c" font-size="14" text-anchor="end">x</text><line x1="90" y1="290" x2="90" y2="24" stroke="#3ddc84" stroke-width="2" stroke-linecap="round"/><path d="M90,24 L93.9,33.2 L86.1,33.2 z" fill="#3ddc84"/><text x="100" y="30" fill="#3ddc84" font-size="14" text-anchor="start">y</text><rect x="64" y="270" width="52" height="12" fill="#3a4552"/><line x1="90" y1="270" x2="189.6" y2="212.5" stroke="#ff9f43" stroke-width="9" stroke-linecap="round"/><line x1="189.6" y1="212.5" x2="213.4" y2="123.6" stroke="#ff9f43" stroke-width="9" stroke-linecap="round"/><circle cx="90" cy="270" r="11" fill="#262626" stroke="#e8eef5" stroke-width="2.5"/><circle cx="90" cy="270" r="3" fill="#e8eef5"/><circle cx="189.6" cy="212.5" r="11" fill="#262626" stroke="#e8eef5" stroke-width="2.5"/><circle cx="189.6" cy="212.5" r="3" fill="#e8eef5"/><circle cx="213.4" cy="123.6" r="6" fill="#e8eef5"/><path d="M130,270 A40,40 0 0 0 124.6,250" fill="none" stroke="#f5c518" stroke-width="2"/><text x="136" y="258" fill="#f5c518" font-size="15" text-anchor="start">θ₁</text><line x1="189.6" y1="212.5" x2="237.2" y2="185" stroke="#9fb0c3" stroke-width="1.5" stroke-dasharray="4 4" stroke-linecap="round"/><path d="M217.3,196.5 A32,32 0 0 0 197.9,181.6" fill="none" stroke="#f5c518" stroke-width="2"/><text x="216.7" y="182.4" fill="#f5c518" font-size="15" text-anchor="start">θ₂</text><text x="121.8" y="235.3" fill="#e8eef5" font-size="15" text-anchor="start" font-weight="700">L₁</text><text x="209.5" y="160.1" fill="#e8eef5" font-size="15" text-anchor="start" font-weight="700">L₂</text><line x1="213.4" y1="123.6" x2="213.4" y2="270" stroke="#5aa9ff" stroke-width="1.5" stroke-dasharray="5 4" stroke-linecap="round"/><line x1="90" y1="123.6" x2="213.4" y2="123.6" stroke="#5aa9ff" stroke-width="1.5" stroke-dasharray="5 4" stroke-linecap="round"/><text x="213.4" y="290" fill="#5aa9ff" font-size="14" text-anchor="middle">x</text><text x="80" y="127.6" fill="#5aa9ff" font-size="14" text-anchor="end">y</text><text x="223.4" y="115.6" fill="#e8eef5" font-size="13" text-anchor="start">tool (x, y)</text></svg></figure>
+<p class="eq"><i>x</i> = <i>L</i><sub>1</sub> cos <i>θ</i><sub>1</sub> + <i>L</i><sub>2</sub> cos(<i>θ</i><sub>1</sub> + <i>θ</i><sub>2</sub>) &emsp; <i>y</i> = <i>L</i><sub>1</sub> sin <i>θ</i><sub>1</sub> + <i>L</i><sub>2</sub> sin(<i>θ</i><sub>1</sub> + <i>θ</i><sub>2</sub>)</p>
+<pre class="code"><code># a function for the forward kinematics of a 2-link arm
+import math
+
+def fk(theta1, theta2, L1=0.5, L2=0.4):
+    """Angles in degrees -&gt; position (x, y) of the tool in metres."""
+    t1 = math.radians(theta1)
+    t12 = math.radians(theta1 + theta2)
+    x = L1 * math.cos(t1) + L2 * math.cos(t12)
+    y = L1 * math.sin(t1) + L2 * math.sin(t12)
+    return x, y
+
+x, y = fk(30, 45)
+print(f"tool at ({x:.3f}, {y:.3f}) m")
+print(fk(0, 0))            # arm stretched along x: (0.9, 0.0)</code></pre>
+<pre class="out"><code>tool at (0.537, 0.636) m
+(0.9, 0.0)</code></pre>
+<ul><li><code>def fk(theta1, theta2, L1=0.5, L2=0.4):</code> — two required parameters and two with a <strong>default value</strong>.</li><li>The text between triple quotes is the <strong>docstring</strong>: it says what goes in and what comes out, with the units.</li><li><code>return x, y</code> returns two values; <code>x, y = fk(30, 45)</code> takes them apart.</li></ul>
+<div class="box method"><div class="bt">Always test a function with a pose you know</div><div class="bb"><p>With all the angles at 0 the arm is stretched along x: <code>fk(0, 0)</code> must give (0.9, 0). With θ₁ = 90°, θ₂ = 0 it points up: (0, 0.9). Two lines of test catch most mistakes (degrees forgotten, sin and cos swapped).</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>function, def</li><li>parameter, default value</li><li>return</li><li>docstring</li><li>forward kinematics</li></ul>
+<section class="exs" data-for="py-4"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-4-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">With the function fk of the lesson (L1 = 0.5, L2 = 0.4), what is y for <code>fk(90, 0)</code> (in m)?</p><div class="numin" data-ans="0.9" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>forward kinematics: y = L1 sin θ1 + L2 sin(θ1 + θ2)</span> <span class="solwhere">lesson 4 — 4.1 The forward kinematics as a function</span></p><ol class="solsteps"><li>θ1 = 90°, θ1 + θ2 = 90°: both links point up.</li><li>y = 0.5 × sin 90° + 0.4 × sin 90° = 0.5 + 0.4.</li></ol><p class="solans"><b>Answer</b> <span><b>y = 0.9 m</b> (and x = 0)</span></p></div></details>
+</div>
+<div class="ex" data-id="py-4-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">What is x for <code>fk(90, -90)</code> (in m)?</p><div class="numin" data-ans="0.4" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>θ1 + θ2 = 0: the second link is horizontal.</p></details><details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>forward kinematics: x = L1 cos θ1 + L2 cos(θ1 + θ2)</span> <span class="solwhere">lesson 4 — 4.1 The forward kinematics as a function</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Term</th><th class="left">Angle</th><th class="left">cos</th><th class="left">Value (m)</th></tr><tr><td class="left">L1 cos θ1</td><td class="left">90°</td><td class="left">0</td><td class="left">0</td></tr><tr><td class="left">L2 cos(θ1 + θ2)</td><td class="left">0°</td><td class="left">1</td><td class="left">0.4</td></tr><tr><td class="left"><b>sum x</b></td><td class="left"></td><td class="left"></td><td class="left"><b>0.4</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>x = 0.4 m</b> (and y = 0.5 m): the arm makes an L</span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does fk(0, 0) return with L1 = 0.5 and L2 = 0.4?</p><p class="a">(0.9, 0.0): the arm is stretched along x.</p></li><li><p class="q">How do you call fk with an arm of L1 = 1 and L2 = 1?</p><p class="a">fk(30, 45, L1=1, L2=1) — the default values are replaced.</p></li><li><p class="q">Why write a docstring?</p><p class="a">To say what goes in and what comes out, with the units (degrees, metres): the reader and you in six months need it.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="4"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l5" data-id="py-5">
+          <header class="lesson-head"><span class="num">5</span><h2>Lists and dictionaries: waypoints and parameters</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how to keep many values together: a list for an ordered path of waypoints, a tuple for a fixed pair, a dictionary for the named parameters of a robot.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>A list is numbered from 0 and keeps the order; a dictionary finds a value by its name.</p></div></div>
+<h4>5.1 Three containers</h4>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Container</th><th class="left">Written</th><th class="left">Read one value</th><th class="left">In a robot</th></tr><tr><td class="left">list</td><td class="left"><code>[0, 30, 60]</code></td><td class="left"><code>pts[0]</code>, <code>pts[-1]</code></td><td class="left">a path, the samples of a sensor</td></tr><tr><td class="left">tuple</td><td class="left"><code>(30, 45)</code></td><td class="left"><code>p[1]</code></td><td class="left">one pose (θ₁, θ₂), a point (x, y)</td></tr><tr><td class="left">dictionary</td><td class="left"><code>{"L1": 0.5}</code></td><td class="left"><code>robot["L1"]</code></td><td class="left">the parameters of a robot, a configuration file</td></tr></table></div>
+<pre class="code"><code># a list of waypoints and a dictionary of robot parameters
+robot = {"name": "arm2", "L1": 0.5, "L2": 0.4, "max_speed": 90}   # dict: key -&gt; value
+waypoints = [(0, 0), (30, 45), (60, -30), (90, 0)]               # list of tuples (theta1, theta2)
+
+print("robot", robot["name"], "with", len(waypoints), "waypoints")
+for i, (t1, t2) in enumerate(waypoints):
+    print(f"point {i}: theta1 = {t1}, theta2 = {t2}")
+
+waypoints.append((0, 0))                 # go back home at the end
+print("last point:", waypoints[-1], "- total:", len(waypoints))</code></pre>
+<pre class="out"><code>robot arm2 with 4 waypoints
+point 0: theta1 = 0, theta2 = 0
+point 1: theta1 = 30, theta2 = 45
+point 2: theta1 = 60, theta2 = -30
+point 3: theta1 = 90, theta2 = 0
+last point: (0, 0) - total: 5</code></pre>
+<ul><li>The first element is number <strong>0</strong>; <code>[-1]</code> is the last one.</li><li><code>len(pts)</code> gives the number of elements; <code>pts.append(p)</code> adds one at the end.</li><li><code>for i, (t1, t2) in enumerate(pts)</code> gives at the same time the number and the two angles of each point.</li></ul>
+<div class="box note"><div class="bt">Why a dictionary for the parameters?</div><div class="bb"><p><code>robot["L1"]</code> says what it is; <code>robot[1]</code> does not. The configuration files of ROS 2 (YAML) and of most robots are read in Python as dictionaries.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>list, index</li><li>tuple</li><li>dictionary, key</li><li>len, append</li><li>enumerate</li></ul>
+<section class="exs" data-for="py-5"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-5-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">The list <code>pts</code> has 4 points. After <code>pts.append((0, 0))</code> twice, what is <code>len(pts)</code>?</p><div class="numin" data-ans="6" data-tol="0" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>append adds one element at the end; len counts the elements</span> <span class="solwhere">lesson 5 — 5.1, list under the program</span></p><ol class="solsteps"><li>Start: 4 elements.</li><li>Each append adds 1: 4 + 1 + 1 = 6.</li></ol><p class="solans"><b>Answer</b> <span><b>6</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-5-2" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">2</span></div>
+<p class="q">With <code>pts = [(0, 0), (30, 45), (60, -30)]</code>, what is <code>pts[-1]</code>?</p><ol class="opts" type="A"><li>(0, 0)</li><li data-ok="1">(60, -30)</li><li>(30, 45)</li><li>an error</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>index −1 is the last element of a list</span> <span class="solwhere">lesson 5 — 5.1, list under the program</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Index</th><th class="left">0</th><th class="left">1</th><th class="left">2</th></tr><tr><td class="left">from the end</td><td class="left">−3</td><td class="left">−2</td><td class="left"><b>−1</b></td></tr><tr><td class="left">element</td><td class="left">(0, 0)</td><td class="left">(30, 45)</td><td class="left"><b>(60, -30)</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>(60, -30)</b> (B)</span></p></div></details>
+</div>
+<div class="ex" data-id="py-5-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">With <code>robot = {"L1": 0.5, "L2": 0.4}</code>, what does <code>robot["L1"] + robot["L2"]</code> give? (It is the reach of the arm, in m.)</p><div class="numin" data-ans="0.9" data-tol="0.005" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>a dictionary gives the value stored under a key: robot["L1"]</span> <span class="solwhere">lesson 5 — 5.1 Three containers (table)</span></p><ol class="solsteps"><li>robot["L1"] → 0.5 and robot["L2"] → 0.4.</li><li>0.5 + 0.4 = 0.9: the arm stretched reaches 0.9 m.</li></ol><p class="solans"><b>Answer</b> <span><b>0.9 m</b></span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is waypoints[0] in the program?</p><p class="a">(0, 0): the first point, number 0.</p></li><li><p class="q">How do you read the length L2 of the robot?</p><p class="a">robot["L2"] → 0.4.</p></li><li><p class="q">When is a tuple better than a list?</p><p class="a">For a small fixed group of values that belong together, such as one pose (θ₁, θ₂): it cannot be changed by mistake.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="5"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l6" data-id="py-6">
+          <header class="lesson-head"><span class="num">6</span><h2>NumPy: vectors, matrices, whole trajectories</h2><span class="time">30 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how NumPy stores vectors and matrices, the matrix product @, a rotation matrix as a function, and how to compute a whole trajectory in one line instead of a loop.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>NumPy turns the maths of the course into code almost word for word: a vector is np.array, a product of matrices is @.</p></div></div>
+<h4>6.1 A rotation in code</h4>
+<p class="eq">R(<i>θ</i>) = [[cos <i>θ</i>, −sin <i>θ</i>], [sin <i>θ</i>, cos <i>θ</i>]] &emsp; <i>a</i>′ = R(<i>θ</i>) <i>a</i></p>
+<pre class="code"><code># NumPy: vectors, matrices and a whole trajectory at once
+import numpy as np
+
+a = np.array([0.3, 0.4])
+print("length of a:", np.linalg.norm(a))          # 0.5
+
+def rot(deg):
+    t = np.radians(deg)
+    return np.array([[np.cos(t), -np.sin(t)],
+                     [np.sin(t),  np.cos(t)]])
+
+print("a turned by 90 deg:", rot(90) @ a)          # @ = matrix product
+
+t = np.linspace(0, 2, 5)                           # 5 instants from 0 to 2 s
+theta = 90 * t / 2                                 # a joint going from 0 to 90 deg
+print("t     =", t)
+print("theta =", theta)</code></pre>
+<pre class="out"><code>length of a: 0.5
+a turned by 90 deg: [-0.4  0.3]
+t     = [0.  0.5 1.  1.5 2. ]
+theta = [ 0.  22.5 45.  67.5 90. ]</code></pre>
+<figure class="figure"><svg viewBox="0 0 460 300" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="460" height="300" fill="#1b1f25" rx="10"/><line x1="30" y1="230" x2="430" y2="230" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M430,230 L420.8,233.9 L420.8,226.1 z" fill="#9fb0c3"/><text x="426" y="250" fill="#9fb0c3" font-size="14" text-anchor="end">x</text><line x1="230" y1="270" x2="230" y2="20" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M230,20 L233.9,29.2 L226.1,29.2 z" fill="#9fb0c3"/><text x="240" y="30" fill="#9fb0c3" font-size="14" text-anchor="start">y</text><line x1="230" y1="230" x2="350" y2="70" stroke="#ff9f43" stroke-width="3.5" stroke-linecap="round"/><path d="M350,70 L347.6,79.7 L341.4,75 z" fill="#ff9f43"/><text x="358" y="70" fill="#ff9f43" font-size="14" text-anchor="start" font-weight="700">a = (0.3, 0.4)</text><line x1="230" y1="230" x2="70" y2="110" stroke="#5aa9ff" stroke-width="3.5" stroke-linecap="round"/><path d="M70,110 L79.7,112.4 L75,118.6 z" fill="#5aa9ff"/><text x="64" y="100" fill="#5aa9ff" font-size="14" text-anchor="start" font-weight="700">rot(90) @ a = (−0.4, 0.3)</text><path d="M272,174 A70,70 0 0 0 174,188" fill="none" stroke="#f5c518" stroke-width="2" stroke-dasharray="5 4"/><text x="226" y="148" fill="#f5c518" font-size="14" text-anchor="middle">90°</text></svg></figure>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Maths</th><th class="left">NumPy</th></tr><tr><td class="left">vector a</td><td class="left"><code>np.array([0.3, 0.4])</code></td></tr><tr><td class="left">length ‖a‖</td><td class="left"><code>np.linalg.norm(a)</code></td></tr><tr><td class="left">product of matrices R a</td><td class="left"><code>R @ a</code></td></tr><tr><td class="left">transpose Rᵀ, inverse R⁻¹</td><td class="left"><code>R.T</code>, <code>np.linalg.inv(R)</code></td></tr><tr><td class="left">n instants from 0 to T</td><td class="left"><code>np.linspace(0, T, n)</code></td></tr></table></div>
+<h4>6.2 No loop needed</h4>
+<p><code>theta = 90 * t / 2</code> computes the 5 angles at once, because <code>t</code> is an array: every operation is done on every element. This is shorter and about 100 times faster than a <code>for</code> loop on long trajectories.</p>
+<div class="box warn"><div class="bt">* is not @</div><div class="bb"><p><code>A * B</code> multiplies element by element; the matrix product of the maths course is <code>A @ B</code>. Mixing them up gives a result of the right size but wrong values.</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>NumPy, array</li><li>matrix product @</li><li>norm</li><li>linspace</li><li>vectorised computation</li></ul>
+<section class="exs" data-for="py-6"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-6-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">What does <code>np.linalg.norm(np.array([3, 4]))</code> give?</p><div class="numin" data-ans="5" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>the norm is the length of the vector: √(x² + y²)</span> <span class="solwhere">lesson 6 — 6.1 (table maths → NumPy)</span></p><ol class="solsteps"><li>3² + 4² = 9 + 16 = 25.</li><li>√25 = 5.</li></ol><p class="solans"><b>Answer</b> <span><b>5.0</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-6-2" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">2</span></div>
+<p class="q">What is the step between two values of <code>np.linspace(0, 1, 5)</code>?</p><div class="numin" data-ans="0.25" data-tol="0.001" data-unit=""></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>linspace(a, b, n) gives n values, ends included, so n − 1 intervals: step = (b − a) / (n − 1)</span> <span class="solwhere">lesson 6 — 6.1 (program and table)</span></p><ol class="solsteps"><li>5 values make 4 intervals.</li><li>step = (1 − 0) / 4 = 0.25: [0, 0.25, 0.5, 0.75, 1].</li></ol><p class="solans"><b>Answer</b> <span><b>0.25</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-6-3" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">3</span></div>
+<p class="q">With the function rot of the lesson, what is <code>rot(90) @ np.array([1, 0])</code>?</p><ol class="opts" type="A"><li data-ok="1">[0, 1]</li><li>[1, 0]</li><li>[0, −1]</li><li>[−1, 0]</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>R(θ) a turns a by θ counter-clockwise; R(90°) = [[0, −1], [1, 0]]</span> <span class="solwhere">lesson 6 — 6.1 A rotation in code (and the figure)</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Row of R</th><th class="left">× (1, 0)</th><th class="left">Result</th></tr><tr><td class="left">[0, −1]</td><td class="left">0 × 1 + (−1) × 0</td><td class="left">0</td></tr><tr><td class="left">[1, 0]</td><td class="left">1 × 1 + 0 × 0</td><td class="left">1</td></tr></table></div><p class="solans"><b>Answer</b> <span><b>[0, 1]</b> (A): the x axis turned by 90° becomes the y axis (NumPy prints [6.1e-17, 1.] because of rounding)</span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What does np.linalg.norm(np.array([3, 4])) give?</p><p class="a">5.0 = √(3² + 4²).</p></li><li><p class="q">What is the difference between R * a and R @ a?</p><p class="a">R * a multiplies element by element; R @ a is the matrix product (the rotation).</p></li><li><p class="q">How many values does np.linspace(0, 2, 5) give, and what is the step?</p><p class="a">5 values, step 0.5: [0, 0.5, 1, 1.5, 2].</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="6"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l7" data-id="py-7">
+          <header class="lesson-head"><span class="num">7</span><h2>Plots and data files: seeing what the robot does</h2><span class="time">25 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how to draw a curve with Matplotlib (axes, labels, legend, grid), how to save it, and how to read a file of measurements and compute its mean and standard deviation.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>Never trust a trajectory or a sensor you have not plotted.</p></div></div>
+<h4>7.1 Plot a joint trajectory</h4>
+<p>The program draws the smooth law of degree 5 of the maths course (lesson 7): the joint goes from 0 to 90° in 2 s, starting and stopping with zero speed and acceleration.</p>
+<pre class="code"><code># plot a joint trajectory and read sensor data from a file
+import numpy as np
+import matplotlib.pyplot as plt
+
+t = np.linspace(0, 2, 200)
+s = 10 * (t / 2)**3 - 15 * (t / 2)**4 + 6 * (t / 2)**5     # smooth law from 0 to 1
+theta = 90 * s                                            # degrees
+
+plt.plot(t, theta, label="theta (deg)")
+plt.xlabel("time (s)"); plt.ylabel("angle (deg)"); plt.legend(); plt.grid()
+plt.savefig("trajectory.png")                              # or plt.show()
+
+data = np.loadtxt("distance.csv", delimiter=",")           # one column of measurements (m)
+print(f"mean = {data.mean():.3f} m, std = {data.std():.3f} m, n = {data.size}")</code></pre>
+<figure class="figure"><svg viewBox="0 0 640 330" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="330" fill="#1b1f25" rx="10"/><line x1="56" y1="54" x2="56" y2="286" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="304" fill="#9fb0c3" font-size="12" text-anchor="middle">0</text><line x1="197.5" y1="54" x2="197.5" y2="286" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="197.5" y="304" fill="#9fb0c3" font-size="12" text-anchor="middle">0.5</text><line x1="339" y1="54" x2="339" y2="286" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="339" y="304" fill="#9fb0c3" font-size="12" text-anchor="middle">1</text><line x1="480.5" y1="54" x2="480.5" y2="286" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="480.5" y="304" fill="#9fb0c3" font-size="12" text-anchor="middle">1.5</text><line x1="622" y1="54" x2="622" y2="286" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="304" fill="#9fb0c3" font-size="12" text-anchor="middle">2</text><line x1="56" y1="286" x2="622" y2="286" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="290" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="208.7" x2="622" y2="208.7" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="212.7" fill="#9fb0c3" font-size="12" text-anchor="end">30</text><line x1="56" y1="131.3" x2="622" y2="131.3" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="135.3" fill="#9fb0c3" font-size="12" text-anchor="end">60</text><line x1="56" y1="54" x2="622" y2="54" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="58" fill="#9fb0c3" font-size="12" text-anchor="end">90</text><line x1="56" y1="286" x2="622" y2="286" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="54" x2="56" y2="286" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,286L59.5,286L63.1,286L66.6,286L70.2,286L73.7,285.9L77.2,285.9L80.8,285.8L84.3,285.7L87.8,285.6L91.4,285.5L94.9,285.3L98.4,285.1L102,284.9L105.5,284.6L109.1,284.3L112.6,284L116.1,283.6L119.7,283.2L123.2,282.8L126.8,282.3L130.3,281.7L133.8,281.1L137.4,280.5L140.9,279.8L144.4,279.1L148,278.3L151.5,277.5L155.1,276.6L158.6,275.7L162.1,274.7L165.7,273.7L169.2,272.6L172.7,271.4L176.3,270.2L179.8,269L183.4,267.7L186.9,266.3L190.4,264.9L194,263.5L197.5,262L201,260.4L204.6,258.8L208.1,257.2L211.7,255.5L215.2,253.7L218.7,251.9L222.3,250.1L225.8,248.2L229.3,246.2L232.9,244.2L236.4,242.2L240,240.1L243.5,238L247,235.9L250.6,233.7L254.1,231.4L257.6,229.2L261.2,226.9L264.7,224.5L268.3,222.2L271.8,219.7L275.3,217.3L278.9,214.8L282.4,212.4L285.9,209.8L289.5,207.3L293,204.7L296.5,202.1L300.1,199.5L303.6,196.9L307.2,194.3L310.7,191.6L314.2,188.9L317.8,186.3L321.3,183.6L324.8,180.9L328.4,178.1L331.9,175.4L335.5,172.7L339,170L342.5,167.3L346.1,164.6L349.6,161.9L353.2,159.1L356.7,156.4L360.2,153.7L363.8,151.1L367.3,148.4L370.8,145.7L374.4,143.1L377.9,140.5L381.4,137.9L385,135.3L388.5,132.7L392.1,130.2L395.6,127.6L399.1,125.2L402.7,122.7L406.2,120.3L409.8,117.8L413.3,115.5L416.8,113.1L420.4,110.8L423.9,108.6L427.4,106.3L431,104.1L434.5,102L438.1,99.9L441.6,97.8L445.1,95.8L448.7,93.8L452.2,91.8L455.7,89.9L459.3,88.1L462.8,86.3L466.3,84.5L469.9,82.8L473.4,81.2L477,79.6L480.5,78L484,76.5L487.6,75.1L491.1,73.7L494.7,72.3L498.2,71L501.7,69.8L505.3,68.6L508.8,67.4L512.3,66.3L515.9,65.3L519.4,64.3L523,63.4L526.5,62.5L530,61.7L533.6,60.9L537.1,60.2L540.6,59.5L544.2,58.9L547.7,58.3L551.3,57.7L554.8,57.2L558.3,56.8L561.9,56.4L565.4,56L568.9,55.7L572.5,55.4L576,55.1L579.6,54.9L583.1,54.7L586.6,54.5L590.2,54.4L593.7,54.3L597.2,54.2L600.8,54.1L604.3,54.1L607.9,54L611.4,54L614.9,54L618.5,54L622,54" fill="none" stroke="#ff9f43" stroke-width="3"/><rect x="60" y="14" width="18" height="4" fill="#ff9f43"/><text x="86" y="20" fill="#ff9f43" font-size="13" text-anchor="start">theta (deg)</text><circle cx="339" cy="170" r="5" fill="#f5c518"/><text x="347" y="162" fill="#f5c518" font-size="13" text-anchor="start">half-way: 45° at 1 s</text><text x="622" y="324" fill="#9fb0c3" font-size="13" text-anchor="end">time (s)</text><text x="60" y="49" fill="#9fb0c3" font-size="12" text-anchor="start">angle (deg)</text></svg></figure>
+<p>The picture saved in <code>trajectory.png</code> looks like the figure above. Then the program reads 10 measurements of a distance sensor pointed at a wall 1 m away:</p>
+<pre class="out"><code>mean = 1.000 m, std = 0.019 m, n = 10</code></pre>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Line</th><th class="left">What the line does</th></tr><tr><td class="left"><code>plt.plot(t, theta, label=…)</code></td><td class="left">draws theta against t and names the curve</td></tr><tr><td class="left"><code>plt.xlabel / ylabel / legend / grid</code></td><td class="left">the names of the axes with units, the legend, the grid</td></tr><tr><td class="left"><code>plt.savefig("….png")</code></td><td class="left">saves the picture (plt.show() opens a window)</td></tr><tr><td class="left"><code>np.loadtxt("….csv", delimiter=",")</code></td><td class="left">reads a text file of numbers into an array</td></tr><tr><td class="left"><code>data.mean(), data.std()</code></td><td class="left">the mean and the standard deviation (the noise of the sensor)</td></tr></table></div>
+<div class="box method"><div class="bt">A good plot in four checks</div><div class="bb"><ol><li>each axis has a name and a unit;</li><li>each curve has a label and the legend does not hide it;</li><li>the start and end values are the expected ones (0 and 90° here);</li><li>there is no jump: a jump in a position means an infinite speed.</li></ol></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>Matplotlib</li><li>label, legend</li><li>CSV file</li><li>mean</li><li>standard deviation</li></ul>
+<section class="exs" data-for="py-7"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-7-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">On the curve of the lesson (0 to 90° in 2 s), what is the angle at t = 1 s (in degrees)?</p><div class="numin" data-ans="45" data-tol="0.5" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>smooth law of degree 5: s(u) = 10u³ − 15u⁴ + 6u⁵ with u = t / T, then θ = 90 s</span> <span class="solwhere">lesson 7 — 7.1 Plot a joint trajectory</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Term</th><th class="left">u = 0.5</th></tr><tr><td class="left">10u³</td><td class="left">1.25</td></tr><tr><td class="left">−15u⁴</td><td class="left">−0.9375</td></tr><tr><td class="left">6u⁵</td><td class="left">0.1875</td></tr><tr><td class="left"><b>s = sum</b></td><td class="left"><b>0.5</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>θ = 90 × 0.5 = 45°</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-7-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">A sensor gives 0.98, 1.00 and 1.02 m. What does <code>data.mean()</code> give (in m)?</p><div class="numin" data-ans="1" data-tol="0.001" data-unit="m"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>mean = sum of the values / number of values</span> <span class="solwhere">lesson 7 — 7.1 (table, last line)</span></p><ol class="solsteps"><li>Sum: 0.98 + 1.00 + 1.02 = 3.00.</li><li>Divide by 3: 3.00 / 3 = 1.00.</li></ol><p class="solans"><b>Answer</b> <span><b>1.00 m</b></span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the angle at t = 1 s on the curve?</p><p class="a">45°: the smooth law is symmetric, half the motion is done at half the time.</p></li><li><p class="q">What does the standard deviation of the 10 measurements tell you?</p><p class="a">The size of the sensor noise: about 0.019 m = 1.9 cm here.</p></li><li><p class="q">What is the difference between plt.savefig and plt.show?</p><p class="a">savefig writes the picture into a file; show opens it in a window.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="7"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+
+        <article class="lesson" id="l8" data-id="py-8">
+          <header class="lesson-head"><span class="num">8</span><h2>Classes and a first controller</h2><span class="time">30 min</span></header>
+          <div class="goal"><b>You will learn</b><p>how a class groups the data of a robot and its functions, what self and __init__ are, and how to write the loop of a proportional controller that brings a joint to a target.</p></div>
+<div class="box idea"><div class="bt">In one sentence</div><div class="bb"><p>A class is a mould for objects: Arm2() makes a robot that keeps its own lengths and angles and knows how to compute its tool.</p></div></div>
+<h4>8.1 The class Arm2</h4>
+<ul><li><code>__init__</code> runs when the object is made: it stores <code>L1</code>, <code>L2</code> and the angles <code>q</code> in <code>self</code>.</li><li><code>self</code> is “this robot”: two objects <code>Arm2()</code> have their own angles.</li><li><code>tool()</code> is a <strong>method</strong>: a function that uses the data of the object (the forward kinematics of lesson 4).</li></ul>
+<h4>8.2 A proportional controller</h4>
+<p class="eq"><i>e</i> = <i>q</i><sub>target</sub> − <i>q</i> &emsp; <i>ω</i> = <i>K</i><sub>p</sub> <i>e</i> &emsp; <i>q</i> ← <i>q</i> + <i>ω</i> Δ<i>t</i></p>
+<pre class="code"><code># a small robot class and a proportional controller on one joint
+import math
+
+class Arm2:
+    def __init__(self, L1=0.5, L2=0.4):
+        self.L1, self.L2 = L1, L2
+        self.q = [0.0, 0.0]                      # joint angles in degrees
+
+    def tool(self):
+        t1, t12 = math.radians(self.q[0]), math.radians(self.q[0] + self.q[1])
+        return (self.L1 * math.cos(t1) + self.L2 * math.cos(t12),
+                self.L1 * math.sin(t1) + self.L2 * math.sin(t12))
+
+arm = Arm2()
+target, Kp, dt = 60.0, 4.0, 0.05                 # P controller on joint 1
+for k in range(6):
+    error = target - arm.q[0]
+    speed = Kp * error                           # deg/s
+    arm.q[0] += speed * dt
+    print(f"step {k}: q1 = {arm.q[0]:5.1f} deg, error = {error:5.1f}")
+print("tool at (%.2f, %.2f) m" % arm.tool())</code></pre>
+<pre class="out"><code>step 0: q1 =  12.0 deg, error =  60.0
+step 1: q1 =  21.6 deg, error =  48.0
+step 2: q1 =  29.3 deg, error =  38.4
+step 3: q1 =  35.4 deg, error =  30.7
+step 4: q1 =  40.3 deg, error =  24.6
+step 5: q1 =  44.3 deg, error =  19.7
+tool at (0.64, 0.63) m</code></pre>
+<figure class="figure"><svg viewBox="0 0 640 350" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="640" height="350" fill="#1b1f25" rx="10"/><line x1="56" y1="74" x2="56" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="56" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0</text><line x1="150.3" y1="74" x2="150.3" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="150.3" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0.1</text><line x1="244.7" y1="74" x2="244.7" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="244.7" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0.2</text><line x1="339" y1="74" x2="339" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="339" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0.3</text><line x1="433.3" y1="74" x2="433.3" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="433.3" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0.4</text><line x1="527.7" y1="74" x2="527.7" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="527.7" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0.5</text><line x1="622" y1="74" x2="622" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="622" y="324" fill="#9fb0c3" font-size="12" text-anchor="middle">0.6</text><line x1="56" y1="306" x2="622" y2="306" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="310" fill="#9fb0c3" font-size="12" text-anchor="end">0</text><line x1="56" y1="272.9" x2="622" y2="272.9" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="276.9" fill="#9fb0c3" font-size="12" text-anchor="end">10</text><line x1="56" y1="239.7" x2="622" y2="239.7" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="243.7" fill="#9fb0c3" font-size="12" text-anchor="end">20</text><line x1="56" y1="206.6" x2="622" y2="206.6" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="210.6" fill="#9fb0c3" font-size="12" text-anchor="end">30</text><line x1="56" y1="173.4" x2="622" y2="173.4" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="177.4" fill="#9fb0c3" font-size="12" text-anchor="end">40</text><line x1="56" y1="140.3" x2="622" y2="140.3" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="144.3" fill="#9fb0c3" font-size="12" text-anchor="end">50</text><line x1="56" y1="107.1" x2="622" y2="107.1" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="111.1" fill="#9fb0c3" font-size="12" text-anchor="end">60</text><line x1="56" y1="74" x2="622" y2="74" stroke="#3a4552" stroke-width="1" stroke-linecap="round"/><text x="48" y="78" fill="#9fb0c3" font-size="12" text-anchor="end">70</text><line x1="56" y1="306" x2="622" y2="306" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><line x1="56" y1="74" x2="56" y2="306" stroke="#9fb0c3" stroke-width="1.5" stroke-linecap="round"/><path d="M56,107.1L59.5,107.1L63.1,107.1L66.6,107.1L70.2,107.1L73.7,107.1L77.2,107.1L80.8,107.1L84.3,107.1L87.8,107.1L91.4,107.1L94.9,107.1L98.4,107.1L102,107.1L105.5,107.1L109.1,107.1L112.6,107.1L116.1,107.1L119.7,107.1L123.2,107.1L126.8,107.1L130.3,107.1L133.8,107.1L137.4,107.1L140.9,107.1L144.4,107.1L148,107.1L151.5,107.1L155.1,107.1L158.6,107.1L162.1,107.1L165.7,107.1L169.2,107.1L172.7,107.1L176.3,107.1L179.8,107.1L183.3,107.1L186.9,107.1L190.4,107.1L194,107.1L197.5,107.1L201,107.1L204.6,107.1L208.1,107.1L211.6,107.1L215.2,107.1L218.7,107.1L222.3,107.1L225.8,107.1L229.3,107.1L232.9,107.1L236.4,107.1L240,107.1L243.5,107.1L247,107.1L250.6,107.1L254.1,107.1L257.6,107.1L261.2,107.1L264.7,107.1L268.3,107.1L271.8,107.1L275.3,107.1L278.9,107.1L282.4,107.1L285.9,107.1L289.5,107.1L293,107.1L296.6,107.1L300.1,107.1L303.6,107.1L307.2,107.1L310.7,107.1L314.2,107.1L317.8,107.1L321.3,107.1L324.9,107.1L328.4,107.1L331.9,107.1L335.5,107.1L339,107.1L342.5,107.1L346.1,107.1L349.6,107.1L353.2,107.1L356.7,107.1L360.2,107.1L363.8,107.1L367.3,107.1L370.8,107.1L374.4,107.1L377.9,107.1L381.4,107.1L385,107.1L388.5,107.1L392.1,107.1L395.6,107.1L399.1,107.1L402.7,107.1L406.2,107.1L409.8,107.1L413.3,107.1L416.8,107.1L420.4,107.1L423.9,107.1L427.4,107.1L431,107.1L434.5,107.1L438,107.1L441.6,107.1L445.1,107.1L448.7,107.1L452.2,107.1L455.7,107.1L459.3,107.1L462.8,107.1L466.3,107.1L469.9,107.1L473.4,107.1L477,107.1L480.5,107.1L484,107.1L487.6,107.1L491.1,107.1L494.7,107.1L498.2,107.1L501.7,107.1L505.3,107.1L508.8,107.1L512.3,107.1L515.9,107.1L519.4,107.1L523,107.1L526.5,107.1L530,107.1L533.6,107.1L537.1,107.1L540.6,107.1L544.2,107.1L547.7,107.1L551.3,107.1L554.8,107.1L558.3,107.1L561.9,107.1L565.4,107.1L568.9,107.1L572.5,107.1L576,107.1L579.5,107.1L583.1,107.1L586.6,107.1L590.2,107.1L593.7,107.1L597.2,107.1L600.8,107.1L604.3,107.1L607.9,107.1L611.4,107.1L614.9,107.1L618.5,107.1L622,107.1" fill="none" stroke="#3ddc84" stroke-width="3" stroke-dasharray="6 5"/><path d="M56,306L59.5,303L63.1,300.1L66.6,297.2L70.2,294.4L73.7,291.6L77.2,288.9L80.8,286.2L84.3,283.5L87.8,280.9L91.4,278.3L94.9,275.8L98.4,273.2L102,270.8L105.5,268.3L109.1,265.9L112.6,263.6L116.1,261.2L119.7,258.9L123.2,256.7L126.8,254.5L130.3,252.3L133.8,250.1L137.4,248L140.9,245.9L144.4,243.8L148,241.8L151.5,239.8L155.1,237.8L158.6,235.9L162.1,233.9L165.7,232.1L169.2,230.2L172.7,228.4L176.3,226.6L179.8,224.8L183.3,223L186.9,221.3L190.4,219.6L194,217.9L197.5,216.3L201,214.7L204.6,213.1L208.1,211.5L211.6,209.9L215.2,208.4L218.7,206.9L222.3,205.4L225.8,203.9L229.3,202.5L232.9,201.1L236.4,199.7L240,198.3L243.5,196.9L247,195.6L250.6,194.3L254.1,193L257.6,191.7L261.2,190.5L264.7,189.2L268.3,188L271.8,186.8L275.3,185.6L278.9,184.4L282.4,183.3L285.9,182.2L289.5,181L293,179.9L296.6,178.8L300.1,177.8L303.6,176.7L307.2,175.7L310.7,174.7L314.2,173.7L317.8,172.7L321.3,171.7L324.9,170.7L328.4,169.8L331.9,168.9L335.5,167.9L339,167L342.5,166.1L346.1,165.3L349.6,164.4L353.2,163.5L356.7,162.7L360.2,161.9L363.8,161.1L367.3,160.3L370.8,159.5L374.4,158.7L377.9,157.9L381.4,157.2L385,156.4L388.5,155.7L392.1,155L395.6,154.3L399.1,153.6L402.7,152.9L406.2,152.2L409.8,151.5L413.3,150.9L416.8,150.2L420.4,149.6L423.9,148.9L427.4,148.3L431,147.7L434.5,147.1L438,146.5L441.6,145.9L445.1,145.3L448.7,144.8L452.2,144.2L455.7,143.7L459.3,143.1L462.8,142.6L466.3,142L469.9,141.5L473.4,141L477,140.5L480.5,140L484,139.5L487.6,139L491.1,138.6L494.7,138.1L498.2,137.6L501.7,137.2L505.3,136.7L508.8,136.3L512.3,135.9L515.9,135.4L519.4,135L523,134.6L526.5,134.2L530,133.8L533.6,133.4L537.1,133L540.6,132.6L544.2,132.2L547.7,131.9L551.3,131.5L554.8,131.1L558.3,130.8L561.9,130.4L565.4,130.1L568.9,129.7L572.5,129.4L576,129.1L579.5,128.7L583.1,128.4L586.6,128.1L590.2,127.8L593.7,127.5L597.2,127.2L600.8,126.9L604.3,126.6L607.9,126.3L611.4,126L614.9,125.7L618.5,125.5L622,125.2" fill="none" stroke="#ff9f43" stroke-width="3"/><rect x="60" y="14" width="18" height="4" fill="#3ddc84"/><text x="86" y="20" fill="#3ddc84" font-size="13" text-anchor="start">target 60°</text><rect x="60" y="34" width="18" height="4" fill="#ff9f43"/><text x="86" y="40" fill="#ff9f43" font-size="13" text-anchor="start">q₁ with Kp = 4 /s</text><circle cx="56" cy="306" r="5" fill="#f5c518"/><circle cx="103.2" cy="266.2" r="5" fill="#f5c518"/><circle cx="150.3" cy="234.4" r="5" fill="#f5c518"/><circle cx="197.5" cy="209" r="5" fill="#f5c518"/><circle cx="244.7" cy="188.6" r="5" fill="#f5c518"/><circle cx="291.8" cy="172.3" r="5" fill="#f5c518"/><circle cx="339" cy="159.3" r="5" fill="#f5c518"/><circle cx="386.2" cy="148.8" r="5" fill="#f5c518"/><circle cx="433.3" cy="140.5" r="5" fill="#f5c518"/><circle cx="480.5" cy="133.8" r="5" fill="#f5c518"/><circle cx="527.7" cy="128.5" r="5" fill="#f5c518"/><circle cx="574.8" cy="124.2" r="5" fill="#f5c518"/><circle cx="622" cy="120.8" r="5" fill="#f5c518"/><text x="622" y="344" fill="#9fb0c3" font-size="13" text-anchor="end">time (s)</text><text x="60" y="69" fill="#9fb0c3" font-size="12" text-anchor="start">q₁ (deg)</text></svg></figure>
+<p>At each step the error is multiplied by 1 − <i>K</i><sub>p</sub>Δ<i>t</i> = 1 − 4 × 0.05 = 0.8: 60 → 48 → 38.4 → … The joint gets closer and closer without overshoot. A larger <i>K</i><sub>p</sub> is faster, but if <i>K</i><sub>p</sub>Δ<i>t</i> &gt; 2 the error changes sign and grows at every step: the loop is unstable.</p>
+<div class="box note"><div class="bt">Where to go next</div><div class="bb"><p>The PID of the control course adds an integral term (no error left at the end) and a derivative term (less overshoot). In ROS 2 the same class becomes a node (ROS 2 course, lesson 3), and on a microcontroller the same loop becomes loop() (electronics course).</p></div></div>
+          <h3>Key terms</h3>
+          <ul class="terms"><li>class, object</li><li>__init__, self</li><li>method</li><li>proportional controller</li><li>gain Kp, period Δt</li></ul>
+<section class="exs" data-for="py-8"><h3>Exercises</h3><p class="exnote">Try each exercise yourself first. Type your answer in the box (the checker accepts a small tolerance) or pick an option; use the hint only if you are stuck, and read the solution to compare your method.</p><p class="exscore" aria-live="polite"></p>
+<div class="ex" data-id="py-8-1" data-lv="1">
+<div class="qh"><span class="lv l1">Level 1 · Beginner</span><span class="qn">1</span></div>
+<p class="q">In the controller of the lesson, take Kp = 2 instead of 4 (Δt = 0.05, target 60°, start 0°). What is q1 after the first step (in degrees)?</p><div class="numin" data-ans="6" data-tol="0.05" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>P controller: e = target − q, ω = Kp e, q ← q + ω Δt</span> <span class="solwhere">lesson 8 — 8.2 A proportional controller</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Quantity</th><th class="left">Value</th></tr><tr><td class="left">e = 60 − 0</td><td class="left">60°</td></tr><tr><td class="left">ω = 2 × 60</td><td class="left">120 °/s</td></tr><tr><td class="left">q = 0 + 120 × 0.05</td><td class="left"><b>6°</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>6°</b> — half of the 12° of the lesson: half the gain, half the step</span></p></div></details>
+</div>
+<div class="ex" data-id="py-8-2" data-lv="2">
+<div class="qh"><span class="lv l2">Level 2 · Intermediate</span><span class="qn">2</span></div>
+<p class="q">Still with Kp = 2, what is the error after 2 steps (in degrees)?</p><div class="numin" data-ans="48.6" data-tol="0.05" data-unit="°"></div><p class="fb" aria-live="polite"></p>
+<details class="hint"><summary>Hint</summary><p>At each step the error is multiplied by 1 − Kp Δt.</p></details><details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>at each step the error is multiplied by 1 − Kp Δt</span> <span class="solwhere">lesson 8 — 8.2, paragraph under the figure</span></p><ol class="solsteps"><li>1 − Kp Δt = 1 − 2 × 0.05 = 0.9.</li></ol><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Step k</th><th class="left">Error (°)</th><th class="left">q1 (°)</th></tr><tr><td class="left">0</td><td class="left">60</td><td class="left">0</td></tr><tr><td class="left">1</td><td class="left">60 × 0.9 = 54</td><td class="left">6</td></tr><tr><td class="left">2</td><td class="left"><b>54 × 0.9 = 48.6</b></td><td class="left">11.4</td></tr></table></div><p class="solans"><b>Answer</b> <span><b>48.6°</b></span></p></div></details>
+</div>
+<div class="ex" data-id="py-8-3" data-lv="3">
+<div class="qh"><span class="lv l3">Level 3 · Professional</span><span class="qn">3</span></div>
+<p class="q">Which gain makes the loop unstable with Δt = 0.05 s?</p><ol class="opts" type="A"><li>Kp = 4 /s</li><li>Kp = 20 /s</li><li>Kp = 35 /s</li><li data-ok="1">Kp = 50 /s</li></ol><p class="fb" aria-live="polite"></p>
+<details class="sol"><summary>Solution</summary><div class="solx"><p class="solrule"><b>Rule used</b> <span>the loop is stable if |1 − Kp Δt| &lt; 1, that is 0 &lt; Kp Δt &lt; 2</span> <span class="solwhere">lesson 8 — 8.2, paragraph under the figure</span></p><div class="cmp-wrap"><table class="dh soltab"><tr><th class="left">Kp</th><th class="left">Kp Δt</th><th class="left">1 − Kp Δt</th><th class="left">Behaviour</th></tr><tr><td class="left">4</td><td class="left">0.2</td><td class="left">0.8</td><td class="left">smooth</td></tr><tr><td class="left">20</td><td class="left">1</td><td class="left">0</td><td class="left">reaches the target in 1 step</td></tr><tr><td class="left">35</td><td class="left">1.75</td><td class="left">−0.75</td><td class="left">oscillates but converges</td></tr><tr><td class="left"><b>50</b></td><td class="left"><b>2.5</b></td><td class="left"><b>−1.5</b></td><td class="left"><b>oscillates and grows: unstable</b></td></tr></table></div><p class="solans"><b>Answer</b> <span><b>Kp = 50 /s</b> (D)</span></p></div></details>
+</div>
+</section><details class="quiz"><summary>Check yourself</summary><ol class="qa"><li><p class="q">What is the error after the first step of the program?</p><p class="a">48: q1 went from 0 to 12 and the target is 60.</p></li><li><p class="q">Why does q1 never quite reach 60 in 6 steps?</p><p class="a">Because each step only removes 20 % of the remaining error; it gets closer and closer (exponentially).</p></li><li><p class="q">What happens with Kp = 50 and Δt = 0.05?</p><p class="a">Kp Δt = 2.5 > 2: the error is multiplied by −1.5 at each step, the joint oscillates more and more — unstable.</p></li></ol></details>
+          <label class="lesson-done"><input type="checkbox" data-lesson="8"><span class="box" aria-hidden="true"></span><span class="lbl"></span></label>
+        </article>
+
+        <section class="gloss">
+          <h2>Glossary</h2>
+          <p>All the words of the course in one place.</p>
+<div class="cmp-wrap"><table class="dh "><tr><th class="left">Term</th><th class="left">Meaning</th></tr><tr><td class="left">Variable</td><td class="left">A name that holds a value: L1 = 0.5.</td></tr><tr><td class="left">Type</td><td class="left">The kind of a value: int, float, str, bool, list, dict…</td></tr><tr><td class="left">Module, import</td><td class="left">A file of ready-made functions loaded with import (math, numpy).</td></tr><tr><td class="left">Radian</td><td class="left">The unit of angles used by math.cos and np.cos: 180° = π rad.</td></tr><tr><td class="left">Indentation</td><td class="left">The spaces at the start of a line that say which block it belongs to.</td></tr><tr><td class="left">Loop (for, while)</td><td class="left">Lines repeated for each element, or as long as a condition is true.</td></tr><tr><td class="left">Function, return</td><td class="left">A named calculation: def fk(…): … return x, y.</td></tr><tr><td class="left">List, index</td><td class="left">An ordered sequence numbered from 0; [-1] is the last element.</td></tr><tr><td class="left">Dictionary</td><td class="left">Values found by a name (a key): robot["L1"].</td></tr><tr><td class="left">NumPy array</td><td class="left">A vector or matrix; operations apply to every element at once.</td></tr><tr><td class="left">Matrix product @</td><td class="left">The product of the maths course (R @ a); * is element by element.</td></tr><tr><td class="left">Class, object, method</td><td class="left">A mould (class) that makes objects holding their data and their functions (methods).</td></tr><tr><td class="left">Proportional controller</td><td class="left">A command proportional to the error: ω = Kp (target − q).</td></tr></table></div>
+        </section>
+        <!-- BEGIN sources -->
+        <section class="sources" id="sources">
+          <h2>Sources and references</h2>
+          <p>This course was written from these books, papers, standards and documentation. They are also the best way to go further.</p>
+          <ol class="srclist">
+            <li><span class="src">The Python Tutorial, docs.python.org/3/tutorial (Python Software Foundation).</span> <span class="srcuse"><em>used for:</em> <span>the language: types, loops, functions, lists, dictionaries, classes</span></span></li>
+            <li><span class="src">NumPy documentation, numpy.org/doc.</span> <span class="srcuse"><em>used for:</em> <span>vectors, matrices, linspace</span></span></li>
+            <li><span class="src">C. R. Harris et al., “Array programming with NumPy”, <i>Nature</i>, 585, 2020.</span> <span class="srcuse"><em>used for:</em> <span>why array computing is fast</span></span></li>
+            <li><span class="src">J. D. Hunter, “Matplotlib: a 2D graphics environment”, <i>Computing in Science &amp; Engineering</i>, 9(3), 2007; matplotlib.org.</span> <span class="srcuse"><em>used for:</em> <span>plots</span></span></li>
+            <li><span class="src">J. J. Craig, <i>Introduction to Robotics: Mechanics and Control</i>, 4th ed., Pearson, 2017.</span> <span class="srcuse"><em>used for:</em> <span>forward kinematics of the 2-link arm</span></span></li>
+            <li><span class="src">K. J. Åström, R. M. Murray, <i>Feedback Systems: An Introduction for Scientists and Engineers</i>, 2nd ed., Princeton University Press, 2021 (free online).</span> <span class="srcuse"><em>used for:</em> <span>the proportional controller and its stability</span></span></li>
+          </ol>
+        </section>
+        <!-- END sources -->
+
+
+        <section class="finish">
+          <h2>You can now program a robot in Python!</h2>
+          <p>Next: the electronics and Arduino course to make a real motor turn, “Code a robot arm in Python” for a full DH engine and inverse kinematics, and ROS 2 from zero to run your code on a real robot.</p>
+          <p class="cta"><a class="btn" href="index.html#road">Back to the roadmap →</a> <a class="btn ghost" href="index.html#road">Home page</a></p>
+        </section>
+      </div>
+    </div>
+    <script src="learn-more-widgets.js" defer></script>
+    <script src="lab3d.js" defer></script>
+    <script src="labkit.js" defer></script>
+    <script src="learn-mobile-widgets.js" defer></script>
+    <script src="lesson-quiz.js" defer></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+  var FR = (window.RA && RA.lang) === 'fr', L = function (en, fr) { return FR ? fr : en; };
+  var PREFIX = 'py-', KEY = 'py';
+  var no = function (el) { return +el.id.slice(1); }, lessons = [].slice.call(document.querySelectorAll('.lesson')), nav = document.getElementById('lessonNav');
+  var P = function () { return (window.RA && RA.progress) || { get: function () { return false; }, set: function () {} }; };
+  nav.innerHTML = '<div class="ln-head"><b id="lnCount"></b><div class="rm-bar"><i id="lnBar"></i></div></div><ol>' + lessons.map(function (el) { var k = no(el); return '<li><a href="#l' + k + '" data-i="' + k + '"><span class="n">' + k + '</span><span class="t">' + el.querySelector('h2').innerHTML + '</span></a></li>'; }).join('') + '</ol>';
+  function paint() {
+    var done = 0;
+    lessons.forEach(function (el) { var k = no(el), ok = P().get(PREFIX + k); if (ok) done++; el.classList.toggle('done', ok); var cb = el.querySelector('input[data-lesson]'); cb.checked = ok; el.querySelector('.lbl').textContent = ok ? L('Lesson done', 'Leçon terminée') : L('Mark this lesson as done', 'Marquer cette leçon comme terminée'); nav.querySelector('a[data-i="' + k + '"]').parentNode.classList.toggle('done', ok); });
+    document.getElementById('lnCount').textContent = done + ' / ' + lessons.length + ' ' + L('lessons done', 'leçons terminées');
+    document.getElementById('lnBar').style.width = Math.round(done / lessons.length * 100) + '%';
+    var all = done === lessons.length; if (P().get(KEY) !== all) P().set(KEY, all);
+    [].forEach.call(document.querySelectorAll('.course'), function (a) { var n = 0, t = +a.dataset.total, s = +(a.dataset.start || 1); for (var i = s; i < s + t; i++) if (P().get(a.dataset.prefix + i)) n++; a.querySelector('.cnt').textContent = n + ' / ' + t; a.classList.toggle('complete', n === t); });
+  }
+  document.addEventListener('change', function (e) { var i = e.target.getAttribute && e.target.getAttribute('data-lesson'); if (i) P().set(PREFIX + i, e.target.checked); });
+  window.addEventListener('ra-progress', paint); paint();
+  function spy() { var m = window.scrollY + window.innerHeight * 0.3, cur = 1; lessons.forEach(function (el, i) { if (el.offsetTop <= m) cur = i + 1; }); [].forEach.call(nav.querySelectorAll('li'), function (li, i) { li.classList.toggle('on', i + 1 === cur); }); }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+});
+    </script>
+  </body>
+</html>

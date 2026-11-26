@@ -1,0 +1,4 @@
+Robot R2 has 3 joints
+Link length: 0.45 m
+Powered: True
+<class 'int'> <class 'float'>
