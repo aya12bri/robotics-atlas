@@ -1,5 +1,7 @@
 // Français — page learn-maths. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1q658uljngn": "Supports de cours",
+"y6kzufu8yt": "Références",
 "21xhxwt8n8d": "Sources et références",
 "2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
 "1d15cz9ovk": "utilisé pour :",

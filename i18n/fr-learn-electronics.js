@@ -3,6 +3,8 @@ RA.add({
 "21xhxwt8n8d": "Sources et références",
 "2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
 "1d15cz9ovk": "utilisé pour :",
+"1q658uljngn": "Supports de cours",
+"y6kzufu8yt": "Références",
 "1vv4g1o47ap": "loi d'Ohm, ponts diviseurs, régulateurs, transistors, diodes",
 "1qvr1oizvyj": "broches, analogRead, analogWrite, interruptions, limites de la carte",
 "17e82fkmk70": "le capteur à ultrasons",

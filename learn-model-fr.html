@@ -627,6 +627,8 @@
 
 
 
+
+
           <!-- BEGIN practice -->
           <div class="box key"><div class="bt">L'essentiel</div><div class="bb"><ul><li>Position : matrices de rotation, transformations homogènes, DHm → MGD ; inverse → MGI.</li><li>Vitesse : jacobienne ; singularités quand det J = 0.</li><li>Temps : lois de mouvement ; effort : dynamique et commande.</li></ul></div></div>
           <figure class="figure pfig"><svg viewBox="0 0 720 126" class="fig" role="img" aria-hidden="true"><rect x="0" y="0" width="720" height="126" fill="#1b1f25" rx="10"></rect><rect x="20" y="30" width="150" height="62" rx="8" fill="#262c35" stroke="#ff9f43" stroke-width="2"></rect><text x="95" y="58" fill="#e8eef5" font-size="13" text-anchor="middle" font-weight="700">Position :</text><text x="95" y="75" fill="#e8eef5" font-size="13" text-anchor="middle" font-weight="700">MGD, MGI</text><line x1="172" y1="61" x2="194" y2="61" stroke="#9fb0c3" stroke-width="2" stroke-linecap="round"></line><path d="M194,61 L184.8,64.9 L184.8,57.1 z" fill="#9fb0c3"></path><rect x="196" y="30" width="150" height="62" rx="8" fill="#262c35" stroke="#5aa9ff" stroke-width="2"></rect><text x="271" y="66" fill="#e8eef5" font-size="11.979166666666668" text-anchor="middle" font-weight="700">Vitesse : J, det J</text><line x1="348" y1="61" x2="370" y2="61" stroke="#9fb0c3" stroke-width="2" stroke-linecap="round"></line><path d="M370,61 L360.8,64.9 L360.8,57.1 z" fill="#9fb0c3"></path><rect x="372" y="30" width="150" height="62" rx="8" fill="#262c35" stroke="#3ddc84" stroke-width="2"></rect><text x="447" y="58" fill="#e8eef5" font-size="13" text-anchor="middle" font-weight="700">Temps : lois</text><text x="447" y="75" fill="#e8eef5" font-size="13" text-anchor="middle" font-weight="700">horaires</text><line x1="524" y1="61" x2="546" y2="61" stroke="#9fb0c3" stroke-width="2" stroke-linecap="round"></line><path d="M546,61 L536.8,64.9 L536.8,57.1 z" fill="#9fb0c3"></path><rect x="548" y="30" width="150" height="62" rx="8" fill="#262c35" stroke="#ff5c5c" stroke-width="2"></rect><text x="623" y="66" fill="#e8eef5" font-size="11.979166666666668" text-anchor="middle" font-weight="700">Effort : dynamique</text></svg><figcaption>Tout le cours sur une ligne : où est l'outil, à quelle vitesse il bouge, quand il arrive, et avec quels efforts.</figcaption></figure>
@@ -657,13 +659,18 @@
           <h2>Glossaire</h2>
           <p>Tous les mots des leçons au même endroit.</p>
           <div class="cmp-wrap"><table class="dh">
-            <tbody><tr><th class="left">Mot</th><th class="left">Sens</th></tr><tr><td class="left">MGD</td><td class="left">Modèle géométrique direct : variables articulaires → situation de l'outil.</td></tr><tr><td class="left">MGI</td><td class="left">Modèle géométrique inverse : situation de l'outil → variables articulaires.</td></tr><tr><td class="left">DHm</td><td class="left">Convention de Denavit–Hartenberg modifiée (Khalil–Kleinfinger).</td></tr><tr><td class="left">Aspect</td><td class="left">Une des postures en nombre fini qui atteignent la même situation.</td></tr><tr><td class="left">Singularité</td><td class="left">Une configuration où la jacobienne perd du rang.</td></tr><tr><td class="left">Jacobienne</td><td class="left">La matrice qui relie les vitesses articulaires aux vitesses de l'outil.</td></tr><tr><td class="left">Matrice homogène</td><td class="left">Une matrice 4×4 qui contient une rotation et une translation.</td></tr><tr><td class="left">Robot redondant</td><td class="left">Un robot qui a plus de ddl que la tâche n'en demande.</td></tr><tr><td class="left">Blocage de cardan</td><td class="left">Perte d'un degré de liberté de la représentation par angles.</td></tr><tr><td class="left">Espace de travail</td><td class="left">L'image des limites articulaires par le MGD.</td></tr>
+            <tbody><tr><th class="left">Mot</th><th class="left">Sens</th></tr><tr><td class="left">MGD</td><td class="left">Modèle géométrique direct : variables articulaires → situation de l'outil.</td></tr><tr><td class="left">MGI</td><td class="left">Modèle géométrique inverse : situation de l'outil → variables articulaires.</td></tr><tr><td class="left">DHm</td><td class="left">Convention de Denavit–Hartenberg modifiée (Khalil–Kleinfinger).</td></tr><tr><td class="left">Aspect</td><td class="left">Une des postures en nombre fini qui atteignent la même situation.</td></tr><tr><td class="left">Singularité</td><td class="left">Une configuration où la jacobienne perd du rang.</td></tr><tr><td class="left">Jacobienne</td><td class="left">La matrice qui relie les vitesses articulaires aux vitesses de l'outil.</td></tr><tr><td class="left">Matrice homogène</td><td class="left">Une matrice 4×4 qui contient une rotation et une translation.</td></tr><tr><td class="left">Robot redondant</td><td class="left">Un robot qui a plus de ddl que la tâche n'en demande.</td></tr><tr><td class="left">Blocage de cardan</td><td class="left">Perte d'un degré de liberté de la représentation par angles.</td></tr><tr><td class="left">Volume de travail</td><td class="left">L'image des limites articulaires par le MGD.</td></tr>
           </tbody></table></div>
         </section>
         <!-- BEGIN sources -->
         <section class="sources" id="sources">
           <h2>Sources et références</h2>
           <p>Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.</p>
+          <h3>Supports de cours</h3>
+          <ul class="srclist teach">
+            <li>M. Abbas, <i>Modélisation des robots</i> (UE33c) : DHm, modèles géométriques direct et inverse, modèles cinématiques, Master MARS, Université d’Orléans.</li>
+          </ul>
+          <h3>Références</h3>
           <ol class="srclist">
             <li><span class="src">W. Khalil, E. Dombre, <i>Modeling, Identification and Control of Robots</i>, Hermes Penton Science, 2002 (French edition: <i>Modélisation, identification et commande des robots</i>, Hermès, 1999).</span> <span class="srcuse"><em>utilisé pour :</em> <span>tout le cours : DHM, MGD, MGI, jacobienne, lois de mouvement, dynamique</span></span></li>
             <li><span class="src">W. Khalil, J.-F. Kleinfinger, “A new geometric notation for open and closed-loop robots”, <i>IEEE International Conference on Robotics and Automation</i>, 1986.</span> <span class="srcuse"><em>utilisé pour :</em> <span>la notation DH modifiée</span></span></li>
@@ -673,6 +680,8 @@
           </ol>
         </section>
         <!-- END sources -->
+
+
 
 
 

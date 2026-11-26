@@ -3,6 +3,8 @@ RA.add({
 "21xhxwt8n8d": "Sources et références",
 "2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
 "1d15cz9ovk": "utilisé pour :",
+"1q658uljngn": "Supports de cours",
+"y6kzufu8yt": "Références",
 "w62xzth416": "familles de robots et chiffres du marché",
 "hoqb9x06ui": "pinces et ventouses",
 "yejct1jvlh": "sécurité des cellules de robots industriels",
