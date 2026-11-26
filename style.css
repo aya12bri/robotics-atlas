@@ -2024,5 +2024,5 @@ nav.courses.fold:not(.open) .course.current .cmeta { display: none; }
 
 /* course pages: sources and references */
 .sources { margin: 2rem 0 1rem; }
-.sources .srclist { margin: 0.6rem 0 0 1.2rem; } .sources .srclist li { margin: 0.45rem 0; line-height: 1.5; }
+.sources .srclist { margin: 0.6rem 0 0 1.2rem; } .sources h3 { margin: 1.1rem 0 0.2rem; font-size: 1.05rem; } .sources .srclist.teach li { list-style: disc; } .sources .srclist li { margin: 0.45rem 0; line-height: 1.5; }
 .sources .srcuse { display: block; color: var(--muted); font-size: 0.9rem; }

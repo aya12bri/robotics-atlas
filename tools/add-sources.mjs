@@ -90,7 +90,16 @@ const SOURCES = {
   'learn-transmission.html': [['shigley', U('gears, belts, screws and their sizing', 'engrenages, courroies, vis et leur dimensionnement')], ['monkman', U('grippers', 'préhenseurs')], ['handbook', U('actuators and transmissions of robots', 'actionneurs et transmissions des robots')]],
   'learn-parallel.html': [['merlet', U('parallel robots, their models and singularities', 'robots parallèles, leurs modèles et leurs singularités')], ['gosselin', U('the three types of singularities', 'les trois types de singularités')], ['khalil', U('joint and operational spaces, workspace, aspects', 'espaces articulaire et opérationnel, espace de travail, aspects')]]
 };
-const T = { title: U('Sources and references', 'Sources et références'), lead: U('This course was written from these books, papers, standards and documentation. They are also the best way to go further.', 'Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.'), used: U('used for:', 'utilisé pour :') };
+// the course materials each course was written from: the teachers and their courses (from the PDFs of the courses)
+const TEACH = {
+  'learn-kalman.html': [U('N. Ramdani, <i>Data fusion for autonomous navigation</i>, parts A and B and tutorials, Master MARS, Université d’Orléans.', 'N. Ramdani, <i>Fusion de données pour la navigation autonome</i>, parties A et B et TD, Master MARS, Université d’Orléans.'), U('Part B is based on the course of L. Jaulin, ENSTA Bretagne (KalMOOC).', 'La partie B s’appuie sur le cours de L. Jaulin, ENSTA Bretagne (KalMOOC).')],
+  'learn-transmission.html': [U('M. Elahres, <i>Mechanical transmission and transformation</i>, Master MARS 2025/2026, Laboratoire PRISME, Université d’Orléans.', 'M. Elahres, <i>Transmission et transformation mécaniques</i>, Master MARS 2025/2026, Laboratoire PRISME, Université d’Orléans.')],
+  'learn-teleop.html': [U('P. Léveillé, <i>Teleoperation and supervision</i> (UE35a), cobotics, tutorials TD1 and TD2, Master MARS 2, Université d’Orléans.', 'P. Léveillé, <i>Téléopération et supervision</i> (UE35a), cobotique, TD1 et TD2, Master MARS 2, Université d’Orléans.'), U('C. Novales, <i>Control architectures of robots</i> and the PAT architecture, Laboratoire PRISME, Université d’Orléans.', 'C. Novales, <i>Architectures de commande des robots</i> et l’architecture PAT, Laboratoire PRISME, Université d’Orléans.'), U('M. Deleruelle, <i>Safety in robotics: regulations and standards</i>, CETIM.', 'M. Deleruelle, <i>Sécurité en robotique : aspects réglementaires et normatifs</i>, CETIM.')],
+  'learn-mobile.html': [U('J. Xiao, <i>Mobile Robot Locomotion</i>, City College of New York.', 'J. Xiao, <i>Mobile Robot Locomotion</i>, City College of New York.'), U('H.-Y. Lin, <i>Autonomous Mobile Robots, Mobile Robot Kinematics</i>, National Chung Cheng University.', 'H.-Y. Lin, <i>Autonomous Mobile Robots, Mobile Robot Kinematics</i>, National Chung Cheng University.')],
+  'learn-model.html': [U('M. Abbas, <i>Robot Modeling</i> (UE33c): DHm, direct and inverse geometric models, kinematic models, Master MARS, Université d’Orléans.', 'M. Abbas, <i>Modélisation des robots</i> (UE33c) : DHm, modèles géométriques direct et inverse, modèles cinématiques, Master MARS, Université d’Orléans.')],
+  'learn-parallel.html': [U('S. Miossec, <i>Parallel robotics: mobility, geometric and kinematic models of parallel robots</i> (UE35d), Master MARS, Université d’Orléans.', 'S. Miossec, <i>Robotique parallèle : mobilité, modèles géométriques et cinématiques des robots parallèles</i> (UE35d), Master MARS, Université d’Orléans.')]
+};
+const T = { title: U('Sources and references', 'Sources et références'), lead: U('This course was written from these books, papers, standards and documentation. They are also the best way to go further.', 'Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.'), used: U('used for:', 'utilisé pour :'), teach: U('Course materials', 'Supports de cours'), refs: U('References', 'Références') };
 for (const [page, list] of Object.entries(SOURCES)) {
   const f = root + page; if (!fs.existsSync(f)) { console.log('missing', page); continue; }
   let h = fs.readFileSync(f, 'utf8');
@@ -99,7 +108,12 @@ for (const [page, list] of Object.entries(SOURCES)) {
         <section class="sources" id="sources">
           <h2>${T.title[0]}</h2>
           <p>${T.lead[0]}</p>
-          <ol class="srclist">
+${TEACH[page] ? `          <h3>${T.teach[0]}</h3>
+          <ul class="srclist teach">
+${TEACH[page].map((t) => `            <li>${t[0]}</li>`).join('\n')}
+          </ul>
+          <h3>${T.refs[0]}</h3>
+` : ''}          <ol class="srclist">
 ${list.map(([k, u]) => `            <li><span class="src">${R[k]}</span> <span class="srcuse"><em>${T.used[0]}</em> <span>${u[0]}</span></span></li>`).join('\n')}
           </ol>
         </section>
@@ -114,7 +128,7 @@ ${list.map(([k, u]) => `            <li><span class="src">${R[k]}</span> <span c
   // French: the headings and the "used for" texts (the citations stay as they are)
   const dictFile = root + 'i18n/fr-' + page.replace('.html', '.js');
   let d = fs.readFileSync(dictFile, 'utf8'); const add = [];
-  for (const [en, fr] of [T.title, T.lead, T.used, ...list.map((x) => x[1])]) { const k = hash(norm(en)); if (!d.includes(`"${k}"`) && !add.some((a) => a.startsWith(`"${k}"`))) add.push(`"${k}": ${JSON.stringify(fr)}`); }
+  for (const [en, fr] of [T.title, T.lead, T.used, T.teach, T.refs, ...(TEACH[page] || []), ...list.map((x) => x[1])]) { const k = hash(norm(en)); if (!d.includes(`"${k}"`) && !add.some((a) => a.startsWith(`"${k}"`))) add.push(`"${k}": ${JSON.stringify(fr)}`); }
   for (const [k] of list) { const k2 = hash(norm(R[k])); if (!d.includes(`"${k2}"`) && !add.some((a) => a.startsWith(`"${k2}"`))) add.push(`"${k2}": ${JSON.stringify(R[k])}`); }
   if (add.length) d = d.replace('RA.add({\n', 'RA.add({\n' + add.join(',\n') + ',\n');
   fs.writeFileSync(dictFile, d);

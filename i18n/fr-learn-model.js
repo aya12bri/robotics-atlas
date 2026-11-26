@@ -1,5 +1,8 @@
 // Français — page learn-model. Clé = empreinte du texte anglais, valeur = traduction.
 RA.add({
+"1h1wk0df6nx": "M. Abbas, <i>Modélisation des robots</i> (UE33c) : DHm, modèles géométriques direct et inverse, modèles cinématiques, Master MARS, Université d’Orléans.",
+"1q658uljngn": "Supports de cours",
+"y6kzufu8yt": "Références",
 "21xhxwt8n8d": "Sources et références",
 "2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
 "1d15cz9ovk": "utilisé pour :",

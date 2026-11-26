@@ -3,6 +3,8 @@ RA.add({
 "21xhxwt8n8d": "Sources et références",
 "2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
 "1d15cz9ovk": "utilisé pour :",
+"1q658uljngn": "Supports de cours",
+"y6kzufu8yt": "Références",
 "261mm9op8mg": "caméras, étalonnage, stéréo",
 "aatcbrxz3l": "filtre de Kalman, localisation et SLAM",
 "29v4yymvlul": "le filtre de Kalman d’origine",

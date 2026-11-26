@@ -3,6 +3,8 @@ RA.add({
 "21xhxwt8n8d": "Sources et références",
 "2aomvb1eh2r": "Ce cours a été écrit à partir de ces livres, articles, normes et documentations. Ce sont aussi les meilleurs moyens d’aller plus loin.",
 "1d15cz9ovk": "utilisé pour :",
+"1q658uljngn": "Supports de cours",
+"y6kzufu8yt": "Références",
 "14a5w2btdvm": "modèles direct et inverse, DH",
 "gxapay0hav": "cinématique inverse numérique",
 "ethxan1wf8": "lois de mouvement polynomiales",
